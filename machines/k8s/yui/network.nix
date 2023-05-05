@@ -13,7 +13,7 @@
   };
   networking = {
     hostName = "${hostname}";
-    interfaces.enp5s0.wakeOnLan.enable = true;
+    interfaces.eno1.wakeOnLan.enable = true;
     firewall = {
       enable = true;
       trustedInterfaces = [
