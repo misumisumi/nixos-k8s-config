@@ -19,7 +19,6 @@ let
     hostname,
     user,
     rootDir ? "",
-    use_privete_conf,
   }: let
     hostConf = ./. + "/${rootDir}" + /home.nix;
     system = "x86_64-linux";
@@ -51,7 +50,6 @@ let
               imports = [
                 (import ../hm/hm.nix)
                 (import hostConf)
-                ../modules/nixosWallpaper.nix
                 flakes.nixosModules.for-hm
                 common-config.nixosModules.for-hm
                 nvimdots.nixosModules.for-hm
@@ -63,7 +61,7 @@ let
 in {
   yui-host = settings {
     hostname = "yui";
-    rootDir = "k8s/yui/host";
+    rootDir = "k8s/yui";
     inherit user;
   };
 }

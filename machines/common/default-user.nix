@@ -14,7 +14,7 @@
     isNormalUser = true;
     shell = pkgs.zsh;
     initialHashedPassword = "$6$viPBN7o74kK3JdGw$4zKIuVEbgqvTqLIae/G5rOgrYXWSccB5MQp9/0HgeitQIocLg2.GeG7TWYYfNhZdgs4FNHJuPg5SqSrrIkpr51";
-    extraGroups = ["wheel" "lxd" "libvirtd" "uucp" "kvm" "input" "audio" "video" "scanner" "lp"];
+    extraGroups = ["wheel" "uucp" "kvm" "input" "audio" "video" "scanner" "lp"];
     useDefaultShell = true;
     subUidRanges = [
       # Using rootless container

@@ -38,12 +38,11 @@
       pkgs-stable,
       ...
     }: {
-      nixpkgs.overlays =
-        [
-          nur.overlay
-          flakes.overlays.default
-        ]
-        ++ (import ./patches {inherit pkgs-stable;});
+      nixpkgs.overlays = [
+        nur.overlay
+        flakes.overlays.default
+      ];
+      # ++ (import ./patches {inherit pkgs-stable;});
     };
   in {
     nixosConfigurations = (
