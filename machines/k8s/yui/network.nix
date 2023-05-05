@@ -58,7 +58,7 @@
       };
       networks = {
         "10-wired" = {
-          name = "enp5s0";
+          name = "eno1";
           bridge = ["br0"];
         };
         "20-br0" = {
