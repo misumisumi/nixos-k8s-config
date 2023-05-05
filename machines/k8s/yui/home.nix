@@ -17,7 +17,7 @@
   home = {
     installCommonPkgs = {
       enable = true;
-      isLarge = true;
+      isLarge = false;
     };
     # packages = import ../../apps/userWide/pkgs {
     #   inherit lib pkgs;
