@@ -12,7 +12,7 @@
   ];
   boot = {
     initrd = {
-      availableKernelModules = ["nvme" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod"];
+      availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "uas" "sd_mod"];
       kernelModules = ["dm-snapshot"];
       luks.devices = {
         luksroot = {
