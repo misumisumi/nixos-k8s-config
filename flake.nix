@@ -10,6 +10,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     common-config.url = "github:misumisumi/nixos-common-config";
     nvimdots.url = "github:misumisumi/nvimdots";
@@ -23,6 +27,7 @@
     self,
     flake-utils,
     home-manager,
+    nixos-generators,
     nixpkgs,
     nixpkgs-stable,
     nur,
@@ -44,13 +49,40 @@
       ];
       # ++ (import ./patches {inherit pkgs-stable;});
     };
-  in {
-    nixosConfigurations = (
-      import ./machines {
-        inherit (nixpkgs) lib;
-        inherit inputs overlay stateVersion user;
-        inherit home-manager nixpkgs nixpkgs-stable nur common-config flakes nvimdots;
-      }
-    );
-  };
+  in
+    rec {
+      nixosConfigurations = (
+        import ./machines {
+          inherit (nixpkgs) lib;
+          inherit inputs overlay stateVersion user;
+          inherit home-manager nixpkgs nixpkgs-stable nur common-config flakes nvimdots;
+        }
+      );
+      overlays.default = final: prev: {mkcerts = final.callPackage (import ./certs) {};};
+    }
+    // flake-utils.lib.eachSystem ["x86_64-linux"]
+    (system: let
+      pkgs = import nixpkgs {
+        system = "${system}";
+        overlays = [
+          self.overlays.default
+        ]; # nvfetcherもoverlayする
+        config.allowUnfree = true;
+      };
+    in
+      with pkgs.legacyPackages.${system}; {
+        packages = {
+          ctrl = nixos-generators.nixosGenerate {
+            system = "x86_64-linux";
+            format = "qcow";
+            modules = [
+              nur.nixosModules.nur
+              common-config.nixosModules.for-nixos
+              ./machines/k8s/yui
+            ];
+          };
+          mkcerts = pkgs.mkcerts;
+        };
+        apps = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
+      });
 }
