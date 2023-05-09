@@ -72,17 +72,15 @@
     in
       with pkgs.legacyPackages.${system}; {
         packages = {
-          ctrl = nixos-generators.nixosGenerate {
+          terraform = nixos-generators.nixosGenerate {
             system = "x86_64-linux";
             format = "qcow";
             modules = [
-              nur.nixosModules.nur
-              common-config.nixosModules.for-nixos
-              ./machines/k8s/yui
+              ./machines/terraform
             ];
           };
-          mkcerts = pkgs.mkcerts;
+          # mkcerts = pkgs.mkcerts;
         };
-        apps = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
+        # apps = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
       });
 }
