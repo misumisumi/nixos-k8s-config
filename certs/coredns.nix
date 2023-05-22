@@ -1,13 +1,14 @@
-{ pkgs, cfssl, kubectl }:
-let
-  inherit (pkgs.callPackage ./utils.nix { }) mkCsr;
+{
+  pkgs,
+  cfssl,
+  kubectl,
+}: let
+  inherit (pkgs.callPackage ./src/utils.nix {}) mkCsr;
 
   corednsKubeCsr = mkCsr "coredns" {
     cn = "system:coredns";
   };
-
-in
-''
+in ''
   mkdir -p $out/coredns
 
   pushd $out/kubernetes > /dev/null

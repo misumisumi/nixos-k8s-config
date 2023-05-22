@@ -1,8 +1,10 @@
-{ pkgs, cfssl }:
-let
-  inherit (pkgs.callPackage ./utils.nix { }) getAltNames mkCsr;
+{
+  pkgs,
+  cfssl,
+}: let
+  inherit (pkgs.callPackage ./src/utils.nix {}) getAltNames mkCsr;
 
-  caCsr = mkCsr "etcd-ca" { cn = "etcd-ca"; };
+  caCsr = mkCsr "etcd-ca" {cn = "etcd-ca";};
   serverCsr = mkCsr "etcd-server" {
     cn = "etcd";
     altNames = getAltNames "etcd";
@@ -11,8 +13,7 @@ let
     cn = "etcd-peer";
     altNames = getAltNames "etcd";
   };
-in
-''
+in ''
   mkdir -p $out/etcd
 
   pushd $out/etcd > /dev/null

@@ -1,14 +1,15 @@
-{ pkgs, cfssl, kubectl }:
-let
-  inherit (pkgs.callPackage ./utils.nix { }) getAltNames mkCsr;
+{
+  pkgs,
+  cfssl,
+  kubectl,
+}: let
+  inherit (pkgs.callPackage ./src/utils.nix {}) getAltNames mkCsr;
 
   etcdClientCsr = mkCsr "etcd-client" {
     cn = "flannel";
     altNames = getAltNames "worker";
   };
-
-in
-''
+in ''
   mkdir -p $out/flannel
 
   pushd $out/etcd > /dev/null

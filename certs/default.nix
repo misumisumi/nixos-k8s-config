@@ -4,26 +4,9 @@
   writeShellApplication,
   writeText,
 }: let
-  caConfig = writeText "ca-config.json" ''
-    {
-      "signing": {
-        "profiles": {
-          "client": {
-            "expiry": "87600h",
-            "usages": ["signing", "key encipherment", "client auth"]
-          },
-          "peer": {
-            "expiry": "87600h",
-            "usages": ["signing", "key encipherment", "client auth", "server auth"]
-          },
-          "server": {
-            "expiry": "8760h",
-            "usages": ["signing", "key encipherment", "client auth", "server auth"]
-          }
-        }
-      }
-    }
-  '';
+  # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
+  # 各証明書の有効期限は10年
+  inherit (callPackage ./src/settings.nix {}) caConfig;
 in
   writeShellApplication {
     name = "generate-certs";
