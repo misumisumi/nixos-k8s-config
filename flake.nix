@@ -70,24 +70,12 @@
         config.allowUnfree = true;
       };
     in
-      with pkgs.legacyPackages.${system}; {
+      with nixpkgs.legacyPackages.${system}; {
         packages = {
-          terraform-lxc = nixos-generators.nixosGenerate {
-            system = "x86_64-linux";
-            format = "lxc";
-            modules = [
-              ./machines/terraform
-            ];
-            terraform-lxc-metadata = nixos-generators.nixosGenerate {
-              system = "x86_64-linux";
-              format = "lxc-metadata";
-              modules = [
-                ./machines/terraform
-              ];
-            };
-            # mkcerts = pkgs.mkcerts;
-          };
+          mkcerts = pkgs.mkcerts;
         };
-        # apps = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
+        apps = rec {
+          mkcerts = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
+        };
       });
 }

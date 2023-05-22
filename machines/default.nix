@@ -64,4 +64,12 @@ in {
     rootDir = "k8s/yui";
     inherit user;
   };
+  terraform-lxc = with lib;
+    nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = {inherit stateVersion;};
+      modules = [
+        ./terraform
+      ];
+    };
 }
