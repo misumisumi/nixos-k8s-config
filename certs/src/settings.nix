@@ -1,10 +1,12 @@
 # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
 {
+  lib,
   callPackage,
   cfssl,
   writeShellApplication,
   writeText,
-}: {
+}:
+with lib; {
   # 各証明書の有効期限は10年
   caConfig = writeText "ca-config.json" ''
     {
@@ -26,17 +28,21 @@
       }
     }
   '';
-  csrDefault = {
+  csrConfig = {organizationUnit ? null}: {
     key = {
       algo = "rsa";
       size = 2048;
     };
-    names = {
-      "C" = "Japan";
-      "ST" = "Asia";
-      "L" = "Tokyo";
-      "O" = "miSumiSumi";
-      "OU" = "CardinalSystem";
-    };
+    names = [
+      ({
+          "C" = "Japan";
+          "ST" = "Asia";
+          "L" = "Tokyo";
+          "O" = "CardinalSYstem";
+        }
+        // optionalAttrs (organizationUnit != null) {
+          "OU" = organizationUnit;
+        })
+    ];
   };
 }

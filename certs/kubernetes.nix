@@ -27,17 +27,17 @@
   apiServerKubeletClientCsr = mkCsr "kube-api-server-kubelet-client" {
     cn = "kube-api-server";
     altNames = getAltNames "controlplane";
-    organization = "system:masters";
+    organizationUnit = "system:masters";
   };
 
   cmCsr = mkCsr "kube-controller-manager" {
     cn = "system:kube-controller-manager";
-    organization = "system:kube-controller-manager";
+    organizationUnit = "system:kube-controller-manager";
   };
 
   adminCsr = mkCsr "admin" {
     cn = "admin";
-    organization = "system:masters";
+    organizationUnit = "system:masters";
   };
 
   etcdClientCsr = mkCsr "etcd-client" {
@@ -51,12 +51,12 @@
 
   proxyCsr = mkCsr "kube-proxy" {
     cn = "system:kube-proxy";
-    organization = "system:node-proxier";
+    organizationUnit = "system:node-proxier";
   };
 
   schedulerCsr = mkCsr "kube-scheduler" rec {
     cn = "system:kube-scheduler";
-    organization = cn;
+    organizationUnit = cn;
   };
 
   workerCsrs =
@@ -65,7 +65,7 @@
       name = r.values.name;
       csr = mkCsr r.values.name {
         cn = "system:node:${r.values.name}";
-        organization = "system:nodes";
+        organizationUnit = "system:nodes";
         # TODO: unify with getAltNames?
         altNames = [r.values.name (nodeIP r)];
       };
@@ -95,13 +95,13 @@ in ''
   ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \
       --client-certificate=admin.pem \
       --client-key=admin-key.pem
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster virt \
+  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster lxd \
       --certificate-authority=ca.pem \
       --server=https://${virtualIP}
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context virt \
+  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context lxd \
       --user admin \
-      --cluster virt
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context virt > /dev/null
+      --cluster lxd
+  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context lxd > /dev/null
 
   popd > /dev/null
 ''

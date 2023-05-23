@@ -7,16 +7,10 @@
   domain = "k8s.local";
 
   inherit (callPackage ../../src/resources.nix {}) resourcesByRole;
+  inherit (callPackage ./settings.nix {}) csrConfig;
   inherit (import ../../src/utils.nix) nodeIP;
 
   writeJSONText = name: obj: writeText "${name}.json" (builtins.toJSON obj);
-
-  csrDefaults = {
-    key = {
-      algo = "rsa";
-      size = 2048;
-    };
-  };
 in {
   # Get IP/DNS alternative names for all servers of this role.
   # We currently use the same certificates for all replicas of a role (where possible),
@@ -25,7 +19,6 @@ in {
   getAltNames = role: let
     hosts = map (r: r.values.name) (resourcesByRole role);
     ips = map nodeIP (resourcesByRole role);
-    inherit (callPackage ./settings.nix) csrDefaults;
   in
     hosts ++ (map (h: "${h}.${domain}") hosts) ++ ips;
 
@@ -33,9 +26,9 @@ in {
   mkCsr = name: {
     cn,
     altNames ? [],
-    organization ? null,
+    organizationUnit ? null,
   }:
-    writeJSONText name (lib.attrsets.recursiveUpdate csrDefaults {
+    writeJSONText name (lib.attrsets.recursiveUpdate (csrConfig {inherit organizationUnit;}) {
       CN = cn;
       hosts = [cn] ++ altNames;
     });
