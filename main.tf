@@ -16,29 +16,34 @@ provider "lxd" {
   accept_remote_certificate    = true
 }
 
-resource "lxd_container" "nixos-master" {
-  name  = "nixos-master"
-  image = "nixos"
-
-  config = {
-    "boot.autostart" = true
+module "node" {
+  for_each = {
+    "etcd" : {
+      "count" : var.etcd_instances,
+      "cpu": 2,
+      "memory" : "2GB",
+    }
+    "controlplane" : {
+      "count" : var.control_plane_instances,
+      "cpu": 2,
+      "memory" : "2GB",
+    }
+    "worker" : {
+      "count" : var.worker_instances,
+      "cpu": 2,
+      "memory" : "2GBJ",
+    }
+    "loadbalancer" : {
+      "count" : var.load_balancer_instances,
+      "cpu": 2,
+      "memory" : "2GB",
+    }
   }
 
-  limits = {
-    cpu = 2
-    memory = "2GB"
-  }
-}
-resource "lxd_container" "nixos-node" {
-  name  = "nixos-node"
-  image = "nixos"
+  source = "./modules/node"
 
-  config = {
-    "boot.autostart" = true
-  }
-
-  limits = {
-    cpu = 2
-    memory = "2GB"
-  }
+  name         = each.key
+  num_replicas = each.value.count
+  memory       = each.value.memory
+  cpu = each.value.cpu
 }
