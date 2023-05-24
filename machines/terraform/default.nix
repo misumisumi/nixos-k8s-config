@@ -3,7 +3,7 @@
   lib,
 }: let
   inherit (import ../../src/resources.nix {inherit lib;}) resources resourcesByRole;
-  inherit (import ../../src/utils.nix {}) nodeIP;
+  inherit (import ../../src/utils.nix) nodeIP;
 
   etcdHosts = map (r: r.values.name) (resourcesByRole "etcd");
   controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane");
@@ -50,7 +50,7 @@ in
       deployment.targetHost = nodeIP self;
       networking.hostName = name;
 
-      system.stateVersion = "22.05";
+      system.stateVersion = "23.05";
     };
   }
   // builtins.listToAttrs (map (h: {
