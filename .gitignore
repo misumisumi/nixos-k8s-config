@@ -1,0 +1,4 @@
+.terraform*
+terraform.tfstate*
+certs/generated
+show.json
