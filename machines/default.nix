@@ -69,7 +69,7 @@ in {
       system = "x86_64-linux";
       specialArgs = {inherit stateVersion;};
       modules = [
-        ./terraform
+        ./terraform/init
       ];
     };
 }

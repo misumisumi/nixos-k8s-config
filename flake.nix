@@ -50,7 +50,14 @@
       # ++ (import ./patches {inherit pkgs-stable;});
     };
   in
-    rec {
+    {
+      # Cluster settings managing colmena
+      colmena = import ./machines/terraform {
+        inherit nixpkgs;
+        inherit (nixpkgs) callPackage;
+      };
+    }
+    // {
       nixosConfigurations = (
         import ./machines {
           inherit (nixpkgs) lib;
