@@ -1,10 +1,9 @@
 {
   nixpkgs,
-  callPackage,
-  ...
+  lib,
 }: let
-  inherit (callPackage ../src/resources.nix {}) resources resourcesByRole;
-  inherit (import ../src/utils.nix) nodeIP;
+  inherit (import ../../src/resources.nix {inherit lib;}) resources resourcesByRole;
+  inherit (import ../../src/utils.nix {}) nodeIP;
 
   etcdHosts = map (r: r.values.name) (resourcesByRole "etcd");
   controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane");
@@ -33,7 +32,9 @@
 in
   {
     meta = {
-      inherit nixpkgs;
+      nixpkgs = import nixpkgs {
+        system = "x86_64-linux";
+      };
     };
 
     defaults = {

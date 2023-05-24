@@ -52,10 +52,12 @@
   in
     {
       # Cluster settings managing colmena
-      colmena = import ./machines/terraform {
-        inherit nixpkgs;
-        inherit (nixpkgs) callPackage;
-      };
+      colmena = (
+        import ./machines/terraform {
+          inherit nixpkgs;
+          inherit (nixpkgs) lib;
+        }
+      );
     }
     // {
       nixosConfigurations = (
