@@ -31,7 +31,7 @@ module "node" {
     "worker" : {
       "count" : var.worker_instances,
       "cpu": 2,
-      "memory" : "2GBJ",
+      "memory" : "2GB",
     }
     "loadbalancer" : {
       "count" : var.load_balancer_instances,
