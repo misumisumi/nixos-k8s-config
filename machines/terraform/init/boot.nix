@@ -1,6 +1,6 @@
 {modulesPath, ...}: {
   imports = [
-    "${toString modulesPath}/profiles/qemu-guest.nix"
+    "${toString modulesPath}/virtualisation/lxc-container.nix"
   ];
 
   # fileSystems."/" = {
@@ -13,4 +13,5 @@
   # boot.kernelParams = ["console=ttyS0"];
   # boot.loader.grub.device = "/dev/vda";
   security.polkit.enable = true;
+  boot.loader.grub.device = "nodev";
 }

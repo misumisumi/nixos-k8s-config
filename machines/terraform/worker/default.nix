@@ -1,38 +1,42 @@
-{ config, name, resourcesByRole, ... }:
-let
-  inherit (import ../../consts.nix) virtualIP;
-in
 {
-  imports = [ ./coredns.nix ./flannel.nix ];
+  config,
+  name,
+  resourcesByRole,
+  ...
+}: let
+  pwd = builtins.toPath (builtins.getEnv "PWD");
+  inherit (import ../../../src/consts.nix) virtualIP;
+in {
+  imports = [./coredns.nix ./flannel.nix];
 
   deployment.keys = {
     "ca.pem" = {
-      keyFile = ../../certs/generated/kubernetes/ca.pem;
+      keyFile = "${pwd}/certs/generated/kubernetes/ca.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
       permissions = "0644";
     };
 
     "kubelet.pem" = {
-      keyFile = ../../certs/generated/kubernetes/kubelet + "/${name}.pem";
+      keyFile = "${pwd}/certs/generated/kubernetes/kubelet" + "/${name}.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "kubelet-key.pem" = {
-      keyFile = ../../certs/generated/kubernetes/kubelet + "/${name}-key.pem";
+      keyFile = "${pwd}/certs/generated/kubernetes/kubelet" + "/${name}-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "proxy.pem" = {
-      keyFile = ../../certs/generated/kubernetes/proxy.pem;
+      keyFile = "${pwd}/certs/generated/kubernetes/proxy.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "proxy-key.pem" = {
-      keyFile = ../../certs/generated/kubernetes/proxy-key.pem;
+      keyFile = "${pwd}/certs/generated/kubernetes/proxy-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

@@ -5,12 +5,13 @@
   self,
   ...
 }: let
-  inherit (import ../utils.nix) nodeIP;
+  pwd = builtins.toPath (builtins.getEnv "PWD");
+  inherit (import ../../../src/utils.nix) nodeIP;
   etcds = resourcesByRole "etcd";
   cluster = map (r: "${r.values.name}=https://${nodeIP r}:2380") etcds;
 
   mkSecret = filename: {
-    keyFile = ../certs/generated/etcd + "/${filename}";
+    keyFile = "${pwd}/certs/generated/etcd" + "/${filename}";
     destDir = "/var/lib/secrets/etcd";
     user = "etcd";
   };

@@ -1,16 +1,15 @@
-{ resourcesByRole, ... }:
-let
-  inherit (import ../../consts.nix) virtualIP;
-in
-{
+{resourcesByRole, ...}: let
+  pwd = builtins.toPath (builtins.getEnv "PWD");
+  inherit (import ../../../src/consts.nix) virtualIP;
+in {
   deployment.keys = {
     "scheduler.pem" = {
-      keyFile = ../../certs/generated/kubernetes/scheduler.pem;
+      keyFile = "${pwd}/certs/generated/kubernetes/scheduler.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
     "scheduler-key.pem" = {
-      keyFile = ../../certs/generated/kubernetes/scheduler-key.pem;
+      keyFile = "${pwd}/certs/generated/kubernetes/scheduler-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

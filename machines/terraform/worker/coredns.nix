@@ -1,22 +1,26 @@
-{ pkgs, resourcesByRole, self, ... }:
-let
-  inherit (import ../../consts.nix) virtualIP;
-  inherit (import ../../utils.nix) nodeIP;
-in
 {
+  pkgs,
+  resourcesByRole,
+  self,
+  ...
+}: let
+  pwd = builtins.toPath (builtins.getEnv "PWD");
+  inherit (import ../../../src/consts.nix) virtualIP;
+  inherit (import ../../../src/utils.nix) nodeIP;
+in {
   deployment.keys = {
     "coredns-kube.pem" = {
-      keyFile = ../../certs/generated/coredns/coredns-kube.pem;
+      keyFile = "${pwd}/certs/generated/coredns/coredns-kube.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
     "coredns-kube-key.pem" = {
-      keyFile = ../../certs/generated/coredns/coredns-kube-key.pem;
+      keyFile = "${pwd}/certs/generated/coredns/coredns-kube-key.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
     "kube-ca.pem" = {
-      keyFile = ../../certs/generated/kubernetes/ca.pem;
+      keyFile = "${pwd}/certs/generated/kubernetes/ca.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
@@ -38,10 +42,10 @@ in
 
   services.kubernetes.kubelet.clusterDns = nodeIP self;
 
-  networking.firewall.interfaces.mynet.allowedTCPPorts = [ 53 ];
-  networking.firewall.interfaces.mynet.allowedUDPPorts = [ 53 ];
+  networking.firewall.interfaces.mynet.allowedTCPPorts = [53];
+  networking.firewall.interfaces.mynet.allowedUDPPorts = [53];
 
-  users.groups.coredns = { };
+  users.groups.coredns = {};
   users.users.coredns = {
     group = "coredns";
     isSystemUser = true;
