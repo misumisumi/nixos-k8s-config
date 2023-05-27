@@ -2,6 +2,7 @@
   inherit (import ../../../src/consts.nix) virtualIP;
   pwd = builtins.getEnv "PWD";
 in {
+  # For colmena
   deployment.keys = {
     "controller-manager.pem" = {
       keyFile = "${pwd}/certs/generated/kubernetes/controller-manager.pem";

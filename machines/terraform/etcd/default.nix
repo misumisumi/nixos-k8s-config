@@ -16,6 +16,7 @@
     user = "etcd";
   };
 in {
+  # For colmena
   deployment.keys = {
     "ca.pem" = mkSecret "ca.pem";
     "peer.pem" = mkSecret "peer.pem";

@@ -8,6 +8,7 @@
   inherit (import ../../../src/consts.nix) virtualIP;
   inherit (import ../../../src/utils.nix) nodeIP;
 in {
+  # For colmena
   deployment.keys = {
     "coredns-kube.pem" = {
       keyFile = "${pwd}/certs/generated/coredns/coredns-kube.pem";

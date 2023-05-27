@@ -37,6 +37,7 @@
       };
     };
 in {
+  # For colmena
   deployment.keys = {
     "server.pem" = mkSecret "server.pem";
     "server-key.pem" = mkSecret "server-key.pem";

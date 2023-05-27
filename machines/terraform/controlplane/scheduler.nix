@@ -2,6 +2,7 @@
   pwd = builtins.toPath (builtins.getEnv "PWD");
   inherit (import ../../../src/consts.nix) virtualIP;
 in {
+  # For colmena
   deployment.keys = {
     "scheduler.pem" = {
       keyFile = "${pwd}/certs/generated/kubernetes/scheduler.pem";
