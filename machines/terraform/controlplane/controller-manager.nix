@@ -1,4 +1,4 @@
-{resourcesByRole, ...}: let
+{...}: let
   inherit (import ../../../src/consts.nix) virtualIP;
   pwd = builtins.getEnv "PWD";
 in {
