@@ -1,3 +1,4 @@
+.direnv
 .terraform*
 terraform.tfstate*
 certs/generated
