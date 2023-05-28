@@ -78,13 +78,48 @@
         ]; # nvfetcherもoverlayする
         config.allowUnfree = true;
       };
+      myTerraform = pkgs.terraform.withPlugins (tp: [tp.libvirt tp.lxd]);
+      ter = pkgs.writeShellScriptBin "ter" ''
+        ${myTerraform}/bin/terraform $@ && \
+          ${myTerraform}/bin/terraform show -json | ${pkgs.jq}/bin/jq > show.json
+      '';
+      k = pkgs.writeShellScriptBin "k" ''
+        ${pkgs.kubectl}/bin/kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig $@
+      '';
+      mkimg4lxc = pkgs.writeShellScriptBin "mkimg4lxc" ''
+        lxc image import --alias nixos ''$(${pkgs.nixos-generators}/bin/ixos-generate -f lxc-metadata) ''$(${pkgs.nixos-generators}/bin/nixos-generate -f lxc --flake ".#terraform-lxc")
+      '';
+      _pkgs = with pkgs; [
+        # software for deployment
+        colmena
+        jq
+        libxslt
+        myTerraform
+
+        # software for testing
+        etcd
+        kubectl
+
+        # scripts
+        mkcerts
+        ter
+        k
+        mkimg4lxc
+      ];
     in
       with nixpkgs.legacyPackages.${system}; {
         packages = {
           mkcerts = pkgs.mkcerts;
         };
-        apps = rec {
+        apps = {
           mkcerts = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
+        };
+        devShells.default = pkgs.mkShell {
+          nativeBuildInputs = _pkgs;
+          buildInputs = [];
+          shellHooks = ''
+            alias k="kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig"
+          '';
         };
       });
 }
