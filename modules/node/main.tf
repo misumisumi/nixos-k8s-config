@@ -15,8 +15,8 @@ resource "lxd_profile" "profile" {
 
   config = {
     "boot.autostart" = true
-    "limits.cpu" = var.cpu
-    "limits.memory" = var.memory
+    "limits.cpu"     = var.cpu
+    "limits.memory"  = var.memory
   }
 
   device {

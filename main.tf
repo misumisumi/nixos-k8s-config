@@ -20,22 +20,22 @@ module "node" {
   for_each = {
     "etcd" : {
       "count" : var.etcd_instances,
-      "cpu": 2,
+      "cpu" : 2,
       "memory" : "2GB",
     }
     "controlplane" : {
       "count" : var.control_plane_instances,
-      "cpu": 2,
+      "cpu" : 2,
       "memory" : "2GB",
     }
     "worker" : {
       "count" : var.worker_instances,
-      "cpu": 2,
+      "cpu" : 2,
       "memory" : "2GB",
     }
     "loadbalancer" : {
       "count" : var.load_balancer_instances,
-      "cpu": 2,
+      "cpu" : 2,
       "memory" : "2GB",
     }
   }
@@ -45,5 +45,5 @@ module "node" {
   name         = each.key
   num_replicas = each.value.count
   memory       = each.value.memory
-  cpu = each.value.cpu
+  cpu          = each.value.cpu
 }
