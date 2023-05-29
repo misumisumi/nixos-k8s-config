@@ -2,7 +2,6 @@
   lib,
   resources,
   resourcesByRole,
-  resourcesByRoles,
   self,
   ...
 }: let
@@ -10,7 +9,6 @@
   inherit (import ../../../src/utils.nix) nodeIP;
   etcds = resourcesByRole "etcd";
   cluster = map (r: "${r.values.name}=https://${nodeIP r}:2380") etcds;
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
 
   mkSecret = filename: {
     keyFile = "${pwd}/certs/generated/etcd" + "/${filename}";
@@ -28,7 +26,6 @@ in {
   };
 
   networking.firewall.allowedTCPPorts = [2379 2380];
-  networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
 
   services.etcd = {
     enable = true;

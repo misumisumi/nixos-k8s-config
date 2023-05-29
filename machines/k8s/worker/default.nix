@@ -1,13 +1,11 @@
 {
-  lib,
   config,
   name,
-  resourcesByRoles,
+  resourcesByRole,
   ...
 }: let
-  inherit (import ../../../src/consts.nix) virtualIP;
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
+  inherit (import ../../../src/consts.nix) virtualIP;
 in {
   imports = [./coredns.nix ./flannel.nix];
 
@@ -44,7 +42,6 @@ in {
     };
   };
 
-  networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
   networking.firewall.allowedTCPPorts = [
     config.services.kubernetes.kubelet.port
   ];

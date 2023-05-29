@@ -61,7 +61,7 @@ let
 in {
   yui-host = settings {
     hostname = "yui";
-    rootDir = "k8s/yui";
+    rootDir = "hosts/yui";
     inherit user;
   };
   terraform-lxc = with lib;
@@ -69,7 +69,7 @@ in {
       system = "x86_64-linux";
       specialArgs = {inherit stateVersion;};
       modules = [
-        ./terraform/init
+        ./k8s/init
       ];
     };
 }
