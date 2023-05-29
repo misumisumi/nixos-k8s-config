@@ -41,9 +41,9 @@ resource "lxd_profile" "profile" {
 }
 
 resource "lxd_container" "node" {
-  count = var.num_replicas
+  for_each = var.node_names
 
-  name = "${var.name}${count.index + 1}"
+  name = each.value
 
   image = "nixos"
 

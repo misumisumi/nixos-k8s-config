@@ -1,4 +1,4 @@
-etcd_instances          = 3
-control_plane_instances = 3
-worker_instances        = 2
-load_balancer_instances = 2
+etcdinstances          = ["etcd1", "etcd2", "etcd3"]
+controlplane_instances = ["controlplane1", "controlplane2", "controlplane3"]
+worker_instances       = ["worker1", "worer2"]
+loadbalancer_instances = ["loadbalancer1", "loadbalancer2"]

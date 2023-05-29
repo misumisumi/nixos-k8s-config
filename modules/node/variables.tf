@@ -13,7 +13,7 @@ variable "name" {
   description = "Base name for the machine and boot volume"
 }
 
-variable "num_replicas" {
-  type        = number
-  description = "Amount of machines to spawn"
+variable "node_names" {
+  type = set(string)
+  description = "Name to give to each nodes"
 }
