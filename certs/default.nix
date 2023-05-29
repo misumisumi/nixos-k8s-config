@@ -9,7 +9,7 @@
   inherit (callPackage ./src/settings.nix {}) caConfig;
 in
   writeShellApplication {
-    name = "generate-certs";
+    name = "mkcerts";
     text = ''
       set -e
 
