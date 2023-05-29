@@ -67,17 +67,16 @@
           inherit home-manager nixpkgs nixpkgs-stable nur common-config flakes nvimdots;
         }
       );
-      overlays.default = final: prev: {mkcerts = final.callPackage (import ./certs) {};};
     }
     // flake-utils.lib.eachSystem ["x86_64-linux"]
     (system: let
       pkgs = import nixpkgs {
         system = "${system}";
         overlays = [
-          self.overlays.default
         ]; # nvfetcherもoverlayする
         config.allowUnfree = true;
       };
+      mkcerts = pkgs.callPackage (import ./certs) {};
       myTerraform = pkgs.terraform.withPlugins (tp: [tp.libvirt tp.lxd]);
       ter = pkgs.writeShellScriptBin "ter" ''
         ${myTerraform}/bin/terraform $@ && \
@@ -108,17 +107,16 @@
       ];
     in
       with nixpkgs.legacyPackages.${system}; {
-        packages = {
-          mkcerts = pkgs.mkcerts;
-        };
         apps = {
-          mkcerts = flake-utils.lib.mkApp {drv = pkgs.mkcerts;};
+          mkcerts = flake-utils.lib.mkApp {drv = mkcerts;};
+          ter = flake-utils.lib.mkApp {drv = ter;};
+          k = flake-utils.lib.mkApp {drv = k;};
+          mkimg4lxc = flake-utils.lib.mkApp {drv = mkimg4lxc;};
         };
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = _pkgs;
           buildInputs = [];
           shellHooks = ''
-            alias k="kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig"
           '';
         };
       });
