@@ -16,39 +16,33 @@ provider "lxd" {
   accept_remote_certificate    = true
 }
 
+module "root_pool" {
+  source = "../root_pool"
+}
+
 module "node" {
   for_each = {
     etcd = {
-      count      = var.etcd_instances,
-      cpu        = tonumber(var.etcd_RD.cpu)
-      memory     = var.etcd_RD.memory
-      nic_parent = var.etcd_RD.nic_parent
+      nodes = var.etcd_instances,
+      rd    = var.etcd_RD
     }
     "controlplane" = {
-      count      = var.control_plane_instances,
-      cpu        = tonumber(var.control_plane_RD.cpu)
-      memory     = var.control_plane_RD.memory
-      nic_parent = var.control_plane_RD.nic_parent
+      nodes = var.control_plane_instances,
+      rd    = var.control_plane_RD
     }
     worker = {
-      count      = var.worker_instances,
-      cpu        = tonumber(var.worker_RD.cpu)
-      memory     = var.worker_RD.memory
-      nic_parent = var.worker_RD.nic_parent
+      nodes = var.worker_instances,
+      rd    = var.worker_RD
     }
-    "loadbalancer" = {
-      count      = var.load_balancer_instances,
-      cpu        = tonumber(var.load_balancer_RD.cpu)
-      memory     = var.load_balancer_RD.memory
-      nic_parent = var.load_balancer_RD.nic_parent
+    loadbalancer = {
+      nodes = var.load_balancer_instances,
+      rd    = var.load_balancer_RD
     }
   }
 
   source = "./modules/node"
 
-  name       = each.key
-  node_names = each.value.count
-  memory     = each.value.memory
-  cpu        = each.value.cpu
-  nic_parent = each.value.nic_parent
+  name    = each.key
+  nodes   = each.value.nodes
+  node_rd = each.value.rd
 }
