@@ -25,7 +25,7 @@ resource "lxd_profile" "profile" {
 
     properties = {
       nictype = "bridged"
-      parent  = "br0"
+      parent  = var.nic_parent
     }
   }
 
@@ -41,9 +41,13 @@ resource "lxd_profile" "profile" {
 }
 
 resource "lxd_container" "node" {
-  for_each = var.node_names
+  for_each = { for i in var.node_names : i.name => i }
+  target   = contains(keys(each.value), "target") ? each.value.target : null
+  config = {
+    ip_address = contains(keys(each.value), "ip_address") ? each.value.ip_address : null
+  }
 
-  name = each.value
+  name = each.value.name
 
   image = "nixos"
 
