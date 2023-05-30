@@ -53,7 +53,7 @@
     {
       # Cluster settings managing colmena
       colmena = (
-        import ./machines/terraform {
+        import ./machines/k8s {
           inherit nixpkgs;
           inherit (nixpkgs) lib;
         }
@@ -117,6 +117,7 @@
           nativeBuildInputs = _pkgs;
           buildInputs = [];
           shellHooks = ''
+            [[ -f ./show.json ]] && touch show.json
           '';
         };
       });
