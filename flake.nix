@@ -77,7 +77,7 @@
         config.allowUnfree = true;
       };
       mkcerts = pkgs.callPackage (import ./certs) {};
-      myTerraform = pkgs.terraform.withPlugins (tp: [tp.libvirt tp.lxd]);
+      myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.null]);
       ter = pkgs.writeShellScriptBin "ter" ''
         ${myTerraform}/bin/terraform $@ && \
           ${myTerraform}/bin/terraform show -json | ${pkgs.jq}/bin/jq > show.json
@@ -93,6 +93,7 @@
         colmena
         jq
         libxslt
+        btrfs-progs
         myTerraform
 
         # software for testing
