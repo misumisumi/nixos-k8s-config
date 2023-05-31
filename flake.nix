@@ -78,22 +78,16 @@
       };
       mkcerts = pkgs.callPackage (import ./certs) {};
       myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.null]);
-      ter = pkgs.writeShellScriptBin "ter" ''
-        ${myTerraform}/bin/terraform $@ && \
-          ${myTerraform}/bin/terraform show -json | ${pkgs.jq}/bin/jq > show.json
-      '';
-      k = pkgs.writeShellScriptBin "k" ''
-        ${pkgs.kubectl}/bin/kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig $@
-      '';
-      mkimg4lxc = pkgs.writeShellScriptBin "mkimg4lxc" ''
-        lxc image import --alias nixos ''$(${pkgs.nixos-generators}/bin/ixos-generate -f lxc-metadata) ''$(${pkgs.nixos-generators}/bin/nixos-generate -f lxc --flake ".#terraform-lxc")
-      '';
-      _pkgs = with pkgs; [
+      myScripts = pkgs.callPackage (import ./scripts) {};
+      _pkgs = with pkgs;
+      with myScripts; [
         # software for deployment
         colmena
         jq
         libxslt
         btrfs-progs
+        terraform-docs
+        hcl2json
         myTerraform
 
         # software for testing
@@ -101,10 +95,13 @@
         kubectl
 
         # scripts
-        mkcerts
-        ter
+        check_k8s
+        deploy
         k
+        mkcerts
+        mkenv
         mkimg4lxc
+        ter
       ];
     in
       with nixpkgs.legacyPackages.${system}; {
