@@ -1,6 +1,5 @@
-{resourcesByRole, ...}: let
+{virtualIP, ...}: let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  inherit (import ../../../src/consts.nix) virtualIP;
 in {
   # For colmena
   deployment.keys = {

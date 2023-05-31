@@ -1,11 +1,9 @@
 {
-  pkgs,
-  resourcesByRole,
   self,
+  virtualIP,
   ...
 }: let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  inherit (import ../../../src/consts.nix) virtualIP;
   inherit (import ../../../src/utils.nix) nodeIP;
 in {
   # For colmena

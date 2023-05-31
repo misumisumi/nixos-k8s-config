@@ -12,7 +12,8 @@
   ...
 }: {
   _module.args = rec {
-    inherit (pkgs.callPackage ../../src/resources.nix {}) resources resourcesByRole;
+    inherit (pkgs.callPackage ../../src/resources.nix {}) resources resourcesByRole resourcesByRoles;
+    inherit (pkgs.callPackage ../../src/consts.nix {}) virtualIP;
     self = builtins.head (builtins.filter (r: r.values.name == name) resources);
   };
 }

@@ -1,15 +1,17 @@
 {
   lib,
   resourcesByRole,
+  resourcesByRoles,
+  virtualIP,
   self,
   ...
 }: let
-  inherit (import ../../../src/consts.nix) virtualIP;
   inherit (import ../../../src/utils.nix) nodeIP;
   backends =
     map
     (r: "server ${r.values.name} ${nodeIP r}:6443")
     (resourcesByRole "controlplane");
+  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
 in {
   services.haproxy = {
     enable = true;
@@ -33,7 +35,7 @@ in {
     enable = true;
     vrrpInstances.k8s = {
       # TODO: at least basic (hardcoded) auth or other protective measures
-      interface = "ens3";
+      interface = "eth0";
       priority =
         # Prioritize loadbalancer1 over loadbalancer2 over loadbalancer3, etc.
         let
@@ -54,4 +56,5 @@ in {
   networking.firewall.allowedTCPPorts = [443];
   networking.firewall.extraCommands = "iptables -A INPUT -p vrrp -j ACCEPT";
   networking.firewall.extraStopCommands = "iptables -D INPUT -p vrrp -j ACCEPT || true";
+  networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
 }

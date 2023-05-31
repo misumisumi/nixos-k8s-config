@@ -1,5 +1,4 @@
-{resourcesByRole, ...}: let
-  inherit (import ../../../src/consts.nix) virtualIP;
+{virtualIP, ...}: let
   pwd = builtins.getEnv "PWD";
 in {
   # For colmena
