@@ -2,7 +2,6 @@
   callPackage,
   cfssl,
   writeShellApplication,
-  writeText,
 }: let
   # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
   # 各証明書の有効期限は10年
