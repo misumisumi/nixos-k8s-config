@@ -46,8 +46,8 @@ resource "lxd_container" "node" {
 
     properties = {
       nictype        = "bridged"
-      parent         = terraform.workspace == "product" ? var.node_rd.nic_parent : "k8sbr0"
-      "ipv4.address" = contains(keys(each.value), "ip_address") ? each.value.ip_address : null
+      parent         = terraform.workspace == "develop" ? "k8sbr0" : var.node_rd.nic_parent
+      "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace == "develop" ? each.value.ip_address : null
     }
   }
 }
