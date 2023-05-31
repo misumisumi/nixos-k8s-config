@@ -10,11 +10,6 @@ terraform {
   }
 }
 
-module "network" {
-  count  = terraform.workspace == "product" ? 0 : 1
-  source = "../network"
-}
-
 resource "lxd_profile" "profile" {
   name = "profile_${var.name}"
 
@@ -29,7 +24,7 @@ resource "lxd_profile" "profile" {
     name = "root"
 
     properties = {
-      pool = "pool_${var.name}"
+      pool = "default"
       path = "/"
     }
   }
@@ -51,7 +46,7 @@ resource "lxd_container" "node" {
 
     properties = {
       nictype        = "bridged"
-      parent         = terraform.workspace == "product" ? var.node_rd.nic_parent : module.network[0].name
+      parent         = terraform.workspace == "product" ? var.node_rd.nic_parent : "k8sbr0"
       "ipv4.address" = contains(keys(each.value), "ip_address") ? each.value.ip_address : null
     }
   }

@@ -12,7 +12,7 @@ resource "lxd_network" "k8sbr0" {
   config = {
     "ipv4.address" = "10.150.10.1/24"
     "ipv4.nat"     = "true"
-    "ipv6.address" = "fd42:474b:622d:259d::1/64"
-    "ipv6.nat"     = "true"
+    "ipv6.address" = "none"
+    "ipv6.nat"     = "false"
   }
 }

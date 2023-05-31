@@ -16,13 +16,22 @@ provider "lxd" {
   accept_remote_certificate    = true
 }
 
-module "root_pool" {
-  source = "../root_pool"
+# Only use making env label for outputing show.json to use from colmena
+resource "null_resource" "label" {
+  triggers = {
+    name = "labe"
+    env  = terraform.workspace
+  }
 }
+module "network" {
+  count  = terraform.workspace == "product" ? 0 : 1
+  source = "./modules/network"
+}
+
 
 module "node" {
   for_each = {
-    etcd = {
+    "etcd" = {
       nodes = var.etcd_instances,
       rd    = var.etcd_RD
     }
@@ -30,11 +39,11 @@ module "node" {
       nodes = var.control_plane_instances,
       rd    = var.control_plane_RD
     }
-    worker = {
+    "worker" = {
       nodes = var.worker_instances,
       rd    = var.worker_RD
     }
-    loadbalancer = {
+    "loadbalancer" = {
       nodes = var.load_balancer_instances,
       rd    = var.load_balancer_RD
     }
