@@ -1,12 +1,13 @@
 {
   lib,
+  pkgs,
   resourcesByRoles,
   ...
 }: let
   pwd = builtins.toPath (builtins.getEnv "PWD");
   nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
 in {
-  imports = [./apiserver.nix ./controller-manager.nix ./scheduler.nix];
+  imports = [./addon-manager.nix ./apiserver.nix ./controller-manager.nix ./scheduler.nix];
 
   # For colmena
   deployment.keys."ca.pem" = {
