@@ -27,17 +27,17 @@
   apiServerKubeletClientCsr = mkCsr "kube-api-server-kubelet-client" {
     cn = "kube-api-server";
     altNames = getAltNames "controlplane";
-    organizationUnit = "system:masters";
+    organization = "system:masters";
   };
 
   cmCsr = mkCsr "kube-controller-manager" {
     cn = "system:kube-controller-manager";
-    organizationUnit = "system:kube-controller-manager";
+    organization = "system:kube-controller-manager";
   };
 
   adminCsr = mkCsr "admin" {
     cn = "admin";
-    organizationUnit = "system:masters";
+    organization = "system:masters";
   };
 
   etcdClientCsr = mkCsr "etcd-client" {
@@ -51,12 +51,12 @@
 
   proxyCsr = mkCsr "kube-proxy" {
     cn = "system:kube-proxy";
-    organizationUnit = "system:node-proxier";
+    organization = "system:node-proxier";
   };
 
   schedulerCsr = mkCsr "kube-scheduler" rec {
     cn = "system:kube-scheduler";
-    organizationUnit = cn;
+    organization = cn;
   };
 
   workerCsrs =
@@ -65,7 +65,7 @@
       name = r.values.name;
       csr = mkCsr r.values.name {
         cn = "system:node:${r.values.name}";
-        organizationUnit = "system:nodes";
+        organization = "system:nodes";
         # TODO: unify with getAltNames?
         altNames = [r.values.name (nodeIP r)];
       };

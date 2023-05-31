@@ -28,7 +28,7 @@ with lib; {
       }
     }
   '';
-  csrConfig = {organizationUnit ? null}: {
+  csrConfig = {organization ? null}: {
     key = {
       algo = "rsa";
       size = 2048;
@@ -38,10 +38,9 @@ with lib; {
           "C" = "Japan";
           "ST" = "Asia";
           "L" = "Tokyo";
-          "O" = "CardinalSYstem";
         }
-        // optionalAttrs (organizationUnit != null) {
-          "OU" = organizationUnit;
+        // optionalAttrs (organization != null) {
+          "O" = organization;
         })
     ];
   };

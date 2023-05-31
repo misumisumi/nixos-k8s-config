@@ -26,9 +26,9 @@ in {
   mkCsr = name: {
     cn,
     altNames ? [],
-    organizationUnit ? null,
+    organization ? null,
   }:
-    writeJSONText name (lib.attrsets.recursiveUpdate (csrConfig {inherit organizationUnit;}) {
+    writeJSONText name (lib.attrsets.recursiveUpdate (csrConfig {inherit organization;}) {
       CN = cn;
       hosts = [cn] ++ altNames;
     });
