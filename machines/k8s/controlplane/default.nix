@@ -1,6 +1,5 @@
 {
   lib,
-  pkgs,
   resourcesByRoles,
   ...
 }: let
