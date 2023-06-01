@@ -1,4 +1,8 @@
-{virtualIP, ...}: let
+{
+  lib,
+  virtualIP,
+  ...
+}: let
   pwd = builtins.getEnv "PWD";
 in {
   # For colmena
@@ -17,6 +21,9 @@ in {
 
   services.kubernetes.controllerManager = {
     enable = true;
+    extraOpts = lib.strings.concatStringsSep " " [
+      "--feature-gates=KubeletInUserNamespace=true"
+    ];
     kubeconfig = {
       caFile = "/var/lib/secrets/kubernetes/ca.pem";
       certFile = "/var/lib/secrets/kubernetes/controller-manager.pem";

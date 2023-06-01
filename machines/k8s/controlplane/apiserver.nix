@@ -59,6 +59,9 @@ in {
   services.kubernetes.apiserver = {
     enable = true;
     serviceClusterIpRange = "10.32.0.0/24";
+    extraOpts = lib.strings.concatStringsSep " " [
+      "--feature-gates=KubeletInUserNamespace=true"
+    ];
 
     # Using ABAC for CoreDNS running outside of k8s
     # is more simple in this case than using kube-addon-manager

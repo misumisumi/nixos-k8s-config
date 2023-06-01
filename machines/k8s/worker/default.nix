@@ -9,7 +9,7 @@
   pwd = builtins.toPath (builtins.getEnv "PWD");
   nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
 in {
-  imports = [./coredns.nix ./flannel.nix];
+  imports = [./containerd.nix ./coredns.nix ./flannel.nix];
 
   deployment.keys = {
     "ca.pem" = {
@@ -53,6 +53,10 @@ in {
 
   services.kubernetes.kubelet = rec {
     enable = true;
+    extraOpts = lib.strings.concatStringsSep " " [
+      "--fail-swap-on=false"
+      "--feature-gates=KubeletInUserNamespace=true"
+    ];
     unschedulable = false;
     kubeconfig = rec {
       caFile = "/var/lib/secrets/kubernetes/ca.pem";
@@ -67,6 +71,11 @@ in {
 
   services.kubernetes.proxy = {
     enable = true;
+    extraOpts = lib.strings.concatStringsSep " " [
+      "--conntrack-max-per-core=0"
+      "--conntrack-tcp-timeout-established=0"
+      "--conntrack-tcp-timeout-close-wait=0"
+    ];
     kubeconfig = {
       caFile = "/var/lib/secrets/kubernetes/ca.pem";
       certFile = "/var/lib/secrets/kubernetes/proxy.pem";
