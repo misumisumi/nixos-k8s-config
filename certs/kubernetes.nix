@@ -74,7 +74,7 @@
 
   workerScripts = map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") workerCsrs;
 in ''
-  mkdir -p $out/kubernetes/{apiserver,controller-manager,kubelet}
+  mkdir -p $out/kubernetes/{apiserver,kubelet}
 
   pushd $out/etcd > /dev/null
   genCert client ../kubernetes/apiserver/etcd-client ${etcdClientCsr}
