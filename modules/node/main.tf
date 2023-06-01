@@ -10,13 +10,24 @@ terraform {
   }
 }
 
+locals {
+  raw_lxc = <<EOT
+lxc.apparmor.profile = unconfined
+lxc.cap.drop = ""
+lxc.cgroup.devices.allow = a
+EOT
+}
+
 resource "lxd_profile" "profile" {
   name = "profile_${var.name}"
 
   config = {
-    "boot.autostart" = true
-    "limits.cpu"     = tonumber(var.node_rd.cpu)
-    "limits.memory"  = var.node_rd.memory
+    # "security.privileged" = true
+    "security.nesting" = true
+    "boot.autostart"   = true
+    "limits.cpu"       = tonumber(var.node_rd.cpu)
+    "limits.memory"    = var.node_rd.memory
+    "raw.lxc"          = local.raw_lxc
   }
 
   device {
@@ -26,6 +37,13 @@ resource "lxd_profile" "profile" {
     properties = {
       pool = "default"
       path = "/"
+    }
+  }
+  device {
+    type = "unix-block"
+    name = "loop0"
+    properties = {
+      path = "/dev/loop0"
     }
   }
 }
