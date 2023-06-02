@@ -13,8 +13,8 @@ etcd_instances = [
   },
 ]
 etcd_RD = {
-  cpu        = "2"
-  memory     = "2GiB"
+  cpu    = "2"
+  memory = "2GiB"
 }
 
 control_plane_instances = [
@@ -32,8 +32,8 @@ control_plane_instances = [
   },
 ]
 control_plane_RD = {
-  cpu        = "2"
-  memory     = "2GiB"
+  cpu    = "2"
+  memory = "2GiB"
 }
 worker_instances = [
   {
@@ -46,8 +46,8 @@ worker_instances = [
   },
 ]
 worker_RD = {
-  cpu        = "2"
-  memory     = "2GiB"
+  cpu    = "2"
+  memory = "2GiB"
 }
 load_balancer_instances = [
   { name       = "loadbalancer1"
@@ -58,6 +58,6 @@ load_balancer_instances = [
   },
 ]
 load_balancer_RD = {
-  cpu        = "2"
-  memory     = "2GiB"
+  cpu    = "2"
+  memory = "2GiB"
 }

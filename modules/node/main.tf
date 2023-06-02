@@ -10,14 +10,6 @@ terraform {
   }
 }
 
-locals {
-  raw_lxc = <<EOT
-lxc.apparmor.profile = unconfined
-lxc.cap.drop = ""
-lxc.cgroup.devices.allow = a
-EOT
-}
-
 resource "lxd_profile" "profile" {
   name = "profile_${var.name}"
 
@@ -27,7 +19,11 @@ resource "lxd_profile" "profile" {
     "boot.autostart"   = true
     "limits.cpu"       = tonumber(var.node_rd.cpu)
     "limits.memory"    = var.node_rd.memory
-    "raw.lxc"          = local.raw_lxc
+    "raw.lxc"          = <<EOT
+lxc.apparmor.profile = unconfined
+lxc.cap.drop = ""
+lxc.cgroup.devices.allow = a
+    EOT
   }
 
   device {
@@ -64,8 +60,8 @@ resource "lxd_container" "node" {
 
     properties = {
       nictype        = "bridged"
-      parent         = terraform.workspace == "develop" ? "k8sbr0" : var.node_rd.nic_parent
-      "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace == "develop" ? each.value.ip_address : null
+      parent         = var.node_rd.nic_parent
+      "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace != "product" ? each.value.ip_address : null
     }
   }
 }

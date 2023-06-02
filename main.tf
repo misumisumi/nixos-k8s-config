@@ -16,6 +16,12 @@ provider "lxd" {
   accept_remote_certificate    = true
 }
 
+locals {
+  default_RD = {
+    nic_parent = terraform.workspace == "product" ? null : module.network[0].name
+  }
+}
+
 # Only use making env label for outputing show.json to use from colmena
 resource "null_resource" "label" {
   triggers = {
@@ -23,29 +29,29 @@ resource "null_resource" "label" {
     env  = terraform.workspace
   }
 }
+
 module "network" {
   count  = terraform.workspace == "product" ? 0 : 1
   source = "./modules/network"
 }
 
-
-module "node" {
+module "cluster" {
   for_each = {
     "etcd" = {
       nodes = var.etcd_instances,
-      rd    = var.etcd_RD
+      rd    = merge(local.default_RD, var.etcd_RD),
     }
     "controlplane" = {
       nodes = var.control_plane_instances,
-      rd    = var.control_plane_RD
+      rd    = merge(local.default_RD, var.control_plane_RD)
     }
     "worker" = {
       nodes = var.worker_instances,
-      rd    = var.worker_RD
+      rd    = merge(local.default_RD, var.worker_RD)
     }
     "loadbalancer" = {
       nodes = var.load_balancer_instances,
-      rd    = var.load_balancer_RD
+      rd    = merge(local.default_RD, var.load_balancer_RD)
     }
   }
 

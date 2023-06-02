@@ -7,13 +7,14 @@ variable "etcd_instances" {
     "ip_address" = null
   }]
 }
+
 variable "etcd_RD" {
   type        = map(string)
   description = "Requirement Definition for etcd hosts to spawn"
   default = {
     "cpu"        = "2"
     "memory"     = "1GiB"
-    "nic_parent" = "br0"
+    "nic_parent" = null
   }
 }
 
@@ -32,7 +33,7 @@ variable "control_plane_RD" {
   default = {
     "cpu"        = "2"
     "memory"     = "1GiB"
-    "nic_parent" = "br0"
+    "nic_parent" = null
   }
 }
 
@@ -51,7 +52,7 @@ variable "worker_RD" {
   default = {
     "cpu"        = "2"
     "memory"     = "1GiB"
-    "nic_parent" = "br0"
+    "nic_parent" = null
   }
 }
 
@@ -70,6 +71,6 @@ variable "load_balancer_RD" {
   default = {
     "cpu"        = "2"
     "memory"     = "1GiB"
-    "nic_parent" = "br0"
+    "nic_parent" = null
   }
 }
