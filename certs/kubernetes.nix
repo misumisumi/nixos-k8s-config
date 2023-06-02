@@ -45,9 +45,9 @@
     altNames = getAltNames "controlplane";
   };
 
-  kubeletCsr = mkCsr "kubelet" {
-    cn = "kubelet";
-  };
+  # kubeletCsr = mkCsr "kubelet" {
+  #   cn = "kubelet";
+  # };
 
   proxyCsr = mkCsr "kube-proxy" {
     cn = "system:kube-proxy";
@@ -59,7 +59,7 @@
     organization = cn;
   };
 
-  workerCsrs =
+  kubeletCsrs = role:
     map
     (r: {
       name = r.values.name;
@@ -70,9 +70,9 @@
         altNames = [r.values.name (nodeIP r)];
       };
     })
-    (resourcesByRole "worker");
+    (resourcesByRole role);
 
-  workerScripts = map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") workerCsrs;
+  kubeletScripts = role: map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") (kubeletCsrs role);
 in ''
   mkdir -p $out/kubernetes/{apiserver,kubelet}
 
@@ -90,7 +90,8 @@ in ''
   genCert client scheduler ${schedulerCsr}
   genCert client admin ${adminCsr}
 
-  ${builtins.concatStringsSep "\n" workerScripts}
+  ${builtins.concatStringsSep "\n" (kubeletScripts "worker")}
+  ${builtins.concatStringsSep "\n" (kubeletScripts "controlplane")}
 
   ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \
       --client-certificate=admin.pem \
