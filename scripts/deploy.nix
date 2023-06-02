@@ -6,7 +6,7 @@ writeShellApplication {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
-      ) <plan|apply> <workspace> [-h] [-v]
+      ) <ter|nix> <cmd> <target> [-h] [-v]
 
       Deployment of terraform with workspace-specific variables
 
@@ -47,16 +47,21 @@ writeShellApplication {
       done
 
       cmd=''$1
-      workspace=''$2
+      subcmd=''$2
+      target=''$3
 
       # check required params and arguments
       for value in "''${cmd[@]}"
       do
-        [[ "''${value}" != "plan" ]] && [[ "''${value}" != "apply" ]] && die "Can use only 'plan' or 'apply'"
+        [[ "''${value}" != "nix" ]] && [[ "''${value}" != "ter" ]] && die "Can use only 'plan' or 'apply'"
       done
-      for value in "''${workspace[@]}"
+      for value in "''${target[@]}"
       do
         [[ "''${value}" == "" ]] && die "Need workspace name"
+        # colmena tag
+        [[ "''${cmd}" == "nix" ]] && [[ "''${value}" != "hosts" ]] && [[ "''${value}" != "k8s" ]] && die "Can use tag 'hosts' or 'k8s'"
+        # terraform workspace
+        [[ "''${cmd}" == "ter" ]] && [[ "''${value}" != "develop" ]] && [[ "''${value}" != "product" ]] && die "Can use workspace 'develop' or 'product'"
       done
 
       return 0
@@ -65,10 +70,15 @@ writeShellApplication {
     parse_params "''$@"
 
     # script logic here
+    if [ "''${cmd}" = "ter" ]; then
+      terraform workspace select "''${target}"
+      terraform "''${subcmd}" -var-file="''${target}".tfvars
+      terraform show -json | jq >show.json
+      hcl2json "''${target}".tfvars > terraform.json
+    fi
 
-    terraform workspace select "''${workspace}"
-    terraform "''${cmd}" -var-file="''${workspace}".tfvars
-    terraform show -json | jq >show.json
-    hcl2json "''${workspace}.tfvars" > terraform.json
+    if [ "''${cmd}" = "nix" ]; then
+      colmena "''${subcmd}" --on @"''${target}"
+    fi
   '';
 }
