@@ -90,9 +90,11 @@
         hcl2json
         myTerraform
 
-        # software for testing
+        # software for managing cluster
+        argocd
         etcd
         kubectl
+        kubernetes-helm
 
         # scripts
         check_k8s
