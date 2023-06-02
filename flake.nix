@@ -117,7 +117,6 @@
           nativeBuildInputs = _pkgs;
           buildInputs = [];
           shellHooks = ''
-            [[ -f ./show.json ]] && touch show.json
           '';
         };
       });
