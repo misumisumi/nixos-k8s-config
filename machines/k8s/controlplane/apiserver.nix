@@ -44,14 +44,6 @@ in {
 
     "kubelet-client.pem" = mkSecret "kubelet-client.pem";
     "kubelet-client-key.pem" = mkSecret "kubelet-client-key.pem";
-
-    "etcd-ca.pem" = {
-      keyFile = "${pwd}/certs/generated/etcd/ca.pem";
-      destDir = "/var/lib/secrets/kubernetes/apiserver";
-      user = "kubernetes";
-    };
-    "etcd-client.pem" = mkSecret "etcd-client.pem";
-    "etcd-client-key.pem" = mkSecret "etcd-client-key.pem";
   };
 
   networking.firewall.allowedTCPPorts = [6443];

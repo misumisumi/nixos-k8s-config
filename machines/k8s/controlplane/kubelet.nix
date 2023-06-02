@@ -7,7 +7,6 @@
   ...
 }: let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
 in {
   imports = [../node/default.nix];
 
@@ -32,7 +31,6 @@ in {
     };
   };
 
-  networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
   networking.firewall.allowedTCPPorts = [
     config.services.kubernetes.kubelet.port
   ];
@@ -55,5 +53,10 @@ in {
     clientCaFile = "/var/lib/secrets/kubernetes/ca.pem";
     tlsCertFile = "/var/lib/secrets/kubernetes/kubelet.pem";
     tlsKeyFile = "/var/lib/secrets/kubernetes/kubelet-key.pem";
+    taints."controlplane" = {
+      key = "node-role.kubernetes.io";
+      value = "control-plane";
+      effect = "NoSchedule";
+    };
   };
 }
