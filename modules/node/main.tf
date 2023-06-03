@@ -64,4 +64,12 @@ resource "lxd_container" "node" {
       "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace != "product" ? each.value.ip_address : null
     }
   }
+  dynamic "device" {
+    for_each = each.value.devices
+    content {
+      name       = each.value.name
+      type       = each.value.type
+      properties = each.value.properties
+    }
+  }
 }

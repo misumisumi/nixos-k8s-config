@@ -61,3 +61,28 @@ load_balancer_RD = {
   cpu    = "2"
   memory = "2GiB"
 }
+
+optional_instances = [{
+  instance_name = "nsf"
+  nodes = [
+    {
+      name       = "nsf1"
+      ip_address = "10.150.10.60"
+    },
+    {
+      name       = "nsf2"
+      ip_address = "10.150.10.60"
+    }
+  ]
+  instance_RD = {
+    cpu    = "2"
+    memory = "2GiB"
+  }
+}]
+
+dev_pools = [
+  {
+    name = "ceph"
+    size = "16GiB"
+  }
+]

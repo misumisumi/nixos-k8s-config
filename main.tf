@@ -1,7 +1,15 @@
-# terraform init
-# terraform apply -auto-approve
-# terraform destroy -auto-approve
-
+locals {
+  default_RD = {
+    nic_parent = terraform.workspace == "product" ? null : module.network[0].name
+  }
+  optional_instances = merge([
+    for i in var.optional_instances : i.instance_name != null ? {
+      "${i.instance_name}" = {
+        nodes = i.nodes
+        rd    = merge(local.default_RD, i.instance_RD)
+    } } : {}
+  ]...)
+}
 
 terraform {
   required_providers {
@@ -14,12 +22,6 @@ terraform {
 provider "lxd" {
   generate_client_certificates = true
   accept_remote_certificate    = true
-}
-
-locals {
-  default_RD = {
-    nic_parent = terraform.workspace == "product" ? null : module.network[0].name
-  }
 }
 
 # Only use making env label for outputing show.json to use from colmena
@@ -35,8 +37,13 @@ module "network" {
   source = "./modules/network"
 }
 
+module "dev_pool" {
+  source = "./modules/dev_pool"
+  pools  = var.dev_pools
+}
+
 module "cluster" {
-  for_each = {
+  for_each = merge({
     "etcd" = {
       nodes = var.etcd_instances,
       rd    = merge(local.default_RD, var.etcd_RD),
@@ -53,7 +60,9 @@ module "cluster" {
       nodes = var.load_balancer_instances,
       rd    = merge(local.default_RD, var.load_balancer_RD)
     }
-  }
+    },
+    local.optional_instances
+  )
 
   source = "./modules/node"
 

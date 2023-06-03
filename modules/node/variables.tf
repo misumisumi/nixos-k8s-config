@@ -4,16 +4,27 @@ variable "name" {
 }
 
 variable "nodes" {
-  type        = set(map(string))
+  type = set(
+    object({
+      name       = string
+      target     = string
+      ip_address = string
+      devices = set(
+        object({
+          name       = string
+          type       = string
+          properties = map(string)
+      }))
+    })
+  )
   description = "Name to give to each nodes"
 }
 
 variable "node_rd" {
-  type        = map(string)
+  type = object({
+    cpu        = string
+    memory     = string
+    nic_parent = string
+  })
   description = "System requirement Definition for node to spawn"
-  default = {
-    "cpu"        = 2
-    "memory"     = "1GiB"
-    "nic_parent" = "lxdbr0"
-  }
 }
