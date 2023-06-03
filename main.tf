@@ -22,11 +22,14 @@ provider "lxd" {
 }
 
 # Only use making env label for outputing show.json to use from colmena
-resource "null_resource" "label" {
-  triggers = {
-    name = "labe"
-    env  = terraform.workspace
-  }
+resource "terraform_data" "workspace" {
+  input = terraform.workspace
+}
+
+resource "time_sleep" "wait_10s" {
+  depends_on       = [module.network]
+  create_duration  = "10s"
+  destroy_duration = "10s"
 }
 
 module "network" {
@@ -66,5 +69,5 @@ module "cluster" {
   name       = each.key
   nodes      = each.value.nodes
   node_rd    = each.value.rd
-  depends_on = [module.network, module.pool]
+  depends_on = [module.network, module.pool, time_sleep.wait_10s]
 }
