@@ -63,14 +63,14 @@ load_balancer_RD = {
 }
 
 optional_instances = [{
-  instance_name = "nsf"
+  instance_name = "nfs"
   nodes = [
     {
-      name       = "nsf1"
+      name       = "nfs1"
       ip_address = "10.150.10.60"
     },
     {
-      name       = "nsf2"
+      name       = "nfs2"
       ip_address = "10.150.10.61"
     }
   ]
