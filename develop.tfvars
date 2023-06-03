@@ -71,7 +71,7 @@ optional_instances = [{
     },
     {
       name       = "nsf2"
-      ip_address = "10.150.10.60"
+      ip_address = "10.150.10.61"
     }
   ]
   instance_RD = {

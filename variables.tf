@@ -14,7 +14,7 @@ variable "etcd_RD" {
   type = object({
     cpu        = optional(string, "2")
     memory     = optional(string, "1GiB")
-    nic_parent = optional(string, null)
+    nic_parent = optional(string, "k8sbr0")
   })
   description = "Requirement Definition for etcd hosts to spawn"
 }
@@ -34,7 +34,7 @@ variable "control_plane_RD" {
   type = object({
     cpu        = optional(string, "2")
     memory     = optional(string, "1GiB")
-    nic_parent = optional(string, null)
+    nic_parent = optional(string, "k8sbr0")
   })
   description = "Requirement Definition for control plane hosts to spawn"
 }
@@ -54,7 +54,7 @@ variable "worker_RD" {
   type = object({
     cpu        = optional(string, "2")
     memory     = optional(string, "1GiB")
-    nic_parent = optional(string, null)
+    nic_parent = optional(string, "k8sbr0")
   })
   description = "Requirement Definition for worker hosts to spawn"
 }
@@ -74,7 +74,7 @@ variable "load_balancer_RD" {
   type = object({
     cpu        = optional(string, "2")
     memory     = optional(string, "1GiB")
-    nic_parent = optional(string, null)
+    nic_parent = optional(string, "k8sbr0")
   })
   description = "Requirement Definition for load balancer hosts to spawn"
 }
@@ -94,7 +94,7 @@ variable "optional_instances" {
       instance_RD = object({
         cpu        = optional(string, "2")
         memory     = optional(string, "1GiB")
-        nic_parent = optional(string, null)
+        nic_parent = optional(string, "k8sbr0")
       })
     })
   )

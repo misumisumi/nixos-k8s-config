@@ -1,12 +1,9 @@
 locals {
-  default_RD = {
-    nic_parent = terraform.workspace == "product" ? null : module.network[0].name
-  }
   optional_instances = merge([
     for i in var.optional_instances : i.instance_name != null ? {
       "${i.instance_name}" = {
         nodes = i.nodes
-        rd    = merge(local.default_RD, i.instance_RD)
+        rd    = i.instance_RD
     } } : {}
   ]...)
 }
@@ -46,19 +43,19 @@ module "cluster" {
   for_each = merge({
     "etcd" = {
       nodes = var.etcd_instances,
-      rd    = merge(local.default_RD, var.etcd_RD),
+      rd    = var.etcd_RD
     }
     "controlplane" = {
       nodes = var.control_plane_instances,
-      rd    = merge(local.default_RD, var.control_plane_RD)
+      rd    = var.control_plane_RD
     }
     "worker" = {
       nodes = var.worker_instances,
-      rd    = merge(local.default_RD, var.worker_RD)
+      rd    = var.worker_RD
     }
     "loadbalancer" = {
       nodes = var.load_balancer_instances,
-      rd    = merge(local.default_RD, var.load_balancer_RD)
+      rd    = var.load_balancer_RD
     }
     },
     local.optional_instances
