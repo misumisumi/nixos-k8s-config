@@ -77,7 +77,7 @@
         config.allowUnfree = true;
       };
       mkcerts = pkgs.callPackage (import ./certs) {};
-      myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.null]);
+      myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.time]);
       myScripts = pkgs.callPackage (import ./scripts) {};
       _pkgs = with pkgs;
       with myScripts; [
@@ -88,6 +88,7 @@
         btrfs-progs
         terraform-docs
         hcl2json
+        graphviz
         myTerraform
 
         # software for managing cluster

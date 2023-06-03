@@ -3,5 +3,5 @@
 terraform.tfstate
 terraform.tfstate.backup
 certs/generated
-show.json
+show.*
 terraform.json

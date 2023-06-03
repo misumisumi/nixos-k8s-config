@@ -74,6 +74,7 @@ writeShellApplication {
       terraform workspace select "''${target}"
       terraform "''${subcmd}" -var-file="''${target}".tfvars
       terraform show -json | jq >show.json
+      terraform graph | dot -Tpng >show.png
       hcl2json "''${target}".tfvars > terraform.json
     fi
 
