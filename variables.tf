@@ -101,7 +101,7 @@ variable "optional_instances" {
   description = "Name and some config for optional hosts to spawn"
 }
 
-variable "dev_pools" {
+variable "pools" {
   type        = set(any)
   description = "Strage pool propaties"
   default     = []

@@ -39,10 +39,47 @@ worker_instances = [
   {
     name       = "worker1"
     ip_address = "10.150.10.30"
+    devices = [
+      {
+        name = "ceph"
+        type = "disk"
+        properties = {
+          pool   = "ceph"
+          path   = "/dev/sda"
+          source = "ceph1"
+        }
+      }
+    ]
   },
   {
     name       = "worker2"
     ip_address = "10.150.10.31"
+    devices = [
+      {
+        name = "ceph"
+        type = "disk"
+        properties = {
+          pool   = "ceph"
+          path   = "/dev/sda"
+          source = "ceph2"
+        }
+      }
+    ]
+  },
+  {
+    name       = "worker3"
+    ip_address = "10.150.10.32"
+    devices = [
+      {
+        name = "ceph"
+        type = "disk"
+        properties = {
+          pool   = "ceph"
+          path   = "/dev/sda"
+          source = "ceph3"
+        }
+      }
+    ]
   },
 ]
 worker_RD = {
@@ -80,7 +117,7 @@ optional_instances = [{
   }
 }]
 
-dev_pools = [
+pools = [
   {
     name = "ceph"
     size = "16GiB"

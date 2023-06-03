@@ -34,9 +34,9 @@ module "network" {
   source = "./modules/network"
 }
 
-module "dev_pool" {
-  source = "./modules/dev_pool"
-  pools  = var.dev_pools
+module "pool" {
+  source = "./modules/pool"
+  pools  = var.pools
 }
 
 module "cluster" {
@@ -63,7 +63,8 @@ module "cluster" {
 
   source = "./modules/node"
 
-  name    = each.key
-  nodes   = each.value.nodes
-  node_rd = each.value.rd
+  name       = each.key
+  nodes      = each.value.nodes
+  node_rd    = each.value.rd
+  depends_on = [module.network, module.pool]
 }

@@ -10,6 +10,20 @@ terraform {
   }
 }
 
+locals {
+  mkvolumes = flatten([for device in flatten(var.nodes[*].devices[*]) :
+    device.type == "disk" && contains(keys(device.properties), "pool") ? {
+      name = device.properties.source
+      pool = device.properties.pool
+    } : {}
+  ])
+}
+
+module "volume" {
+  source  = "../volume"
+  volumes = local.mkvolumes
+}
+
 resource "lxd_profile" "profile" {
   name = "profile_${var.name}"
 
@@ -67,9 +81,10 @@ resource "lxd_container" "node" {
   dynamic "device" {
     for_each = each.value.devices
     content {
-      name       = each.value.name
-      type       = each.value.type
-      properties = each.value.properties
+      type       = device.value.type
+      name       = device.value.name
+      properties = device.value.properties
     }
   }
+  depends_on = [module.volume, lxd_profile.profile]
 }
