@@ -26,10 +26,10 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-resource "time_sleep" "wait_10s" {
+resource "time_sleep" "wait_15s" {
   depends_on       = [module.network]
-  create_duration  = "10s"
-  destroy_duration = "10s"
+  create_duration  = "15s"
+  destroy_duration = "15s"
 }
 
 module "network" {
@@ -69,5 +69,5 @@ module "cluster" {
   name       = each.key
   nodes      = each.value.nodes
   node_rd    = each.value.rd
-  depends_on = [module.network, module.pool, time_sleep.wait_10s]
+  depends_on = [module.network, module.pool, time_sleep.wait_15s]
 }
