@@ -9,25 +9,31 @@
   controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane");
   workerHosts = map (r: r.values.name) (resourcesByRole "worker");
   loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer");
+  nfsHosts = map (r: r.values.name) (resourcesByRole "nfs");
 
   etcdConf = {...}: {
-    imports = [./etcd];
-    deployment.tags = ["k8s" "etcd"];
+    imports = [./k8s/etcd];
+    deployment.tags = ["cardinal" "k8s" "etcd"];
   };
 
   controlPlaneConf = {...}: {
-    imports = [./controlplane];
-    deployment.tags = ["k8s" "controlplane"];
+    imports = [./k8s/controlplane];
+    deployment.tags = ["cardinal" "k8s" "controlplane"];
   };
 
   workerConf = {...}: {
-    imports = [./worker];
-    deployment.tags = ["k8s" "worker"];
+    imports = [./k8s/worker];
+    deployment.tags = ["cardinal" "k8s" "worker"];
   };
 
   loadBalancerConf = {...}: {
-    imports = [./loadbalancer];
-    deployment.tags = ["k8s" "loadbalancer"];
+    imports = [./k8s/loadbalancer];
+    deployment.tags = ["cardinal" "k8s" "loadbalancer"];
+  };
+
+  nfsConf = {name, ...}: {
+    imports = [./nfs];
+    deployment.tags = ["cardinal" "nfs" "${name}"];
   };
 in
   {
@@ -73,3 +79,8 @@ in
       value = workerConf;
     })
     workerHosts)
+  // builtins.listToAttrs (map (h: {
+      name = h;
+      value = nfsConf;
+    })
+    nfsHosts)

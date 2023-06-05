@@ -53,7 +53,7 @@
     {
       # Cluster settings managing colmena
       colmena = (
-        import ./machines/k8s {
+        import ./machines/cluster {
           inherit nixpkgs;
           inherit (nixpkgs) lib;
         }

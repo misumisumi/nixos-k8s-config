@@ -1,10 +1,10 @@
 {
   self,
   virtualIP,
+  nodeIP,
   ...
 }: let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  inherit (import ../../../src/utils.nix) nodeIP;
 in {
   # For colmena
   deployment.keys = {

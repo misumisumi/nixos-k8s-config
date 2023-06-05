@@ -6,7 +6,6 @@
 #
 # See: https://github.com/NixOS/nixpkgs/blob/f9c6dd42d98a5a55e9894d82dc6338ab717cda23/lib/modules.nix#L75-L95
 {
-  lib,
   pkgs,
   name,
   ...
@@ -14,6 +13,7 @@
   _module.args = rec {
     inherit (pkgs.callPackage ../../src/resources.nix {}) resources resourcesByRole resourcesByRoles;
     inherit (pkgs.callPackage ../../src/consts.nix {}) virtualIP;
+    inherit (import ../../src/utils.nix) nodeIP;
     self = builtins.head (builtins.filter (r: r.values.name == name) resources);
   };
 }
