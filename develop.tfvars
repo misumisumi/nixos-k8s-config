@@ -105,10 +105,32 @@ optional_instances = [{
     {
       name       = "nfs1"
       ip_address = "10.150.10.60"
+      devices = [
+        {
+          name = "nfs"
+          type = "disk"
+          properties = {
+            pool   = "nfs"
+            path   = "/dev/sda"
+            source = "nfs1"
+          }
+        }
+      ]
     },
     {
       name       = "nfs2"
       ip_address = "10.150.10.61"
+      devices = [
+        {
+          name = "nfs"
+          type = "disk"
+          properties = {
+            pool   = "nfs"
+            path   = "/dev/sda"
+            source = "nfs2"
+          }
+        }
+      ]
     }
   ]
   instance_RD = {
@@ -121,5 +143,9 @@ pools = [
   {
     name = "ceph"
     size = "16GiB"
+  },
+  {
+    name = "nfs"
+    size = "8GiB"
   }
 ]
