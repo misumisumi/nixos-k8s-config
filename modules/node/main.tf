@@ -34,9 +34,9 @@ resource "lxd_profile" "profile" {
     "limits.cpu"       = tonumber(var.node_rd.cpu)
     "limits.memory"    = var.node_rd.memory
     "raw.lxc"          = <<EOT
-lxc.apparmor.profile = unconfined
-lxc.cap.drop = ""
-lxc.cgroup.devices.allow = a
+        lxc.apparmor.profile = unconfined
+        lxc.cap.drop = ""
+        lxc.cgroup.devices.allow = a
     EOT
   }
 
@@ -63,8 +63,9 @@ resource "lxd_container" "node" {
   target   = contains(keys(each.value), "target") ? each.value.target : null
 
   name = each.value.name
+  type = each.value.type
 
-  image = "nixos"
+  image = "nixos/lxc-${each.value.type}"
 
   profiles = ["${lxd_profile.profile.name}"]
 

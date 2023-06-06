@@ -8,6 +8,7 @@ variable "nodes" {
     object({
       name       = string
       target     = string
+      type       = string
       ip_address = string
       devices = set(
         object({
