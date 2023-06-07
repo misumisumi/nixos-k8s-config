@@ -17,7 +17,7 @@
     ${kubectl}/bin/kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig $@
   '';
   mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
-    nix run ".#import/lxc-container"
-    nix run ".#import/lxc-vm"
+    nix run ".#import/lxc-container" --impure
+    nix run ".#import/lxc-virtual-machine" --impure
   '';
 }
