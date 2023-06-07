@@ -104,10 +104,12 @@ optional_instances = [{
   nodes = [
     {
       name       = "nfs1"
+      type       = "virtual-machine"
       ip_address = "10.150.10.60"
     },
     {
       name       = "nfs2"
+      type       = "virtual-machine"
       ip_address = "10.150.10.61"
     }
   ]

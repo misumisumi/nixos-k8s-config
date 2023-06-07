@@ -3,6 +3,7 @@ variable "etcd_instances" {
     object({
       name       = string
       target     = optional(string, null)
+      type       = optional(string, "container")
       ip_address = optional(string, null)
       devices    = optional(set(any), [])
     })
@@ -24,6 +25,7 @@ variable "control_plane_instances" {
     object({
       name       = string
       target     = optional(string, null)
+      type       = optional(string, "container")
       ip_address = optional(string, null)
       devices    = optional(set(any), [])
     })
@@ -44,6 +46,7 @@ variable "worker_instances" {
     object({
       name       = string
       target     = optional(string, null)
+      type       = optional(string, "container")
       ip_address = optional(string, null)
       devices    = optional(set(any), [])
     })
@@ -64,6 +67,7 @@ variable "load_balancer_instances" {
     object({
       name       = string
       target     = optional(string, null)
+      type       = optional(string, "container")
       ip_address = optional(string, null)
       devices    = optional(set(any), [])
     })
@@ -87,6 +91,7 @@ variable "optional_instances" {
         object({
           name       = string
           target     = optional(string, null)
+          type       = optional(string, "container")
           ip_address = optional(string, null)
           devices    = optional(set(any), [])
         })
