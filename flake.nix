@@ -5,7 +5,13 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-22.11";
     flake-utils.url = "github:numtide/flake-utils";
-    nur.url = "github:nix-community/NUR";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    lxd-nixos = {
+      url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+      inputs.nixpkgs-2211.follows = "nixpkgs-stable";
+      inputs.nixpkgs-unstable.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,89 +32,91 @@
   outputs = inputs @ {
     self,
     flake-utils,
-    home-manager,
-    nixos-generators,
+    flake-parts,
     nixpkgs,
     nixpkgs-stable,
-    nur,
-    common-config,
-    nvimdots,
     flakes,
-  }: let
-    user = "sumi";
-    stateVersion = "23.05"; # For Home Manager
-
-    overlay = {
-      nixpkgs,
-      pkgs-stable,
-      ...
-    }: {
-      nixpkgs.overlays = [
-        nur.overlay
-        flakes.overlays.default
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux"];
+      imports = [
+        inputs.lxd-nixos.flakeModules.images
       ];
-      # ++ (import ./patches {inherit pkgs-stable;});
-    };
-  in
-    {
-      # Cluster settings managing colmena
-      colmena = (
-        import ./machines/cluster {
-          inherit nixpkgs;
-          inherit (nixpkgs) lib;
-        }
-      );
-    }
-    // {
-      nixosConfigurations = (
-        import ./machines {
-          inherit (nixpkgs) lib;
-          inherit inputs overlay stateVersion user;
-          inherit home-manager nixpkgs nixpkgs-stable nur common-config flakes nvimdots;
-        }
-      );
-    }
-    // flake-utils.lib.eachSystem ["x86_64-linux"]
-    (system: let
-      pkgs = import nixpkgs {
-        system = "${system}";
-        overlays = [
-        ]; # nvfetcherもoverlayする
-        config.allowUnfree = true;
-      };
-      mkcerts = pkgs.callPackage (import ./certs) {};
-      myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.time]);
-      myScripts = pkgs.callPackage (import ./scripts) {};
-      _pkgs = with pkgs;
-      with myScripts; [
-        # software for deployment
-        colmena
-        jq
-        libxslt
-        btrfs-progs
-        terraform-docs
-        hcl2json
-        graphviz
-        myTerraform
+      lxd.generateImporters = true;
+      flake = let
+        user = "sumi";
+        stateVersion = "23.05"; # For Home Manager
 
-        # software for managing cluster
-        argocd
-        etcd
-        kubectl
-        kubernetes-helm
+        overlay = {
+          nixpkgs,
+          pkgs-stable,
+          ...
+        }: {
+          nixpkgs.overlays = [
+            flakes.overlays.default
+          ];
+          # ++ (import ./patches {inherit pkgs-stable;});
+        };
+      in
+        {
+          # Cluster settings managing colmena
+          colmena = (
+            import ./machines/cluster {
+              inherit nixpkgs;
+              inherit (nixpkgs) lib;
+            }
+          );
+        }
+        // {
+          nixosConfigurations = (
+            import ./machines {
+              inherit inputs overlay stateVersion user;
+            }
+          );
+        };
+      perSystem = {
+        system,
+        pkgs,
+        ...
+      }: let
+        mkcerts = pkgs.callPackage (import ./certs) {};
+        myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.time]);
+        myScripts = pkgs.callPackage (import ./scripts) {};
+        _pkgs = with pkgs;
+        with myScripts; [
+          # software for deployment
+          colmena
+          jq
+          libxslt
+          btrfs-progs
+          terraform-docs
+          hcl2json
+          graphviz
+          myTerraform
 
-        # scripts
-        check_k8s
-        deploy
-        k
-        mkcerts
-        mkenv
-        mkimg4lxc
-        ter
-      ];
-    in
-      with nixpkgs.legacyPackages.${system}; {
-        apps = {
+          # software for managing cluster
+          argocd
+          etcd
+          kubectl
+          kubernetes-helm
+
+          # scripts
+          check_k8s
+          deploy
+          k
+          mkcerts
+          mkenv
+          mkimg4lxc
+          ter
+        ];
+      in {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [];
+          config.allowUnfree = true;
+        };
+        apps = with myScripts; {
           mkcerts = flake-utils.lib.mkApp {drv = mkcerts;};
           ter = flake-utils.lib.mkApp {drv = ter;};
           k = flake-utils.lib.mkApp {drv = k;};
@@ -120,5 +128,6 @@
           shellHooks = ''
           '';
         };
-      });
+      };
+    };
 }

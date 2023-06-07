@@ -3,18 +3,11 @@
   overlay,
   stateVersion,
   user,
-  home-manager,
-  nixpkgs,
-  nixpkgs-stable,
-  nur,
-  common-config,
-  flakes,
-  nvimdots,
   ...
 }:
 # Multipul arguments
 let
-  lib = nixpkgs.lib;
+  lib = inputs.nixpkgs.lib;
   settings = {
     hostname,
     user,
@@ -22,7 +15,7 @@ let
   }: let
     hostConf = ./. + "/${rootDir}" + /home.nix;
     system = "x86_64-linux";
-    pkgs-stable = import nixpkgs-stable {
+    pkgs-stable = import inputs.nixpkgs-stable {
       inherit system;
       config = {allowUnfree = true;};
     };
@@ -33,14 +26,16 @@ let
         specialArgs = {inherit hostname inputs user stateVersion;}; # specialArgs give some args to modules
         modules = [
           ./configuration.nix # Common system conf
-          (overlay {inherit nixpkgs pkgs-stable;})
-          nur.nixosModules.nur
-          common-config.nixosModules.for-nixos
+          (overlay {
+            inherit (inputs) nixpkgs;
+            inherit pkgs-stable;
+          })
+          inputs.common-config.nixosModules.for-nixos
           # ../modules
 
           (./. + "/${rootDir}") # Each machine conf
 
-          home-manager.nixosModules.home-manager
+          inputs.home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -50,9 +45,9 @@ let
               imports = [
                 (import ../hm/hm.nix)
                 (import hostConf)
-                flakes.nixosModules.for-hm
-                common-config.nixosModules.for-hm
-                nvimdots.nixosModules.for-hm
+                inputs.flakes.nixosModules.for-hm
+                inputs.common-config.nixosModules.for-hm
+                inputs.nvimdots.nixosModules.for-hm
               ];
             };
           }
@@ -64,12 +59,22 @@ in {
     rootDir = "hosts/yui";
     inherit user;
   };
-  terraform-lxc = with lib;
+  lxc-container = with lib;
     nixosSystem {
       system = "x86_64-linux";
       specialArgs = {inherit stateVersion;};
       modules = [
-        ./k8s/init
+        ./cluster/init
+        inputs.lxd-nixos.nixosModules.container
+      ];
+    };
+  lxc-virtual-machine = with lib;
+    nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = {inherit stateVersion;};
+      modules = [
+        ./cluster/init
+        inputs.lxd-nixos.nixosModules.virtual-machine
       ];
     };
 }

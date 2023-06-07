@@ -17,6 +17,7 @@
     ${kubectl}/bin/kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig $@
   '';
   mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
-    lxc image import --alias nixos ''$(${nixos-generators}/bin/nixos-generate -f lxc-metadata) ''$(${nixos-generators}/bin/nixos-generate -f lxc --flake ".#terraform-lxc")
+    nix run ".#import/lxc-container" --impure
+    nix run ".#import/lxc-virtual-machine" --impure
   '';
 }
