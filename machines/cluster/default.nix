@@ -1,4 +1,5 @@
 {
+  inputs,
   nixpkgs,
   lib,
 }: let
@@ -40,6 +41,9 @@ in
     meta = {
       nixpkgs = import nixpkgs {
         system = "x86_64-linux";
+      };
+      specialArgs = {
+        inherit inputs;
       };
     };
 

@@ -62,7 +62,7 @@ in {
   lxc-container = with lib;
     nixosSystem {
       system = "x86_64-linux";
-      specialArgs = {inherit stateVersion;};
+      specialArgs = {inherit stateVersion inputs;};
       modules = [
         ./cluster/init
         inputs.lxd-nixos.nixosModules.container
@@ -71,7 +71,7 @@ in {
   lxc-virtual-machine = with lib;
     nixosSystem {
       system = "x86_64-linux";
-      specialArgs = {inherit stateVersion;};
+      specialArgs = {inherit stateVersion inputs;};
       modules = [
         ./cluster/init
         inputs.lxd-nixos.nixosModules.virtual-machine
