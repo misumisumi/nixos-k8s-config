@@ -1,8 +1,8 @@
 {
   inputs,
-  nixpkgs,
-  lib,
+  stateVersion,
 }: let
+  inherit (inputs.nixpkgs) lib;
   inherit (import ../../src/resources.nix {inherit lib;}) resourcesByRole;
   inherit (import ../../src/utils.nix) nodeIP;
 
@@ -11,39 +11,42 @@
   workerHosts = map (r: r.values.name) (resourcesByRole "worker");
   loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer");
   nfsHosts = map (r: r.values.name) (resourcesByRole "nfs");
+  machineType = target: builtins.head (map (r: r.values.type) (resourcesByRole target));
 
   etcdConf = {...}: {
-    imports = [./k8s/etcd];
+    imports = [./k8s/etcd inputs.lxd-nixos.nixosModules.${machineType "etcd"}];
     deployment.tags = ["cardinal" "k8s" "etcd"];
   };
 
   controlPlaneConf = {...}: {
-    imports = [./k8s/controlplane];
+    imports = [./k8s/controlplane inputs.lxd-nixos.nixosModules.${machineType "controlplane"}];
     deployment.tags = ["cardinal" "k8s" "controlplane"];
   };
 
   workerConf = {...}: {
-    imports = [./k8s/worker];
+    imports = [./k8s/worker inputs.lxd-nixos.nixosModules.${machineType "worker"}];
     deployment.tags = ["cardinal" "k8s" "worker"];
   };
 
   loadBalancerConf = {...}: {
-    imports = [./k8s/loadbalancer];
+    imports = [./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${machineType "loadbalancer"}];
     deployment.tags = ["cardinal" "k8s" "loadbalancer"];
   };
 
   nfsConf = {name, ...}: {
-    imports = [./nfs];
+    imports = [./nfs inputs.lxd-nixos.nixosModules.${machineType "nfs"}];
     deployment.tags = ["cardinal" "nfs" "${name}"];
   };
 in
   {
     meta = {
-      nixpkgs = import nixpkgs {
+      nixpkgs = import inputs.nixpkgs {
         system = "x86_64-linux";
+        overlays = [inputs.flakes.overlays.default];
       };
       specialArgs = {
         inherit inputs;
+        inherit stateVersion;
       };
     };
 
@@ -59,8 +62,6 @@ in
 
       deployment.targetHost = nodeIP self;
       networking.hostName = name;
-
-      system.stateVersion = "23.05";
     };
   }
   // builtins.listToAttrs (map (h: {

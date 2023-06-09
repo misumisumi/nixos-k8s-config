@@ -1,8 +1,4 @@
-{
-  lib,
-  stateVersion,
-  ...
-}: {
+{stateVersion, ...}: {
   imports = [./ssh.nix];
 
   time.timeZone = "Asia/Tokyo"; # Time zone and internationalisation

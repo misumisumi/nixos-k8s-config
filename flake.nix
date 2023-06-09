@@ -63,8 +63,7 @@
           # Cluster settings managing colmena
           colmena = (
             import ./machines/cluster {
-              inherit nixpkgs inputs;
-              inherit (nixpkgs) lib;
+              inherit inputs stateVersion;
             }
           );
         }
