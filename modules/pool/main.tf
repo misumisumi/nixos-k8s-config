@@ -13,4 +13,7 @@ resource "lxd_storage_pool" "pool" {
   config = {
     size = each.value.size
   }
+  lifecycle {
+    create_before_destroy = true
+  }
 }

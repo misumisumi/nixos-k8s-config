@@ -2,8 +2,9 @@ variable "volumes" {
   type = set(
     object(
       {
-        name = string
-        pool = string
+        name         = optional(string, null)
+        pool         = optional(string, null)
+        content_type = optional(string, null)
       }
     )
   )

@@ -11,12 +11,18 @@ terraform {
 }
 
 locals {
-  mkvolumes = flatten([for device in flatten(var.nodes[*].devices[*]) :
+  mkvolumes = [for device in flatten(var.nodes[*].devices[*]) :
     device.type == "disk" && contains(keys(device.properties), "pool") ? {
       name = device.properties.source
       pool = device.properties.pool
-    } : {}
-  ])
+      # pull reqが上げられているため将来的に追加される可能性が高い https://github.com/terraform-lxd/terraform-provider-lxd/pull/294
+      # content_type = startswith(device.properties.path, "/dev") ? "block" : "filesystem"
+      } : {
+      name = null
+      pool = null
+      # content_type = null
+    }
+  ]
 }
 
 module "volume" {
