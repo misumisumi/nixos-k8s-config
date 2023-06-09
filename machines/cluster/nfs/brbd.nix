@@ -1,25 +1,25 @@
 {
   lib,
+  pkgs,
   resourcesByRole,
   ...
 }: let
   _nfsHosts = lib.flatten (map (r:
     map (d:
-      if d.values.type == "disk"
-      then [r.values.name d.values.properties.path r.values.ip_address]
+      if d.type == "disk"
+      then {
+        inherit (r.values) name ip_address;
+        inherit (d.properties) path;
+        id = lib.removePrefix "nfs" r.values.name;
+      }
       else [])
     r.values.device) (resourcesByRole "nfs"));
   nfsHosts =
-    lib.imap (i: v: ''
-      on "${builtins.elemAt v 0}" {
-        node-id ${i};
-        disk "${builtins.elemAt v 1}";
-      }
-    '')
-    _nfsHosts;
-  nfsHostIps =
     map (v: ''
-      host "${builtins.elemAt v 0}" address "${builtins.elemAt v 2}:7788";
+      on "${v.name}" {
+        disk "${v.path}";
+        address ${v.ip_address}:7788;
+      }
     '')
     _nfsHosts;
 in {
@@ -33,10 +33,14 @@ in {
         device minor 1;
         meta-disk internal;
         ${builtins.concatStringsSep "\n" nfsHosts}
-        connection {
-          ${builtins.concatStringsSep "\n" nfsHostIps}
-        }
       }
     '';
+  };
+  systemd.services.drbd = {
+    serviceConfig = {
+      ExecStart = lib.mkForce "${pkgs.drbd}/bin/drbdadm up all";
+      ExecStop = lib.mkForce "${pkgs.drbd}/bin/drbdadm down all";
+    };
+    path = with pkgs; [kmod];
   };
 }
