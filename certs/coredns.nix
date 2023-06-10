@@ -3,7 +3,7 @@
   cfssl,
   kubectl,
 }: let
-  inherit (pkgs.callPackage ./src/utils.nix {}) mkCsr;
+  inherit (pkgs.callPackage ./utils/utils.nix {}) mkCsr;
 
   corednsKubeCsr = mkCsr "coredns" {
     cn = "system:coredns";

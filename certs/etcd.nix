@@ -2,7 +2,7 @@
   pkgs,
   cfssl,
 }: let
-  inherit (pkgs.callPackage ./src/utils.nix {}) getAltNames mkCsr;
+  inherit (pkgs.callPackage ./utils/utils.nix {}) getAltNames mkCsr;
 
   caCsr = mkCsr "etcd-ca" {cn = "etcd-ca";};
   serverCsr = mkCsr "etcd-server" {

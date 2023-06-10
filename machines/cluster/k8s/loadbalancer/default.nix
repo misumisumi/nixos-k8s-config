@@ -7,7 +7,6 @@
   self,
   ...
 }: let
-  # inherit (import ../../../src/utils.nix) nodeIP;
   backends =
     map
     (r: "server ${r.values.name} ${nodeIP r}:6443")

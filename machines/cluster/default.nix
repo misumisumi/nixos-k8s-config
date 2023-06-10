@@ -3,8 +3,8 @@
   stateVersion,
 }: let
   inherit (inputs.nixpkgs) lib;
-  inherit (import ../../src/resources.nix {inherit lib;}) resourcesByRole;
-  inherit (import ../../src/utils.nix) nodeIP;
+  inherit (import ../../utils/resources.nix {inherit lib;}) resourcesByRole;
+  inherit (import ../../utils/utils.nix) nodeIP;
 
   etcdHosts = map (r: r.values.name) (resourcesByRole "etcd");
   controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane");

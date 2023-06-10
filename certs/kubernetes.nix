@@ -4,10 +4,10 @@
   cfssl,
   kubectl,
 }: let
-  inherit (pkgs.callPackage ../src/resources.nix {}) resourcesByRole;
-  inherit (pkgs.callPackage ../src/consts.nix {}) virtualIP;
-  inherit (import ../src/utils.nix) nodeIP;
-  inherit (pkgs.callPackage ./src/utils.nix {}) getAltNames mkCsr;
+  inherit (pkgs.callPackage ../utils/resources.nix {}) resourcesByRole;
+  inherit (pkgs.callPackage ../utils/consts.nix {}) virtualIP;
+  inherit (import ../utils/utils.nix) nodeIP;
+  inherit (pkgs.callPackage ./utils/utils.nix {}) getAltNames mkCsr;
 
   caCsr = mkCsr "kubernetes-ca" {
     cn = "kubernetes-ca";

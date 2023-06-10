@@ -3,7 +3,7 @@
   cfssl,
   kubectl,
 }: let
-  inherit (pkgs.callPackage ./src/utils.nix {}) getAltNames mkCsr;
+  inherit (pkgs.callPackage ./utils/utils.nix {}) getAltNames mkCsr;
 
   etcdClientCsr = mkCsr "etcd-client" {
     cn = "flannel";

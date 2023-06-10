@@ -5,7 +5,7 @@
 }: let
   # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
   # 各証明書の有効期限は10年
-  inherit (callPackage ./src/settings.nix {}) caConfig;
+  inherit (callPackage ./utils/settings.nix {}) caConfig;
 in
   writeShellApplication {
     name = "mkcerts";

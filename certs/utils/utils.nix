@@ -6,9 +6,9 @@
 }: let
   domain = "k8s.local";
 
-  inherit (callPackage ../../src/resources.nix {}) resourcesByRole;
+  inherit (callPackage ../../utils/resources.nix {}) resourcesByRole;
   inherit (callPackage ./settings.nix {}) csrConfig;
-  inherit (import ../../src/utils.nix) nodeIP;
+  inherit (import ../../utils/utils.nix) nodeIP;
 
   writeJSONText = name: obj: writeText "${name}.json" (builtins.toJSON obj);
 in {
