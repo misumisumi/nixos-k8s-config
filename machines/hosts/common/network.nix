@@ -1,6 +1,5 @@
 {
   lib,
-  config,
   hostname,
   ...
 }: {
@@ -21,10 +20,7 @@
       trustedInterfaces = [
         "br0"
       ];
-      allowedTCPPorts =
-        [
-        ]
-        + config.services.openssh.ports;
+      allowedTCPPorts = [];
     };
   };
 
