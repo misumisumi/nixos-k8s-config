@@ -1,7 +1,5 @@
 {
   lib,
-  user,
-  hostname,
   pkgs,
   ...
 }:
@@ -13,13 +11,6 @@ with lib; {
   programs = {
     dconf.enable = true;
     udevil.enable = true;
-  };
-
-  hardware = {
-    opengl = {
-      driSupport = true;
-      # driSupport32Bit = true;
-    };
   };
 
   services = {

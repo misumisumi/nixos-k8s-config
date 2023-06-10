@@ -1,17 +1,15 @@
 {
   lib,
   stateVersion,
-  pkgs,
   ...
 }:
-with lib; {
+{
   programs.ssh = {
     askPassword = "";
   };
   services.openssh =
     {
       enable = true;
-      ports = [12511];
       extraConfig = ''
         UsePAM yes
       '';
