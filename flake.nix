@@ -102,11 +102,15 @@
 
           # scripts
           check_k8s
+          copy_img2lxd
           deploy
+          init_lxd
+          init_remote_lxd
           k
           mkcerts
           mkenv
           mkimg4lxc
+          mksshconfig
           ter
         ];
       in {

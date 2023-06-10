@@ -5,3 +5,4 @@ terraform.tfstate.backup
 certs/generated
 show.*
 terraform.json
+ssh_config
