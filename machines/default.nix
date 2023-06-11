@@ -2,7 +2,6 @@
   inputs,
   overlay,
   stateVersion,
-  user,
   ...
 }:
 # Multipul arguments
@@ -21,14 +20,16 @@ let
     with lib;
       nixosSystem {
         inherit system;
-        specialArgs = {inherit hostname inputs stateVersion;}; # specialArgs give some args to modules
+        specialArgs = {
+          inherit hostname inputs stateVersion;
+          user = hostname;
+        }; # specialArgs give some args to modules
         modules = [
-          ./configuration.nix # Common system conf
+          ./hosts/common
           (overlay {
             inherit (inputs) nixpkgs;
             inherit pkgs-stable;
           })
-          inputs.common-config.nixosModules.for-nixos
 
           (./. + "/${rootDir}") # Each machine conf
         ];
@@ -38,14 +39,14 @@ in {
     hostname = "alice";
     rootDir = "hosts/alice";
   };
-  strea = settings {
-    hostname = "strea";
-    rootDir = "hosts/strea";
-  };
-  yui = settings {
-    hostname = "yui";
-    rootDir = "hosts/yui";
-  };
+  # strea = settings {
+  #   hostname = "strea";
+  #   rootDir = "hosts/strea";
+  # };
+  # yui = settings {
+  #   hostname = "yui";
+  #   rootDir = "hosts/yui";
+  # };
   lxc-container = with lib;
     nixosSystem {
       system = "x86_64-linux";

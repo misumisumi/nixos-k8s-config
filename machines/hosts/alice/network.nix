@@ -1,4 +1,22 @@
 {
+  hostname,
+  pkgs,
+  ...
+}: let
+  inherit (pkgs.callPackage ../../../utils/resources.nix {}) resourcesFromHosts;
+  ip_address = (builtins.head (builtins.filter (v: v.name == hostname) resourcesFromHosts)).ip_address;
+in {
+  networking.interfaces.enp2s0 = {
+    wakeOnLan.enable = true;
+    useDHCP = false;
+  };
+  boot.initrd.availableKernelModules = ["r8169"];
+  boot.initrd.network.udhcpc.extraArgs = [
+    "-i"
+    "enp2s0"
+    "-r"
+    "${ip_address}"
+  ];
   systemd = {
     network = {
       netdevs = {
@@ -9,14 +27,13 @@
       };
       networks = {
         "10-wired" = {
-          name = "enp5s0";
+          name = "enp2s0";
           bridge = ["br0"];
         };
         "20-br0" = {
           name = "br0";
-          dns = ["192.168.1.40" "127.0.0.1"];
-          address = ["192.168.1.20"];
-          gateway = ["192.168.1.1"];
+          DHCP = "yes";
+          address = ["${ip_address}"];
         };
       };
     };

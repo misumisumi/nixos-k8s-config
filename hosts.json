@@ -2,15 +2,7 @@
   "hosts": [
     {
       "name": "alice",
-      "ip_address": "10.150.10.60"
-    },
-    {
-      "name": "strea",
-      "ip_address": "10.150.10.30"
-    },
-    {
-      "name": "yui",
-      "ip_address": "10.150.10.30"
+      "ip_address": "192.168.1.20"
     }
   ]
 }

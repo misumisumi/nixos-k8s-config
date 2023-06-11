@@ -1,4 +1,5 @@
 {inputs, ...}: {
+  security.polkit.enable = true;
   virtualisation = {
     lxc.enable = true;
     lxd = {

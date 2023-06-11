@@ -5,7 +5,6 @@
   ...
 }: {
   programs.bash = {
-    enable = true;
     enableCompletion = false;
   };
   users.users."${hostname}" = {

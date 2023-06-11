@@ -15,28 +15,32 @@ let
 
   sshKey = readFirst [~/.ssh/id_ed25519.pub ~/.ssh/id_rsa.pub];
 in {
+  boot.initrd.network = {
+    enable = true;
+    ssh = {
+      enable = true;
+      authorizedKeys = [sshKey];
+      hostKeys = [
+        "/etc/secrets/initrd/ssh_host_rsa_key"
+        "/etc/secrets/initrd/ssh_host_ed25519_key"
+      ];
+    };
+  };
+  users.users.root.openssh.authorizedKeys.keys = [sshKey];
+  users.users."${hostname}".openssh.authorizedKeys.keys = [sshKey];
+
+  networking.firewall.allowedTCPPorts = config.services.openssh.ports;
   programs.ssh = {
     askPassword = "";
   };
-
-  networking.firewall.allowedTCPPorts = config.services.openssh.ports;
-  users.users.root.openssh.authorizedKeys.keys = [sshKey];
-  users.users."${hostname}".openssh.authorizedKeys.keys = [sshKey];
-  services.openssh =
-    {
-      enable = true;
-      extraConfig = ''
-        UsePAM yes
-      '';
-    }
-    // lib.attrsets.optionalAttrs (stateVersion <= "22.11") {
-      kbdInteractiveAuthentication = true;
-      forwardX11 = true;
-    }
-    // lib.attrsets.optionalAttrs (stateVersion > "22.11") {
-      settings = {
-        kbdInteractiveAuthentication = true;
-        X11Forwarding = true;
-      };
+  services.openssh = {
+    enable = true;
+    extraConfig = ''
+      UsePAM yes
+    '';
+    settings = {
+      KbdInteractiveAuthentication = true;
+      X11Forwarding = true;
     };
+  };
 }

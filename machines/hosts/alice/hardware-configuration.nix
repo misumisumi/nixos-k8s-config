@@ -43,13 +43,13 @@
     fsType = "ext4";
   };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/mo-boot";
+    device = "/dev/disk/by-label/ali-boot";
     fsType = "vfat";
   };
 
   swapDevices = [
     {
-      device = "/dev/mapper/VolGroup00-lvolswap";
+      device = "/dev/mapper/VolGroupAlice-lvolswap";
       priority = 10;
     }
   ];

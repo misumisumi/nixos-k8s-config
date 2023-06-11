@@ -21,8 +21,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    common-config.url = "github:misumisumi/nixos-common-config";
-    nvimdots.url = "github:misumisumi/nvimdots";
     flakes = {
       url = "github:misumisumi/flakes";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -45,7 +43,6 @@
       ];
       lxd.generateImporters = true;
       flake = let
-        user = "sumi";
         stateVersion = "23.05"; # For Home Manager
 
         overlay = {
@@ -62,7 +59,7 @@
         {
           # Cluster settings managing colmena
           colmena = (
-            import ./machines/cluster {
+            import ./machines/hive.nix {
               inherit inputs stateVersion;
             }
           );
@@ -70,7 +67,7 @@
         // {
           nixosConfigurations = (
             import ./machines {
-              inherit inputs overlay stateVersion user;
+              inherit inputs overlay stateVersion;
             }
           );
         };

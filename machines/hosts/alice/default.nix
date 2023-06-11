@@ -1,6 +1,5 @@
 {
   imports = [
-    ../common
     ./hardware-configuration.nix
     ./network.nix
   ];
@@ -11,7 +10,7 @@
       max-jobs = 2;
     };
     extraOptions = ''
-      binary-caches-parallel-connections = 24
+      binary-caches-parallel-connections = 4
     '';
   };
 }

@@ -1,8 +1,4 @@
-{
-  lib,
-  hostname,
-  ...
-}: {
+{hostname, ...}: {
   systemd = {
     network = {
       enable = true;
@@ -14,7 +10,7 @@
 
   networking = {
     hostName = "${hostname}";
-    useDHCP = lib.mkDefault false; # Setting each network interafces
+    useDHCP = true;
     firewall = {
       enable = true;
       trustedInterfaces = [
