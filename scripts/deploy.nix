@@ -34,6 +34,18 @@ writeShellApplication {
       exit "''$code"
     }
 
+    check_in_host() {
+      local json=''$1
+      local target=''$2
+      jq -r ".hosts[].name" "''$json" | while read -r host
+      do
+        if [ "''${host}" == "''${target}" ]; then
+            return 0
+        fi
+      done
+      return 1
+    }
+
     parse_params() {
       # default values of variables set from params
       while :; do
@@ -59,7 +71,7 @@ writeShellApplication {
       do
         [[ "''${value}" == "" ]] && die "Need workspace name"
         # colmena tag
-        [[ "''${cmd}" == "nix" ]] && [[ "''${value}" != "hosts" ]] && [[ "''${value}" != "k8s" ]] && die "Can use tag 'hosts' or 'k8s'"
+        [[ "''${cmd}" == "nix" ]] && [[ "''${value}" != "hosts" ]] && [[ "''${value}" != "k8s" ]] && check_in_host hosts.json "''${value}" && die "Can use tag 'hosts' or 'k8s'"
         # terraform workspace
         [[ "''${cmd}" == "ter" ]] && [[ "''${value}" != "develop" ]] && [[ "''${value}" != "product" ]] && die "Can use workspace 'develop' or 'product'"
       done
@@ -79,7 +91,7 @@ writeShellApplication {
     fi
 
     if [ "''${cmd}" = "nix" ]; then
-      colmena "''${subcmd}" --on @"''${target}"
+      colmena "''${subcmd}" --on @"''${target}" --impure
     fi
   '';
 }

@@ -6,7 +6,7 @@
   nixos-generators,
   terraform,
 }: let
-  hosts = builtins.fromJSON (builtins.readFile ../hosts.json);
+  inherit (callPackage ../utils/resources.nix {}) resourcesFromHosts;
   sshConfig =
     builtins.map (v: ''
       Host ${v.name}
@@ -14,7 +14,7 @@
         User root
         Port 22
     '')
-    hosts.hosts;
+    resourcesFromHosts;
 in
   {
     check_k8s = callPackage (import ./check_k8s.nix) {};
