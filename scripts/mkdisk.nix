@@ -6,7 +6,7 @@
         cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
       Usage: ''$(
           basename "''${BASH_SOURCE[0]}"
-        ) [-h] [-v] BOOTPART LUKSPART VGNAME
+        ) [-h] [-v] BOOTPART VGNAME -l LUKSPART
 
       Making bootfs
       You must run as root user.
@@ -15,6 +15,7 @@
 
       -h,  --help      Print this help and exit
       -v,  --verbose   Print script debug info
+      -l,  --lukspart  LUKS partion (if you need unlock partion)
       EOF
         exit
       }
@@ -37,10 +38,12 @@
 
       parse_params() {
         # default values of variables set from params
+        LUKSPART=""
         while :; do
           case "''${1-}" in
           -h | --help) usage ;;
           -v | --verbose) set -x ;;
+          -l | --lukspart) LUKSPART=''${2-} ;;
           -?*) die "Unknown option: ''$1" ;;
           *) break ;;
           esac
@@ -55,7 +58,6 @@
       [[ "''$(whoami)" != "root" ]] && echo "Run must as root !" && exit 1
       BOOTPART=''$1
       VGNAME=''$2
-      LUKSPART=''${3:-""}
       [[ "''$BOOTPART" == "" ]] && echo "You must set boot disk part" && exit 1
 
       [[ ! -d /mnt ]] && mkdir /mnt && echo "Create /mnt"
