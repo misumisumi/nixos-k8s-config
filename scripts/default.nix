@@ -38,3 +38,4 @@ in
     '';
   }
   // (callPackage (import ./setup_lxd.nix) {})
+  // (callPackage (import ./mkdisk.nix) {})

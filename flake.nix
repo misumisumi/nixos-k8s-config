@@ -104,10 +104,13 @@
           init_lxd
           init_remote_lxd
           k
+          mkbootfs
           mkcerts
           mkenv
           mkimg4lxc
+          mkrootfs
           mksshconfig
+          mountrootfs
           ter
         ];
       in {
