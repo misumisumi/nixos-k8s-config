@@ -39,14 +39,14 @@ in {
     hostname = "alice";
     rootDir = "hosts/alice";
   };
-  # strea = settings {
-  #   hostname = "strea";
-  #   rootDir = "hosts/strea";
-  # };
-  # yui = settings {
-  #   hostname = "yui";
-  #   rootDir = "hosts/yui";
-  # };
+  strea = settings {
+    hostname = "strea";
+    rootDir = "hosts/strea";
+  };
+  yui = settings {
+    hostname = "yui";
+    rootDir = "hosts/yui";
+  };
   lxc-container = with lib;
     nixosSystem {
       system = "x86_64-linux";
