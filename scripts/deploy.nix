@@ -48,38 +48,38 @@ writeShellApplication {
 
     parse_params() {
       # default values of variables set from params
+      count=0
       while :; do
+        count=''$((count + 1))
         case "''${1-}" in
         -h | --help) usage ;;
         -v | --verbose) set -x ;;
+        -- )
+          count=''$((count + 1))
+          break
+        ;;
         -?*) die "Unknown option: ''$1" ;;
-        *) break ;;
+        *) ;;
         esac
         shift
-      done
-
-      cmd=''$1
-      subcmd=''$2
-      target=''$3
-
-      # check required params and arguments
-      for value in "''${cmd[@]}"
-      do
-        [[ "''${value}" != "nix" ]] && [[ "''${value}" != "ter" ]] && die "Can use only 'plan' or 'apply'"
-      done
-      for value in "''${target[@]}"
-      do
-        [[ "''${value}" == "" ]] && die "Need workspace name"
-        # colmena tag
-        [[ "''${cmd}" == "nix" ]] && [[ "''${value}" != "hosts" ]] && [[ "''${value}" != "k8s" ]] && check_in_host hosts.json "''${value}" && die "Can use tag 'hosts' or 'k8s'"
-        # terraform workspace
-        [[ "''${cmd}" == "ter" ]] && [[ "''${value}" != "develop" ]] && [[ "''${value}" != "product" ]] && die "Can use workspace 'develop' or 'product'"
       done
 
       return 0
     }
 
     parse_params "''$@"
+
+    cmd=''$1
+    subcmd=''$2
+    target=''$3
+
+    # check required params and arguments
+    [[ "''${cmd}" != "nix" ]] && [[ "''${cmd}" != "ter" ]] && die "Can use only 'plan' or 'apply'"
+    [[ "''${target}" == "" ]] && die "Need workspace name"
+    # colmena tag
+    [[ "''${cmd}" == "nix" ]] && [[ "''${target}" != "hosts" ]] && [[ "''${target}" != "k8s" ]] && check_in_host hosts.json "''${target}" && die "Can use tag 'hosts' or 'k8s'"
+    # terraform workspace
+    [[ "''${cmd}" == "ter" ]] && [[ "''${target}" != "develop" ]] && [[ "''${target}" != "product" ]] && die "Can use workspace 'develop' or 'product'"
 
     # script logic here
     if [ "''${cmd}" = "ter" ]; then
@@ -91,7 +91,7 @@ writeShellApplication {
     fi
 
     if [ "''${cmd}" = "nix" ]; then
-      colmena "''${subcmd}" --on @"''${target}" --impure
+      colmena "''${subcmd}" --on @"''${target}" --impure  "''${@:count:(''$#-2)}"
     fi
   '';
 }
