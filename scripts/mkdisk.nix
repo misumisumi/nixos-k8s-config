@@ -1,12 +1,12 @@
 {writeShellApplication}: {
-  mountrootfs = writeShellApplication {
-    name = "mountrootfs";
+  unmountrootfs = writeShellApplication {
+    name = "unmountrootfs";
     text = ''
       usage() {
         cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
       Usage: ''$(
           basename "''${BASH_SOURCE[0]}"
-        ) [-h] [-v] BOOTPART VGNAME -l LUKSPART
+        ) [-h] [-v] VGNAME -l
 
       Making bootfs
       You must run as root user.
@@ -15,7 +15,7 @@
 
       -h,  --help      Print this help and exit
       -v,  --verbose   Print script debug info
-      -l,  --lukspart  LUKS partion (if you need unlock partion)
+      -l,  --lukspart  LUKS partion (if you use luks partition)
       EOF
         exit
       }
@@ -38,14 +38,77 @@
 
       parse_params() {
         # default values of variables set from params
-        LUKSPART=""
-        while :; do
+        CLOSELUKS=0
+        while (( $# > 0 )) do
           case "''${1-}" in
           -h | --help) usage ;;
           -v | --verbose) set -x ;;
-          -l | --lukspart) LUKSPART=''${2-} ;;
+          -l | --lukspart) CLOSELUKS=1 ;;
           -?*) die "Unknown option: ''$1" ;;
-          *) break ;;
+          *) ;;
+          esac
+          shift
+        done
+
+        # check required params and arguments
+        return 0
+      }
+
+      parse_params "''$@"
+      [[ "''$(whoami)" != "root" ]] && echo "Run must as root !" && exit 1
+      VGNAME=''$1
+
+      umount -R /mnt
+      vgchange -a n "$VGNAME"
+      sleep 1
+      [[ ''$CLOSELUKS ]] && cryptsetup close cryptolvm
+      echo "Unmounted!"
+    '';
+  };
+  mountrootfs = writeShellApplication {
+    name = "mountrootfs";
+    text = ''
+      usage() {
+        cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
+      Usage: ''$(
+          basename "''${BASH_SOURCE[0]}"
+        ) [-h] [-v] BOOTPART VGNAME
+
+      Making bootfs
+      You must run as root user.
+
+      Available options:
+
+      -h,  --help      Print this help and exit
+      -v,  --verbose   Print script debug info
+      EOF
+        exit
+      }
+
+      cleanup() {
+        trap - SIGINT SIGTERM ERR EXIT
+        # script cleanup here
+      }
+
+      msg() {
+        echo >&2 -e "''${1-}"
+      }
+
+      die() {
+        local msg=''$1
+        local code=''${2-1} # default exit status 1
+        msg "''$msg"
+        exit "''$code"
+      }
+
+      parse_params() {
+        # default values of variables set from params
+        while (( $# > 0 )) do
+          case "''${1-}" in
+          -h | --help) usage ;;
+          -v | --verbose) set -x ;;
+          -?*) die "Unknown option: ''$1" ;;
+          *) ;;
           esac
           shift
         done
@@ -61,9 +124,6 @@
       [[ "''$BOOTPART" == "" ]] && echo "You must set boot disk part" && exit 1
 
       [[ ! -d /mnt ]] && mkdir /mnt && echo "Create /mnt"
-      if [ "''$LUKSPART" != "" ]; then
-        cryptsetup open "''$LUKSPART" cryptolvm
-      fi
       lvnames=("lvolroot" "lvolvar" "lvolnix" "lvolswap" "lvolhome")
       for lvname in "''${lvnames[@]}"; do
         if [ "''$lvname" == "lvolroot" ]; then
@@ -119,7 +179,7 @@
 
       parse_params() {
         # default values of variables set from params
-        while :; do
+        while (( $# > 0 )) do
           case "''${1-}" in
           -h | --help) usage ;;
           -v | --verbose) set -x ;;
@@ -196,17 +256,31 @@
         nix_size="64G"
         swap_size="8G"
 
-        while :; do
+        while (( $# > 0 )) do
           case "''${1-}" in
           -h | --help) usage ;;
           -v | --verbose) set -x ;;
-          -rs | --root_size) root_size=''${2-} ;;
-          -hs | --home_size) home_size=''${2-} ;;
-          -vs | --var_size) var_size=''${2-} ;;
-          -ns | --nix_size) nix_size=''${2-} ;;
-          -ss | --swap_size) swap_size=''${2-} ;;
+          -rs | --root_size)
+            root_size=''${2-}
+            shift
+          ;;
+          -hs | --home_size)
+            home_size=''${2-}
+            shift
+          ;;
+          -vs | --var_size)
+            var_size=''${2-}
+            shift
+          ;;
+          -ns | --nix_size)
+            nix_size=''${2-}
+            shift
+          ;;
+          -ss | --swap_size)
+            swap_size=''${2-}
+          ;;
           -?*) die "Unknown option: ''$1" ;;
-          *) break ;;
+          *) ;;
           esac
           shift
         done

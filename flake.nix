@@ -111,6 +111,7 @@
           mkrootfs
           mksshconfig
           mountrootfs
+          unmountrootfs
           ter
         ];
       in {
