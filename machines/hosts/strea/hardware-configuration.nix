@@ -27,29 +27,29 @@
   };
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/alice-root";
+    device = "/dev/disk/by-label/strea-root";
     fsType = "ext4";
   };
   fileSystems."/nix" = {
-    device = "/dev/disk/by-label/alice-nix";
+    device = "/dev/disk/by-label/strea-nix";
     fsType = "ext4";
   };
   fileSystems."/var" = {
-    device = "/dev/disk/by-label/alice-var";
+    device = "/dev/disk/by-label/strea-var";
     fsType = "ext4";
   };
   fileSystems."/home" = {
-    device = "/dev/disk/by-label/alice-home";
+    device = "/dev/disk/by-label/strea-home";
     fsType = "ext4";
   };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/ali-boot";
+    device = "/dev/disk/by-label/str-boot";
     fsType = "vfat";
   };
 
   swapDevices = [
     {
-      device = "/dev/mapper/VolGroupAlice-lvolswap";
+      device = "/dev/mapper/VolGroupSTREA-lvolswap";
       priority = 10;
     }
   ];
