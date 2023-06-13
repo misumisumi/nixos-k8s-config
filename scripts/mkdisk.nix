@@ -324,8 +324,9 @@
 
       for lvname in "''${lvnames[@]}"; do
         mkfs.ext4 /dev/mapper/"''$VGNAME-''$lvname"
-        e2label /dev/mapper/"''$VGNAME-''$lvname" "''$NAME-''${lvname//lvol//}"
+        e2label /dev/mapper/"''$VGNAME-''$lvname" "''$NAME-''${lvname/lvol/}"
       done
+      mkswap /dev/mapper/"''$VGNAME-lvolswap"
 
       echo "Finish!"
     '';
