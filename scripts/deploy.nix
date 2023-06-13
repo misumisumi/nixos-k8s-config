@@ -49,7 +49,7 @@ writeShellApplication {
     parse_params() {
       # default values of variables set from params
       count=0
-      while :; do
+      while (( $# > 0 )) do
         count=''$((count + 1))
         case "''${1-}" in
         -h | --help) usage ;;
