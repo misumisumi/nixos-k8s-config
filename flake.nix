@@ -81,6 +81,7 @@
         myScripts = pkgs.callPackage (import ./scripts) {};
         _pkgs = with pkgs;
         with myScripts; [
+          bashInteractive
           # software for deployment
           colmena
           jq
