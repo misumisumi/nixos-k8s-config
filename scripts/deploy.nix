@@ -55,23 +55,25 @@ writeShellApplication {
         -h | --help) usage ;;
         -v | --verbose) set -x ;;
         -- )
-          count=''$((count + 1))
           break
         ;;
         -?*) die "Unknown option: ''$1" ;;
-        *) ;;
+        *) cmd=''${1-}
+          shift
+          subcmd=''${1-}
+          shift
+          target=''${1-}
+          count="''$((count + 2))"
+        ;;
         esac
         shift
       done
 
+      count="''$((count + 1))"
       return 0
     }
 
     parse_params "''$@"
-
-    cmd=''$1
-    subcmd=''$2
-    target=''$3
 
     # check required params and arguments
     [[ "''${cmd}" != "nix" ]] && [[ "''${cmd}" != "ter" ]] && die "Can use only 'plan' or 'apply'"
@@ -84,14 +86,15 @@ writeShellApplication {
     # script logic here
     if [ "''${cmd}" = "ter" ]; then
       terraform workspace select "''${target}"
-      terraform "''${subcmd}" -var-file="''${target}".tfvars
+      terraform "''${subcmd}" -var-file="''${target}".tfvars "''${@:count:(''$#-2)}"
       terraform show -json | jq >show.json
       terraform graph | dot -Tpng >show.png
       hcl2json "''${target}".tfvars > terraform.json
     fi
 
     if [ "''${cmd}" = "nix" ]; then
-      colmena "''${subcmd}" --on @"''${target}" --impure  "''${@:count:(''$#-2)}"
+      echo "colmena ''${subcmd} --on @''${target} ''${*:count:(''$#-2)}"
+      colmena "''${subcmd}" --on @"''${target}" --impure "''${@:count:(''$#-2)}"
     fi
   '';
 }
