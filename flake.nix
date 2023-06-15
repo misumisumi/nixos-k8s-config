@@ -103,7 +103,7 @@
           copy_img2lxd
           deploy
           init_lxd
-          init_remote_lxd
+          add_remote_lxd
           k
           mkbootfs
           mkcerts
