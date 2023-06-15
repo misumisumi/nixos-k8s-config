@@ -19,6 +19,14 @@ terraform {
 provider "lxd" {
   generate_client_certificates = true
   accept_remote_certificate    = true
+  dynamic "lxd_remote" {
+    for_each = var.remote_hosts
+    content {
+      name    = lxd_remote.value.name
+      address = lxd_remote.value.address
+      scheme  = "https"
+    }
+  }
 }
 
 # Only use making env label for outputing show.json to use from colmena

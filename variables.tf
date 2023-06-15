@@ -1,3 +1,12 @@
+variable "remote_hosts" {
+  type = set(
+    object({
+      name    = optional(string, null)
+      address = optional(string, null)
+    })
+  )
+  default = []
+}
 variable "etcd_instances" {
   type = set(
     object({
