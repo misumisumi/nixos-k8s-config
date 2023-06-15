@@ -42,8 +42,8 @@ worker_instances = [
     ip_address = "10.150.10.30"
     devices = [
       {
-        name = "ceph"
-        type = "disk"
+        name         = "ceph"
+        type         = "disk"
         content_type = "block"
         properties = {
           pool   = "ceph"
@@ -58,8 +58,8 @@ worker_instances = [
     ip_address = "10.150.10.31"
     devices = [
       {
-        name = "ceph"
-        type = "disk"
+        name         = "ceph"
+        type         = "disk"
         content_type = "block"
         properties = {
           pool   = "ceph"
@@ -74,8 +74,8 @@ worker_instances = [
     ip_address = "10.150.10.32"
     devices = [
       {
-        name = "ceph"
-        type = "disk"
+        name         = "ceph"
+        type         = "disk"
         content_type = "block"
         properties = {
           pool   = "ceph"
@@ -111,8 +111,8 @@ optional_instances = [{
       ip_address = "10.150.10.60"
       devices = [
         {
-          name = "nfs"
-          type = "disk"
+          name         = "nfs"
+          type         = "disk"
           content_type = "block"
           properties = {
             pool   = "nfs"
@@ -127,8 +127,8 @@ optional_instances = [{
       ip_address = "10.150.10.61"
       devices = [
         {
-          name = "nfs"
-          type = "disk"
+          name         = "nfs"
+          type         = "disk"
           content_type = "block"
           properties = {
             pool   = "nfs"

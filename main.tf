@@ -11,7 +11,8 @@ locals {
 terraform {
   required_providers {
     lxd = {
-      source = "terraform-lxd/lxd"
+      source  = "terraform-lxd/lxd"
+      version = "~> 1.10.0"
     }
   }
 }
