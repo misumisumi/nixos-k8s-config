@@ -38,48 +38,51 @@ control_plane_RD = {
 worker_instances = [
   {
     name       = "worker1"
+    type       = "virtual-machine"
     ip_address = "10.150.10.30"
-    # devices = [
-    #   {
-    #     name = "ceph"
-    #     type = "disk"
-    #     properties = {
-    #       pool   = "ceph"
-    #       path   = "/dev/sdb"
-    #       source = "ceph1"
-    #     }
-    #   }
-    # ]
+    devices = [
+      {
+        name = "ceph"
+        type = "disk"
+        content_type = "block"
+        properties = {
+          pool   = "ceph"
+          source = "ceph1"
+        }
+      }
+    ]
   },
   {
     name       = "worker2"
+    type       = "virtual-machine"
     ip_address = "10.150.10.31"
-    # devices = [
-    #   {
-    #     name = "ceph"
-    #     type = "disk"
-    #     properties = {
-    #       pool   = "ceph"
-    #       path   = "/dev/sdb"
-    #       source = "ceph2"
-    #     }
-    #   }
-    # ]
+    devices = [
+      {
+        name = "ceph"
+        type = "disk"
+        content_type = "block"
+        properties = {
+          pool   = "ceph"
+          source = "ceph2"
+        }
+      }
+    ]
   },
   {
     name       = "worker3"
+    type       = "virtual-machine"
     ip_address = "10.150.10.32"
-    # devices = [
-    #   {
-    #     name = "ceph"
-    #     type = "disk"
-    #     properties = {
-    #       pool   = "ceph"
-    #       path   = "/dev/sda"
-    #       source = "ceph3"
-    #     }
-    #   }
-    # ]
+    devices = [
+      {
+        name = "ceph"
+        type = "disk"
+        content_type = "block"
+        properties = {
+          pool   = "ceph"
+          source = "ceph3"
+        }
+      }
+    ]
   },
 ]
 worker_RD = {
@@ -110,9 +113,9 @@ optional_instances = [{
         {
           name = "nfs"
           type = "disk"
+          content_type = "block"
           properties = {
             pool   = "nfs"
-            path   = "/dev/sdb"
             source = "nfs1"
           }
         }
@@ -126,9 +129,9 @@ optional_instances = [{
         {
           name = "nfs"
           type = "disk"
+          content_type = "block"
           properties = {
             pool   = "nfs"
-            path   = "/dev/sdb"
             source = "nfs2"
           }
         }

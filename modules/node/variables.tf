@@ -12,9 +12,10 @@ variable "nodes" {
       ip_address = string
       devices = set(
         object({
-          name       = string
-          type       = string
-          properties = map(string)
+          name         = string
+          type         = string
+          content_type = optional(string, "filesystem")
+          properties   = map(string)
       }))
     })
   )

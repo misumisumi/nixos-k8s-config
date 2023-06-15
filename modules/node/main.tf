@@ -13,14 +13,13 @@ terraform {
 locals {
   mkvolumes = [for device in flatten(var.nodes[*].devices[*]) :
     device.type == "disk" && contains(keys(device.properties), "pool") ? {
-      name = device.properties.source
-      pool = device.properties.pool
-      # pull reqが上げられているため将来的に追加される可能性が高い https://github.com/terraform-lxd/terraform-provider-lxd/pull/294
-      # content_type = startswith(device.properties.path, "/dev") ? "block" : "filesystem"
+      name         = device.properties.source
+      pool         = device.properties.pool
+      content_type = device.content_type
       } : {
-      name = null
-      pool = null
-      # content_type = null
+      name         = null
+      pool         = null
+      content_type = null
     }
   ]
 }
@@ -36,6 +35,8 @@ resource "lxd_profile" "profile" {
   config = {
     # "security.privileged" = true
     "security.nesting" = true
+    "security.syscalls.intercept.mount.allowed"="ext4"
+    "security.syscalls.intercept.mount"=true
     "boot.autostart"   = true
     "limits.cpu"       = tonumber(var.node_rd.cpu)
     "limits.memory"    = var.node_rd.memory
