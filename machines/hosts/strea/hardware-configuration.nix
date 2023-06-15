@@ -49,7 +49,7 @@
 
   swapDevices = [
     {
-      device = "/dev/mapper/VolGroupSTREA-lvolswap";
+      device = "/dev/mapper/VolGroupStrea-lvolswap";
       priority = 10;
     }
   ];
