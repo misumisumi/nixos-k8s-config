@@ -1,16 +1,12 @@
 # Default normal user config
-{
-  pkgs,
-  hostname,
-  ...
-}: {
+{pkgs, ...}: {
   programs.bash = {
     enableCompletion = false;
   };
-  users.users."${hostname}" = {
+  users.users.cardinal = {
     isNormalUser = true;
     shell = pkgs.bash;
-    initialHashedPassword = "$y$j9T$Wn.jPTa4eGqJ9fjcyNjkp/$vQFpXhYbCwlCXCzMbJxtRjNdEkmREnSFjVrtpUTqeMA";
+    initialHashedPassword = "$y$j9T$WK.ICvT6LkzmVlsCw6Zmu/$hjxhEDbbbMNiSRy58UqbQ5HjDj19CaGB2/5bi9lrB7/";
     extraGroups = ["wheel" "kvm" "input" "lxd"];
     useDefaultShell = true;
     subUidRanges = [
