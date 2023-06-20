@@ -2,7 +2,6 @@
   lib,
   config,
   name,
-  resourcesByRoles,
   virtualIP,
   ...
 }: let
@@ -43,7 +42,7 @@ in {
       "--fail-swap-on=false"
       "--feature-gates=KubeletInUserNamespace=true"
     ];
-    unschedulable = false;
+    unschedulable = true;
     kubeconfig = {
       caFile = "/var/lib/secrets/kubernetes/ca.pem";
       certFile = tlsCertFile;
@@ -54,8 +53,8 @@ in {
     tlsCertFile = "/var/lib/secrets/kubernetes/kubelet.pem";
     tlsKeyFile = "/var/lib/secrets/kubernetes/kubelet-key.pem";
     taints."controlplane" = {
-      key = "node-role.kubernetes.io";
-      value = "control-plane";
+      key = "node-role.kubernetes.io/control-plane";
+      value = "true";
       effect = "NoSchedule";
     };
   };

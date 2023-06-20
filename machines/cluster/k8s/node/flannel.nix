@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   resourcesByRole,
   ...
 }: let

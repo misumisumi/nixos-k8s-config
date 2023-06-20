@@ -29,9 +29,12 @@ in {
     enable = true;
     config = ''
       .:53 {
-        kubernetes cluster.local {
+        log
+        errors
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
           endpoint https://${virtualIP}
           tls /var/lib/secrets/coredns/coredns-kube.pem /var/lib/secrets/coredns/coredns-kube-key.pem /var/lib/secrets/coredns/kube-ca.pem
+          fallthrough in-addr.arpa ip6.arpa
           pods verified
         }
         forward . 1.1.1.1:53 1.0.0.1:53

@@ -17,9 +17,8 @@
     cn = "kubernetes";
     altNames =
       lib.singleton virtualIP
-      ++
-      # Alternative names remain, as they might be useful for debugging purposes
-      getAltNames "controlplane"
+      ++ lib.singleton "10.32.0.1" # clusterIP of controlplane
+      ++ getAltNames "controlplane" # Alternative names remain, as they might be useful for debugging purposes
       ++ getAltNames "loadbalancer"
       ++ ["kubernetes" "kubernetes.default" "kubernetes.default.svc" "kubernetes.default.svc.cluster" "kubernetes.svc.cluster.local"];
   };
