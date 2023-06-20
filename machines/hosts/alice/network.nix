@@ -6,6 +6,11 @@
   inherit (pkgs.callPackage ../../../utils/resources.nix {}) resourcesFromHosts;
   ip_address = (builtins.head (builtins.filter (v: v.name == hostname) resourcesFromHosts)).ip_address;
 in {
+  networking = {
+    wireless = {
+      enable = false;
+    };
+  };
   networking.interfaces.enp2s0 = {
     wakeOnLan.enable = true;
     useDHCP = false;

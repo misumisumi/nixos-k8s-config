@@ -1,10 +1,4 @@
-{
-  lib,
-  stateVersion,
-  hostname,
-  config,
-  ...
-}:
+{config, ...}:
 # Allow yourself to SSH to the machines using your public key
 let
   # read the first file that exists
@@ -27,7 +21,7 @@ in {
     };
   };
   users.users.root.openssh.authorizedKeys.keys = [sshKey];
-  users.users."${hostname}".openssh.authorizedKeys.keys = [sshKey];
+  users.users.cardinal.openssh.authorizedKeys.keys = [sshKey];
 
   networking.firewall.allowedTCPPorts = config.services.openssh.ports;
   programs.ssh = {

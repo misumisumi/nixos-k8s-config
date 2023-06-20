@@ -26,6 +26,10 @@
     };
     resolved = {
       enable = true;
+      extraConfig = ''
+        [Resolve]
+        DNS=1.1.1.1 2606:4700:4700::1111
+      '';
       fallbackDns = [
         "1.1.1.1"
         "2606:4700:4700::1111"
