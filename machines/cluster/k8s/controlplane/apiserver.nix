@@ -1,6 +1,7 @@
 {
   lib,
   resourcesByRole,
+  workspace,
   ...
 }: let
   pwd = builtins.toPath (builtins.getEnv "PWD");
@@ -8,6 +9,11 @@
 
   mkSecret = filename: {
     keyFile = "${pwd}/.kube/kubernetes/apiserver" + "/${filename}";
+    destDir = "/var/lib/secrets/kubernetes/apiserver";
+    user = "kubernetes";
+  };
+  mkServerSecret = filename: {
+    keyFile = "${pwd}/.kube/kubernetes/apiserver" + "/${workspace}" + "/${filename}";
     destDir = "/var/lib/secrets/kubernetes/apiserver";
     user = "kubernetes";
   };
@@ -39,8 +45,8 @@
 in {
   # For colmena
   deployment.keys = {
-    "server.pem" = mkSecret "server.pem";
-    "server-key.pem" = mkSecret "server-key.pem";
+    "server.pem" = mkServerSecret "server.pem";
+    "server-key.pem" = mkServerSecret "server-key.pem";
 
     "kubelet-client.pem" = mkSecret "kubelet-client.pem";
     "kubelet-client-key.pem" = mkSecret "kubelet-client-key.pem";

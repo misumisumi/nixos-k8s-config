@@ -5,23 +5,25 @@
   kubectl,
 }: let
   inherit (pkgs.callPackage ../utils/resources.nix {}) resourcesByRole;
-  inherit (pkgs.callPackage ../utils/consts.nix {}) virtualIP;
   inherit (import ../utils/utils.nix) nodeIP;
   inherit (pkgs.callPackage ./utils/utils.nix {}) getAltNames mkCsr;
+
+  inherit (builtins.fromJSON (builtins.readFile ../config.json)) virtualIPs;
 
   caCsr = mkCsr "kubernetes-ca" {
     cn = "kubernetes-ca";
   };
 
-  apiServerCsr = mkCsr "kube-api-server" {
-    cn = "kubernetes";
-    altNames =
-      lib.singleton virtualIP
-      ++ lib.singleton "10.32.0.1" # clusterIP of controlplane
-      ++ getAltNames "controlplane" # Alternative names remain, as they might be useful for debugging purposes
-      ++ getAltNames "loadbalancer"
-      ++ ["kubernetes" "kubernetes.default" "kubernetes.default.svc" "kubernetes.default.svc.cluster" "kubernetes.svc.cluster.local"];
-  };
+  apiServerCsr = virtualIP:
+    mkCsr "kube-api-server" {
+      cn = "kubernetes";
+      altNames =
+        lib.singleton virtualIP
+        ++ lib.singleton "10.32.0.1" # clusterIP of controlplane
+        ++ getAltNames "controlplane" # Alternative names remain, as they might be useful for debugging purposes
+        ++ getAltNames "loadbalancer"
+        ++ ["kubernetes" "kubernetes.default" "kubernetes.default.svc" "kubernetes.default.svc.cluster" "kubernetes.svc.cluster.local"];
+    };
 
   apiServerKubeletClientCsr = mkCsr "kube-api-server-kubelet-client" {
     cn = "kube-api-server";
@@ -72,8 +74,22 @@
     (resourcesByRole role);
 
   kubeletScripts = role: map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") (kubeletCsrs role);
+
+  genCertScripts = lib.mapAttrsToList (workspace: ip: "genCert server apiserver/${workspace}/server ${apiServerCsr ip}") virtualIPs;
+  mkKubeConfig = {
+    workspace,
+    ip,
+  }: ''
+    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster ${workspace} \
+      --certificate-authority=./kubernetes/ca.pem \
+      --server=https://${ip}
+    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context ${workspace} \
+      --user admin \
+      --cluster ${workspace}
+  '';
+  multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig {inherit workspace ip;}) virtualIPs;
 in ''
-  mkdir -p $out/kubernetes/{apiserver,kubelet}
+  mkdir -p $out/kubernetes/{apiserver/{product,develop},kubelet}
 
   pushd $out/etcd > /dev/null
   genCert client ../kubernetes/apiserver/etcd-client ${etcdClientCsr}
@@ -82,7 +98,8 @@ in ''
   pushd $out/kubernetes > /dev/null
 
   genCa ${caCsr}
-  genCert server apiserver/server ${apiServerCsr}
+
+  ${builtins.concatStringsSep "\n" genCertScripts}
   genCert server apiserver/kubelet-client ${apiServerKubeletClientCsr}
   genCert client controller-manager ${cmCsr}
   genCert client proxy ${proxyCsr}
@@ -98,13 +115,8 @@ in ''
   ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \
       --client-certificate=./kubernetes/admin.pem \
       --client-key=./kubernetes/admin-key.pem
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster lxd \
-      --certificate-authority=./kubernetes/ca.pem \
-      --server=https://${virtualIP}
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context lxd \
-      --user admin \
-      --cluster lxd
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context lxd > /dev/null
+  ${builtins.concatStringsSep "\n" multiKubeConfig}
+  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context develop > /dev/null
 
   popd > /dev/null
 ''

@@ -10,5 +10,5 @@ in rec {
   resources = resourcesByType "lxd_container";
   resourcesByRole = role: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) resources);
   resourcesByRoles = roles: lib.flatten (lib.forEach roles (role: builtins.filter (r: lib.strings.hasPrefix role r.values.name) resources));
-  resourcesFromHosts = (builtins.fromJSON (builtins.readFile ../hosts.json)).hosts;
+  resourcesFromHosts = (builtins.fromJSON (builtins.readFile ../config.json)).hosts;
 }

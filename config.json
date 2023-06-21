@@ -1,4 +1,8 @@
 {
+  "virtualIPs": {
+    "develop": "10.150.10.50",
+    "product": "192.168.1.50"
+  },
   "hosts": [
     {
       "name": "alice",

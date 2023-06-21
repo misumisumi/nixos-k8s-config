@@ -8,7 +8,7 @@
     colmena exec --on @hosts --impure -- lxc config trust add --name colmena
 
     declare -A remotes=()
-    jq -c ".hosts[]" hosts.json | while read target
+    jq -c ".hosts[]" config.json | while read target
     do
       lxc remote add ''$(echo ''${target} | jq -r '.name') \
         `ssh -n root@''$(echo "''${target}" | jq -r '.ip_address') lxc config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token'`
@@ -18,7 +18,7 @@
     ALIAS_CONTAINER="nixos/lxc-container"
     ALIAS_VM="nixos/lxc-virtual-machine"
 
-    jq -r ".hosts[].name" hosts.json | while read target
+    jq -r ".hosts[].name" config.json | while read target
     do
         echo "Copy NixOS images to ''${target}"
         lxc image copy --mode=relay ''${ALIAS_CONTAINER} ''${target}: --alias ''${ALIAS_CONTAINER}

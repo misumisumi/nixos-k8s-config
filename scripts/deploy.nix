@@ -79,7 +79,7 @@ writeShellApplication {
     [[ "''${cmd}" != "nix" ]] && [[ "''${cmd}" != "ter" ]] && die "Can use only 'plan' or 'apply'"
     [[ "''${target}" == "" ]] && die "Need workspace name"
     # colmena tag
-    [[ "''${cmd}" == "nix" ]] && [[ "''${target}" != "hosts" ]] && [[ "''${target}" != "k8s" ]] && check_in_host hosts.json "''${target}" && die "Can use tag 'hosts' or 'k8s'"
+    [[ "''${cmd}" == "nix" ]] && [[ "''${target}" != "hosts" ]] && [[ "''${target}" != "k8s" ]] && check_in_host config.json "''${target}" && die "Can use tag 'hosts' or 'k8s'"
     # terraform workspace
     [[ "''${cmd}" == "ter" ]] && [[ "''${target}" != "develop" ]] && [[ "''${target}" != "product" ]] && die "Can use workspace 'develop' or 'product'"
 
