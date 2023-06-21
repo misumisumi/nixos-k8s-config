@@ -30,5 +30,6 @@ in {
       keyFile = "/var/lib/secrets/kubernetes/controller-manager-key.pem";
       server = "https://${virtualIP}";
     };
+    rootCaFile = "/var/lib/secrets/kubernetes/ca.pem";
   };
 }
