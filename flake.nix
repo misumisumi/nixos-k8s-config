@@ -101,7 +101,7 @@
           check_k8s
           copy_img2lxd
           deploy
-          h-dev
+          he
           init_lxd
           add_remote_lxd
           k

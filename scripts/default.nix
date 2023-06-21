@@ -28,7 +28,7 @@ in
     k = writeShellScriptBin "k" ''
       ${kubectl}/bin/kubectl --kubeconfig .kube/admin.kubeconfig $@
     '';
-    h-dev = writeShellScriptBin "h-dev" ''
+    he = writeShellScriptBin "he" ''
       ${kubernetes-helm}/bin/helm --kubeconfig .kube/admin.kubeconfig $@
     '';
     mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
