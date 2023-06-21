@@ -4,12 +4,12 @@ in {
   # For colmena
   deployment.keys = {
     "scheduler.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/scheduler.pem";
+      keyFile = "${pwd}/.kube/kubernetes/scheduler.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
     "scheduler-key.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/scheduler-key.pem";
+      keyFile = "${pwd}/.kube/kubernetes/scheduler-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

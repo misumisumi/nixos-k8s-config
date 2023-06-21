@@ -9,13 +9,13 @@ in {
 
   deployment.keys = {
     "proxy.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/proxy.pem";
+      keyFile = "${pwd}/.kube/kubernetes/proxy.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "proxy-key.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/proxy-key.pem";
+      keyFile = "${pwd}/.kube/kubernetes/proxy-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

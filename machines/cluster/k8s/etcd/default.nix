@@ -12,7 +12,7 @@
   nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
 
   mkSecret = filename: {
-    keyFile = "${pwd}/certs/generated/etcd" + "/${filename}";
+    keyFile = "${pwd}/.kube/etcd" + "/${filename}";
     destDir = "/var/lib/secrets/etcd";
     user = "etcd";
   };

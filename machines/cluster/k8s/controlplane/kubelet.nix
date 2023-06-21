@@ -11,20 +11,20 @@ in {
 
   deployment.keys = {
     "ca.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/ca.pem";
+      keyFile = "${pwd}/.kube/kubernetes/ca.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
       permissions = "0644";
     };
 
     "kubelet.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/kubelet" + "/${name}.pem";
+      keyFile = "${pwd}/.kube/kubernetes/kubelet" + "/${name}.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "kubelet-key.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/kubelet" + "/${name}-key.pem";
+      keyFile = "${pwd}/.kube/kubernetes/kubelet" + "/${name}-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

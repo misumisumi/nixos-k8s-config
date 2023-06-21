@@ -41,7 +41,7 @@ in
       }
 
 
-      out=./certs/generated
+      out=./.kube/
 
       ${callPackage ./etcd.nix {}}
       ${callPackage ./kubernetes.nix {}}

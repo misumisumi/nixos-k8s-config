@@ -10,7 +10,7 @@ in {
 
   # For colmena
   deployment.keys."ca.pem" = {
-    keyFile = "${pwd}/certs/generated/kubernetes/ca.pem";
+    keyFile = "${pwd}/.kube/kubernetes/ca.pem";
     destDir = "/var/lib/secrets/kubernetes";
     user = "kubernetes";
   };

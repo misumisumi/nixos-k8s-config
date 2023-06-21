@@ -8,15 +8,15 @@
 in {
   deployment.keys = {
     "etcd-ca.pem" = {
-      keyFile = "${pwd}/certs/generated/etcd/ca.pem";
+      keyFile = "${pwd}/.kube/etcd/ca.pem";
       destDir = "/var/lib/secrets/flannel";
     };
     "etcd-client.pem" = {
-      keyFile = "${pwd}/certs/generated/flannel/etcd-client.pem";
+      keyFile = "${pwd}/.kube/flannel/etcd-client.pem";
       destDir = "/var/lib/secrets/flannel";
     };
     "etcd-client-key.pem" = {
-      keyFile = "${pwd}/certs/generated/flannel/etcd-client-key.pem";
+      keyFile = "${pwd}/.kube/flannel/etcd-client-key.pem";
       destDir = "/var/lib/secrets/flannel";
     };
   };

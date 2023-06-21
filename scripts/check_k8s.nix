@@ -7,9 +7,9 @@ writeShellApplication {
     etcd1_ip=$(jq -r '.values.root_module.child_modules[] | .resources[] | select(.values.id == "etcd1").values.ip_address' show.json)
 
     etcdctl --endpoints "https://''${etcd1_ip}:2379" \
-      --cacert=./certs/generated/etcd/ca.pem \
-      --cert=./certs/generated/etcd/peer.pem \
-      --key=./certs/generated/etcd/peer-key.pem \
+      --cacert=./.kube/etcd/ca.pem \
+      --cert=./.kube/etcd/peer.pem \
+      --key=./.kube/etcd/peer-key.pem \
       -w table endpoint status
 
     k --request-timeout 1 cluster-info

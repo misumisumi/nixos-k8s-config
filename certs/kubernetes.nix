@@ -92,11 +92,14 @@ in ''
   ${builtins.concatStringsSep "\n" (kubeletScripts "worker")}
   ${builtins.concatStringsSep "\n" (kubeletScripts "controlplane")}
 
+  popd > /dev/null
+  pushd $out > /dev/null
+
   ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \
-      --client-certificate=admin.pem \
-      --client-key=admin-key.pem
+      --client-certificate=./kubernetes/admin.pem \
+      --client-key=./kubernetes/admin-key.pem
   ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster lxd \
-      --certificate-authority=ca.pem \
+      --certificate-authority=./kubernetes/ca.pem \
       --server=https://${virtualIP}
   ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context lxd \
       --user admin \

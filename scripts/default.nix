@@ -26,10 +26,10 @@ in
         ${terraform}/bin/terraform show -json | ${jq}/bin/jq > show.json
     '';
     k = writeShellScriptBin "k" ''
-      ${kubectl}/bin/kubectl --kubeconfig certs/generated/kubernetes/admin.kubeconfig $@
+      ${kubectl}/bin/kubectl --kubeconfig .kube/admin.kubeconfig $@
     '';
     h-dev = writeShellScriptBin "h-dev" ''
-      ${kubernetes-helm}/bin/helm --kubeconfig certs/generated/kubernetes/admin.kubeconfig $@
+      ${kubernetes-helm}/bin/helm --kubeconfig .kube/admin.kubeconfig $@
     '';
     mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
       nix run ".#import/lxc-container" --impure

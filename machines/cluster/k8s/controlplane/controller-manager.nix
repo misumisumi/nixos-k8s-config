@@ -8,12 +8,12 @@ in {
   # For colmena
   deployment.keys = {
     "controller-manager.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/controller-manager.pem";
+      keyFile = "${pwd}/.kube/kubernetes/controller-manager.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
     "controller-manager-key.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/controller-manager-key.pem";
+      keyFile = "${pwd}/.kube/kubernetes/controller-manager-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

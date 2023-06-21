@@ -9,17 +9,17 @@ in {
   # For colmena
   deployment.keys = {
     "coredns-kube.pem" = {
-      keyFile = "${pwd}/certs/generated/coredns/coredns-kube.pem";
+      keyFile = "${pwd}/.kube/coredns/coredns-kube.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
     "coredns-kube-key.pem" = {
-      keyFile = "${pwd}/certs/generated/coredns/coredns-kube-key.pem";
+      keyFile = "${pwd}/.kube/coredns/coredns-kube-key.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
     "kube-ca.pem" = {
-      keyFile = "${pwd}/certs/generated/kubernetes/ca.pem";
+      keyFile = "${pwd}/.kube/kubernetes/ca.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };

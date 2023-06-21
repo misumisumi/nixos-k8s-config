@@ -2,7 +2,7 @@
 .terraform*
 terraform.tfstate
 terraform.tfstate.backup
-certs/generated
+.kube
 show.*
 terraform.json
 ssh_config

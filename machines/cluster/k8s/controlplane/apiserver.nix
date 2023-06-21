@@ -7,7 +7,7 @@
   etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd");
 
   mkSecret = filename: {
-    keyFile = "${pwd}/certs/generated/kubernetes/apiserver" + "/${filename}";
+    keyFile = "${pwd}/.kube/kubernetes/apiserver" + "/${filename}";
     destDir = "/var/lib/secrets/kubernetes/apiserver";
     user = "kubernetes";
   };
@@ -46,7 +46,7 @@ in {
     "kubelet-client-key.pem" = mkSecret "kubelet-client-key.pem";
 
     "api-etcd-ca.pem" = {
-      keyFile = "${pwd}/certs/generated/etcd/ca.pem";
+      keyFile = "${pwd}/.kube/etcd/ca.pem";
       destDir = "/var/lib/secrets/kubernetes/apiserver";
       user = "kubernetes";
     };
