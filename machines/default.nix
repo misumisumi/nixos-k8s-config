@@ -52,7 +52,8 @@ in {
       system = "x86_64-linux";
       specialArgs = {inherit stateVersion inputs;};
       modules = [
-        ./cluster/init
+        ./cluster/init/ssh.nix
+        ./cluster/init/system.nix
         inputs.lxd-nixos.nixosModules.container
       ];
     };
@@ -61,7 +62,8 @@ in {
       system = "x86_64-linux";
       specialArgs = {inherit stateVersion inputs;};
       modules = [
-        ./cluster/init
+        ./cluster/init/ssh.nix
+        ./cluster/init/system.nix
         inputs.lxd-nixos.nixosModules.virtual-machine
       ];
     };

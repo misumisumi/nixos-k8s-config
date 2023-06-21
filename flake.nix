@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
-    flake-utils.url = "github:numtide/flake-utils";
     flake-parts.url = "github:hercules-ci/flake-parts";
     lxd-nixos = {
       url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
@@ -29,7 +28,6 @@
 
   outputs = inputs @ {
     self,
-    flake-utils,
     flake-parts,
     nixpkgs,
     nixpkgs-stable,
@@ -76,6 +74,7 @@
         pkgs,
         ...
       }: let
+        inherit (import ./lib.nix) mkApp;
         mkcerts = pkgs.callPackage (import ./certs) {};
         myTerraform = pkgs.terraform.withPlugins (tp: [tp.lxd tp.time]);
         myScripts = pkgs.callPackage (import ./scripts) {};
@@ -123,10 +122,11 @@
           config.allowUnfree = true;
         };
         apps = with myScripts; {
-          mkcerts = flake-utils.lib.mkApp {drv = mkcerts;};
-          ter = flake-utils.lib.mkApp {drv = ter;};
-          k = flake-utils.lib.mkApp {drv = k;};
-          mkimg4lxc = flake-utils.lib.mkApp {drv = mkimg4lxc;};
+          mkcerts = mkApp {drv = mkcerts;};
+          ter = mkApp {drv = ter;};
+          k = mkApp {drv = k;};
+          mkimg4lxc = mkApp {drv = mkimg4lxc;};
+          deploy = mkApp {drv = deploy;};
         };
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = _pkgs;
