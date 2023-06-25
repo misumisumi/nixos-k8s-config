@@ -2,15 +2,10 @@
   description = "Each my machine NixOS System Flake Configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/13ab0007cacee0001fd05aa946e7ab77d9c88e2e";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    lxd-nixos = {
-      url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
-      inputs.nixpkgs-2211.follows = "nixpkgs-stable";
-      inputs.nixpkgs-unstable.follows = "nixpkgs";
-    };
+    lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
