@@ -80,12 +80,10 @@ writeShellApplication {
     [[ "''${target}" == "" ]] && die "Need workspace name"
     # colmena tag
     [[ "''${cmd}" == "nix" ]] && [[ "''${target}" != "hosts" ]] && [[ "''${target}" != "k8s" ]] && check_in_host config.json "''${target}" && die "Can use tag 'hosts' or 'k8s'"
-    # terraform workspace
-    [[ "''${cmd}" == "ter" ]] && [[ "''${target}" != "develop" ]] && [[ "''${target}" != "product" ]] && die "Can use workspace 'develop' or 'product'"
 
     # script logic here
     if [ "''${cmd}" = "ter" ]; then
-      terraform workspace select "''${target}"
+      terraform workspace select "''${target}" || echo "''${taget} is not listed in the workspace." && exit 1
       terraform "''${subcmd}" -var-file="''${target}".tfvars "''${@:count:(''$#-2)}"
       terraform show -json | jq >show.json
       terraform graph | dot -Tpng >show.png

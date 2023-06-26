@@ -8,7 +8,7 @@
   inherit (import ../utils/utils.nix) nodeIP;
   inherit (pkgs.callPackage ./utils/utils.nix {}) getAltNames mkCsr;
 
-  inherit (builtins.fromJSON (builtins.readFile ../config.json)) virtualIPs;
+  inherit (builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/config.json")) virtualIPs;
 
   caCsr = mkCsr "kubernetes-ca" {
     cn = "kubernetes-ca";
@@ -89,7 +89,8 @@
   '';
   multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig {inherit workspace ip;}) virtualIPs;
 in ''
-  mkdir -p $out/kubernetes/{apiserver/{product,develop},kubelet}
+  mkdir -p $out/kubernetes/kubelet
+  ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (ws: ip: "mkdir -p $out/kubernetes/apiserver/${ws}") virtualIPs)}
 
   pushd $out/etcd > /dev/null
   genCert client ../kubernetes/apiserver/etcd-client ${etcdClientCsr}
@@ -116,7 +117,7 @@ in ''
       --client-certificate=./kubernetes/admin.pem \
       --client-key=./kubernetes/admin-key.pem
   ${builtins.concatStringsSep "\n" multiKubeConfig}
-  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context develop > /dev/null
+  ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context development > /dev/null
 
   popd > /dev/null
 ''
