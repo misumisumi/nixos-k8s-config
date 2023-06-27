@@ -1,7 +1,7 @@
 {
   "virtualIPs": {
-    "development": "10.150.10.50",
-    "production": "192.168.1.50"
+    "development": "10.150.10.100",
+    "production": "192.168.1.100"
   },
   "hosts": [
     {
