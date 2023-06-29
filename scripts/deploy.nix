@@ -83,7 +83,7 @@ writeShellApplication {
 
     # script logic here
     if [ "''${cmd}" = "ter" ]; then
-      terraform workspace select "''${target}" || echo "''${taget} is not listed in the workspace." && exit 1
+      terraform workspace select "''${target}" || echo "''${target} is not listed in the workspace."
       terraform "''${subcmd}" -var-file="''${target}".tfvars "''${@:count:(''$#-2)}"
       terraform show -json | jq >show.json
       terraform graph | dot -Tpng >show.png
