@@ -31,6 +31,7 @@ in {
       user = "kubernetes";
     };
   };
+  boot.kernelModules = ["rbd"];
 
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
   networking.firewall.allowedTCPPorts = [
