@@ -2,7 +2,7 @@
   description = "Each my machine NixOS System Flake Configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/13ab0007cacee0001fd05aa946e7ab77d9c88e2e";
+    nixpkgs.url = "github:nixos/nixpkgs";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
