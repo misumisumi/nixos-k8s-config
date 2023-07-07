@@ -64,6 +64,7 @@ in {
 
   services.kubernetes.apiserver = {
     enable = true;
+    allowPrivileged = true;
     serviceClusterIpRange = "10.32.0.0/24";
     extraOpts = lib.strings.concatStringsSep " " [
       "--feature-gates=KubeletInUserNamespace=true"
