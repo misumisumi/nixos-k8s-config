@@ -22,13 +22,12 @@ in {
   };
 
   # https://github.com/NixOS/nixpkgs/blob/145084f62b6341fc4300ba3f8eb244d594168e9d/nixos/modules/services/cluster/kubernetes/flannel.nix#L41-L47
-  networking = {
-    dhcpcd.denyInterfaces = ["mynet*" "flannel*"];
-    firewall.allowedUDPPorts = [
-      8285 # flannel udp
-      8472 # flannel vxlan
-    ];
-  };
+  networking.dhcpcd.denyInterfaces = ["flannel*"];
+  networking.firewall.allowedUDPPorts = [
+    8285 # flannel udp
+    8472 # flannel vxlan
+  ];
+  networking.firewall.trustedInterfaces = ["flannel*"];
 
   services.flannel = {
     enable = true;

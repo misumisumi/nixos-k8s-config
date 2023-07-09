@@ -44,6 +44,7 @@ in {
 
   services.kubernetes.kubelet.clusterDns = nodeIP self;
 
+  networking.dhcpcd.denyInterfaces = ["mynet*"];
   networking.firewall.interfaces.mynet.allowedTCPPorts = [53];
   networking.firewall.interfaces.mynet.allowedUDPPorts = [53];
 

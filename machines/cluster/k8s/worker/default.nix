@@ -31,11 +31,14 @@ in {
       user = "kubernetes";
     };
   };
-  boot.kernelModules = ["rbd"];
+  boot.kernelModules = ["ceph"];
 
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
   networking.firewall.allowedTCPPorts = [
     config.services.kubernetes.kubelet.port
+    7946 # metallb
+    6789 # rook/ceph
+    3300 # rook/ceph
   ];
 
   services.kubernetes.clusterCidr = "10.200.0.0/16";
@@ -43,6 +46,7 @@ in {
   services.kubernetes.kubelet = rec {
     enable = true;
     extraOpts = lib.strings.concatStringsSep " " [
+      "--root-dir=/var/lib/kubelet"
       "--fail-swap-on=false"
       "--feature-gates=KubeletInUserNamespace=true"
     ];
