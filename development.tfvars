@@ -1,4 +1,4 @@
-etcd_instances = [
+gctcd_instances = [
   {
     name       = "etcd1"
     ip_address = "10.150.10.10"
@@ -147,10 +147,10 @@ optional_instances = [{
 pools = [
   {
     name = "ceph"
-    size = "16GiB"
+    size = "21GB"
   },
   {
     name = "nfs"
-    size = "8GiB"
+    size = "4GiB"
   }
 ]
