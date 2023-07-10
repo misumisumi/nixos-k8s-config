@@ -1,4 +1,4 @@
-gctcd_instances = [
+etcd_instances = [
   {
     name       = "etcd1"
     ip_address = "10.150.10.10"
