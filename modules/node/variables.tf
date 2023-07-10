@@ -27,6 +27,7 @@ variable "node_rd" {
     cpu        = string
     memory     = string
     nic_parent = string
+    root_size  = optional(string, null)
   })
   description = "System requirement Definition for node to spawn"
 }

@@ -34,13 +34,13 @@ resource "lxd_profile" "profile" {
 
   config = {
     # "security.privileged" = true
-    "security.nesting" = true
-    "security.syscalls.intercept.mount.allowed"="ext4"
-    "security.syscalls.intercept.mount"=true
-    "boot.autostart"   = true
-    "limits.cpu"       = tonumber(var.node_rd.cpu)
-    "limits.memory"    = var.node_rd.memory
-    "raw.lxc"          = <<EOT
+    "security.nesting"                          = true
+    "security.syscalls.intercept.mount.allowed" = "ext4"
+    "security.syscalls.intercept.mount"         = true
+    "boot.autostart"                            = true
+    "limits.cpu"                                = tonumber(var.node_rd.cpu)
+    "limits.memory"                             = var.node_rd.memory
+    "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
         lxc.cgroup.devices.allow = a
@@ -54,6 +54,7 @@ resource "lxd_profile" "profile" {
     properties = {
       pool = "default"
       path = "/"
+      size = var.node_rd.root_size
     }
   }
   device {

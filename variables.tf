@@ -67,6 +67,7 @@ variable "worker_RD" {
     cpu        = optional(string, "2")
     memory     = optional(string, "1GiB")
     nic_parent = optional(string, "k8sbr0")
+    root_size  = optional(string, "10GB")
   })
   description = "Requirement Definition for worker hosts to spawn"
 }
@@ -109,6 +110,7 @@ variable "optional_instances" {
         cpu        = optional(string, "2")
         memory     = optional(string, "1GiB")
         nic_parent = optional(string, "k8sbr0")
+        root_size  = optional(string, null)
       })
     })
   )

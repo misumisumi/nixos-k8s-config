@@ -88,6 +88,7 @@ worker_instances = [
 worker_RD = {
   cpu    = "2"
   memory = "2GiB"
+  root_size = "16GiB"
 }
 load_balancer_instances = [
   { name       = "loadbalancer1"
@@ -147,7 +148,7 @@ optional_instances = [{
 pools = [
   {
     name = "ceph"
-    size = "21GB"
+    size = "8GiB"
   },
   {
     name = "nfs"
