@@ -1,6 +1,6 @@
 # rootless環境でのkubernetesの実行
 # 参照: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns/#caveats
-{
+{lib, ...}: {
   virtualisation.containerd = {
     settings = {
       version = 2;
@@ -17,4 +17,6 @@
       };
     };
   };
+  # https://github.com/rook/rook/issues/10110#issuecomment-1464898937
+  systemd.services.containerd.serviceConfig.LimitNOFILE = lib.mkForce "1048576";
 }
