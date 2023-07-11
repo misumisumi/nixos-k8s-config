@@ -86,10 +86,11 @@ worker_instances = [
   },
 ]
 worker_RD = {
-  cpu    = "2"
-  memory = "2GiB"
+  cpu       = "6"
+  memory    = "16GiB"
   root_size = "16GiB"
 }
+
 load_balancer_instances = [
   { name       = "loadbalancer1"
     ip_address = "10.150.10.40"
@@ -148,7 +149,7 @@ optional_instances = [{
 pools = [
   {
     name = "ceph"
-    size = "8GiB"
+    size = "9GiB"
   },
   {
     name = "nfs"
