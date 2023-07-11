@@ -15,18 +15,6 @@ in {
     user = "kubernetes";
   };
 
-  boot.kernelModules = ["ceph"];
-  networking.firewall.allowedTCPPorts = [
-    6789 # rook/ceph
-    3300 # rook/ceph
-  ];
-  networking.firewall.allowedTCPPortRanges = [
-    {
-      from = 6800;
-      to = 7300;
-    }
-  ];
-
   services.kubernetes.clusterCidr = "10.200.0.0/16";
 
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
