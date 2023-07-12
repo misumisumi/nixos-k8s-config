@@ -1,6 +1,6 @@
 {writeShellApplication}:
 writeShellApplication {
-  name = "deploy";
+  name = "ter";
   text = ''
     usage() {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
@@ -54,14 +54,10 @@ writeShellApplication {
         case "''${1-}" in
         -h | --help) usage ;;
         -v | --verbose) set -x ;;
-        -- )
-          break
-        ;;
-        -?*) die "Unknown option: ''$1" ;;
+        -?*) break ;;
         *) cmd=''${1-}
           shift
           workspace=''${1-}
-          count="''$((count + 1))"
         ;;
         esac
         shift
@@ -77,11 +73,10 @@ writeShellApplication {
     [[ "''${workspace}" == "" ]] && die "Need workspace name"
 
     # script logic here
-    echo "''${@:count:(''$#-2)}"
-    # terraform workspace select "''${workspace}" || echo "''${workspace} is not listed in the workspace."
-    # terraform "''${subcmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-2)}"
-    # terraform show -json | jq >show.json
-    # terraform graph | dot -Tpng >show.png
-    # hcl2json "''${target}".tfvars > terraform.json
+    terraform workspace select "''${workspace}" || echo "''${workspace} is not listed in the workspace."
+    terraform "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-2)}"
+    terraform show -json | jq >show.json
+    terraform graph | dot -Tpng >show.png
+    hcl2json "''${workspace}".tfvars > terraform.json
   '';
 }

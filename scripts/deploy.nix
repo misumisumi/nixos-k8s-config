@@ -6,12 +6,13 @@ writeShellApplication {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
-      ) <ter|nix> <cmd> <target> [-h] [-v]
+      ) <cmd> <tag> -w <workspace> [-h] [-v] -- <colmena option>
 
-      Deployment of terraform with workspace-specific variables
+      Deployment NixOS by colmena with workspace-specific variables
 
     Available options:
 
+    -w, --workspace Workspace name (default: check 'terraform workspace list')
     -h, --help      Print this help and exit
     -v, --verbose   Print script debug info
     EOF
@@ -49,21 +50,23 @@ writeShellApplication {
     parse_params() {
       # default values of variables set from params
       count=0
+      workspace=""
       while (( $# > 0 )) do
         count=''$((count + 1))
         case "''${1-}" in
         -h | --help) usage ;;
         -v | --verbose) set -x ;;
+        -w | --workspace) shift
+          workspace=''${1-}
+          count="''$((count + 2))"
+        ;;
         -- )
           break
         ;;
-        -?*) die "Unknown option: ''$1" ;;
+        -?*) break;;
         *) cmd=''${1-}
           shift
-          subcmd=''${1-}
-          shift
-          target=''${1-}
-          count="''$((count + 2))"
+          tag=''${1-}
         ;;
         esac
         shift
@@ -76,23 +79,11 @@ writeShellApplication {
     parse_params "''$@"
 
     # check required params and arguments
-    [[ "''${cmd}" != "nix" ]] && [[ "''${cmd}" != "ter" ]] && die "Can use only 'plan' or 'apply'"
-    [[ "''${target}" == "" ]] && die "Need workspace name"
-    # colmena tag
-    [[ "''${cmd}" == "nix" ]] && [[ "''${target}" != "hosts" ]] && [[ "''${target}" != "k8s" ]] && check_in_host config.json "''${target}" && die "Can use tag 'hosts' or 'k8s'"
-
-    # script logic here
-    if [ "''${cmd}" = "ter" ]; then
-      terraform workspace select "''${target}" || echo "''${target} is not listed in the workspace."
-      terraform "''${subcmd}" -var-file="''${target}".tfvars "''${@:count:(''$#-2)}"
-      terraform show -json | jq >show.json
-      terraform graph | dot -Tpng >show.png
-      hcl2json "''${target}".tfvars > terraform.json
+    if [ "''${workspace}" = "" ]; then
+      die "You must select workspace using -w option."
+    else
+      terraform workspace select "''${workspace}" || die "''${workspace}' is not listed in the workspace."
     fi
-
-    if [ "''${cmd}" = "nix" ]; then
-      echo "colmena ''${subcmd} --on @''${target} ''${*:count:(''$#-2)}"
-      colmena "''${subcmd}" --on @"''${target}" --impure "''${@:count:(''$#-2)}"
-    fi
+    colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}"
   '';
 }
