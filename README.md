@@ -80,6 +80,7 @@ If not, create one using `ed25519` or `rsa`.
 
 - Enable `lxc` and `lxd`
 - Enable `flakes`
+- Enable nested virtualisation
 - lxd package of [nixpkgs]() cannot be used by VM, so external package ([lxd-nixos](https://codeberg.org/adamcstephens/lxd-nixos)) must be used
 - (optional): Install [direnv](https://github.com/direnv/direnv)
 
@@ -91,6 +92,7 @@ If not, create one using `ed25519` or `rsa`.
 ---
 {inputs, ...}:
 {
+  boot.kernelModules = ["kvm_intel nested=1" "kvm_amd nested=1"]; # Either intel or amd
   virtualisation = {
     lxc.enable = true;
     lxd = {
