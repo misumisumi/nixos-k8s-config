@@ -86,8 +86,8 @@ worker_instances = [
   },
 ]
 worker_RD = {
-  cpu       = "6"
-  memory    = "16GiB"
+  cpu       = "4"
+  memory    = "8GiB"
   root_size = "16GiB"
 }
 
