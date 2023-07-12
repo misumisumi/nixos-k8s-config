@@ -1,13 +1,13 @@
 # What is this ?
 
 This project to create a High-Available kubernetes on-premise cluster with Infurastracture as Code (IaC) in your home.  
-Reproducibility, portability, and recoverability are important.
+Emphasis is placed on reproducibility, portability, and recoverability.
 
 ## Motivation
 
-Inspired by [nixos-ha-cluster](https://github.com/justinas/nixos-ha-kubernetes), we began to build.
+Inspired by [nixos-ha-cluster](https://github.com/justinas/nixos-ha-kubernetes), I began to build.
 NixOS enables declarative node management and HA k8s cluster building.  
-The differences between his project and the others are as follows
+The differences between his project and this.
 
 - Response to [Flakes](https://nixos.wiki/wiki/Flakes)
 - Light weight nodes by LXC/LXD
@@ -28,7 +28,7 @@ The differences between his project and the others are as follows
 - [Terraform](https://www.terraform.io/): Management of container and virtual machine for node of k8s
 - [LXC](https://linuxcontainers.org)/[LXD](https://ubuntu.com/lxd): As Nodes for k8s cluster
 
-## External repository
+## Relationship
 
 - [ansible-k8s-config](): Ansible-playbooks for apps on k8s
 
