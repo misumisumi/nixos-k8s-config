@@ -40,6 +40,7 @@ in {
     7946 # metallb
     6789 # rook/ceph
     3300 # rook/ceph
+    8443 # rook/ceph
   ];
   networking.firewall.allowedTCPPortRanges = [
     {
