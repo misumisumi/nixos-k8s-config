@@ -1,10 +1,11 @@
-{
-  name,
-  self,
-  ...
-}: let
+{ name
+, self
+, ...
+}:
+let
   inherit (import ../../../utils/utils.nix) nodeIP;
-in {
+in
+{
   imports = [
     ./autoresources.nix
     ./ssh.nix

@@ -1,4 +1,4 @@
-{hostname, ...}: {
+{ hostname, ... }: {
   systemd = {
     network = {
       enable = true;
@@ -16,7 +16,7 @@
       trustedInterfaces = [
         "br0"
       ];
-      allowedTCPPorts = [];
+      allowedTCPPorts = [ ];
     };
   };
 

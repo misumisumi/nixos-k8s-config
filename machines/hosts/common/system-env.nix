@@ -1,5 +1,5 @@
 # For
-{pkgs, ...}: {
+{ pkgs, ... }: {
   time.timeZone = "Asia/Tokyo"; # Time zone and internationalisation
   i18n = {
     defaultLocale = "en_US.UTF-8";
@@ -23,10 +23,10 @@
     enableDefaultFonts = true;
     fontconfig = {
       defaultFonts = {
-        serif = ["Source Han Serif"];
-        sansSerif = ["Source Han Sans"];
-        monospace = ["Source Han Mono"];
-        emoji = ["Noto Color Emoji"];
+        serif = [ "Source Han Serif" ];
+        sansSerif = [ "Source Han Sans" ];
+        monospace = [ "Source Han Mono" ];
+        emoji = [ "Noto Color Emoji" ];
       };
     };
     fonts = with pkgs; [

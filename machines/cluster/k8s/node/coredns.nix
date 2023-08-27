@@ -1,11 +1,12 @@
-{
-  self,
-  virtualIP,
-  nodeIP,
-  ...
-}: let
+{ self
+, virtualIP
+, nodeIP
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-in {
+in
+{
   # For colmena
   deployment.keys = {
     "coredns-kube.pem" = {
@@ -44,11 +45,11 @@ in {
 
   services.kubernetes.kubelet.clusterDns = nodeIP self;
 
-  networking.dhcpcd.denyInterfaces = ["mynet*"];
-  networking.firewall.interfaces.mynet.allowedTCPPorts = [53];
-  networking.firewall.interfaces.mynet.allowedUDPPorts = [53];
+  networking.dhcpcd.denyInterfaces = [ "mynet*" ];
+  networking.firewall.interfaces.mynet.allowedTCPPorts = [ 53 ];
+  networking.firewall.interfaces.mynet.allowedUDPPorts = [ 53 ];
 
-  users.groups.coredns = {};
+  users.groups.coredns = { };
   users.users.coredns = {
     group = "coredns";
     isSystemUser = true;

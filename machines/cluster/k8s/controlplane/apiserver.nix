@@ -1,9 +1,9 @@
-{
-  lib,
-  resourcesByRole,
-  workspace,
-  ...
-}: let
+{ lib
+, resourcesByRole
+, workspace
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
   etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd");
 
@@ -20,29 +20,30 @@
 
   corednsPolicies =
     map
-    (r: {
-      apiVersion = "abac.authorization.kubernetes.io/v1beta1";
-      kind = "Policy";
-      spec = {
-        user = "system:coredns";
-        namespace = "*";
-        resource = r;
-        readonly = true;
-      };
-    }) ["endpoints" "services" "pods" "namespaces"]
+      (r: {
+        apiVersion = "abac.authorization.kubernetes.io/v1beta1";
+        kind = "Policy";
+        spec = {
+          user = "system:coredns";
+          namespace = "*";
+          resource = r;
+          readonly = true;
+        };
+      }) [ "endpoints" "services" "pods" "namespaces" ]
     ++ lib.singleton
-    {
-      apiVersion = "abac.authorization.kubernetes.io/v1beta1";
-      kind = "Policy";
-      spec = {
-        user = "system:coredns";
-        namespace = "*";
-        resource = "endpointslices";
-        apiGroup = "discovery.k8s.io";
-        readonly = true;
+      {
+        apiVersion = "abac.authorization.kubernetes.io/v1beta1";
+        kind = "Policy";
+        spec = {
+          user = "system:coredns";
+          namespace = "*";
+          resource = "endpointslices";
+          apiGroup = "discovery.k8s.io";
+          readonly = true;
+        };
       };
-    };
-in {
+in
+{
   # For colmena
   deployment.keys = {
     "server.pem" = mkServerSecret "server.pem";
@@ -60,7 +61,7 @@ in {
     "api-etcd-client-key.pem" = mkSecret "etcd-client-key.pem";
   };
 
-  networking.firewall.allowedTCPPorts = [6443];
+  networking.firewall.allowedTCPPorts = [ 6443 ];
 
   services.kubernetes.apiserver = {
     enable = true;
@@ -72,7 +73,7 @@ in {
 
     # Using ABAC for CoreDNS running outside of k8s
     # is more simple in this case than using kube-addon-manager
-    authorizationMode = ["RBAC" "Node" "ABAC"];
+    authorizationMode = [ "RBAC" "Node" "ABAC" ];
     authorizationPolicy = corednsPolicies;
 
     etcd = {

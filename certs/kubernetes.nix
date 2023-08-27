@@ -1,12 +1,13 @@
-{
-  lib,
-  pkgs,
-  cfssl,
-  kubectl,
-}: let
-  inherit (pkgs.callPackage ../utils/resources.nix {}) resourcesByRole;
+{ lib
+, pkgs
+, cfssl
+, kubectl
+,
+}:
+let
+  inherit (pkgs.callPackage ../utils/resources.nix { }) resourcesByRole;
   inherit (import ../utils/utils.nix) nodeIP;
-  inherit (pkgs.callPackage ./utils/utils.nix {}) getAltNames mkCsr;
+  inherit (pkgs.callPackage ./utils/utils.nix { }) getAltNames mkCsr;
 
   inherit (builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/config.json")) virtualIPs;
 
@@ -22,7 +23,7 @@
         ++ lib.singleton "10.32.0.1" # clusterIP of controlplane
         ++ getAltNames "controlplane" # Alternative names remain, as they might be useful for debugging purposes
         ++ getAltNames "loadbalancer"
-        ++ ["kubernetes" "kubernetes.default" "kubernetes.default.svc" "kubernetes.default.svc.cluster" "kubernetes.svc.cluster.local"];
+        ++ [ "kubernetes" "kubernetes.default" "kubernetes.default.svc" "kubernetes.default.svc.cluster" "kubernetes.svc.cluster.local" ];
     };
 
   apiServerKubeletClientCsr = mkCsr "kube-api-server-kubelet-client" {
@@ -62,33 +63,35 @@
 
   kubeletCsrs = role:
     map
-    (r: {
-      name = r.values.name;
-      csr = mkCsr r.values.name {
-        cn = "system:node:${r.values.name}";
-        organization = "system:nodes";
-        # TODO: unify with getAltNames?
-        altNames = [r.values.name (nodeIP r)];
-      };
-    })
-    (resourcesByRole role);
+      (r: {
+        name = r.values.name;
+        csr = mkCsr r.values.name {
+          cn = "system:node:${r.values.name}";
+          organization = "system:nodes";
+          # TODO: unify with getAltNames?
+          altNames = [ r.values.name (nodeIP r) ];
+        };
+      })
+      (resourcesByRole role);
 
   kubeletScripts = role: map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") (kubeletCsrs role);
 
   genCertScripts = lib.mapAttrsToList (workspace: ip: "genCert server apiserver/${workspace}/server ${apiServerCsr ip}") virtualIPs;
-  mkKubeConfig = {
-    workspace,
-    ip,
-  }: ''
-    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster ${workspace} \
-      --certificate-authority=./kubernetes/ca.pem \
-      --server=https://${ip}
-    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context ${workspace} \
-      --user admin \
-      --cluster ${workspace}
-  '';
-  multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig {inherit workspace ip;}) virtualIPs;
-in ''
+  mkKubeConfig =
+    { workspace
+    , ip
+    ,
+    }: ''
+      ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster ${workspace} \
+        --certificate-authority=./kubernetes/ca.pem \
+        --server=https://${ip}
+      ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context ${workspace} \
+        --user admin \
+        --cluster ${workspace}
+    '';
+  multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig { inherit workspace ip; }) virtualIPs;
+in
+''
   mkdir -p $out/kubernetes/kubelet
   ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (ws: ip: "mkdir -p $out/kubernetes/apiserver/${ws}") virtualIPs)}
 

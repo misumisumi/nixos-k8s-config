@@ -1,16 +1,19 @@
+{ lib
+, resourcesByRole
+, ...
+}:
+let
+  nfsServers = map
+    (r: {
+      name = r.values.name;
+      nodeid = lib.strings.toInt (lib.strings.removePrefix "nfs" r.values.name);
+      ring_addrs = [ r.values.ip_address ];
+    })
+    (resourcesByRole "nfs");
+in
 {
-  lib,
-  resourcesByRole,
-  ...
-}: let
-  nfsServers = map (r: {
-    name = r.values.name;
-    nodeid = lib.strings.toInt (lib.strings.removePrefix "nfs" r.values.name);
-    ring_addrs = [r.values.ip_address];
-  }) (resourcesByRole "nfs");
-in {
   # For pcs daemon, pcs remote node, DLM, crosync
-  networking.firewall.allowedTCPPorts = [2224 3121 21064 5404 5405];
+  networking.firewall.allowedTCPPorts = [ 2224 3121 21064 5404 5405 ];
   services.pacemaker = {
     enable = true;
   };

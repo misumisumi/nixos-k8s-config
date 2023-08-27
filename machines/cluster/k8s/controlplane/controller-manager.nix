@@ -1,10 +1,11 @@
-{
-  lib,
-  virtualIP,
-  ...
-}: let
+{ lib
+, virtualIP
+, ...
+}:
+let
   pwd = builtins.getEnv "PWD";
-in {
+in
+{
   # For colmena
   deployment.keys = {
     "controller-manager.pem" = {

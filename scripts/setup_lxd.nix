@@ -1,4 +1,4 @@
-{writeShellScriptBin}: {
+{ writeShellScriptBin }: {
   init_lxd = writeShellScriptBin "init_lxd" ''
     lxd init --auto --storage-backend=btrfs --storage-create-loop=64
   '';

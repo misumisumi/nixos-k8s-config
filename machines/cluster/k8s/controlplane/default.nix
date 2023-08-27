@@ -1,12 +1,13 @@
-{
-  lib,
-  resourcesByRoles,
-  ...
-}: let
+{ lib
+, resourcesByRoles
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
-in {
-  imports = [./apiserver.nix ./controller-manager.nix ./scheduler.nix ./kubelet.nix ../node];
+  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+in
+{
+  imports = [ ./apiserver.nix ./controller-manager.nix ./scheduler.nix ./kubelet.nix ../node ];
 
   # For colmena
   deployment.keys."ca.pem" = {

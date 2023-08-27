@@ -1,13 +1,14 @@
-{
-  lib,
-  config,
-  name,
-  virtualIP,
-  ...
-}: let
+{ lib
+, config
+, name
+, virtualIP
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-in {
-  imports = [../node/default.nix];
+in
+{
+  imports = [ ../node/default.nix ];
 
   deployment.keys = {
     "ca.pem" = {

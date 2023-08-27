@@ -1,4 +1,4 @@
-{stateVersion, ...}: {
+{ stateVersion, ... }: {
   time.timeZone = "Asia/Tokyo"; # Time zone and internationalisation
 
   system = {

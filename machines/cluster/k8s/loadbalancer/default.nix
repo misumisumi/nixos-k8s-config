@@ -1,18 +1,19 @@
-{
-  lib,
-  resourcesByRole,
-  resourcesByRoles,
-  virtualIP,
-  nodeIP,
-  self,
-  ...
-}: let
+{ lib
+, resourcesByRole
+, resourcesByRoles
+, virtualIP
+, nodeIP
+, self
+, ...
+}:
+let
   backends =
     map
-    (r: "server ${r.values.name} ${nodeIP r}:6443")
-    (resourcesByRole "controlplane");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
-in {
+      (r: "server ${r.values.name} ${nodeIP r}:6443")
+      (resourcesByRole "controlplane");
+  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+in
+{
   # haproxyのログの取り方の参考
   # https://blog.amedama.jp/entry/2015/08/19/194522
   # https://qiita.com/saka1_p/items/3634ba70f9ecd74b0860#%E3%81%A8%E3%82%8A%E3%81%82%E3%81%88%E3%81%9A%E3%83%AD%E3%82%B0%E3%82%92%E5%8F%96%E3%82%8C%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B
@@ -30,7 +31,7 @@ in {
     enable = true;
     settings = {
       "haproxy" = {
-        files = ["/var/log/haproxy.log"];
+        files = [ "/var/log/haproxy.log" ];
         compress = true;
         rotate = 7;
         size = "100M";
@@ -71,7 +72,7 @@ in {
         let
           number = lib.strings.toInt (lib.strings.removePrefix "loadbalancer" self.values.name);
         in
-          200 - number;
+        200 - number;
       virtualRouterId = 42;
       virtualIps = [
         {
@@ -83,7 +84,7 @@ in {
 
   boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
 
-  networking.firewall.allowedTCPPorts = [443];
+  networking.firewall.allowedTCPPorts = [ 443 ];
   networking.firewall.extraCommands = "iptables -A INPUT -p vrrp -j ACCEPT";
   networking.firewall.extraStopCommands = "iptables -D INPUT -p vrrp -j ACCEPT || true";
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;

@@ -1,10 +1,10 @@
 # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
-{
-  lib,
-  callPackage,
-  cfssl,
-  writeShellApplication,
-  writeText,
+{ lib
+, callPackage
+, cfssl
+, writeShellApplication
+, writeText
+,
 }:
 with lib; {
   # 各証明書の有効期限は10年
@@ -28,20 +28,20 @@ with lib; {
       }
     }
   '';
-  csrConfig = {organization ? null}: {
+  csrConfig = { organization ? null }: {
     key = {
       algo = "rsa";
       size = 2048;
     };
     names = [
       ({
-          "C" = "Japan";
-          "ST" = "Asia";
-          "L" = "Tokyo";
-        }
-        // optionalAttrs (organization != null) {
-          "O" = organization;
-        })
+        "C" = "Japan";
+        "ST" = "Asia";
+        "L" = "Tokyo";
+      }
+      // optionalAttrs (organization != null) {
+        "O" = organization;
+      })
     ];
   };
 }

@@ -1,16 +1,17 @@
-{
-  lib,
-  config,
-  pkgs,
-  name,
-  resourcesByRoles,
-  virtualIP,
-  ...
-}: let
+{ lib
+, config
+, pkgs
+, name
+, resourcesByRoles
+, virtualIP
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
-in {
-  imports = [../node/default.nix];
+  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+in
+{
+  imports = [ ../node/default.nix ];
 
   deployment.keys = {
     "ca.pem" = {
@@ -32,7 +33,7 @@ in {
       user = "kubernetes";
     };
   };
-  boot.kernelModules = ["ceph"];
+  boot.kernelModules = [ "ceph" ];
 
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
   networking.firewall.allowedTCPPorts = [

@@ -1,4 +1,4 @@
-{writeShellApplication}:
+{ writeShellApplication }:
 writeShellApplication {
   name = "check_k8s";
   text = ''

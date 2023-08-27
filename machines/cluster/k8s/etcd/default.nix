@@ -1,22 +1,23 @@
-{
-  lib,
-  resourcesByRole,
-  resourcesByRoles,
-  nodeIP,
-  self,
-  ...
-}: let
+{ lib
+, resourcesByRole
+, resourcesByRoles
+, nodeIP
+, self
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
   etcds = resourcesByRole "etcd";
   cluster = map (r: "${r.values.name}=https://${nodeIP r}:2380") etcds;
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles ["etcd" "controlplane" "loadbalancer" "worker"]);
+  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
 
   mkSecret = filename: {
     keyFile = "${pwd}/.kube/etcd" + "/${filename}";
     destDir = "/var/lib/secrets/etcd";
     user = "etcd";
   };
-in {
+in
+{
   # For colmena
   deployment.keys = {
     "ca.pem" = mkSecret "ca.pem";
@@ -26,17 +27,17 @@ in {
     "server-key.pem" = mkSecret "server-key.pem";
   };
 
-  networking.firewall.allowedTCPPorts = [2379 2380];
+  networking.firewall.allowedTCPPorts = [ 2379 2380 ];
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
 
   services.etcd = {
     enable = true;
 
-    advertiseClientUrls = ["https://${nodeIP self}:2379"];
-    initialAdvertisePeerUrls = ["https://${nodeIP self}:2380"];
+    advertiseClientUrls = [ "https://${nodeIP self}:2379" ];
+    initialAdvertisePeerUrls = [ "https://${nodeIP self}:2380" ];
     initialCluster = lib.mkForce cluster;
-    listenClientUrls = ["https://${nodeIP self}:2379" "https://127.0.0.1:2379"];
-    listenPeerUrls = ["https://${nodeIP self}:2380" "https://127.0.0.1:2380"];
+    listenClientUrls = [ "https://${nodeIP self}:2379" "https://127.0.0.1:2379" ];
+    listenPeerUrls = [ "https://${nodeIP self}:2380" "https://127.0.0.1:2380" ];
 
     clientCertAuth = true;
     peerClientCertAuth = true;
@@ -52,7 +53,7 @@ in {
   };
 
   systemd.services.etcd = {
-    wants = ["network-online.target"];
-    after = ["network-online.target"];
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
   };
 }

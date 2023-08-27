@@ -1,4 +1,4 @@
-{writeShellApplication}: {
+{ writeShellApplication }: {
   unmountrootfs = writeShellApplication {
     name = "unmountrootfs";
     text = ''

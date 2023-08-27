@@ -1,6 +1,8 @@
-{virtualIP, ...}: let
+{ virtualIP, ... }:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-in {
+in
+{
   # For colmena
   deployment.keys = {
     "scheduler.pem" = {

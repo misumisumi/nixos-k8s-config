@@ -1,11 +1,12 @@
-{
-  lib,
-  virtualIP,
-  ...
-}: let
+{ lib
+, virtualIP
+, ...
+}:
+let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-in {
-  imports = [./containerd.nix ./coredns.nix ./flannel.nix];
+in
+{
+  imports = [ ./containerd.nix ./coredns.nix ./flannel.nix ];
 
   deployment.keys = {
     "proxy.pem" = {
