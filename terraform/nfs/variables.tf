@@ -12,7 +12,7 @@ variable "compornents" {
   type = set(
     object({
       tag = string
-      nodes = set(
+      instances = set(
         object({
           name       = string
           target     = optional(string, null)
@@ -28,7 +28,7 @@ variable "compornents" {
           ), [])
         })
       )
-      node_config = object({
+      instance_config = object({
         cpu        = optional(number, 2)
         memory     = optional(string, "1GiB")
         nic_parent = optional(string, "k8sbr0")
@@ -36,7 +36,7 @@ variable "compornents" {
       })
     })
   )
-  description = "Name and some config for nodes to spawn"
+  description = "Name and some config for instances to spawn"
 }
 
 variable "pools" {

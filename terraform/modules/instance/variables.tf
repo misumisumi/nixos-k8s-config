@@ -1,4 +1,4 @@
-variable "nodes" {
+variable "instances" {
   type = set(
     object({
       name       = string
@@ -14,10 +14,10 @@ variable "nodes" {
       }))
     })
   )
-  description = "Name to give to each nodes"
+  description = "Name to give to each instances"
 }
 
-variable "node_config" {
+variable "instance_config" {
   type = object({
     cpu            = number
     memory         = string
@@ -26,5 +26,5 @@ variable "node_config" {
     root_block     = optional(string, "loop0")
     root_size      = optional(string, null)
   })
-  description = "Node config"
+  description = "instance config"
 }

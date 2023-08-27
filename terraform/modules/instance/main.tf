@@ -11,7 +11,7 @@ terraform {
 }
 
 locals {
-  mkvolumes = [for device in flatten(var.nodes[*].devices[*]) :
+  mkvolumes = [for device in flatten(var.instances[*].devices[*]) :
     device.type == "disk" && contains(keys(device.properties), "pool") ? {
       name         = device.properties.source
       pool         = device.properties.pool
@@ -29,8 +29,8 @@ module "volume" {
   volumes = local.mkvolumes
 }
 
-resource "lxd_instance" "node" {
-  for_each = { for i in var.nodes : i.name => i }
+resource "lxd_instance" "instance" {
+  for_each = { for i in var.instances : i.name => i }
   target   = each.value.target
 
   name      = each.value.name
@@ -39,7 +39,7 @@ resource "lxd_instance" "node" {
   ephemeral = false
 
   config = {
-    "boot.autostart"                            = var.node_config.boot_autostart
+    "boot.autostart"                            = var.instance_config.boot_autostart
     "security.nesting"                          = true
     "security.syscalls.intercept.mount"         = true
     "security.syscalls.intercept.mount.allowed" = "ext4"
@@ -50,8 +50,8 @@ resource "lxd_instance" "node" {
     EOT
   }
   limits = {
-    cpu    = var.node_config.cpu
-    memory = var.node_config.memory
+    cpu    = var.instance_config.cpu
+    memory = var.instance_config.memory
   }
 
   device {
@@ -60,7 +60,7 @@ resource "lxd_instance" "node" {
 
     properties = {
       nictype        = "bridged"
-      parent         = var.node_config.nic_parent
+      parent         = var.instance_config.nic_parent
       "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace != "product" ? each.value.ip_address : null
     }
   }

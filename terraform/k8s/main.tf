@@ -2,8 +2,8 @@ locals {
   compornents = merge([
     for i in var.compornents : i.tag != null ? {
       "${i.tag}" = {
-        nodes       = i.nodes
-        node_config = i.node_config
+        instances       = i.instances
+        instance_config = i.instance_config
     } } : {}
   ]...)
 }
@@ -56,9 +56,9 @@ module "pool" {
 
 module "cluster" {
   for_each = local.compornents
-  source   = "../modules/node"
+  source   = "../modules/instance"
 
-  nodes       = each.value.nodes
-  node_config = each.value.node_config
-  depends_on  = [module.network, module.pool, time_sleep.wait_15s]
+  instances       = each.value.instances
+  instance_config = each.value.instance_config
+  depends_on      = [module.network, module.pool, time_sleep.wait_15s]
 }

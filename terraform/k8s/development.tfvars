@@ -1,7 +1,7 @@
 compornents = [
   {
     tag = "etcd"
-    nodes = [
+    instances = [
       {
         name       = "etcd1"
         ip_address = "10.150.10.10"
@@ -15,14 +15,14 @@ compornents = [
         ip_address = "10.150.10.12"
       },
     ]
-    node_config = {
+    instance_config = {
       cpu    = "2"
       memory = "2GiB"
     }
   },
   {
     tag = "controll"
-    nodes = [
+    instances = [
       {
         name       = "controlplane1"
         ip_address = "10.150.10.20"
@@ -36,14 +36,14 @@ compornents = [
         ip_address = "10.150.10.22"
       },
     ]
-    node_config = {
+    instance_config = {
       cpu    = "2"
       memory = "2GiB"
     }
   },
   {
     tag = "worker",
-    nodes = [
+    instances = [
       {
         name       = "worker1"
         type       = "virtual-machine"
@@ -93,7 +93,7 @@ compornents = [
         ]
       }
     ]
-    node_config = {
+    instance_config = {
       cpu       = "4"
       memory    = "8GiB"
       root_size = "16GiB"
@@ -101,7 +101,7 @@ compornents = [
   },
   {
     tag = "load_balancer",
-    nodes = [
+    instances = [
       { name       = "loadbalancer1"
         ip_address = "10.150.10.40"
       },
@@ -109,14 +109,14 @@ compornents = [
         ip_address = "10.150.10.41"
       },
     ]
-    node_config = {
+    instance_config = {
       cpu    = "2"
       memory = "2GiB"
     }
   },
   {
     tag = "nfs"
-    nodes = [
+    instances = [
       {
         name       = "nfs1"
         type       = "virtual-machine"
@@ -150,7 +150,7 @@ compornents = [
         ]
       }
     ]
-    node_config = {
+    instance_config = {
       cpu    = "2"
       memory = "2GiB"
     }
