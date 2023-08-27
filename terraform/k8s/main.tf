@@ -43,20 +43,20 @@ resource "time_sleep" "wait_15s" {
 
 module "network" {
   count  = terraform.workspace == "product" ? 0 : 1
-  source = "./modules/network"
+  source = "../modules/network"
 
   name         = "k8sbr0"
   ipv4_address = "10.150.10.1/24"
 }
 
 module "pool" {
-  source = "./modules/pool"
+  source = "../modules/pool"
   pools  = var.pools
 }
 
 module "cluster" {
   for_each = local.compornents
-  source   = "./modules/node"
+  source   = "../modules/node"
 
   nodes       = each.value.nodes
   node_config = each.value.node_config

@@ -36,7 +36,7 @@ variable "compornents" {
       })
     })
   )
-  description = "Name and some config for optional hosts to spawn"
+  description = "Name and some config for nodes to spawn"
 }
 
 variable "pools" {
