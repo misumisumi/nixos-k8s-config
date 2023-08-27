@@ -8,12 +8,12 @@ let
   lib = inputs.nixpkgs.lib;
   settings =
     { hostname
+    , system
     , rootDir ? ""
     ,
     }:
     let
-      system = "x86_64-linux";
-      pkgs-unstable = import inputs.nixpkgs-unstable {
+      nixpkgs-unstable = import inputs.nixpkgs-unstable {
         inherit system;
         config = { allowUnfree = true; };
       };
@@ -36,19 +36,7 @@ let
     };
 in
 {
-  alice = settings {
-    hostname = "alice";
-    rootDir = "hosts/alice";
-  };
-  strea = settings {
-    hostname = "strea";
-    rootDir = "hosts/strea";
-  };
-  yui = settings {
-    hostname = "yui";
-    rootDir = "hosts/yui";
-  };
-  lxc-container = with lib;
+  lxc-x86_64-container = with lib;
     nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit stateVersion inputs; };
@@ -58,7 +46,7 @@ in
         inputs.lxd-nixos.nixosModules.container
       ];
     };
-  lxc-virtual-machine = with lib;
+  lxc-x86_64-virtual-machine = with lib;
     nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit stateVersion inputs; };

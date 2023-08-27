@@ -109,11 +109,16 @@
               unmountrootfs
               ter
             ];
+          nixpkgs-unstable = import inputs.nixpkgs-unstable {
+            system = "x86_64-linux";
+            config = { allowUnfree = true; };
+          };
         in
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ ];
+            overlays = [ ]
+              ++ (import ./patches { inherit nixpkgs-unstable; });
             config.allowUnfree = true;
           };
           apps = with myScripts; {

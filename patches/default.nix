@@ -41,5 +41,6 @@
 
   (final: prev: {
     terraform-providers.lxd = nixpkgs-unstable.terraform-providers.lxd;
+    terraform-providers.time = nixpkgs-unstable.terraform-providers.time;
   })
 ]
