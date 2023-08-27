@@ -1,9 +1,9 @@
 locals {
-  optional_instances = merge([
-    for i in var.optional_instances : i.instance_name != null ? {
-      "${i.instance_name}" = {
-        nodes = i.nodes
-        rd    = i.instance_RD
+  compornents = merge([
+    for i in var.compornents : i.tag != null ? {
+      "${i.tag}" = {
+        nodes       = i.nodes
+        node_config = i.node_config
     } } : {}
   ]...)
 }
@@ -12,7 +12,7 @@ terraform {
   required_providers {
     lxd = {
       source  = "terraform-lxd/lxd"
-      version = "~> 1.10.0"
+      version = "~> 1.10.2"
     }
   }
 }
@@ -44,6 +44,9 @@ resource "time_sleep" "wait_15s" {
 module "network" {
   count  = terraform.workspace == "product" ? 0 : 1
   source = "./modules/network"
+
+  name         = "k8sbr0"
+  ipv4_address = "10.150.10.1/24"
 }
 
 module "pool" {
@@ -52,31 +55,10 @@ module "pool" {
 }
 
 module "cluster" {
-  for_each = merge({
-    "etcd" = {
-      nodes = var.etcd_instances,
-      rd    = var.etcd_RD
-    }
-    "controlplane" = {
-      nodes = var.control_plane_instances,
-      rd    = var.control_plane_RD
-    }
-    "worker" = {
-      nodes = var.worker_instances,
-      rd    = var.worker_RD
-    }
-    "loadbalancer" = {
-      nodes = var.load_balancer_instances,
-      rd    = var.load_balancer_RD
-    }
-    },
-    local.optional_instances
-  )
+  for_each = local.compornents
+  source   = "./modules/node"
 
-  source = "./modules/node"
-
-  name       = each.key
-  nodes      = each.value.nodes
-  node_rd    = each.value.rd
-  depends_on = [module.network, module.pool, time_sleep.wait_15s]
+  nodes       = each.value.nodes
+  node_config = each.value.node_config
+  depends_on  = [module.network, module.pool, time_sleep.wait_15s]
 }

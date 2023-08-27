@@ -1,13 +1,8 @@
-variable "name" {
-  type        = string
-  description = "Base name for the machine and boot volume"
-}
-
 variable "nodes" {
   type = set(
     object({
       name       = string
-      target     = string
+      target     = optional(string, null)
       type       = string
       ip_address = string
       devices = set(
@@ -22,12 +17,14 @@ variable "nodes" {
   description = "Name to give to each nodes"
 }
 
-variable "node_rd" {
+variable "node_config" {
   type = object({
-    cpu        = string
-    memory     = string
-    nic_parent = string
-    root_size  = optional(string, null)
+    cpu            = number
+    memory         = string
+    nic_parent     = string
+    boot_autostart = optional(bool, true)
+    root_block     = optional(string, "loop0")
+    root_size      = optional(string, null)
   })
-  description = "System requirement Definition for node to spawn"
+  description = "Node config"
 }

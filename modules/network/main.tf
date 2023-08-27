@@ -7,10 +7,10 @@ terraform {
 }
 
 resource "lxd_network" "k8sbr0" {
-  name = "k8sbr0"
+  name = var.name
 
   config = {
-    "ipv4.address" = "10.150.10.1/24"
+    "ipv4.address" = var.ipv4_address
     "ipv4.nat"     = "true"
     "ipv6.address" = "none"
     "ipv6.nat"     = "false"

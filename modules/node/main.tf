@@ -29,53 +29,30 @@ module "volume" {
   volumes = local.mkvolumes
 }
 
-resource "lxd_profile" "profile" {
-  name = "profile_${var.name}"
+resource "lxd_instance" "node" {
+  for_each = { for i in var.nodes : i.name => i }
+  target   = each.value.target
+
+  name      = each.value.name
+  type      = each.value.type
+  image     = "nixos/lxc-${each.value.type}"
+  ephemeral = false
 
   config = {
-    # "security.privileged" = true
+    "boot.autostart"                            = var.node_config.boot_autostart
     "security.nesting"                          = true
-    "security.syscalls.intercept.mount.allowed" = "ext4"
     "security.syscalls.intercept.mount"         = true
-    "boot.autostart"                            = true
-    "limits.cpu"                                = tonumber(var.node_rd.cpu)
-    "limits.memory"                             = var.node_rd.memory
+    "security.syscalls.intercept.mount.allowed" = "ext4"
     "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
         lxc.cgroup.devices.allow = a
     EOT
   }
-
-  device {
-    type = "disk"
-    name = "root"
-
-    properties = {
-      pool = "default"
-      path = "/"
-      size = var.node_rd.root_size
-    }
+  limits = {
+    cpu    = var.node_config.cpu
+    memory = var.node_config.memory
   }
-  device {
-    type = "unix-block"
-    name = "loop0"
-    properties = {
-      path = "/dev/loop0"
-    }
-  }
-}
-
-resource "lxd_container" "node" {
-  for_each = { for i in var.nodes : i.name => i }
-  target   = contains(keys(each.value), "target") ? each.value.target : null
-
-  name = each.value.name
-  type = each.value.type
-
-  image = "nixos/lxc-${each.value.type}"
-
-  profiles = ["${lxd_profile.profile.name}"]
 
   device {
     name = "eth0"
@@ -83,7 +60,7 @@ resource "lxd_container" "node" {
 
     properties = {
       nictype        = "bridged"
-      parent         = var.node_rd.nic_parent
+      parent         = var.node_config.nic_parent
       "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace != "product" ? each.value.ip_address : null
     }
   }
@@ -95,5 +72,5 @@ resource "lxd_container" "node" {
       properties = device.value.properties
     }
   }
-  depends_on = [module.volume, lxd_profile.profile]
+  depends_on = [module.volume]
 }
