@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   deployment.tags = [ "netboot" ];
 
@@ -8,6 +9,13 @@
   ];
 
   environment.pathsToLink = [
-    "/var/www/"
+    "/var/tftp"
+  ];
+  environment.systemPackages = with pkgs; [
+    (setup-netboot-compornents.override
+      {
+        serverIP = "10.150.20.10";
+      })
   ];
 }
+
