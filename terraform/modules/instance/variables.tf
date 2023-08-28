@@ -3,13 +3,16 @@ variable "tag" {
   description = "Tag to identify this instance"
 }
 
+variable "set_ip_address" {
+  type    = bool
+  default = false
+}
+
 variable "instances" {
   type = set(
     object({
-      name       = string
-      remote     = optional(string, "")
-      type       = string
-      ip_address = string
+      name   = string
+      remote = optional(string, "")
       devices = set(
         object({
           name         = string

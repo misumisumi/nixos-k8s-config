@@ -11,23 +11,25 @@ terraform {
 }
 
 locals {
-  mkvolumes = [for device in flatten(var.instances[*].devices[*]) :
-    device.type == "disk" && contains(keys(device.properties), "pool") ? {
-      name         = device.properties.source
-      pool         = device.properties.pool
-      content_type = device.content_type
-      } : {
-      name         = null
-      pool         = null
-      content_type = null
-    }
-  ]
-  remotes = [for remote in var.instances[*].remote : remote]
+  _volumes = flatten([for instance in flatten(var.instances[*]) :
+    [for device in flatten(instance.devices[*]) :
+      device.type == "disk" && contains(keys(device.properties), "pool") ? {
+        name         = device.properties.source
+        remote       = instance.remote
+        pool         = device.properties.pool
+        content_type = device.content_type
+      } : null
+    ]
+  ])
+  volumes       = [for volume in local._volumes : volume if volume != null]
+  remotes       = [for remote in var.instances[*].remote : remote]
+  instance_ips  = jsondecode(file("../../config.json")).instanceIPs[terraform.workspace]
+  machine_types = jsondecode(file("../../config.json")).machineTypes
 }
 
 module "volume" {
   source  = "../volume"
-  volumes = local.mkvolumes
+  volumes = local.volumes
 }
 
 resource "lxd_profile" "profile" {
@@ -63,12 +65,12 @@ resource "lxd_instance" "instance" {
   remote   = each.value.remote
 
   name      = each.value.name
-  type      = each.value.type
-  image     = "nixos/lxc-${each.value.type}"
+  type      = local.machine_types[var.tag]
+  image     = "nixos/lxc-${local.machine_types[var.tag]}"
   ephemeral = false
   profiles  = ["profile_${var.tag}"]
 
-  config = each.value.type == "container" ? {
+  config = local.machine_types[var.tag] == "container" ? {
     "security.syscalls.intercept.mount"         = true
     "security.syscalls.intercept.mount.allowed" = "ext4"
     "raw.lxc"                                   = <<EOT
@@ -91,7 +93,7 @@ resource "lxd_instance" "instance" {
     properties = {
       nictype        = "bridged"
       parent         = var.instance_config.nic_parent
-      "ipv4.address" = contains(keys(each.value), "ip_address") && terraform.workspace != "product" ? each.value.ip_address : null
+      "ipv4.address" = var.set_ip_address ? local.instance_ips[each.value.name] : null
     }
   }
   dynamic "device" {

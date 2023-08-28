@@ -1,6 +1,6 @@
 output "cluster_info" {
   value = zipmap(
-    keys(module.cluster),
-    [for nodes in values(module.cluster) : zipmap(nodes.name, nodes.ip_address)]
+    keys(module.instances),
+    [for instance in values(module.instances) : zipmap(instance.name, instance.ip_address)]
   )
 }

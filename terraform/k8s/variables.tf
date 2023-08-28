@@ -8,16 +8,22 @@ variable "remote_hosts" {
   default = []
 }
 
+variable "network" {
+  type = object({
+    name         = optional(string, null)
+    ipv4_address = optional(string, null)
+  })
+  default = null
+}
+
 variable "compornents" {
   type = set(
     object({
       tag = string
       instances = set(
         object({
-          name       = string
-          remote     = optional(string, null)
-          type       = optional(string, "container")
-          ip_address = optional(string, null)
+          name   = string
+          remote = optional(string, null)
           devices = optional(set(
             object({
               name         = string

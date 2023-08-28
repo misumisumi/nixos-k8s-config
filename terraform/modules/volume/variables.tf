@@ -3,6 +3,7 @@ variable "volumes" {
     object(
       {
         name         = optional(string, null)
+        remote       = optional(string, null)
         pool         = optional(string, null)
         content_type = optional(string, null)
       }

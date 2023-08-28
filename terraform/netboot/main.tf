@@ -42,7 +42,7 @@ resource "time_sleep" "wait_15s" {
 }
 
 module "network" {
-  count  = terraform.workspace == "product" || var.network == null ? 0 : 1
+  count  = terraform.workspace == "product" || var.network.name == null ? 0 : 1
   source = "../modules/network"
 
   name         = var.network.name
@@ -62,5 +62,4 @@ module "instances" {
   instances       = each.value.instances
   instance_config = each.value.instance_config
   depends_on      = [module.network, module.pool, time_sleep.wait_15s]
-  set_ip_address  = true
 }
