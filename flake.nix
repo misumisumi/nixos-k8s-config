@@ -14,7 +14,6 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     flakes = {
       url = "github:misumisumi/flakes";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,17 +49,22 @@
         {
           # Cluster settings managing colmena
           colmena = (
-            import ./machines/hive.nix {
+            import ./instances/hive.nix {
               inherit inputs stateVersion;
             }
           );
-        }
-        // {
           nixosConfigurations = (
-            import ./machines {
+            import ./lxd {
+              inherit (inputs.nixpkgs) lib;
               inherit inputs overlay stateVersion;
             }
           );
+          # // (
+          #   import ./machines {
+          #     inherit (inputs.nixpkgs) lib;
+          #     inherit inputs overlay stateVersion;
+          #   }
+          # );
         };
       perSystem =
         { system
@@ -104,7 +108,7 @@
               mkenv
               mkimg4lxc
               mkrootfs
-              mksshconfig
+              # mksshconfig
               mountrootfs
               unmountrootfs
               ter

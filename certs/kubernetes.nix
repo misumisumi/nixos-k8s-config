@@ -72,7 +72,7 @@ let
           altNames = [ r.values.name (nodeIP r) ];
         };
       })
-      (resourcesByRole role);
+      (resourcesByRole role "k8s");
 
   kubeletScripts = role: map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") (kubeletCsrs role);
 

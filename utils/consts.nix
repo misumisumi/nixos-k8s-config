@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
   inherit (pkgs.callPackage ./resources.nix { }) resourcesByType;
-  labels = resourcesByType "terraform_data";
+  labels = resourcesByType "terraform_data" "k8s";
   config = builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/config.json");
 in
 rec {

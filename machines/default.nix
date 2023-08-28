@@ -1,59 +1,65 @@
 { inputs
+, lib
 , overlay
 , stateVersion
-, ...
 }:
-# Multipul arguments
 let
-  lib = inputs.nixpkgs.lib;
-  settings =
+  user = "misumi";
+  systemSetting =
     { hostname
+    , user
     , system
-    , rootDir ? ""
-    ,
+    , rootDir
     }:
-    let
-      nixpkgs-unstable = import inputs.nixpkgs-unstable {
+      with lib;
+      nixosSystem {
         inherit system;
-        config = { allowUnfree = true; };
-      };
-    in
-    with lib;
-    nixosSystem {
-      inherit system;
-      specialArgs = {
-        inherit hostname inputs stateVersion;
-        user = hostname;
-      }; # specialArgs give some args to modules
-      modules = [
-        ./hosts/common
-        (overlay {
-          inherit nixpkgs-unstable;
-        })
+        specialArgs = { inherit hostname inputs user stateVersion; }; # specialArgs give some args to modules
+        modules =
+          [
+            inputs.private-config.nixosModules.for-nixos
+            (overlay {
+              inherit system;
+            })
+            ../modules
+            ./common
+            rootDir # Each machine config
 
-        (./. + "/${rootDir}") # Each machine conf
-      ];
-    };
+            inputs.home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.extraSpecialArgs = { inherit hostname user stateVersion; };
+              home-manager.users."${user}" = {
+                imports =
+                  [
+                    ./common/hm.nix
+                    inputs.common-config.nixosModules.core
+                    inputs.nvimdots.nixosModules.nvimdots
+                    inputs.private-config.nixosModules.for-hm
+                  ];
+              };
+            }
+          ];
+      };
 in
 {
-  lxc-x86_64-container = with lib;
-    nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit stateVersion inputs; };
-      modules = [
-        ./cluster/init/ssh.nix
-        ./cluster/init/system.nix
-        inputs.lxd-nixos.nixosModules.container
-      ];
-    };
-  lxc-x86_64-virtual-machine = with lib;
-    nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit stateVersion inputs; };
-      modules = [
-        ./cluster/init/ssh.nix
-        ./cluster/init/system.nix
-        inputs.lxd-nixos.nixosModules.virtual-machine
-      ];
-    };
+  ctrl = systemSetting {
+    inherit user;
+    hostname = "yui";
+    system = "x86_64-linux";
+    rootDir = ./ctrl;
+  };
+  worker1 = systemSetting {
+    inherit user;
+    hostname = "alice";
+    system = "x86_64-linux";
+    rootDir = ./worker;
+  };
+  worker2 = systemSetting {
+    inherit user;
+    hostname = "strea";
+    system = "x86_64-linux";
+    rootDir = ./worker;
+  };
 }

@@ -19,8 +19,8 @@ in
   # etcd1, etcd2, etcd3, 10.240.0.xx1, 10.240.0.xx2, 10.240.0.xx3
   getAltNames = role:
     let
-      hosts = map (r: r.values.name) (resourcesByRole role);
-      ips = map nodeIP (resourcesByRole role);
+      hosts = map (r: r.values.name) (resourcesByRole role "k8s");
+      ips = map nodeIP (resourcesByRole role "k8s");
     in
     hosts ++ (map (h: "${h}.${domain}") hosts) ++ ips;
 

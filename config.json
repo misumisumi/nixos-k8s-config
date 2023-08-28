@@ -1,20 +1,23 @@
 {
-  "virtualIPs": {
-    "development": "10.150.10.100",
-    "production": "192.168.1.100"
-  },
-  "hosts": [
-    {
-      "name": "alice",
-      "ip_address": "192.168.1.20"
+    "virtualIPs": {
+        "development": "10.150.10.100",
+        "production": "192.168.1.100"
     },
-    {
-      "name": "strea",
-      "ip_address": "192.168.1.21"
-    },
-    {
-      "name": "yui",
-      "ip_address": "192.168.1.22"
+    "hosts": {
+        "yui": {
+            "cpu_bender": "intel",
+            "ip_address": "192.168.1.100",
+            "label": "ctrl"
+        },
+        "alice": {
+            "cpu_bender": "intel",
+            "ip_address": "192.168.1.101",
+            "label": "worker1"
+        },
+        "strea": {
+            "cpu_bender": "intel",
+            "ip_address": "192.168.1.102",
+            "label": "worker2"
+        }
     }
-  ]
 }
