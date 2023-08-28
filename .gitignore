@@ -1,8 +1,9 @@
 .direnv
-terraform/*/.terraform*
+terraform/*/.terraform
+terraform/*/.terraform.lock.hcl
 terraform/*/terraform.tfstate
 terraform/*/terraform.tfstate.backup
+terraform/*/show.*
+terraform/*/terraform.json
 .kube
-show.*
-terraform.json
 ssh_config

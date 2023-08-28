@@ -15,7 +15,7 @@ variable "compornents" {
       instances = set(
         object({
           name       = string
-          target     = optional(string, null)
+          remote     = optional(string, null)
           type       = optional(string, "container")
           ip_address = optional(string, null)
           devices = optional(set(

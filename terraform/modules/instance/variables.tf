@@ -1,8 +1,13 @@
+variable "tag" {
+  type        = string
+  description = "Tag to identify this instance"
+}
+
 variable "instances" {
   type = set(
     object({
       name       = string
-      target     = optional(string, null)
+      remote     = optional(string, "")
       type       = string
       ip_address = string
       devices = set(

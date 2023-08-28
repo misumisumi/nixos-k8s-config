@@ -5,7 +5,7 @@ compornents = [
       {
         name       = "nfs1"
         type       = "virtual-machine"
-        ip_address = "10.150.10.60"
+        ip_address = "10.150.10.70"
         devices = [
           {
             name         = "nfs"
@@ -21,7 +21,7 @@ compornents = [
       {
         name       = "nfs2"
         type       = "virtual-machine"
-        ip_address = "10.150.10.61"
+        ip_address = "10.150.10.71"
         devices = [
           {
             name         = "nfs"

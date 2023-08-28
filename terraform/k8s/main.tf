@@ -58,6 +58,7 @@ module "cluster" {
   for_each = local.compornents
   source   = "../modules/instance"
 
+  tag             = each.key
   instances       = each.value.instances
   instance_config = each.value.instance_config
   depends_on      = [module.network, module.pool, time_sleep.wait_15s]

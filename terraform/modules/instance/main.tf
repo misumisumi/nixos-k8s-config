@@ -22,6 +22,7 @@ locals {
       content_type = null
     }
   ]
+  remotes = [for remote in var.instances[*].remote : remote]
 }
 
 module "volume" {
@@ -29,18 +30,45 @@ module "volume" {
   volumes = local.mkvolumes
 }
 
+resource "lxd_profile" "profile" {
+  name     = "profile_${var.tag}"
+  for_each = toset(local.remotes)
+  remote   = each.value
+
+  config = {
+    "boot.autostart" = var.instance_config.boot_autostart
+  }
+
+  device {
+    type = "disk"
+    name = "root"
+
+    properties = {
+      pool = "default"
+      path = "/"
+      size = var.instance_config.root_size
+    }
+  }
+  device {
+    type = "unix-block"
+    name = "loop0"
+    properties = {
+      path = "/dev/loop0"
+    }
+  }
+}
+
 resource "lxd_instance" "instance" {
   for_each = { for i in var.instances : i.name => i }
-  target   = each.value.target
+  remote   = each.value.remote
 
   name      = each.value.name
   type      = each.value.type
   image     = "nixos/lxc-${each.value.type}"
   ephemeral = false
+  profiles  = ["profile_${var.tag}"]
 
-  config = {
-    "boot.autostart"                            = var.instance_config.boot_autostart
-    "security.nesting"                          = true
+  config = each.value.type == "container" ? {
     "security.syscalls.intercept.mount"         = true
     "security.syscalls.intercept.mount.allowed" = "ext4"
     "raw.lxc"                                   = <<EOT
@@ -48,6 +76,8 @@ resource "lxd_instance" "instance" {
         lxc.cap.drop = ""
         lxc.cgroup.devices.allow = a
     EOT
+    } : {
+    "security.secureboot" = false
   }
   limits = {
     cpu    = var.instance_config.cpu
@@ -72,5 +102,5 @@ resource "lxd_instance" "instance" {
       properties = device.value.properties
     }
   }
-  depends_on = [module.volume]
+  depends_on = [module.volume, lxd_profile.profile]
 }
