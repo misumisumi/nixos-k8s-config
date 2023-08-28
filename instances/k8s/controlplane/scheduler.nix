@@ -1,4 +1,7 @@
-{ virtualIP, ... }:
+{ virtualIP
+, workspace
+, ...
+}:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
 in
@@ -6,12 +9,12 @@ in
   # For colmena
   deployment.keys = {
     "scheduler.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/scheduler.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/scheduler.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
     "scheduler-key.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/scheduler-key.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/scheduler-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

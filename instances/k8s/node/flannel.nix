@@ -1,23 +1,25 @@
-{ config
-, resourcesByRole
+{ lib
+, config
+, workspace
+, nodeIPsByRole
 , ...
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd");
+  etcdServers = lib.mapAttrsToList (name: ip: "https://${name}:2379") (nodeIPsByRole "etcd");
 in
 {
   deployment.keys = {
     "etcd-ca.pem" = {
-      keyFile = "${pwd}/.kube/etcd/ca.pem";
+      keyFile = "${pwd}/.kube/${workspace}/etcd/ca.pem";
       destDir = "/var/lib/secrets/flannel";
     };
     "etcd-client.pem" = {
-      keyFile = "${pwd}/.kube/flannel/etcd-client.pem";
+      keyFile = "${pwd}/.kube/${workspace}/flannel/etcd-client.pem";
       destDir = "/var/lib/secrets/flannel";
     };
     "etcd-client-key.pem" = {
-      keyFile = "${pwd}/.kube/flannel/etcd-client-key.pem";
+      keyFile = "${pwd}/.kube/${workspace}/flannel/etcd-client-key.pem";
       destDir = "/var/lib/secrets/flannel";
     };
   };

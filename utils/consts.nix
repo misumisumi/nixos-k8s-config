@@ -1,14 +1,41 @@
-{ pkgs, ... }:
+{ lib, ... }:
 let
-  inherit (pkgs.callPackage ./resources.nix { }) resourcesByType;
-  labels = resourcesByType "terraform_data" "k8s";
+  _workspace = builtins.getEnv "TF_WORKSPACE";
   config = builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/config.json");
 in
 rec {
-  workspace = (
-    if (builtins.length labels) >= 1
-    then (builtins.head labels).values.output
-    else "develop"
+  inherit (config) workspaces;
+  workspace = if _workspace == "" then "development" else _workspace;
+  constByKey = key: config.${key};
+  virtualIP = target: (constByKey "virtualIPs").${target}.${workspace};
+  nodeIP = node: (constByKey "instanceIPs").${workspace}.${node};
+  nodeIPsByRole = role: lib.filterAttrs
+    (x: y: lib.hasPrefix role x)
+    (constByKey "instanceIPs").${workspace};
+  nodeIPsByRoles = roles: builtins.listToAttrs (lib.flatten
+    (lib.forEach roles
+      (role:
+        lib.mapAttrsToList (x: y: { name = x; value = y; })
+          (lib.filterAttrs
+            (x: y: lib.hasPrefix role x)
+            (constByKey "instanceIPs").${workspace}
+          )
+      )
+    )
   );
-  virtualIP = config.virtualIPs."${workspace}";
+  nodeIPByWS = node: ws: (constByKey "instanceIPs").${ws}.${node};
+  nodeIPsByRoleAndWS = role: ws: lib.filterAttrs (x: y: lib.hasPrefix role x) (constByKey "instanceIPs").${ws};
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

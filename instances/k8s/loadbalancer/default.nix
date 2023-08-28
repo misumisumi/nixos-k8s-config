@@ -1,17 +1,17 @@
 { lib
-, resourcesByRole
-, resourcesByRoles
+, nodeIPsByRole
+, nodeIPsByRoles
 , virtualIP
-, nodeIP
-, self
+, name
 , ...
 }:
 let
-  backends =
-    map
-      (r: "server ${r.values.name} ${nodeIP r}:6443")
-      (resourcesByRole "controlplane");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+  backends = lib.mapAttrsToList
+    (name: ip: "server ${name} ${ip}:6443")
+    (nodeIPsByRole "controlplane");
+  nodes = lib.mapAttrsToList
+    (name: ip: "${ip} ${builtins.head (builtins.match "^.*([0-9])" name)}")
+    (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
 in
 {
   # haproxyのログの取り方の参考
@@ -70,7 +70,7 @@ in
       priority =
         # Prioritize loadbalancer1 over loadbalancer2 over loadbalancer3, etc.
         let
-          number = lib.strings.toInt (lib.strings.removePrefix "loadbalancer" self.values.name);
+          number = lib.strings.toInt (lib.strings.removePrefix "loadbalancer" name);
         in
         200 - number;
       virtualRouterId = 42;
@@ -89,3 +89,5 @@ in
   networking.firewall.extraStopCommands = "iptables -D INPUT -p vrrp -j ACCEPT || true";
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
 }
+
+

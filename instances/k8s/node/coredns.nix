@@ -1,6 +1,6 @@
-{ self
-, virtualIP
+{ virtualIP
 , nodeIP
+, workspace
 , ...
 }:
 let
@@ -10,17 +10,17 @@ in
   # For colmena
   deployment.keys = {
     "coredns-kube.pem" = {
-      keyFile = "${pwd}/.kube/coredns/coredns-kube.pem";
+      keyFile = "${pwd}/.kube/${workspace}/coredns/coredns-kube.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
     "coredns-kube-key.pem" = {
-      keyFile = "${pwd}/.kube/coredns/coredns-kube-key.pem";
+      keyFile = "${pwd}/.kube/${workspace}/coredns/coredns-kube-key.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
     "kube-ca.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/ca.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/ca.pem";
       destDir = "/var/lib/secrets/coredns";
       user = "coredns";
     };
@@ -43,7 +43,7 @@ in
     '';
   };
 
-  services.kubernetes.kubelet.clusterDns = nodeIP self;
+  services.kubernetes.kubelet.clusterDns = nodeIP;
 
   networking.dhcpcd.denyInterfaces = [ "mynet*" ];
   networking.firewall.interfaces.mynet.allowedTCPPorts = [ 53 ];

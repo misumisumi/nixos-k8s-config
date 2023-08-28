@@ -12,5 +12,4 @@ rec {
   resources = env: resourcesByType "lxd_instance" env;
   resourcesByRole = role: env: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resources env));
   resourcesByRoles = roles: env: lib.flatten (lib.forEach roles (role: builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resources env)));
-  resourcesFromHosts = (builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/config.json")).hosts;
 }

@@ -1,19 +1,19 @@
 { lib
-, resourcesByRole
+, nodeIPsByRole
 , workspace
 , ...
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd");
+  etcdServers = lib.mapAttrsToList (name: ip: "https://${name}:2379") (nodeIPsByRole "etcd");
 
   mkSecret = filename: {
-    keyFile = "${pwd}/.kube/kubernetes/apiserver" + "/${filename}";
+    keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${filename}";
     destDir = "/var/lib/secrets/kubernetes/apiserver";
     user = "kubernetes";
   };
   mkServerSecret = filename: {
-    keyFile = "${pwd}/.kube/kubernetes/apiserver" + "/${workspace}" + "/${filename}";
+    keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${workspace}/${filename}";
     destDir = "/var/lib/secrets/kubernetes/apiserver";
     user = "kubernetes";
   };

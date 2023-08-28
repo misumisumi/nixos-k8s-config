@@ -1,18 +1,17 @@
 { lib
-, resourcesByRole
-, resourcesByRoles
+, nodeIPsByRole
+, nodeIPsByRoles
 , nodeIP
-, self
+, workspace
 , ...
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  etcds = resourcesByRole "etcd";
-  cluster = map (r: "${r.values.name}=https://${nodeIP r}:2380") etcds;
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+  cluster = lib.mapAttrsToList (name: ip: "${name}=https://${ip}:2380") (nodeIPsByRole "etcd");
+  nodes = lib.mapAttrsToList (name: ip: "${name} ${ip}") (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
 
   mkSecret = filename: {
-    keyFile = "${pwd}/.kube/etcd" + "/${filename}";
+    keyFile = "${pwd}/.kube/${workspace}/etcd" + "/${filename}";
     destDir = "/var/lib/secrets/etcd";
     user = "etcd";
   };
@@ -33,11 +32,11 @@ in
   services.etcd = {
     enable = true;
 
-    advertiseClientUrls = [ "https://${nodeIP self}:2379" ];
-    initialAdvertisePeerUrls = [ "https://${nodeIP self}:2380" ];
+    advertiseClientUrls = [ "https://${nodeIP}:2379" ];
+    initialAdvertisePeerUrls = [ "https://${nodeIP}:2380" ];
     initialCluster = lib.mkForce cluster;
-    listenClientUrls = [ "https://${nodeIP self}:2379" "https://127.0.0.1:2379" ];
-    listenPeerUrls = [ "https://${nodeIP self}:2380" "https://127.0.0.1:2380" ];
+    listenClientUrls = [ "https://${nodeIP}:2379" "https://127.0.0.1:2379" ];
+    listenPeerUrls = [ "https://${nodeIP}:2380" "https://127.0.0.1:2380" ];
 
     clientCertAuth = true;
     peerClientCertAuth = true;

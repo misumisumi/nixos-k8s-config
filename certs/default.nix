@@ -1,12 +1,37 @@
-{ callPackage
+{ lib
+, callPackage
 , cfssl
+, kubectl
 , writeShellApplication
 ,
 }:
 let
   # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
   # 各証明書の有効期限は10年
+  inherit (callPackage ../utils/consts.nix { }) workspaces constByKey;
   inherit (callPackage ./utils/settings.nix { }) caConfig;
+  mkCertScript = lib.concatMapStringsSep "\n"
+    (ws: ''
+      ${callPackage ./etcd.nix {inherit ws;}}
+      ${callPackage ./kubernetes.nix {inherit ws;}}
+      ${callPackage ./coredns.nix {inherit ws;}}
+      ${callPackage ./flannel.nix {inherit ws;}}
+    '')
+    workspaces;
+  virtualIPs = (constByKey "virtualIPs").k8s;
+  mkKubeConfig =
+    { workspace
+    , ip
+    ,
+    }: ''
+      ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster ${workspace} \
+        --certificate-authority=./kubernetes/ca.pem \
+        --server=https://${ip}
+      ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context ${workspace} \
+        --user admin \
+        --cluster ${workspace}
+    '';
+  multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig { inherit workspace ip; }) virtualIPs;
 in
 writeShellApplication {
   name = "mkcerts";
@@ -43,10 +68,15 @@ writeShellApplication {
 
 
     out=./.kube/
+    ${mkCertScript}
+    pushd $out > /dev/null
 
-    ${callPackage ./etcd.nix {}}
-    ${callPackage ./kubernetes.nix {}}
-    ${callPackage ./coredns.nix {}}
-    ${callPackage ./flannel.nix {}}
+    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \
+        --client-certificate=./kubernetes/admin.pem \
+        --client-key=./kubernetes/admin-key.pem
+    ${builtins.concatStringsSep "\n" multiKubeConfig}
+    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context development > /dev/null
+
+    popd > /dev/null
   '';
 }

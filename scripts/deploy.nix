@@ -79,11 +79,11 @@ writeShellApplication {
     parse_params "''$@"
 
     # check required params and arguments
-    if [ "''${workspace}" = "" ]; then
-      die "You must select workspace using -w option."
-    else
-      terraform workspace select "''${workspace}" || die "''${workspace}' is not listed in the workspace."
-    fi
-    colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}"
+    # if [ "''${workspace}" = "" ]; then
+    #   die "You must select workspace using -w option."
+    # else
+    #   terraform workspace select "''${workspace}" || die "''${workspace}' is not listed in the workspace."
+    # fi
+    TF_WORKSPACE="''${workspace}" colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}" --show-trace
   '';
 }

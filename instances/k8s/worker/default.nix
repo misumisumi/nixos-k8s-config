@@ -1,34 +1,36 @@
 { lib
 , config
-, pkgs
 , name
-, resourcesByRoles
+, nodeIPsByRoles
 , virtualIP
+, workspace
 , ...
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = map (r: "${r.values.ip_address} ${r.values.id}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+  nodes = lib.mapAttrsToList
+    (name: ip: "${ip} ${builtins.head (builtins.match "^.*([0-9])" name)}")
+    (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
 in
 {
   imports = [ ../node/default.nix ];
 
   deployment.keys = {
     "ca.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/ca.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/ca.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
       permissions = "0644";
     };
 
     "kubelet.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/kubelet" + "/${name}.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/kubelet" + "/${name}.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "kubelet-key.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/kubelet" + "/${name}-key.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/kubelet" + "/${name}-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

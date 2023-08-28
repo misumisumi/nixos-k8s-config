@@ -1,10 +1,7 @@
 { name
-, self
+, nodeIP
 , ...
 }:
-let
-  inherit (import ../../../utils/utils.nix) nodeIP;
-in
 {
   imports = [
     ./autoresources.nix
@@ -12,6 +9,6 @@ in
     ./system.nix
   ];
 
-  deployment.targetHost = nodeIP self;
+  deployment.targetHost = nodeIP;
   networking.hostName = name;
 }

@@ -1,5 +1,6 @@
 { lib
 , virtualIP
+, workspace
 , ...
 }:
 let
@@ -10,13 +11,13 @@ in
 
   deployment.keys = {
     "proxy.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/proxy.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/proxy.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };
 
     "proxy-key.pem" = {
-      keyFile = "${pwd}/.kube/kubernetes/proxy-key.pem";
+      keyFile = "${pwd}/.kube/${workspace}/kubernetes/proxy-key.pem";
       destDir = "/var/lib/secrets/kubernetes";
       user = "kubernetes";
     };

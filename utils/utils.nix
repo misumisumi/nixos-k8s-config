@@ -1,6 +1,6 @@
+{ lib, ... }:
 {
-  # nodeIP = r: let
-  #   interface = builtins.head r.values.network_interface;
-  # in (builtins.head interface.addresses);
-  nodeIP = r: r.values.ip_address;
+  nodeIPFromTF = r: r.values.ip_address;
+  getByRole = role: nodes: lib.filterAttrs (x: y: lib.hasPrefix role x) nodes;
 }
+

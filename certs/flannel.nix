@@ -1,20 +1,22 @@
-{ pkgs
+{ ws
+, callPackage
 , cfssl
 , kubectl
 ,
 }:
 let
-  inherit (pkgs.callPackage ./utils/utils.nix { }) getAltNames mkCsr;
+  inherit (callPackage ./utils/utils.nix { }) getAltNames mkCsr;
 
+  caCsr = mkCsr "flannel-ca" { cn = "flannel-ca"; };
   etcdClientCsr = mkCsr "etcd-client" {
     cn = "flannel";
-    altNames = getAltNames "worker";
+    altNames = getAltNames "worker" ws;
   };
 in
 ''
-  mkdir -p $out/flannel
+  mkdir -p $out/${ws}/flannel
 
-  pushd $out/etcd > /dev/null
+  pushd $out/${ws}/etcd > /dev/null
   genCert client ../flannel/etcd-client ${etcdClientCsr}
   popd > /dev/null
 ''
