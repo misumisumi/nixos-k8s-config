@@ -39,7 +39,14 @@
           stateVersion = "23.05"; # For Home Manager
 
           overlay =
-            { nixpkgs-unstable }: {
+            { system }:
+            let
+              nixpkgs-unstable = import inputs.nixpkgs-unstable {
+                inherit system;
+                config = { allowUnfree = true; };
+              };
+            in
+            {
               nixpkgs.overlays = [
                 flakes.overlays.default
               ]
@@ -50,21 +57,21 @@
           # Cluster settings managing colmena
           colmena = (
             import ./instances/hive.nix {
-              inherit inputs stateVersion;
+              inherit inputs overlay stateVersion;
             }
           );
           nixosConfigurations = (
             import ./lxd {
               inherit (inputs.nixpkgs) lib;
+              inherit inputs stateVersion;
+            }
+          )
+          // (
+            import ./machines {
+              inherit (inputs.nixpkgs) lib;
               inherit inputs overlay stateVersion;
             }
           );
-          # // (
-          #   import ./machines {
-          #     inherit (inputs.nixpkgs) lib;
-          #     inherit inputs overlay stateVersion;
-          #   }
-          # );
         };
       perSystem =
         { system
@@ -141,3 +148,4 @@
         };
     };
 }
+
