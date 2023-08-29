@@ -17,7 +17,6 @@ let
         specialArgs = { inherit hostname inputs user stateVersion; }; # specialArgs give some args to modules
         modules =
           [
-            inputs.private-config.nixosModules.for-nixos
             (overlay {
               inherit system;
             })

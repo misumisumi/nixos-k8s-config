@@ -25,8 +25,10 @@ rec {
   );
   nodeIPByWS = node: ws: (constByKey "instanceIPs").${ws}.${node};
   nodeIPsByRoleAndWS = role: ws: lib.filterAttrs (x: y: lib.hasPrefix role x) (constByKey "instanceIPs").${ws};
+  cpu_bender = hostname: config.hosts.${hostname}.cpu_bender;
+  ip_address = hostname: config.hosts.${hostname}.ip_address;
+  label = hostname: config.hosts.${hostname}.label;
 }
-
 
 
 

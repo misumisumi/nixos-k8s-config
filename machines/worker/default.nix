@@ -1,11 +1,11 @@
-{ modulesPath, hostname, ... }:
+{ modulesPath, hostname, lib, ... }:
 let
-  inherit (import ../../utils/utils.nix { inherit hostname; }) label;
+  inherit (import ../../utils/consts.nix { inherit lib; }) label;
 in
 {
   imports = [
     (modulesPath + "/installer/netboot/netboot-minimal.nix")
     # ./hardware-configuration.nix
-    ./${label}-network.nix
+    ./${label hostname}-network.nix
   ];
 }

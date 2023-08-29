@@ -9,7 +9,7 @@
 , ...
 }:
 let
-  cpu_bender = (pkgs.callPackage (../../utils/utils.nix) { inherit hostname; }).cpu_bender;
+  cpu_bender = (pkgs.callPackage ../../utils/consts.nix { }).cpu_bender;
 in
 {
   imports = [
@@ -54,5 +54,5 @@ in
   #   fsType = "ext4";
   # };
 
-  hardware.cpu.${cpu_bender}.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.${cpu_bender hostname}.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

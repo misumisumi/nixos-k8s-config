@@ -1,12 +1,13 @@
 { stdenvNoCC
 , lib
 , syslinux
-, nixos-generate
+, nixos-generators
 , serverIP ? "192.168.1.1"
 }:
 stdenvNoCC.mkDerivation {
   pname = "setup-netboot-compornents";
   version = "0.0.1";
+  phases = [ "installPhase" "fixupPhase" ];
 
   installPhase = ''
     runHook preInstall
