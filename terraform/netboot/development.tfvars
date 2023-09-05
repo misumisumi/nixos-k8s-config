@@ -1,7 +1,7 @@
-network = {
-  name         = "netbootbr0"
-  ipv4_address = "10.150.20.1/24"
-}
+# network = {
+#   name         = "netbootbr0"
+#   ipv4_address = "10.150.20.1/24"
+# }
 compornents = [
   {
     tag = "netboot"
@@ -25,7 +25,8 @@ compornents = [
     instance_config = {
       cpu        = "2"
       memory     = "2GiB"
-      nic_parent = "netbootbr0"
+      nic_parent = "br0"
+      vlan       = "10"
     }
   }
 ]

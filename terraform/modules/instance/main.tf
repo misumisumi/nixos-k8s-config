@@ -51,13 +51,6 @@ resource "lxd_profile" "profile" {
       size = var.instance_config.root_size
     }
   }
-  device {
-    type = "unix-block"
-    name = "loop0"
-    properties = {
-      path = "/dev/loop0"
-    }
-  }
 }
 
 resource "lxd_instance" "instance" {
@@ -72,7 +65,7 @@ resource "lxd_instance" "instance" {
 
   config = local.machine_types[var.tag] == "container" ? {
     "security.syscalls.intercept.mount"         = true
-    "security.syscalls.intercept.mount.allowed" = "ext4"
+    "security.syscalls.intercept.mount.allowed" = var.instance_config.mount_fs
     "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
@@ -93,7 +86,9 @@ resource "lxd_instance" "instance" {
     properties = {
       nictype        = "bridged"
       parent         = var.instance_config.nic_parent
+      host_name      = format(local.machine_types[var.tag] == "container" ? "veth_%s" : "tap_%s", each.value.name)
       "ipv4.address" = var.set_ip_address ? local.instance_ips[each.value.name] : null
+      vlan           = var.instance_config.vlan
     }
   }
   dynamic "device" {

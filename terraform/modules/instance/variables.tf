@@ -30,9 +30,11 @@ variable "instance_config" {
     cpu            = number
     memory         = string
     nic_parent     = string
+    vlan           = optional(number, null)
     boot_autostart = optional(bool, true)
     root_block     = optional(string, "loop0")
     root_size      = optional(string, null)
+    mount_fs       = optional(string, "ext4")
   })
   description = "instance config"
 }

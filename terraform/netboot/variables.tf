@@ -38,6 +38,7 @@ variable "compornents" {
         cpu        = optional(number, 2)
         memory     = optional(string, "1GiB")
         nic_parent = optional(string, "k8sbr0")
+        vlan       = optional(number, null)
         root_size  = optional(string, null)
       })
     })
