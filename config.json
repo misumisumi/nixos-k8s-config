@@ -33,7 +33,7 @@
             "worker3": "10.150.10.42",
             "nfs1": "10.150.10.50",
             "nfs2": "10.150.10.51",
-            "netboot1": "10.150.20.10"
+            "netboot1": "192.168.1.11"
         },
         "production": {
             "etcd1": "192.168.1.10",
@@ -68,6 +68,11 @@
             "cpu_bender": "intel",
             "ip_address": "192.168.1.102",
             "label": "worker2"
+        },
+        "netboot": {
+            "cpu_bender": "intel",
+            "ip_address": "192.168.1.101",
+            "label": "netboot"
         }
     }
 }
