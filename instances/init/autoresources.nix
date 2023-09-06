@@ -5,7 +5,7 @@
 , ...
 }:
 let
-  inherit (pkgs.callPackage ../../utils/consts.nix { }) nodeIP virtualIP workspace;
+  inherit (pkgs.callPackage ../../utils/consts.nix { }) nodeIP virtualIP;
 in
 {
   _module.args = {
