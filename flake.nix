@@ -6,8 +6,9 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
+    nvfetcher.url = "github:berberman/nvfetcher";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-generators = {
@@ -18,6 +19,8 @@
       url = "github:misumisumi/flakes";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    common-config.url = "github:misumisumi/nixos-common-config";
+    nvimdots.url = "github:misumisumi/nvimdots/my-config";
   };
 
   outputs =
@@ -87,14 +90,19 @@
             with myScripts; [
               bashInteractive
               # software for deployment
+              btrfs-progs
               colmena
+              dig
+              graphviz
+              hcl2json
+              inetutils
               jq
               libxslt
-              btrfs-progs
-              terraform-docs
-              hcl2json
-              graphviz
               myTerraform
+              nvfetcher
+              squashfsTools
+              tcpdump
+              terraform-docs
 
               # software for managing cluster
               argocd
@@ -128,9 +136,12 @@
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ ]
+            overlays = [ inputs.nvfetcher.overlays.default ]
               ++ (import ./patches { inherit nixpkgs-unstable; });
             config.allowUnfree = true;
+          };
+          packages = {
+            netboot = self.nixosConfigurations.netboot.config.system.build.netboot;
           };
           apps = with myScripts; {
             mkcerts = mkApp { drv = mkcerts; };
@@ -148,4 +159,3 @@
         };
     };
 }
-
