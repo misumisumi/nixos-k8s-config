@@ -6,4 +6,5 @@ terraform/*/terraform.tfstate.backup
 terraform/*/show.*
 terraform/*/terraform.json
 .kube
+keyfiles
 ssh_config
