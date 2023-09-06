@@ -12,7 +12,11 @@ in
   imports = [
     (modulesPath + "/installer/netboot/netboot-minimal.nix")
     # ./hardware-configuration.nix
-    ./${label hostname}-network.nix
+    ./network.nix
+    ../common/default-user.nix
+    ../common/network.nix
+    ../common/ssh.nix
+    ../common/system-env.nix
   ];
   # From https://github.com/nix-community/nixos-images/blob/8cddbac8c61437f1f412cae48ada7d5896ee46d6/nix/netboot-installer/module.nix
   system.build.netboot = pkgs.symlinkJoin {

@@ -31,13 +31,12 @@ in
     }
     // lib.attrsets.optionalAttrs (stateVersion <= "22.11") {
       kbdInteractiveAuthentication = true;
-      forwardX11 = true;
+      forwardX11 = false;
     }
     // lib.attrsets.optionalAttrs (stateVersion > "22.11") {
       settings = {
         KbdInteractiveAuthentication = true;
-        X11Forwarding = true;
+        X11Forwarding = false;
       };
     };
 }
-

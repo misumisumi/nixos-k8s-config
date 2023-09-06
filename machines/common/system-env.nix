@@ -36,9 +36,6 @@
     enableDefaultFonts = true;
     fonts = with pkgs; [
       noto-fonts-emoji
-      # noto-fonts # Normal usage
-      # noto-fonts-cjk-sans
-      # noto-fonts-cjk-serif
 
       source-han-sans
       source-han-serif
@@ -52,9 +49,6 @@
       })
 
       plemoljp-fonts
-      udev-gothic-font
-
-      papirus-icon-theme # Icons
     ];
   }
   // optionalAttrs (stateVersion > "23.05") {

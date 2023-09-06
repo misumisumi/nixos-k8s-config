@@ -27,6 +27,8 @@ in
         };
       };
     };
+    kernelModules = [ "nohibernate" ];
+    kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
   };
 
   # Use crypttab
