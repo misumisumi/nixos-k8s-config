@@ -98,6 +98,7 @@
               inetutils
               jq
               libxslt
+              hdparm
               myTerraform
               nvfetcher
               squashfsTools
