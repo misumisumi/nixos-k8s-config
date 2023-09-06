@@ -40,7 +40,7 @@
   (final: prev: { })
 
   (final: prev: {
-    doq = nixpkgs-unstable.doq;
+    inherit (nixpkgs-unstable) doq;
     setup-netboot-compornents = prev.callPackage ./setup-netboot-compornents.nix { };
     terraform-providers.lxd = nixpkgs-unstable.terraform-providers.lxd;
     terraform-providers.time = nixpkgs-unstable.terraform-providers.time;

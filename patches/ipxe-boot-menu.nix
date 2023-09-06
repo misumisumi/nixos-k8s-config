@@ -20,9 +20,14 @@ writeText "boot-menu.ipxe" ''
   choose --timeout ''${menu-timeout} --default ''${menu-default} selected || goto cancel
   goto ''${selected}
 
-  :NixOS-installer
+  :NixOS-installer (unstable)
   kernel https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/bzImage-x86_64-linux init=/nix/store/8r6q1gbnqd54ibxbk2rmv0vkbbr4vg99-nixos-system-nixos-23.11pre130979.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
   initrd https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/initrd-x86_64-linux
+  boot
+
+  :NixOS-installer (23.05)
+  kernel https://github.com/nix-community/nixos-images/releases/download/nixos-23.05/bzImage-x86_64-linux init=/nix/store/rw55hls1rah957jg260bw5g1s1pbvbb1-nixos-system-nixos-23.05beta-356385.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
+  initrd https://github.com/nix-community/nixos-images/releases/download/nixos-23.05/initrd-x86_64-linux
   boot
 
   :exit
@@ -43,4 +48,6 @@ writeText "boot-menu.ipxe" ''
   :exit
   exit
 ''
+
+
 

@@ -1,0 +1,9 @@
+[nixos-installer-unstable]
+src.github_tag = "nix-community/nixos-images"
+src.include_regex= ".*unstable"
+fetch.github = "nix-community/nixos-images"
+
+[nixos-installer-2305]
+src.github_tag = "nix-community/nixos-images"
+src.include_regex= ".*23.05"
+fetch.github = "nix-community/nixos-images"
