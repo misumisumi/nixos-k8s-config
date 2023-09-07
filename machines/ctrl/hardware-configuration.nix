@@ -16,20 +16,24 @@ in
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
   boot = {
+    zfs.extraPools = [ "PoolCtrl" ];
     initrd = {
       availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" ];
-      kernelModules = [ "dm-snapshot" ];
+      kernelModules = [ "dm-snapshot" "vfat" "nls_cp437" "nls_iso8859_1" ];
+
       luks.devices = {
         lukskeystore = {
-          device = "/dev/zvol/PoolCtrl/keystore";
+          device = "/dev/zd0";
+          preLVM = false;
           preOpenCommands = ''
             zpool import -a
           '';
-          postOpenCOmmands = ''
-            mount --mkdir=0400 /dev/mapper/lukskeystore /tmp/keystore
-            zfs load-keys -a
-            umount -R /tmp/keystore
-            rm -rf /tmp/keystore
+          postOpenCommands = ''
+            mkdir -m 755 -p /tmp/keystore
+            sleep 3
+            mount -n -t vfat -o ro /dev/mapper/lukskeystore /tmp/keystore
+            zfs load-key -a
+            umount /tmp/keystore
             cryptsetup close /dev/mapper/lukskeystore
           '';
         };
