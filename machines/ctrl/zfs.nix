@@ -24,10 +24,6 @@
           hostKeys = [ /root/.ssh/id_ed25519 /root/.ssh/id_rsa ];
           authorizedKeys = config.users.users.root.openssh.authorizedKeys.keys;
         };
-        postCommands = ''
-          zpool import -a
-          echo "zfs load-key -a; killall zfs" >> /root/.profile
-        '';
       };
       availableKernelModules = [ "r8169" ];
     };

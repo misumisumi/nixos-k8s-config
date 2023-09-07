@@ -19,16 +19,23 @@ in
     initrd = {
       availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" ];
       kernelModules = [ "dm-snapshot" ];
+      luks.devices = {
+        lukskeystore = {
+          device = "/dev/zvol/PoolCtrl/keystore";
+          preOpenCommands = ''
+            zpool import -a
+          '';
+          postOpenCOmmands = ''
+            mount --mkdir=0400 /dev/mapper/lukskeystore /tmp/keystore
+            zfs load-keys -a
+            umount -R /tmp/keystore
+            rm -rf /tmp/keystore
+            cryptsetup close /dev/mapper/lukskeystore
+          '';
+        };
+      };
     };
   };
-
-  # Use crypttab
-  # environment.etc.ctypttab.text = ''
-  #   # nfsroot /dev/disk/by-partlabel/LUKSNFSROOT /etc/keyfile4nfsroot
-  #   # nfs /dev/disk/by-partlabel/LUKSNFS /etc/keyfile4nfs
-  # '';
-  # environment.etc.keyfile4nfsroot.source = ../keyfiles/nfsroot;
-  # environment.etc.keyfile4nfs.source = ../keyfiles/nfsroot;
 
   fileSystems."/" = {
     device = "PoolCtrl/nixos/root";
