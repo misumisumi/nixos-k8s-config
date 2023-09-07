@@ -19,16 +19,7 @@ in
     initrd = {
       availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" ];
       kernelModules = [ "dm-snapshot" ];
-      luks.devices = {
-        luksroot = {
-          device = "/dev/disk/by-partlabel/LUKSROOT";
-          preLVM = true;
-          allowDiscards = true;
-        };
-      };
     };
-    kernelModules = [ "nohibernate" ];
-    kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
   };
 
   # Use crypttab
@@ -40,21 +31,29 @@ in
   # environment.etc.keyfile4nfs.source = ../keyfiles/nfsroot;
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/${hostname}-root";
-    fsType = "ext4";
+    device = "PoolCtrl/nixos/root";
+    fsType = "zfs";
+  };
+  fileSystems."/var/lib" = {
+    device = "PoolCtrl/nixos/var/lib";
+    fsType = "zfs";
+  };
+  fileSystems."/var/log" = {
+    device = "PoolCtrl/nixos/var/log";
+    fsType = "zfs";
+  };
+  fileSystems."/home" = {
+    device = "PoolCtrl/nixos/home";
+    fsType = "zfs";
+  };
+  fileSystems."/nix" = {
+    device = "PoolCtrl/local/nix";
+    fsType = "zfs";
   };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/${hostname}-boot";
+    device = "/dev/disk/by-label/ctrl-boot";
     fsType = "vfat";
   };
-  # fileSystems."/srv/nfsroot" = {
-  #   device = "/dev/mapper/nfsroot";
-  #   fsType = "ext4";
-  # };
-  # fileSystems."/srv/nfs" = {
-  #   device = "/dev/mapper/nfs";
-  #   fsType = "ext4";
-  # };
 
   hardware.cpu.${cpu_bender hostname}.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

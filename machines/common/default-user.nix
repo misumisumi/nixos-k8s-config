@@ -8,7 +8,6 @@
     enable = true;
     enableCompletion = false;
   };
-  users.users.root.initialHashedPassword = lib.mkDefault "$y$j9T$vwHggX/iAmiJIqh4UeGjh0$u/eFvPAIamTvSFeAacsGL8UwPa5izO7tOiJlNcwQhy1";
   users.users.${user} = {
     isNormalUser = true;
     shell = pkgs.zsh;

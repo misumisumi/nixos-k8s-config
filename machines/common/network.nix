@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }: {
+{ ... }: {
   systemd = {
     network = {
       enable = true;
@@ -24,9 +24,4 @@
       ];
     };
   };
-
-  networking = {
-    useDHCP = lib.mkDefault false; # Setting each network interafces
-  };
-  # system.nssModules = lib.mkForce [];
 }

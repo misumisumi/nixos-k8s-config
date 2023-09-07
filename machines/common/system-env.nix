@@ -19,61 +19,17 @@
     useXkbConfig = true;
   };
 
-  fonts = {
-    fontconfig = {
-      defaultFonts = {
-        serif = [ "Source Han Serif" ];
-        sansSerif = [ "Source Han Sans" ];
-        monospace = [ "Source Han Mono" ];
-        # serif = [ "Noto Serif CJK JP" ];
-        # sansSerif = [ "Noto Sans CJK JP" ];
-        # monospace = [ "Noto Sans Mono CJK JP" ];
-        emoji = [ "Noto Color Emoji" ];
-      };
-    };
-  }
-  // optionalAttrs (stateVersion <= "23.05") {
+  fonts = { }
+    // optionalAttrs (stateVersion <= "23.05") {
     enableDefaultFonts = true;
     fonts = with pkgs; [
-      noto-fonts-emoji
-
-      source-han-sans
-      source-han-serif
-      source-han-mono
-
-      (nerdfonts.override {
-        # Nerdfont override
-        fonts = [
-          "FiraCode"
-        ];
-      })
-
       plemoljp-fonts
     ];
   }
-  // optionalAttrs (stateVersion > "23.05") {
+    // optionalAttrs (stateVersion > "23.05") {
     enableDefaultPackages = true;
     packages = with pkgs; [
-      noto-fonts-emoji
-      # noto-fonts # Normal usage
-      # noto-fonts-cjk-sans
-      # noto-fonts-cjk-serif
-
-      source-han-sans
-      source-han-serif
-      source-han-mono
-
-      (nerdfonts.override {
-        # Nerdfont override
-        fonts = [
-          "FiraCode"
-        ];
-      })
-
       plemoljp-fonts
-      udev-gothic-font
-
-      papirus-icon-theme # Icons
     ];
   };
   documentation = {
