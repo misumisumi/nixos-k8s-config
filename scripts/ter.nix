@@ -75,8 +75,8 @@ writeShellApplication {
     # script logic here
     terraform workspace select "''${workspace}" || echo "''${workspace} is not listed in the workspace."
     terraform "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-2)}"
-    terraform show -json | jq >show.json
-    terraform graph | dot -Tpng >show.png
+    terraform show -json | jq >"''${workspace}".json
+    terraform graph | dot -Tpng >"''${workspace}".png
     hcl2json "''${workspace}".tfvars > terraform.json
   '';
 }

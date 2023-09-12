@@ -3,8 +3,8 @@ terraform/*/.terraform
 terraform/*/.terraform.lock.hcl
 terraform/*/terraform.tfstate
 terraform/*/terraform.tfstate.backup
-terraform/*/show.*
-terraform/*/terraform.json
+terraform/*/*.json
+terraform/*/*.png
 .kube
 keyfiles
 ssh_config
