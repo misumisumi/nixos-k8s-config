@@ -60,21 +60,4 @@ in
     system = "x86_64-linux";
     rootDir = ./worker;
   };
-  netboot =
-    let
-      system = "x86_64-linux";
-      hostname = "netboot";
-    in
-    lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit hostname inputs user stateVersion; }; # specialArgs give some args to modules
-      modules =
-        [
-          (overlay {
-            inherit system;
-          })
-          ./netboot
-        ];
-    };
 }
-

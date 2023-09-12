@@ -142,7 +142,7 @@
             config.allowUnfree = true;
           };
           packages = {
-            netboot = self.nixosConfigurations.netboot.config.system.build.netboot;
+            # netboot = self.nixosConfigurations.netboot.config.system.build.netboot;
           };
           apps = with myScripts; {
             mkcerts = mkApp { drv = mkcerts; };
