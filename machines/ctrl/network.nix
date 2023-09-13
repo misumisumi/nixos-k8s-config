@@ -1,8 +1,4 @@
-{ hostname, ... }:
-let
-  interface = "enp2s0";
-in
-{
+{ hostname, ... }: {
   imports = [
     ../common/network.nix
   ];
@@ -14,11 +10,11 @@ in
   boot.initrd.availableKernelModules = [ "r8169" ];
   boot.initrd.network.udhcpc.extraArgs = [
     "-i"
-    "${interface}"
+    "eno1"
   ];
   networking = {
     hostName = "${hostname}";
-    interfaces.${interface}.wakeOnLan.enable = true;
+    interfaces.eno1.wakeOnLan.enable = true;
     firewall = {
       enable = true;
       trustedInterfaces = [
@@ -44,7 +40,7 @@ in
       };
       networks = {
         "10-wired" = {
-          name = "${interface}";
+          name = "eno1";
           bridge = [ "br0" ];
         };
         "20-br0" = {
