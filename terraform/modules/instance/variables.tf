@@ -11,8 +11,9 @@ variable "set_ip_address" {
 variable "instances" {
   type = set(
     object({
-      name   = string
-      remote = optional(string, "")
+      name         = string
+      remote       = optional(string, "")
+      ipv4_address = optional(string, null)
       devices = set(
         object({
           name         = string
@@ -30,6 +31,7 @@ variable "instance_config" {
     cpu            = number
     memory         = string
     nic_parent     = string
+    machine_type   = optional(string, "container")
     vlan           = optional(number, null)
     boot_autostart = optional(bool, true)
     root_block     = optional(string, "loop0")

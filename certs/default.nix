@@ -3,21 +3,13 @@
 , cfssl
 , kubectl
 , writeShellApplication
-,
+, ws ? "development"
 }:
 let
   # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
   # 各証明書の有効期限は10年
-  inherit (callPackage ../utils/consts.nix { }) workspaces constByKey;
+  inherit (callPackage ../utils/consts.nix { }) constByKey;
   inherit (callPackage ./utils/settings.nix { }) caConfig;
-  mkCertScript = lib.concatMapStringsSep "\n"
-    (ws: ''
-      ${callPackage ./etcd.nix {inherit ws;}}
-      ${callPackage ./kubernetes.nix {inherit ws;}}
-      ${callPackage ./coredns.nix {inherit ws;}}
-      ${callPackage ./flannel.nix {inherit ws;}}
-    '')
-    workspaces;
   virtualIPs = (constByKey "virtualIPs").k8s;
   mkKubeConfig =
     { workspace
@@ -68,7 +60,10 @@ writeShellApplication {
 
 
     out=./.kube/
-    ${mkCertScript}
+    ${callPackage ./etcd.nix {inherit ws;}}
+    ${callPackage ./kubernetes.nix {inherit ws;}}
+    ${callPackage ./coredns.nix {inherit ws;}}
+    ${callPackage ./flannel.nix {inherit ws;}}
     pushd $out > /dev/null
 
     ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \

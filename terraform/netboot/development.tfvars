@@ -26,7 +26,7 @@ compornents = [
       cpu        = "2"
       memory     = "2GiB"
       nic_parent = "br0"
-      vlan       = "10"
+      # vlan       = "10"
     }
   }
 ]

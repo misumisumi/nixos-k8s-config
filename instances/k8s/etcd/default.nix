@@ -1,14 +1,14 @@
 { lib
-, nodeIPsByRole
-, nodeIPsByRoles
+, resourcesByRole
+, resourcesByRoles
 , nodeIP
 , workspace
 , ...
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  cluster = lib.mapAttrsToList (name: ip: "${name}=https://${ip}:2380") (nodeIPsByRole "etcd");
-  nodes = lib.mapAttrsToList (name: ip: "${name} ${ip}") (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+  cluster = lib.mapAttrsToList (r: "${r.values.name}=https://${r.values.ip_address}:2380") (resourcesByRole "etcd" "k8s");
+  nodes = lib.mapAttrsToList (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 
   mkSecret = filename: {
     keyFile = "${pwd}/.kube/${workspace}/etcd" + "/${filename}";

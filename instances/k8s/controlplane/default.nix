@@ -1,11 +1,11 @@
 { lib
-, nodeIPsByRoles
+, resourcesByRoles
 , workspace
 , ...
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = lib.mapAttrsToList (name: ip: "${name} ${ip}") (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+  nodes = lib.mapAttrsToList (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
   imports = [

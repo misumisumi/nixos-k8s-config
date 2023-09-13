@@ -120,7 +120,7 @@
               add_remote_lxd
               k
               mkbootfs
-              mkcerts
+              # mkcerts
               mkenv
               mkimg4lxc
               mkrootfs
@@ -145,7 +145,8 @@
             # netboot = self.nixosConfigurations.netboot.config.system.build.netboot;
           };
           apps = with myScripts; {
-            mkcerts = mkApp { drv = mkcerts; };
+            mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "development"; }; };
+            mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "production"; }; };
             ter = mkApp { drv = ter; };
             k = mkApp { drv = k; };
             mkimg4lxc = mkApp { drv = mkimg4lxc; };
@@ -160,3 +161,4 @@
         };
     };
 }
+

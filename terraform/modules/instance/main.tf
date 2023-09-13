@@ -21,10 +21,8 @@ locals {
       } : null
     ]
   ])
-  volumes       = [for volume in local._volumes : volume if volume != null]
-  remotes       = [for remote in var.instances[*].remote : remote]
-  instance_ips  = jsondecode(file("../../config.json")).instanceIPs[terraform.workspace]
-  machine_types = jsondecode(file("../../config.json")).machineTypes
+  volumes = [for volume in local._volumes : volume if volume != null]
+  remotes = [for remote in var.instances[*].remote : remote]
 }
 
 module "volume" {
@@ -58,12 +56,12 @@ resource "lxd_instance" "instance" {
   remote   = each.value.remote
 
   name      = each.value.name
-  type      = local.machine_types[var.tag]
-  image     = "nixos/lxc-${local.machine_types[var.tag]}"
+  type      = var.instance_config.machine_type
+  image     = "nixos/lxc-${var.instance_config.machine_type}"
   ephemeral = false
   profiles  = ["profile_${var.tag}"]
 
-  config = local.machine_types[var.tag] == "container" ? {
+  config = var.instance_config.machine_type == "container" ? {
     "security.syscalls.intercept.mount"         = true
     "security.syscalls.intercept.mount.allowed" = var.instance_config.mount_fs
     "raw.lxc"                                   = <<EOT
@@ -84,10 +82,13 @@ resource "lxd_instance" "instance" {
     type = "nic"
 
     properties = {
-      nictype        = "bridged"
-      parent         = var.instance_config.nic_parent
-      host_name      = format(local.machine_types[var.tag] == "container" ? "veth_%s" : "tap_%s", each.value.name)
-      "ipv4.address" = var.set_ip_address ? local.instance_ips[each.value.name] : null
+      nictype = "bridged"
+      parent  = var.instance_config.nic_parent
+      host_name = format(var.instance_config.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
+        substr(each.value.name, 0, 3),
+        substr(each.value.name, -1, -1)
+      )
+      "ipv4.address" = each.value.ipv4_address
       vlan           = var.instance_config.vlan
     }
   }

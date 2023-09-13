@@ -9,50 +9,6 @@
             "production": "192.168.1.100"
         }
     },
-    "machineTypes": {
-        "etcd": "container",
-        "controlplane": "container",
-        "worker": "virtual-machine",
-        "loadbalancer": "container",
-        "nfs": "virtual-machine",
-        "netboot": "container"
-    },
-    "instanceIPs": {
-        "development": {
-            "etcd1": "10.150.10.10",
-            "etcd2": "10.150.10.11",
-            "etcd3": "10.150.10.12",
-            "controlplane1": "10.150.10.20",
-            "controlplane2": "10.150.10.21",
-            "controlplane3": "10.150.10.22",
-            "loadbalancer1": "10.150.10.30",
-            "loadbalancer2": "10.150.10.31",
-            "loadbalancer3": "10.150.10.32",
-            "worker1": "10.150.10.40",
-            "worker2": "10.150.10.41",
-            "worker3": "10.150.10.42",
-            "nfs1": "10.150.10.50",
-            "nfs2": "10.150.10.51",
-            "netboot1": "192.168.1.11"
-        },
-        "production": {
-            "etcd1": "192.168.1.10",
-            "etcd2": "192.168.1.11",
-            "etcd3": "192.168.1.12",
-            "controlplane1": "192.168.1.20",
-            "controlplane2": "192.168.1.21",
-            "controlplane3": "192.168.1.22",
-            "loadbalancer1": "192.168.1.30",
-            "loadbalancer2": "192.168.1.31",
-            "loadbalancer3": "192.168.1.32",
-            "worker1": "192.168.1.40",
-            "worker2": "192.168.1.41",
-            "worker3": "192.168.1.42",
-            "nfs1": "192.168.1.50",
-            "nfs2": "192.168.1.51",
-            "netboot1": "192.168.1.10"
-        }
-    },
     "hosts": {
         "yui": {
             "cpu_bender": "intel",

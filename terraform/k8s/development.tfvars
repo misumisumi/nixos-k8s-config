@@ -4,11 +4,20 @@ network = {
 }
 compornents = [
   {
-    tag = "etcd"
+    tag = "controlplane"
     instances = [
-      { name = "etcd1" },
-      { name = "etcd2" },
-      { name = "etcd3" },
+      {
+        name         = "controlplane1"
+        ipv4_address = "10.150.10.20"
+      },
+      {
+        name         = "controlplane2"
+        ipv4_address = "10.150.10.21"
+      },
+      {
+        name         = "controlplane3"
+        ipv4_address = "10.150.10.22"
+      },
     ]
     instance_config = {
       cpu    = "2"
@@ -16,11 +25,41 @@ compornents = [
     }
   },
   {
-    tag = "controlplane"
+    tag = "etcd"
     instances = [
-      { name = "controlplane1" },
-      { name = "controlplane2" },
-      { name = "controlplane3" },
+      {
+        name         = "etcd1"
+        ipv4_address = "10.150.10.10"
+      },
+      {
+        name         = "etcd2"
+        ipv4_address = "10.150.10.11"
+      },
+      {
+        name         = "etcd3"
+        ipv4_address = "10.150.10.12"
+      },
+    ]
+    instance_config = {
+      cpu    = "2"
+      memory = "2GiB"
+    }
+  },
+  {
+    tag = "loadbalancer",
+    instances = [
+      {
+        name         = "loadbalancer1"
+        ipv4_address = "10.150.10.30"
+      },
+      {
+        name         = "loadbalancer2"
+        ipv4_address = "10.150.10.31"
+      },
+      {
+        name         = "loadbalancer3"
+        ipv4_address = "10.150.10.32"
+      },
     ]
     instance_config = {
       cpu    = "2"
@@ -31,7 +70,8 @@ compornents = [
     tag = "worker",
     instances = [
       {
-        name = "worker1"
+        name         = "worker1"
+        ipv4_address = "10.150.10.40"
         devices = [
           {
             name         = "ceph"
@@ -45,7 +85,8 @@ compornents = [
         ]
       },
       {
-        name = "worker2"
+        name         = "worker2"
+        ipv4_address = "10.150.10.41"
         devices = [
           {
             name         = "ceph"
@@ -59,7 +100,8 @@ compornents = [
         ]
       },
       {
-        name = "worker3"
+        name         = "worker3"
+        ipv4_address = "10.150.10.42"
         devices = [
           {
             name         = "ceph"
@@ -74,20 +116,10 @@ compornents = [
       }
     ]
     instance_config = {
-      cpu       = "4"
-      memory    = "8GiB"
-      root_size = "16GiB"
-    }
-  },
-  {
-    tag = "loadbalancer",
-    instances = [
-      { name = "loadbalancer1" },
-      { name = "loadbalancer2" },
-    ]
-    instance_config = {
-      cpu    = "2"
-      memory = "2GiB"
+      machine_type = "virtual-machine"
+      cpu          = "4"
+      memory       = "8GiB"
+      root_size    = "16GiB"
     }
   }
 ]

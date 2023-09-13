@@ -6,7 +6,7 @@
 ,
 }:
 let
-  inherit (callPackage ../utils/consts.nix { }) nodeIPsByRoleAndWS;
+  inherit (callPackage ../utils/resources.nix { }) resourcesByRoleAndWS;
   inherit (callPackage ./utils/utils.nix { }) getAltNames mkCsr;
 
   inherit (callPackage ../utils/consts.nix { }) constByKey;
@@ -63,16 +63,16 @@ let
   };
 
   kubeletCsrs = role:
-    lib.mapAttrsToList
-      (name: ip: {
-        name = name;
-        csr = mkCsr name {
-          cn = "system:node:${name}";
+    map
+      (r: {
+        name = r.values.name;
+        csr = mkCsr r.values.name {
+          cn = "system:node:${r.values.name}";
           organization = "system:nodes";
           altNames = getAltNames role ws;
         };
       })
-      (nodeIPsByRoleAndWS role ws);
+      (resourcesByRoleAndWS role "k8s" ws);
 
   kubeletScripts = role: map (csr: "genCert peer kubelet/${csr.name} ${csr.csr}") (kubeletCsrs role);
 in

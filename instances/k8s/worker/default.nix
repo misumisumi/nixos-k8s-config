@@ -1,7 +1,7 @@
 { lib
 , config
 , name
-, nodeIPsByRoles
+, resourcesByRoles
 , virtualIP
 , workspace
 , ...
@@ -10,7 +10,7 @@ let
   pwd = builtins.toPath (builtins.getEnv "PWD");
   nodes = lib.mapAttrsToList
     (name: ip: "${ip} ${builtins.head (builtins.match "^.*([0-9])" name)}")
-    (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+    (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
   imports = [ ../node/default.nix ];

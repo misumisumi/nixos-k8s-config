@@ -1,17 +1,17 @@
 { lib
-, nodeIPsByRole
-, nodeIPsByRoles
+, resourcesByRole
+, resourcesByRoles
 , virtualIP
 , name
 , ...
 }:
 let
   backends = lib.mapAttrsToList
-    (name: ip: "server ${name} ${ip}:6443")
-    (nodeIPsByRole "controlplane");
+    (r: "server ${r.values.name} ${r.values.ip_address}:6443")
+    (resourcesByRole "controlplane" "k8s");
   nodes = lib.mapAttrsToList
-    (name: ip: "${ip} ${builtins.head (builtins.match "^.*([0-9])" name)}")
-    (nodeIPsByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ]);
+    (r: "${r.values.ip_address} ${builtins.head (builtins.match "^.*([0-9])" r.values.name)}")
+    (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
   # haproxyのログの取り方の参考
