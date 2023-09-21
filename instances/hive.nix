@@ -5,45 +5,44 @@
 }:
 let
   inherit (inputs.nixpkgs) lib;
-  inherit (import ../utils/consts.nix { inherit lib; }) workspace constByKey;
+  inherit (import ../utils/resources.nix { inherit lib; }) resourcesByRole;
 
-  hostNames = target: lib.mapAttrsToList (x: y: x) (lib.filterAttrs (x: y: lib.hasPrefix target x) (constByKey "instanceIPs").${workspace});
-  etcdHosts = map (r: r) (hostNames "etcd");
-  controlPlaneHosts = map (r: r) (hostNames "controlplane");
-  workerHosts = map (r: r) (hostNames "worker");
-  loadBalancerHosts = map (r: r) (hostNames "loadbalancer");
-  nfsHosts = map (r: r) (hostNames "nfs");
-  netbootHosts = map (r: r) (hostNames "netboot");
-  machineType = target: (constByKey "machineTypes").${target};
+  etcdHosts = map (r: r.values.name) (resourcesByRole "etcd" "k8s");
+  controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane" "k8s");
+  workerHosts = map (r: r.values.name) (resourcesByRole "worker" "k8s");
+  loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer" "k8s");
+  nfsHosts = map (r: r.values.name) (resourcesByRole "nfs" "nfs");
+  netbootHosts = map (r: r.values.name) (resourcesByRole "netboot" "netboot");
+  machineType = target: tag: builtins.head (map (r: r.values.type) (resourcesByRole target tag));
 
   etcdConf = { ... }: {
-    imports = [ ./init ./k8s/etcd inputs.lxd-nixos.nixosModules.${machineType "etcd"} ];
-    deployment.tags = [ "cardinal" "k8s" "etcd" ];
+    imports = [ ./init ./k8s/etcd inputs.lxd-nixos.nixosModules.${ machineType "etcd" "k8s"} ];
+    deployment. tags = [ "cardinal" "k8s" "etcd" ];
   };
 
   controlPlaneConf = { ... }: {
-    imports = [ ./init ./k8s/controlplane inputs.lxd-nixos.nixosModules.${machineType "controlplane"} ];
-    deployment.tags = [ "cardinal" "k8s" "controlplane" ];
+    imports = [ ./init ./k8s/controlplane inputs.lxd-nixos.nixosModules.${ machineType "controlplane" "k8s"} ];
+    deployment. tags = [ "cardinal" "k8s" "controlplane" ];
   };
 
   workerConf = { ... }: {
-    imports = [ ./init ./k8s/worker inputs.lxd-nixos.nixosModules.${machineType "worker"} ];
-    deployment.tags = [ "cardinal" "k8s" "worker" ];
+    imports = [ ./init ./k8s/worker inputs.lxd-nixos.nixosModules.${ machineType "worker" "k8s"} ];
+    deployment. tags = [ "cardinal" "k8s" "worker" ];
   };
 
   loadBalancerConf = { ... }: {
-    imports = [ ./init ./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${machineType "loadbalancer"} ];
-    deployment.tags = [ "cardinal" "k8s" "loadbalancer" ];
+    imports = [ ./init ./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${ machineType "loadbalancer" "k8s"} ];
+    deployment. tags = [ "cardinal" "k8s" "loadbalancer" ];
   };
 
   netbootConf = { name, ... }: {
-    imports = [ ./init ./netboot inputs.lxd-nixos.nixosModules.${machineType "netboot"} ];
-    deployment.tags = [ "cardinal" "netboot" "${name}" ];
+    imports = [ ./init ./netboot inputs.lxd-nixos.nixosModules.${ machineType "netboot" "netboot"} ];
+    deployment. tags = [ "cardinal" "netboot" "${ name}" ];
   };
 
   nfsConf = { name, ... }: {
-    imports = [ ./init ./nfs inputs.lxd-nixos.nixosModules.${machineType "nfs"} ];
-    deployment.tags = [ "cardinal" "nfs" "${name}" ];
+    imports = [ ./init ./nfs inputs.lxd-nixos.nixosModules.${ machineType "nfs" "nfs"} ];
+    deployment. tags = [ "cardinal" "nfs" "${ name}" ];
   };
 in
 {
