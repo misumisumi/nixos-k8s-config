@@ -73,8 +73,8 @@ resource "lxd_instance" "instance" {
     "security.secureboot" = false
   }
   limits = {
-    cpu    = var.instance_config.cpu
-    memory = var.instance_config.memory
+    cpu    = each.value.cpu == null ? var.instance_config.cpu : each.value.cpu
+    memory = each.value.memory == null ? var.instance_config.memory : each.value.memory
   }
 
   device {

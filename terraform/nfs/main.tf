@@ -42,11 +42,11 @@ resource "time_sleep" "wait_15s" {
 }
 
 module "network" {
-  count  = terraform.workspace == "product" ? 0 : 1
+  count  = terraform.workspace == "product" || var.network == null ? 0 : 1
   source = "../modules/network"
 
-  name         = "k8sbr0"
-  ipv4_address = "10.150.10.1/24"
+  name         = var.network.name
+  ipv4_address = var.network.ipv4_address
 }
 
 module "pool" {

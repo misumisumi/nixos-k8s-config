@@ -1,11 +1,10 @@
 compornents = [
   {
     tag = "nfs"
-    nodes = [
+    instances = [
       {
-        name       = "nfs1"
-        type       = "virtual-machine"
-        ip_address = "10.150.10.70"
+        name         = "nfs1"
+        ipv4_address = "10.150.10.70"
         devices = [
           {
             name         = "nfs"
@@ -19,9 +18,8 @@ compornents = [
         ]
       },
       {
-        name       = "nfs2"
-        type       = "virtual-machine"
-        ip_address = "10.150.10.71"
+        name         = "nfs2"
+        ipv4_address = "10.150.10.71"
         devices = [
           {
             name         = "nfs"
@@ -35,9 +33,11 @@ compornents = [
         ]
       }
     ]
-    node_config = {
-      cpu    = "2"
-      memory = "2GiB"
+    instance_config = {
+      cpu          = "2"
+      memory       = "4GiB"
+      nic_parent   = "k8sbr0"
+      machine_type = "virtual-machine"
     }
   }
 ]
