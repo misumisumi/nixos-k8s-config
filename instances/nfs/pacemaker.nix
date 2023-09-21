@@ -9,7 +9,7 @@ let
       nodeid = lib.strings.toInt (lib.strings.removePrefix "nfs" r.values.name);
       ring_addrs = [ r.values.ip_address ];
     })
-    (resourcesByRole "nfs");
+    (resourcesByRole "nfs" "nfs");
 in
 {
   # For pcs daemon, pcs remote node, DLM, crosync

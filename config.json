@@ -9,6 +9,12 @@
             "production": "192.168.1.100"
         }
     },
+    "drbdDevices": {
+        "volume 0": {
+            "drbd1": "/dev/sdb1",
+            "drbd2": "/dev/sdb1"
+        },
+    },
     "hosts": {
         "yui": {
             "cpu_bender": "intel",
