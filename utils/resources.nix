@@ -1,7 +1,9 @@
 { lib, ... }:
 let
   workspace = builtins.getEnv "TF_WORKSPACE";
-  payload = target: builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${target}/${workspace}.json");
+  check_path = path: builtins.pathExists path;
+  tf_output_path = target: "${builtins.getEnv "PWD"}/terraform/${target}/${workspace}.json";
+  payload = target: if check_path (tf_output_path target) then builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${target}/${workspace}.json") else { };
   resourcesInModule = type: module: builtins.filter (r: r.type == type) (module.resources or [ ])
     ++ lib.flatten (map (resourcesInModule type) (module.child_modules or [ ]));
   resourcesByType = type: target: resourcesInModule type ((payload target).values.root_module or [ ]);

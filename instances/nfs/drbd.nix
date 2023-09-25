@@ -17,57 +17,60 @@ let
         r.values.device)
     (resourcesByRole "nfs" "nfs"));
   drbdDevices = constByKey "drbdDevices";
-  drbdVolumeConfig = lib.mapAttrsToList
-    (name: value:
-      ''
-        ''\t${name} {
-        ''\t''\tdevice minor ${(lib.charToInt (builtins.match ".*([0-9].+)" name))+1};
-        ''\tmeta-disk internal;
-        ''\t}
-      ''
-    )
-    drbdDevices;
   drbdVolumeConfigPerNode = node: lib.mapAttrsToList
     (name: value:
       ''
         ''\t''\t${name} {
-        ''\t''\t''\tdisk ${value.${name}}
+        ''\t''\t''\tdevice minor ${builtins.head ((builtins.match "^.*[[:space:]]([[:digit:]]+)$" name))};
+        ''\t''\t''\tdisk ${value.${node}};
+        ''\t''\t''\tmeta-disk internal;
         ''\t''\t}
       ''
     )
-    drbdDevices;
+    (lib.traceSeq drbdDevices drbdDevices);
   drbdNodeConfig = map
     (v: ''
       ''\ton "${v.name}" {
-      ''\t''\tnode-id ${builtins.match ".*([0-9].+)" v.name};
       ${lib.concatStringsSep "\n" (drbdVolumeConfigPerNode v.name)}
+      ''\t''\taddress ${v.ip_address}:7789;
       ''\t}
     ''
     )
     nfsHosts;
-  drbdConnectionConfig = map
-    (v:
-      ''
-        ''\t''\thost "${v.name}" address "${v.ip_address}:7788"
-      ''
-    )
-    nfsHosts;
+  # For drbd 9.0
+  # drbdVolumeConfig = lib.mapAttrsToList
+  #   (name: value:
+  #     ''
+  #       ''\t${name} {
+  #       ''\t''\tdevice minor ${builtins.head ((builtins.match "^.*[[:space:]]([[:digit:]]+)$" name))};
+  #       ''\tmeta-disk internal;
+  #       ''\t}
+  #     ''
+  #   )
+  #   drbdDevices;
+  # drbdConnectionConfig = map
+  #   (v:
+  #     ''
+  #       ''\t''\thost "${v.name}" address "${v.ip_address}:7788";
+  #     ''
+  #   )
+  #   nfsHosts;
 in
 {
-  networking.firewall.allowedTCPPorts = [ 7788 ];
+  networking.firewall.allowedTCPPorts = [ 7789 ];
   services.drbd = {
     enable = true;
-    config = '' #include "drbd.d/global_common.conf";
-      #include "drdb.d/*.res";
+    config = ''
       resource "r0" {
-      ''\tmeta-disk internal;
-      ${lib.concatStringsSep "\n" drbdVolumeConfig}
-      ${lib.concatStringsSep "\n" drbdNodeConfig}
-      ''\tconnection {
-      ${lib.concatStringsSep "\n" drbdConnectionConfig}
+      ''\tnet {
+      ''\t''\tprotocol C;
       ''\t}
+      ${lib.concatStringsSep "\n" drbdNodeConfig}
       }
     '';
+    # ''\tconnection {
+    # ${lib.concatStringsSep "\n" drbdConnectionConfig}
+    # ''\t}
   };
   systemd.services.drbd = {
     serviceConfig = {

@@ -11,9 +11,9 @@
     },
     "drbdDevices": {
         "volume 0": {
-            "drbd1": "/dev/sdb1",
-            "drbd2": "/dev/sdb1"
-        },
+            "nfs1": "/dev/sdb",
+            "nfs2": "/dev/sdb"
+        }
     },
     "hosts": {
         "yui": {
