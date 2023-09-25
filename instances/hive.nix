@@ -21,17 +21,17 @@ let
   };
 
   controlPlaneConf = { ... }: {
-    imports = [ ./init ./k8s/controlplane inputs.lxd-nixos.nixosModules.${ machineType "controlplane" "k8s"} ];
+    imports = [ ./init ./k8s ./k8s/controlplane inputs.lxd-nixos.nixosModules.${ machineType "controlplane" "k8s"} ];
     deployment. tags = [ "cardinal" "k8s" "controlplane" ];
   };
 
   workerConf = { ... }: {
-    imports = [ ./init ./k8s/worker inputs.lxd-nixos.nixosModules.${ machineType "worker" "k8s"} ];
+    imports = [ ./init ./k8s ./k8s/worker inputs.lxd-nixos.nixosModules.${ machineType "worker" "k8s"} ];
     deployment. tags = [ "cardinal" "k8s" "worker" ];
   };
 
   loadBalancerConf = { ... }: {
-    imports = [ ./init ./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${ machineType "loadbalancer" "k8s"} ];
+    imports = [ ./init ./k8s ./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${ machineType "loadbalancer" "k8s"} ];
     deployment. tags = [ "cardinal" "k8s" "loadbalancer" ];
   };
 

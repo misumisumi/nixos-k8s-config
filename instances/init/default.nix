@@ -4,7 +4,6 @@
 }:
 {
   imports = [
-    ./autoresources.nix
     ./ssh.nix
     ./system.nix
   ];
