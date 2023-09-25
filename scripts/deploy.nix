@@ -84,6 +84,6 @@ writeShellApplication {
     # else
     #   terraform workspace select "''${workspace}" || die "''${workspace}' is not listed in the workspace."
     # fi
-    TF_WORKSPACE="''${workspace}" colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}" --show-trace
+    TF_WORKSPACE="''${workspace}" colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}"
   '';
 }
