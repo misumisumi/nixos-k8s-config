@@ -76,7 +76,7 @@ in
       description = "iSCSI targets with config";
     };
   };
-  config = mkIF cfg.enable {
+  config = mkIf cfg.enable {
     environment.etc."tgt/targets.conf" = {
       text = concatStringsSep (mkConfig cfg.targets);
     };
