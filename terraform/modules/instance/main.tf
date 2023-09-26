@@ -30,6 +30,15 @@ module "volume" {
   volumes = local.volumes
 }
 
+resource "random_id" "host_id" {
+  for_each = { for i in var.instances : i.name => i }
+  keepers = {
+    # Generate a new id each time we switch to a new AMI id
+    host_id = each.value.name
+  }
+  byte_length = 4
+}
+
 resource "lxd_profile" "profile" {
   name     = "profile_${var.tag}"
   for_each = toset(local.remotes)

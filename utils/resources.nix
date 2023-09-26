@@ -2,25 +2,27 @@
 let
   workspace = builtins.getEnv "TF_WORKSPACE";
   check_path = path: builtins.pathExists path;
-  tf_output_path = target: "${builtins.getEnv "PWD"}/terraform/${target}/${workspace}.json";
-  payload = target: if check_path (tf_output_path target) then builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${target}/${workspace}.json") else { };
+  tf_output_path = part_of: "${builtins.getEnv "PWD"}/terraform/${part_of}/${workspace}.json";
+  payload = part_of: if check_path (tf_output_path part_of) then builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${part_of}/${workspace}.json") else { };
   resourcesInModule = type: module: builtins.filter (r: r.type == type) (module.resources or [ ])
     ++ lib.flatten (map (resourcesInModule type) (module.child_modules or [ ]));
-  resourcesByType = type: target: resourcesInModule type ((payload target).values.root_module or [ ]);
+  resourcesByType = type: part_of: resourcesInModule type ((payload part_of).values.root_module or [ ]);
 
-  payloadByWS = target: ws: builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${target}/${ws}.json");
-  resourcesByTypeAndWS = type: target: ws: resourcesInModule type ((payloadByWS target ws).values.root_module or [ ]);
+  payloadByWS = part_of: ws: builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${part_of}/${ws}.json");
+  resourcesByTypeAndWS = type: part_of: ws: resourcesInModule type ((payloadByWS part_of ws).values.root_module or [ ]);
 
 in
 rec {
-  resources = target: resourcesByType "lxd_instance" target;
-  resourcesByRole = role: target: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resources target));
-  resourcesByRoles = roles: target: lib.flatten (lib.forEach roles
+  resources = part_of: resourcesByType "lxd_instance" part_of;
+  resourcesByRole = role: part_of: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resources part_of));
+  resourcesByRoles = roles: part_of: lib.flatten (lib.forEach roles
     (role: builtins.filter
       (r: lib.strings.hasPrefix role r.values.name)
-      (resources target)));
+      (resources part_of)));
 
-  resourcesByWS = target: ws: resourcesByTypeAndWS "lxd_instance" target ws;
-  resourcesByRoleAndWS = role: target: ws: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resourcesByWS target ws));
+  resourcesByWS = part_of: ws: resourcesByTypeAndWS "lxd_instance" part_of ws;
+  resourcesByRoleAndWS = role: part_of: ws: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resourcesByWS part_of ws));
+  outputsByRole = role: part_of: (builtins.filter (r: lib.strings.hasPrefix role r.name) ((payload part_of).values.outputs.instance_info.value));
+
   nodeIP = r: r.values.ip_address;
 }

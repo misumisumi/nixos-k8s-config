@@ -83,8 +83,7 @@
         }:
         let
           inherit (import ./lib.nix) mkApp;
-          mkcerts = pkgs.callPackage (import ./certs) { };
-          myTerraform = pkgs.terraform.withPlugins (tp: [ tp.lxd tp.time ]);
+          myTerraform = pkgs.terraform.withPlugins (tp: with tp; [ lxd random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
           _pkgs = with pkgs;
             with myScripts; [
@@ -161,4 +160,3 @@
         };
     };
 }
-

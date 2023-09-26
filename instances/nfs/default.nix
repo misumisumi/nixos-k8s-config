@@ -4,6 +4,7 @@
     ./autoresources.nix
     ./drbd.nix
     ./nfs.nix
-    ./pacemaker.nix
+    # ./pacemaker.nix
+    ./zfs.nix
   ];
 }

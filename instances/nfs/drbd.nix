@@ -27,7 +27,7 @@ let
         ''\t''\t}
       ''
     )
-    (lib.traceSeq drbdDevices drbdDevices);
+    drbdDevices;
   drbdNodeConfig = map
     (v: ''
       ''\ton "${v.name}" {
@@ -73,6 +73,7 @@ in
     # ''\t}
   };
   systemd.services.drbd = {
+    enable = false;
     serviceConfig = {
       ExecStart = lib.mkForce "${pkgs.drbd}/bin/drbdadm up all";
       ExecStop = lib.mkForce "${pkgs.drbd}/bin/drbdadm down all";

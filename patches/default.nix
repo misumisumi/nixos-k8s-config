@@ -36,13 +36,12 @@
   #   spotify = pkgs-stable.spotify;
   # })
   # Patch from https://github.com/NixOS/nixpkgs/pull/211600
-
-  (final: prev: { })
-
   (final: prev: {
     inherit (nixpkgs-unstable) doq;
     setup-netboot-compornents = prev.callPackage ./setup-netboot-compornents.nix { };
-    terraform-providers.lxd = nixpkgs-unstable.terraform-providers.lxd;
-    terraform-providers.time = nixpkgs-unstable.terraform-providers.time;
+    terraform-providers = prev.terraform-providers // {
+      lxd = nixpkgs-unstable.terraform-providers.lxd;
+      time = nixpkgs-unstable.terraform-providers.time;
+    };
   })
 ]
