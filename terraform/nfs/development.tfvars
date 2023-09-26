@@ -1,3 +1,7 @@
+network = {
+  name         = "k8sbr0"
+  ipv4_address = "10.150.10.1/24"
+}
 compornents = [
   {
     tag = "nfs"
@@ -44,7 +48,8 @@ compornents = [
 
 pools = [
   {
-    name = "nfs"
-    size = "4GiB"
+    name        = "nfs"
+    size        = "5GiB"
+    volume_size = "2GiB"
   }
 ]

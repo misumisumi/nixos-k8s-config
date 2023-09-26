@@ -36,7 +36,6 @@ variable "instance_config" {
     machine_type   = optional(string, "container")
     vlan           = optional(number, null)
     boot_autostart = optional(bool, true)
-    root_block     = optional(string, "loop0")
     root_size      = optional(string, null)
     mount_fs       = optional(string, "ext4")
   })

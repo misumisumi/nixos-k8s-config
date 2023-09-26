@@ -11,7 +11,8 @@ resource "lxd_storage_pool" "pool" {
   name     = each.value.name
   driver   = "btrfs"
   config = {
-    size = each.value.size
+    size          = each.value.size
+    "volume.size" = each.value.volume_size
   }
   lifecycle {
     create_before_destroy = true

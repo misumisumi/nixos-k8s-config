@@ -2,8 +2,9 @@ variable "pools" {
   type = set(
     object(
       {
-        name = string
-        size = string
+        name        = string
+        size        = string
+        volume_size = optional(string, null)
       }
     )
   )
