@@ -1,0 +1,11 @@
+keys:
+  - &admin_sumi age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
+  - &instance_nfs1 age1nda0lg7lc0r8gx757sullkly8qr0raskutrgs8kldv326g5s63eqyclrwj
+  - &instance_nfs2 age1gr3mc07wgu9ndc3lse4wutr7e8h6clv0r7q3l4xvz2e4fpdvdvnsnsqhxw
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *admin_sumi
+          - *instance_nfs1
+          - *instance_nfs2

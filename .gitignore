@@ -7,4 +7,5 @@ terraform/*/*.json
 terraform/*/*.png
 .kube
 .keyfiles
-ssh_config
+.ssh
+secrets

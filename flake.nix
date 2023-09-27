@@ -2,11 +2,12 @@
   description = "Each my machine NixOS System Flake Configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     nvfetcher.url = "github:berberman/nvfetcher";
+    sops-nix.url = "github:Mic92/sops-nix";
     home-manager = {
       url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -89,6 +90,7 @@
             with myScripts; [
               bashInteractive
               # software for deployment
+              age
               btrfs-progs
               colmena
               dig
@@ -100,6 +102,7 @@
               hdparm
               myTerraform
               nvfetcher
+              sops
               squashfsTools
               tcpdump
               terraform-docs
@@ -118,12 +121,13 @@
               init_lxd
               add_remote_lxd
               k
+              mkage4mgr
+              mkage4instance
               mkbootfs
-              # mkcerts
               mkenv
               mkimg4lxc
               mkrootfs
-              # mksshconfig
+              mksshhostkeys
               mountrootfs
               unmountrootfs
               ter

@@ -1,28 +1,19 @@
-{ callPackage
-, writeShellScriptBin
+{ lib
+, callPackage
 , jq
 , kubectl
 , kubernetes-helm
 , nixos-generators
+, ssh-to-age
 , terraform
+, writeShellScriptBin
 ,
 }:
-let
-  inherit (callPackage ../utils/resources.nix { }) resourcesFromHosts;
-  # sshConfig =
-  #   builtins.map
-  #     (v: ''
-  #       Host ${v.name}
-  #         HostName ${v.ip_address}
-  #         User root
-  #         Port 22
-  #     '')
-  #     resourcesFromHosts "k8s";
-in
 {
   check_k8s = callPackage (import ./check_k8s.nix) { };
   deploy = callPackage (import ./deploy.nix) { };
   mkenv = callPackage (import ./mkenv.nix) { };
+  mksshhostkeys = callPackage (import ./mksshhostkeys.nix) { };
   ter = callPackage (import ./ter.nix) { };
   k = writeShellScriptBin "k" ''
     ${kubectl}/bin/kubectl --kubeconfig .kube/admin.kubeconfig $@
@@ -30,15 +21,17 @@ in
   he = writeShellScriptBin "he" ''
     ${kubernetes-helm}/bin/helm --kubeconfig .kube/admin.kubeconfig $@
   '';
+  mkkeyfile = writeShellScriptBin "mkkeyfile" ''
+
+  '';
   mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
     nix run ".#import/lxc-container" --impure
     nix run ".#import/lxc-virtual-machine" --impure
   '';
-  # mksshconfig = writeShellScriptBin "mksshconfig" ''
-  #   cat <<EOF > ssh_config
-  #   ${builtins.concatStringsSep "\n" sshConfig}
-  #   EOF
-  # '';
+  init_nfs_instance = writeShellScriptBin "init_nfs_instance" ''
+    deploy exec nfs -w development -- drbdadm create-md r0
+  '';
 }
 // (callPackage (import ./setup_lxd.nix) { })
+// (callPackage (import ./mkage.nix) { })
   // (callPackage (import ./mkdisk.nix) { })

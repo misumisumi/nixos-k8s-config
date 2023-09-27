@@ -3,12 +3,13 @@ let
   workspace = builtins.getEnv "TF_WORKSPACE";
   check_path = path: builtins.pathExists path;
   tf_output_path = part_of: "${builtins.getEnv "PWD"}/terraform/${part_of}/${workspace}.json";
-  payload = part_of: if check_path (tf_output_path part_of) then builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${part_of}/${workspace}.json") else { };
+  payload = part_of: if check_path (tf_output_path part_of) then builtins.fromJSON (builtins.readFile (tf_output_path part_of)) else { };
   resourcesInModule = type: module: builtins.filter (r: r.type == type) (module.resources or [ ])
     ++ lib.flatten (map (resourcesInModule type) (module.child_modules or [ ]));
   resourcesByType = type: part_of: resourcesInModule type ((payload part_of).values.root_module or [ ]);
 
-  payloadByWS = part_of: ws: builtins.fromJSON (builtins.readFile "${builtins.getEnv "PWD"}/terraform/${part_of}/${ws}.json");
+  tf_output_path_by_ws = part_of: ws: "${builtins.getEnv "PWD"}/terraform/${part_of}/${ws}.json";
+  payloadByWS = part_of: ws: if check_path (tf_output_path_by_ws part_of ws) then builtins.fromJSON (builtins.readFile (tf_output_path_by_ws part_of ws)) else { };
   resourcesByTypeAndWS = type: part_of: ws: resourcesInModule type ((payloadByWS part_of ws).values.root_module or [ ]);
 
 in
