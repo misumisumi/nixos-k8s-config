@@ -123,13 +123,9 @@
               k
               mkage4mgr
               mkage4instance
-              mkbootfs
               mkenv
               mkimg4lxc
-              mkrootfs
               mksshhostkeys
-              mountrootfs
-              unmountrootfs
               ter
             ];
           nixpkgs-unstable = import inputs.nixpkgs-unstable {

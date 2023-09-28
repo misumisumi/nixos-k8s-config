@@ -34,4 +34,3 @@
 }
 // (callPackage (import ./setup_lxd.nix) { })
 // (callPackage (import ./mkage.nix) { })
-  // (callPackage (import ./mkdisk.nix) { })
