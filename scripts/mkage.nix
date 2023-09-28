@@ -75,10 +75,10 @@
 
       project_root=$(git rev-parse --show-toplevel)
       jq -r ".values.outputs.instance_info.value | .[].name" < "''${project_root}"/terraform/"''${tf_dir}"/"''${workspace}".json | while read -r instance; do
-        ssh_public_key_path=.ssh/host_keys/"''${workspace}"/"''${instance}"/ssh_host_ed25519_key.pub
-        [ ! -f "''${ssh_public_key_path}" ] && die "Publick key does not exist."
-        echo "- &instance_''${instance} $(${ssh-to-age}/bin/ssh-to-age < "''${ssh_public_key_path}")"
+        age=$(lxc exec "''${instance}" -- cat /etc/ssh/ssh_host_ed25519_key.pub </dev/null | ${ssh-to-age}/bin/ssh-to-age)
+        echo "- &instance_''${workspace}_''${instance} ''${age}"
       done
     '';
   };
 }
+

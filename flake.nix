@@ -119,6 +119,7 @@
               deploy
               he
               init_lxd
+              init_nfs_instance
               add_remote_lxd
               k
               mkage4mgr
@@ -160,3 +161,4 @@
         };
     };
 }
+

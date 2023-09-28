@@ -1,12 +1,6 @@
 { workspace, name, ... }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  hostKey = filename: permissions: {
-    keyFile = "${pwd}/.ssh/host_keys/${workspace}/${name}";
-    destDir = "/etc/ssh/";
-    user = "root";
-    permissions = "${permissions}";
-  };
 in
 {
   imports = [
@@ -17,12 +11,11 @@ in
     # ./pacemaker.nix
     ./zfs.nix
   ];
-
-  # ssh keys
-  deployment.keys = {
-    "ssh_host_rsa_key" = hostKey "ssh_host_rsa_key" "0600";
-    "ssh_host_rsa_key.pub" = hostKey "ssh_host_rsa_key.pub" "0644";
-    "ssh_host_ed25519_key" = hostKey "ssh_host_ed25519_key" "0600";
-    "ssh_host_ed25519_key.pub" = hostKey "ssh_host_ed25519_key.pub" "0644";
-  };
+  sops.validateSopsFiles = false;
+  sops.defaultSopsFile = "${pwd}/secrets/zfs_keyfile.yaml";
+  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+  sops.age.generateKey = true;
+  sops.secrets."${name}.${workspace}.test" = { };
 }
+

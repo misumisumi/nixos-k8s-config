@@ -1,11 +1,13 @@
 keys:
-  - &admin_sumi age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
-  - &instance_nfs1 age1nda0lg7lc0r8gx757sullkly8qr0raskutrgs8kldv326g5s63eqyclrwj
-  - &instance_nfs2 age1gr3mc07wgu9ndc3lse4wutr7e8h6clv0r7q3l4xvz2e4fpdvdvnsnsqhxw
+  - &admin_mother age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
+  - &admin_stacia age1znnqnxjkr0x70r5ys0n2k34ym5a3spn69yuveqa76wh0ng65catspphysl
+  - &instance_development_nfs1 age1q406z9na9qc54jcvrqq0puh0pdyv5dp7uj32r74f8km0fms0857s589ysv
+  - &instance_development_nfs2 age1y83u60wwraglnrxaf6uw7k44cwad5gaxgjwhqtcfmgwg6nfskq0s28sgxm
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
-          - *admin_sumi
-          - *instance_nfs1
-          - *instance_nfs2
+          - *admin_mother
+          - *admin_stacia
+          - *instance_development_nfs1
+          - *instance_development_nfs2

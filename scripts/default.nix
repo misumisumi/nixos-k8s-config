@@ -30,7 +30,9 @@
   '';
   init_nfs_instance = writeShellScriptBin "init_nfs_instance" ''
     deploy exec nfs -w development -- drbdadm create-md r0
+    deploy exec nfs -w development -- drbdadm up r0
+    # deploy exec nfs1 -w development -- drbdadm primary r0 --force
   '';
-}
-// (callPackage (import ./setup_lxd.nix) { })
-// (callPackage (import ./mkage.nix) { })
+} // (callPackage (import ./setup_lxd.nix) { })
+  // (callPackage (import ./mkage.nix) { })
+

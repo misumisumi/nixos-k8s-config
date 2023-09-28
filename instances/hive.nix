@@ -41,7 +41,7 @@ let
   };
 
   nfsConf = { name, ... }: {
-    imports = [ ./init ./nfs inputs.lxd-nixos.nixosModules.${ machineType "nfs" "nfs"} ];
+    imports = [ ./init ./nfs inputs.sops-nix.nixosModules.sops inputs.lxd-nixos.nixosModules.${ machineType "nfs" "nfs"} ];
     deployment. tags = [ "cardinal" "nfs" "${ name}" ];
   };
 in

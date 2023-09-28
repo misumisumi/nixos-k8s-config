@@ -1,4 +1,5 @@
 { lib
+, config
 , pkgs
 , resourcesByRole
 , constByKey
@@ -74,10 +75,15 @@ in
   };
   systemd.services.drbd = {
     enable = false;
+    # before = [ ];
     serviceConfig = {
-      ExecStart = lib.mkForce "${pkgs.drbd}/bin/drbdadm up all";
-      ExecStop = lib.mkForce "${pkgs.drbd}/bin/drbdadm down all";
+      Type = "oneshot";
+      RemainAfterExit = "yes";
+      ExecStart = lib.mkForce "${pkgs.drbd}/etc/init.d/drbd start";
+      ExecStop = lib.mkForce "${pkgs.drbd}/etc/init.d/drbd stop";
+      ExecReload = "${pkgs.drbd}/etc/init.d/drbd reload";
     };
     path = with pkgs; [ kmod ];
   };
 }
+
