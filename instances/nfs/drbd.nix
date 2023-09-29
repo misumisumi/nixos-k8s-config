@@ -73,14 +73,25 @@ in
     # ${lib.concatStringsSep "\n" drbdConnectionConfig}
     # ''\t}
   };
-  systemd.services.drbd = {
+  system.activationScripts.makeLinstorLoopDevice_mapping = lib.stringAfter [ "var" ] ''
+    mkdir -p /var/lib/linstor
+    touch /var/lib/linstor/loop_device_mapping
+  '';
+  # Disable to control with pacemaker
+  systemd.services.drbd = lib.mkForce {
     enable = false;
-    # before = [ ];
+    after = [ "network-online.target" "sshd.service" "drbdproxy.service" ];
+    wants = [ "network-online.target" "sshd.service" ];
+    before = [ "pacemaker.service" ];
+    wantedBy = [ "multi-user.target" ];
+    environment = {
+      INIT_VERSION = "systemd";
+    };
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = "yes";
-      ExecStart = lib.mkForce "${pkgs.drbd}/etc/init.d/drbd start";
-      ExecStop = lib.mkForce "${pkgs.drbd}/etc/init.d/drbd stop";
+      ExecStart = "${pkgs.drbd}/etc/init.d/drbd start";
+      ExecStop = "${pkgs.drbd}/etc/init.d/drbd stop";
       ExecReload = "${pkgs.drbd}/etc/init.d/drbd reload";
     };
     path = with pkgs; [ kmod ];
