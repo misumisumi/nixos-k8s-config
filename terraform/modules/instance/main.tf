@@ -66,7 +66,7 @@ resource "lxd_instance" "instance" {
 
   name      = each.value.name
   type      = var.instance_config.machine_type
-  image     = "nixos/lxc-${var.instance_config.machine_type}"
+  image     = "${var.instance_config.image}/lxc-${var.instance_config.machine_type}"
   ephemeral = false
   profiles  = ["profile_${var.tag}"]
 
@@ -111,3 +111,4 @@ resource "lxd_instance" "instance" {
   }
   depends_on = [module.volume, lxd_profile.profile]
 }
+

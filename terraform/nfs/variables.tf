@@ -35,13 +35,7 @@ variable "compornents" {
           ), [])
         })
       )
-      instance_config = object({
-        machine_type = optional(string, "container")
-        cpu          = optional(number, 2)
-        memory       = optional(string, "1GiB")
-        nic_parent   = optional(string, "k8sbr0")
-        root_size    = optional(string, null)
-      })
+      instance_config = any
     })
   )
   description = "Name and some config for instances to spawn"

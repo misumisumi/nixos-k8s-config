@@ -42,6 +42,7 @@ compornents = [
       memory       = "4GiB"
       nic_parent   = "k8sbr0"
       machine_type = "virtual-machine"
+      image        = "almalinux9"
     }
   }
 ]
@@ -53,3 +54,4 @@ pools = [
     volume_size = "2GiB"
   }
 ]
+

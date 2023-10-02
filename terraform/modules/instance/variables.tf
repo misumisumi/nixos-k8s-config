@@ -33,6 +33,7 @@ variable "instance_config" {
     cpu            = number
     memory         = string
     nic_parent     = string
+    image          = optional(string, "nixos")
     machine_type   = optional(string, "container")
     vlan           = optional(number, null)
     boot_autostart = optional(bool, true)
@@ -41,3 +42,4 @@ variable "instance_config" {
   })
   description = "instance config"
 }
+

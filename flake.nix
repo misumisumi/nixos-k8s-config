@@ -16,10 +16,7 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flakes = {
-      url = "github:misumisumi/flakes";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    flakes. url = "github:misumisumi/flakes";
     common-config.url = "github:misumisumi/nixos-common-config";
     nvimdots.url = "github:misumisumi/nvimdots/my-config";
   };

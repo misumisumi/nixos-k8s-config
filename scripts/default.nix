@@ -27,6 +27,8 @@
   mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
     nix run ".#import/lxc-container" --impure
     nix run ".#import/lxc-virtual-machine" --impure
+    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
+    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
   '';
   init_nfs_instance = writeShellScriptBin "init_nfs_instance" ''
     deploy exec nfs -w development -- drbdadm create-md r0
@@ -35,4 +37,3 @@
   '';
 } // (callPackage (import ./setup_lxd.nix) { })
   // (callPackage (import ./mkage.nix) { })
-
