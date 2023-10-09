@@ -1,6 +1,7 @@
 { inputs
 , overlay
 , stateVersion
+, nixosConfigurations
 ,
 }:
 let
@@ -17,32 +18,32 @@ let
 
   etcdConf = { ... }: {
     imports = [ ./init ./k8s/etcd inputs.lxd-nixos.nixosModules.${ machineType "etcd" "k8s"} ];
-    deployment. tags = [ "cardinal" "k8s" "etcd" ];
+    deployment.tags = [ "cardinal" "k8s" "etcd" ];
   };
 
   controlPlaneConf = { ... }: {
     imports = [ ./init ./k8s ./k8s/controlplane inputs.lxd-nixos.nixosModules.${ machineType "controlplane" "k8s"} ];
-    deployment. tags = [ "cardinal" "k8s" "controlplane" ];
+    deployment.tags = [ "cardinal" "k8s" "controlplane" ];
   };
 
   workerConf = { ... }: {
     imports = [ ./init ./k8s ./k8s/worker inputs.lxd-nixos.nixosModules.${ machineType "worker" "k8s"} ];
-    deployment. tags = [ "cardinal" "k8s" "worker" ];
+    deployment.tags = [ "cardinal" "k8s" "worker" ];
   };
 
   loadBalancerConf = { ... }: {
     imports = [ ./init ./k8s ./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${ machineType "loadbalancer" "k8s"} ];
-    deployment. tags = [ "cardinal" "k8s" "loadbalancer" ];
+    deployment.tags = [ "cardinal" "k8s" "loadbalancer" ];
   };
 
   netbootConf = { name, ... }: {
     imports = [ ./init ./netboot inputs.lxd-nixos.nixosModules.${ machineType "netboot" "netboot"} ];
-    deployment. tags = [ "cardinal" "netboot" "${ name}" ];
+    deployment.tags = [ "cardinal" "netboot" "${ name}" ];
   };
 
   nfsConf = { name, ... }: {
     imports = [ ./init ./nfs inputs.sops-nix.nixosModules.sops inputs.lxd-nixos.nixosModules.${ machineType "nfs" "nfs"} ];
-    deployment. tags = [ "cardinal" "nfs" "${ name}" ];
+    deployment.tags = [ "cardinal" "nfs" "${ name}" ];
   };
 in
 {
@@ -63,6 +64,7 @@ in
     specialArgs = {
       inherit inputs;
       inherit stateVersion;
+      inherit nixosConfigurations;
     };
   };
 }

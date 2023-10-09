@@ -1,4 +1,4 @@
-{ config, pkgs, nodeIP, ... }:
+{ config, pkgs, nodeIP, nixosConfigurations, ... }:
 let
   serverName = "myipxe.com";
 in
@@ -13,6 +13,9 @@ in
   ];
   services.nginx = {
     enable = true;
+    # httpConfig = ''
+    #   disable_symlinks off;
+    # '';
     virtualHosts."${serverName}" = {
       addSSL = false;
       enableACME = false;
@@ -23,6 +26,9 @@ in
   environment.systemPackages = with pkgs; [
     (setup-netboot-compornents.override
       {
+        nixosConfigs = {
+          rescue = nixosConfigurations.rescue;
+        };
         serverIP = "${nodeIP}";
         serverName = "${serverName}";
       })

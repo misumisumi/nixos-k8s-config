@@ -37,6 +37,7 @@
       lxd.generateImporters = true;
       flake =
         let
+
           stateVersion = "23.05"; # For Home Manager
 
           overlay =
@@ -55,9 +56,19 @@
             };
         in
         {
+          nixConfig = {
+            extra-substituters = [
+              "https://nix-community.cachix.org"
+              "https://cache.nixos.org/"
+            ];
+            extra-trusted-public-keys = [
+              "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+            ];
+          };
           # Cluster settings managing colmena
           colmena = (
             import ./instances/hive.nix {
+              inherit (self) nixosConfigurations;
               inherit inputs overlay stateVersion;
             }
           );
@@ -139,7 +150,7 @@
             config.allowUnfree = true;
           };
           packages = {
-            # netboot = self.nixosConfigurations.netboot.config.system.build.netboot;
+            rescueIpxeScript = self.nixosConfigurations.rescue.config.system.build.netbootIpxeScript;
           };
           apps = with myScripts; {
             mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "development"; }; };
@@ -158,4 +169,6 @@
         };
     };
 }
+
+
 

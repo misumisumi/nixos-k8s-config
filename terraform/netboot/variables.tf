@@ -22,8 +22,9 @@ variable "compornents" {
       tag = string
       instances = set(
         object({
-          name   = string
-          remote = optional(string, null)
+          name         = string
+          remote       = optional(string, null)
+          ipv4_address = optional(string, null)
           devices = optional(set(
             object({
               name         = string
@@ -34,13 +35,7 @@ variable "compornents" {
           ), [])
         })
       )
-      instance_config = object({
-        cpu        = optional(number, 2)
-        memory     = optional(string, "1GiB")
-        nic_parent = optional(string, "k8sbr0")
-        vlan       = optional(number, null)
-        root_size  = optional(string, null)
-      })
+      instance_config = any
     })
   )
   description = "Name and some config for instances to spawn"

@@ -6,5 +6,4 @@
     ./dnsmasq.nix
     ./nginx.nix
   ];
-
 }

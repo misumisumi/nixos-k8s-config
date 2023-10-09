@@ -1,5 +1,6 @@
 # For
 { lib, pkgs, stateVersion, ... }: with lib; {
+  environment.noXlibs = lib.mkForce false;
   time.timeZone = "Asia/Tokyo"; # Time zone and internationalisation
   i18n = {
     defaultLocale = "en_US.UTF-8";
