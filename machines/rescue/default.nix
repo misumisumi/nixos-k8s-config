@@ -28,8 +28,7 @@ nixosSystem {
           imports =
             [
               ../common/hm.nix
-              # inputs.common-config.nixosModules.core
-              # inputs.nvimdots.nixosModules.nvimdots
+              inputs.common-config.nixosModules.minimal
             ];
         };
       }

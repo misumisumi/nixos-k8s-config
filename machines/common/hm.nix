@@ -22,9 +22,7 @@
     };
 
     sessionVariables = {
-      EDITOR = "nvim";
       NIXOS_OZONE_WL = "1";
-      DIRENV_WARN_TIMEOUT = "120s"; # DIRENVのタイムアウトまでを長くする
     };
 
     shellAliases = {

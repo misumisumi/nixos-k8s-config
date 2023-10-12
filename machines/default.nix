@@ -60,4 +60,5 @@ in
     system = "x86_64-linux";
     rootDir = ./worker;
   };
+  rescue = import ./rescue { inherit inputs lib overlay stateVersion; system = "x86_64-linux"; };
 }
