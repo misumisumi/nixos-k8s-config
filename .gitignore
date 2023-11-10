@@ -1,7 +1,7 @@
 .direnv
 terraform/*/.terraform
 terraform/*/.terraform.lock.hcl
-terraform/*/terraform.tfstate
+terraform/*/terraform.tfstate.d
 terraform/*/terraform.tfstate.backup
 terraform/*/*.json
 terraform/*/*.png
