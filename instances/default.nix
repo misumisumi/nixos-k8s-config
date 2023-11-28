@@ -9,8 +9,12 @@
       system = "x86_64-linux";
       specialArgs = { inherit stateVersion inputs; };
       modules = [
-        ./ssh.nix
-        ./system.nix
+        ../apps/ssh
+        ../system/console
+        ../system/locale
+        ../system/network
+        ../system/nix
+        ../system/security
         inputs.lxd-nixos.nixosModules.container
       ];
     };
@@ -19,8 +23,12 @@
       system = "x86_64-linux";
       specialArgs = { inherit stateVersion inputs; };
       modules = [
-        ./ssh.nix
-        ./system.nix
+        ../apps/ssh
+        ../system/console
+        ../system/locale
+        ../system/network
+        ../system/nix
+        ../system/security
         inputs.lxd-nixos.nixosModules.virtual-machine
       ];
     };

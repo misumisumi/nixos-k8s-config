@@ -95,7 +95,7 @@
             }
           );
           nixosConfigurations = (
-            import ./lxd {
+            import ./instances {
               inherit (inputs.nixpkgs) lib;
               inherit inputs stateVersion;
             }
