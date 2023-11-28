@@ -25,7 +25,7 @@ in
           preOpenCommands = ''
             zpool import -a
           '';
-          postOpenCOmmands = ''
+          postOpenCommands = ''
             mount --mkdir=0400 /dev/mapper/lukskeystore /tmp/keystore
             zfs load-keys -a
             umount -R /tmp/keystore

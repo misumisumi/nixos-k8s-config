@@ -3,11 +3,13 @@
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
+    flakes. url = "github:misumisumi/flakes";
     lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nur.url = "github:nix-community/NUR";
     nvfetcher.url = "github:berberman/nvfetcher";
-    sops-nix.url = "github:Mic92/sops-nix";
+    nvimdots.url = "github:misumisumi/nvimdots/my-config";
     home-manager = {
       url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,9 +18,29 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flakes. url = "github:misumisumi/flakes";
-    common-config.url = "github:misumisumi/nixos-common-config";
-    nvimdots.url = "github:misumisumi/nvimdots/my-config";
+    nixgl = {
+      url = "github:guibou/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-stable.follows = "nixpkgs";
+    };
+    dotfiles = {
+      url = "github:misumisumi/home-manager-config";
+      # url = "path:/home/sumi/Templates/nix/nixos-common-config";
+      inputs = {
+        flakes.follows = "flakes";
+        home-manager.follows = "home-manager";
+        nixgl.follows = "nixgl";
+        nixpkgs-stable.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-unstable";
+        nur.follows = "nur";
+        nvimdots.follows = "nvimdots";
+        sops-nix.follows = "sops-nix";
+      };
+    };
   };
 
   outputs =

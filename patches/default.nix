@@ -37,7 +37,7 @@
   # })
   # Patch from https://github.com/NixOS/nixpkgs/pull/211600
   (final: prev: {
-    inherit (nixpkgs-unstable) doq;
+    inherit (nixpkgs-unstable) doq udev-gothic-nf;
     setup-netboot-compornents = prev.callPackage ./setup-netboot-compornents.nix { };
     terraform-providers = prev.terraform-providers // {
       lxd = nixpkgs-unstable.terraform-providers.lxd;

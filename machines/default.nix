@@ -10,6 +10,10 @@ let
     , user
     , system
     , rootDir
+    , homeDirectory ? ""
+    , scheme ? "minimal"
+    , wm ? "none"
+    , useNixOSWallpaper ? false
     }:
       with lib;
       nixosSystem {
@@ -17,25 +21,27 @@ let
         specialArgs = { inherit hostname inputs user stateVersion; }; # specialArgs give some args to modules
         modules =
           [
-            (overlay {
-              inherit system;
-            })
+            inputs.sops-nix.nixosModules.sops
             ../modules
-            ./common
             rootDir # Each machine config
 
             inputs.home-manager.nixosModules.home-manager
             {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit hostname user stateVersion; };
-              home-manager.users."${user}" = {
-                imports =
-                  [
-                    ./common/hm.nix
-                    inputs.common-config.nixosModules.core
-                    inputs.nvimdots.nixosModules.nvimdots
-                  ];
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = false;
+                extraSpecialArgs = {
+                  inherit inputs hostname user stateVersion homeDirectory scheme useNixOSWallpaper wm;
+                };
+                sharedModules = [
+                  inputs.flakes.nixosModules.for-hm
+                  inputs.nvimdots.nixosModules.nvimdots
+                  inputs.dotfiles.homeManagerModules.dotfiles
+                  inputs.sops-nix.homeManagerModules.sops
+                ];
+                users."${user}" = {
+                  dotfilesActivation = true;
+                };
               };
             }
           ];
@@ -48,17 +54,17 @@ in
     system = "x86_64-linux";
     rootDir = ./ctrl;
   };
-  worker1 = systemSetting {
-    inherit user;
-    hostname = "alice";
-    system = "x86_64-linux";
-    rootDir = ./worker;
-  };
-  worker2 = systemSetting {
-    inherit user;
-    hostname = "strea";
-    system = "x86_64-linux";
-    rootDir = ./worker;
-  };
-  rescue = import ./rescue { inherit inputs lib overlay stateVersion; system = "x86_64-linux"; };
+  # worker1 = systemSetting {
+  #   inherit user;
+  #   hostname = "alice";
+  #   system = "x86_64-linux";
+  #   rootDir = ./worker;
+  # };
+  # worker2 = systemSetting {
+  #   inherit user;
+  #   hostname = "strea";
+  #   system = "x86_64-linux";
+  #   rootDir = ./worker;
+  # };
+  # rescue = import ./rescue { inherit inputs lib overlay stateVersion; system = "x86_64-linux"; };
 }
