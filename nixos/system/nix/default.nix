@@ -47,7 +47,7 @@
           config = { allowUnfree = true; };
         };
       in
-      import ../../patches { inherit nixpkgs-unstable; }
+      import ../../../patches { inherit nixpkgs-unstable; }
     );
     config = { allowUnfree = true; };
   };

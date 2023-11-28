@@ -1,7 +1,4 @@
 { hostname, ... }: {
-  imports = [
-    ../common/network.nix
-  ];
   services = {
     nscd = {
       enable = true;

@@ -8,7 +8,7 @@
 let
   # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
   # 各証明書の有効期限は10年
-  inherit (callPackage ../utils/consts.nix { }) constByKey;
+  inherit (callPackage ../../utils/consts.nix { }) constByKey;
   inherit (callPackage ./utils/settings.nix { }) caConfig;
   virtualIPs = (constByKey "virtualIPs").k8s;
   mkKubeConfig =

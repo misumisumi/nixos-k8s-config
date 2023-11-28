@@ -6,10 +6,10 @@
 ,
 }:
 let
-  inherit (callPackage ../utils/resources.nix { }) resourcesByRoleAndWS;
+  inherit (callPackage ../../utils/resources.nix { }) resourcesByRoleAndWS;
+  inherit (callPackage ../../utils/consts.nix { }) constByKey;
   inherit (callPackage ./utils/utils.nix { }) getAltNames mkCsr;
 
-  inherit (callPackage ../utils/consts.nix { }) constByKey;
   virtualIPs = (constByKey "virtualIPs").k8s;
 
   caCsr = mkCsr "kubernetes-ca" {

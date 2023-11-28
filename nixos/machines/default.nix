@@ -53,6 +53,7 @@ in
     hostname = "yui";
     system = "x86_64-linux";
     rootDir = ./ctrl;
+    scheme = "minimal";
   };
   # worker1 = systemSetting {
   #   inherit user;
@@ -66,5 +67,11 @@ in
   #   system = "x86_64-linux";
   #   rootDir = ./worker;
   # };
-  # rescue = import ./rescue { inherit inputs lib overlay stateVersion; system = "x86_64-linux"; };
+  rescue = systemSetting {
+    user = "nixos";
+    hostname = "nixos";
+    system = "x86_64-linux";
+    rootDir = ./rescue;
+    scheme = "minimal";
+  };
 }

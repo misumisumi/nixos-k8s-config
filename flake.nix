@@ -89,19 +89,19 @@
           };
           # Cluster settings managing colmena
           colmena = (
-            import ./instances/hive.nix {
+            import ./nixos/instances/hive.nix {
               inherit (self) nixosConfigurations;
               inherit inputs overlay stateVersion;
             }
           );
           nixosConfigurations = (
-            import ./instances {
+            import ./nixos/instances {
               inherit (inputs.nixpkgs) lib;
               inherit inputs stateVersion;
             }
           )
           // (
-            import ./machines {
+            import ./nixos/machines {
               inherit (inputs.nixpkgs) lib;
               inherit inputs overlay stateVersion;
             }
@@ -175,8 +175,8 @@
             rescueIpxeScript = self.nixosConfigurations.rescue.config.system.build.netbootIpxeScript;
           };
           apps = with myScripts; {
-            mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "development"; }; };
-            mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "production"; }; };
+            mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "development"; }; };
+            mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
             ter = mkApp { drv = ter; };
             k = mkApp { drv = k; };
             mkimg4lxc = mkApp { drv = mkimg4lxc; };

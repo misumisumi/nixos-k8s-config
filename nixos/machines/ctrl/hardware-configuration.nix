@@ -9,7 +9,7 @@
 , ...
 }:
 let
-  cpu_bender = (pkgs.callPackage ../../utils/consts.nix { }).cpu_bender;
+  inherit (pkgs.callPackage ../../../utils/consts.nix { }) cpu_bender;
 in
 {
   imports = [

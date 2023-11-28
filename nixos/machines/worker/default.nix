@@ -6,7 +6,7 @@
 , ...
 }:
 let
-  inherit (import ../../utils/consts.nix { inherit lib; }) label;
+  inherit (import ../../../utils/consts.nix { inherit lib; }) label;
 in
 {
   imports = [
