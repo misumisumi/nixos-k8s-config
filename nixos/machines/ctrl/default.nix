@@ -8,6 +8,7 @@
     ../../apps/virtualization/lxd
     ../../system
     ../init
+    ./filesystem.nix
     ./hardware-configuration.nix
     ./network.nix
     ./system.nix

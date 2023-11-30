@@ -19,48 +19,7 @@ in
     initrd = {
       availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" ];
       kernelModules = [ "dm-snapshot" ];
-      luks.devices = {
-        lukskeystore = {
-          device = "/dev/zvol/PoolCtrl/keystore";
-          preOpenCommands = ''
-            zpool import -a
-          '';
-          postOpenCommands = ''
-            mount --mkdir=0400 /dev/mapper/lukskeystore /tmp/keystore
-            zfs load-keys -a
-            umount -R /tmp/keystore
-            rm -rf /tmp/keystore
-            cryptsetup close /dev/mapper/lukskeystore
-          '';
-        };
-      };
     };
   };
-
-  fileSystems."/" = {
-    device = "PoolCtrl/nixos/root";
-    fsType = "zfs";
-  };
-  fileSystems."/var/lib" = {
-    device = "PoolCtrl/nixos/var/lib";
-    fsType = "zfs";
-  };
-  fileSystems."/var/log" = {
-    device = "PoolCtrl/nixos/var/log";
-    fsType = "zfs";
-  };
-  fileSystems."/home" = {
-    device = "PoolCtrl/nixos/home";
-    fsType = "zfs";
-  };
-  fileSystems."/nix" = {
-    device = "PoolCtrl/local/nix";
-    fsType = "zfs";
-  };
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/ctrl-boot";
-    fsType = "vfat";
-  };
-
   hardware.cpu.${cpu_bender hostname}.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

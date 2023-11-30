@@ -22,14 +22,14 @@ let
         modules =
           [
             inputs.sops-nix.nixosModules.sops
+            inputs.home-manager.nixosModules.home-manager
+            inputs.disko.nixosModules.disko
             ../modules
             rootDir # Each machine config
-
-            inputs.home-manager.nixosModules.home-manager
             {
               home-manager = {
                 useGlobalPkgs = true;
-                useUserPackages = false;
+                useUserPackages = true;
                 extraSpecialArgs = {
                   inherit inputs hostname user stateVersion homeDirectory scheme useNixOSWallpaper wm;
                 };

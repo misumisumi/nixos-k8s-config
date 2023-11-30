@@ -8,8 +8,11 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     nur.url = "github:nix-community/NUR";
-    nvfetcher.url = "github:berberman/nvfetcher";
     nvimdots.url = "github:misumisumi/nvimdots/my-config";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -29,7 +32,7 @@
     };
     dotfiles = {
       url = "github:misumisumi/home-manager-config";
-      # url = "path:/home/sumi/Templates/nix/nixos-common-config";
+      # url = "path:/home/sumi/Templates/nix/home-manager-config";
       inputs = {
         flakes.follows = "flakes";
         home-manager.follows = "home-manager";
@@ -131,7 +134,6 @@
               libxslt
               hdparm
               myTerraform
-              nvfetcher
               sops
               squashfsTools
               tcpdump
@@ -167,7 +169,7 @@
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ inputs.nvfetcher.overlays.default ]
+            overlays = [ inputs.flakes.overlays.default ]
               ++ (import ./patches { inherit nixpkgs-unstable; });
             config.allowUnfree = true;
           };
