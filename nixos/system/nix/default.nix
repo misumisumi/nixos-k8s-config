@@ -35,20 +35,19 @@
   };
 
   nixpkgs = {
-    overlays = [
-      inputs.nur.overlay
-      inputs.nixgl.overlay
-      inputs.flakes.overlays.default
-    ]
-    ++ (
+    overlays =
       let
         nixpkgs-unstable = import inputs.nixpkgs-unstable {
           inherit (config.nixpkgs) system;
           config = { allowUnfree = true; };
         };
       in
-      import ../../../patches { inherit nixpkgs-unstable; }
-    );
+      [
+        inputs.nur.overlay
+        inputs.nixgl.overlay
+        inputs.flakes.overlays.default
+        (import ../../../patches { inherit nixpkgs-unstable; })
+      ];
     config = { allowUnfree = true; };
   };
   system = {

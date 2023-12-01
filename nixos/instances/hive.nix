@@ -1,5 +1,4 @@
 { inputs
-, overlay
 , stateVersion
 , nixosConfigurations
 ,
@@ -58,8 +57,10 @@ in
       in
       import inputs.nixpkgs {
         system = "x86_64-linux";
-        overlays = [ inputs.flakes.overlays.default ]
-        ++ (import ../patches { inherit nixpkgs-unstable; });
+        overlays = [
+          inputs.flakes.overlays.default
+          (import ../patches { inherit nixpkgs-unstable; })
+        ];
       };
     specialArgs = {
       inherit inputs;

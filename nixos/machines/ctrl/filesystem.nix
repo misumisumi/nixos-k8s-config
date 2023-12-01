@@ -1,7 +1,8 @@
 { lib, ... }:
 let
   root_disk = "/dev/sdx";
-  raidz_disks = [ "/dev/sdx" "/dev/sdy" ];
+  # raidz_disks = [ "/dev/sdx" "/dev/sdy" ];
+  raidz_disks = [ ];
 in
 {
   disko.devices = {
@@ -36,15 +37,13 @@ in
       name = lib.removePrefix "_" (builtins.replaceStrings [ "/" ] [ "_" ] device);
       inherit device;
       content = {
-        content = {
-          type = "gpt";
-          partitions = {
-            zfs = {
-              size = "100%";
-              content = {
-                type = "zfs";
-                pool = "zscsi";
-              };
+        type = "gpt";
+        partitions = {
+          zfs = {
+            size = "100%";
+            content = {
+              type = "zfs";
+              pool = "zscsi";
             };
           };
         };

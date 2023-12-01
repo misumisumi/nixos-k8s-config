@@ -1,6 +1,5 @@
 { inputs
 , lib
-, overlay
 , stateVersion
 }:
 let
