@@ -62,23 +62,7 @@
       lxd.generateImporters = true;
       flake =
         let
-
           stateVersion = "23.05"; # For Home Manager
-
-          overlay =
-            { system }:
-            let
-              nixpkgs-unstable = import inputs.nixpkgs-unstable {
-                inherit system;
-                config = { allowUnfree = true; };
-              };
-            in
-            {
-              nixpkgs.overlays = [
-                flakes.overlays.default
-              ]
-              ++ (import ./patches { inherit nixpkgs-unstable; });
-            };
         in
         {
           nixConfig = {
@@ -91,12 +75,11 @@
             ];
           };
           # Cluster settings managing colmena
-          colmena = (
-            import ./nixos/instances/hive.nix {
-              inherit (self) nixosConfigurations;
-              inherit inputs overlay stateVersion;
-            }
-          );
+          colmena = import ./nixos/instances/hive.nix {
+            inherit (self) nixosConfigurations;
+            inherit inputs stateVersion;
+          }
+          ;
           nixosConfigurations = (
             import ./nixos/instances {
               inherit (inputs.nixpkgs) lib;
@@ -106,7 +89,7 @@
           // (
             import ./nixos/machines {
               inherit (inputs.nixpkgs) lib;
-              inherit inputs overlay stateVersion;
+              inherit inputs stateVersion;
             }
           );
         };
@@ -129,11 +112,12 @@
               dig
               graphviz
               hcl2json
+              hdparm
               inetutils
               jq
               libxslt
-              hdparm
               myTerraform
+              nixos-anywhere
               sops
               squashfsTools
               tcpdump
@@ -169,8 +153,10 @@
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ inputs.flakes.overlays.default ]
-              ++ (import ./patches { inherit nixpkgs-unstable; });
+            overlays = [
+              inputs.flakes.overlays.default
+              (import ./patches { inherit nixpkgs-unstable; })
+            ];
             config.allowUnfree = true;
           };
           packages = {
