@@ -1,4 +1,7 @@
-{ lib, ... }:
+{ lib
+, vmTest ? false
+, ...
+}:
 let
   root_disk = "/dev/sdx";
   # raidz_disks = [ "/dev/sdx" "/dev/sdy" ];
@@ -80,16 +83,18 @@ in
             type = "zfs_fs";
             options = {
               mountpoint = "none";
-              # encryption = "aes-256-gcm";
-              # keyformat = "passphrase";
-              # keylocation = "file:///tmp/secret.key";
               compression = "zstd";
               "com.sun:auto-snapshot" = "false";
+            } // lib.optionalAttrs (! vmTest) {
+              encryption = "aes-256-gcm";
+              keyformat = "passphrase";
+              keylocation = "file:///tmp/secret.key";
             };
+          } // lib.optionalAttrs (! vmTest) {
             # use this to read the key during boot
-            # postCreateHook = ''
-            #   zfs set keylocation="prompt" "PoolCtrl/system";
-            # '';
+            postCreateHook = ''
+              zfs set keylocation="prompt" "PoolCtrl/system";
+            '';
           };
           "system/root" = {
             type = "zfs_fs";

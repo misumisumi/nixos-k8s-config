@@ -1,3 +1,7 @@
+{ lib
+, vmTest ? false
+, ...
+}:
 {
   imports = [
     #./iscsi.nix
@@ -13,5 +17,5 @@
     ./network.nix
     ./system.nix
     ./zfs.nix
-  ];
+  ] ++ lib.optional (! vmTest) ./post-install.nix;
 }

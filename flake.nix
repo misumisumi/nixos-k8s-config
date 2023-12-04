@@ -87,7 +87,7 @@
             }
           )
           // (
-            import ./nixos/machines {
+            import ./nixos/hosts {
               inherit (inputs.nixpkgs) lib;
               inherit inputs stateVersion;
             }

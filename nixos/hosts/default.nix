@@ -11,13 +11,14 @@ let
     , rootDir
     , homeDirectory ? ""
     , scheme ? "minimal"
+    , vmTest ? false
     , wm ? "none"
     , useNixOSWallpaper ? false
     }:
       with lib;
       nixosSystem {
         inherit system;
-        specialArgs = { inherit hostname inputs user stateVersion; }; # specialArgs give some args to modules
+        specialArgs = { inherit hostname inputs user stateVersion vmTest; }; # specialArgs give some args to modules
         modules =
           [
             inputs.sops-nix.nixosModules.sops
@@ -53,6 +54,14 @@ in
     system = "x86_64-linux";
     rootDir = ./ctrl;
     scheme = "minimal";
+  };
+  ctrl-test = systemSetting {
+    inherit user;
+    hostname = "yui";
+    system = "x86_64-linux";
+    rootDir = ./ctrl;
+    scheme = "minimal";
+    vmTest = true;
   };
   # worker1 = systemSetting {
   #   inherit user;
