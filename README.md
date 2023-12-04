@@ -148,3 +148,9 @@ $ check_k8s                      # check_k8s
 ```
 $ ter destroy development
 ```
+
+## memo
+
+```
+nix run github:nix-community/nixos-anywhere -- -f ".#ctrl" --option pure-eval false --vm-test
+```

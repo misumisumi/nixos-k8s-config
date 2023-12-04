@@ -43,7 +43,7 @@ in
             size = "100%";
             content = {
               type = "zfs";
-              pool = "zscsi";
+              pool = "PoolScsi";
             };
           };
         };
@@ -53,12 +53,10 @@ in
     zpool = {
       PoolCtrl = {
         type = "zpool";
-        # rootFsOptions = {
-        #   compression = "zstd";
-        #   "com.sun:auto-snapshot" = "false";
-        # };
-        # postCreateHook = "zfs snapshot zroot@blank";
-
+        rootFsOptions = {
+          compression = "zstd";
+          "com.sun:auto-snapshot" = "false";
+        };
         datasets = {
           # zfs_testvolume = {
           #   type = "zfs_volume";
@@ -82,16 +80,16 @@ in
             type = "zfs_fs";
             options = {
               mountpoint = "none";
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/secret.key";
+              # encryption = "aes-256-gcm";
+              # keyformat = "passphrase";
+              # keylocation = "file:///tmp/secret.key";
               compression = "zstd";
               "com.sun:auto-snapshot" = "false";
             };
             # use this to read the key during boot
-            postCreateHook = ''
-              zfs set keylocation="prompt" "zroot/$name";
-            '';
+            # postCreateHook = ''
+            #   zfs set keylocation="prompt" "PoolCtrl/system";
+            # '';
           };
           "system/root" = {
             type = "zfs_fs";
@@ -106,9 +104,7 @@ in
             type = "zfs_fs";
             options = {
               mountpoint = "none";
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/secret.key";
+              compression = "zstd";
             };
           };
           "local/nix" = {

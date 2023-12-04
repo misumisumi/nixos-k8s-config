@@ -1,4 +1,4 @@
-{ config, ... }:
+{ lib, config, ... }:
 {
   networking = {
     useDHCP = true;
@@ -12,16 +12,19 @@
       options zfs zfs_arc_max=4294967296
     '';
     zfs = {
-      requestEncryptionCredentials = [ "nixos" ];
+      requestEncryptionCredentials = [ "system" ];
       forceImportRoot = false;
     };
     initrd = {
       network = {
         enable = true;
+        postCommands = lib.mkBefore ''
+          mkdir -p /etc/secrets/initrd
+        '';
         ssh = {
           enable = true;
           port = 2222;
-          hostKeys = [ /root/.ssh/id_ed25519 /root/.ssh/id_rsa ];
+          hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];
           authorizedKeys = config.users.users.root.openssh.authorizedKeys.keys;
         };
       };

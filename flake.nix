@@ -117,7 +117,6 @@
               jq
               libxslt
               myTerraform
-              nixos-anywhere
               sops
               squashfsTools
               tcpdump
