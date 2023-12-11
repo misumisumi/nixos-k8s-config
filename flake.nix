@@ -6,15 +6,19 @@
     flakes. url = "github:misumisumi/flakes";
     lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     nur.url = "github:nix-community/NUR";
     nvimdots.url = "github:misumisumi/nvimdots/my-config";
+    devshell = {
+      url = "github:numtide/devshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.05";
+      url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-generators = {
@@ -58,11 +62,12 @@
       systems = [ "x86_64-linux" ];
       imports = [
         inputs.lxd-nixos.flakeModules.images
+        inputs.devshell.flakeModule
       ];
       lxd.generateImporters = true;
       flake =
         let
-          stateVersion = "23.05"; # For Home Manager
+          stateVersion = "23.11"; # For Home Manager
         in
         {
           nixConfig = {
@@ -102,48 +107,6 @@
           inherit (import ./lib.nix) mkApp;
           myTerraform = pkgs.terraform.withPlugins (tp: with tp; [ lxd random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
-          _pkgs = with pkgs;
-            with myScripts; [
-              bashInteractive
-              # software for deployment
-              age
-              btrfs-progs
-              colmena
-              dig
-              graphviz
-              hcl2json
-              hdparm
-              inetutils
-              jq
-              libxslt
-              myTerraform
-              sops
-              squashfsTools
-              tcpdump
-              terraform-docs
-
-              # software for managing cluster
-              argocd
-              etcd
-              kubectl
-              kubernetes-helm
-
-              # scripts
-              check_k8s
-              copy_img2lxd
-              deploy
-              he
-              init_lxd
-              init_nfs_instance
-              add_remote_lxd
-              k
-              mkage4mgr
-              mkage4instance
-              mkenv
-              mkimg4lxc
-              mksshhostkeys
-              ter
-            ];
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
             config = { allowUnfree = true; };
@@ -169,11 +132,59 @@
             mkimg4lxc = mkApp { drv = mkimg4lxc; };
             deploy = mkApp { drv = deploy; };
           };
-          devShells.default = pkgs.mkShell {
-            nativeBuildInputs = _pkgs;
-            buildInputs = [ ];
-            shellHooks = ''
-          '';
+          devshells.default = {
+            commands = [
+              {
+                help = "disko";
+                name = "disko";
+                command = ''
+                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
+                '';
+              }
+            ];
+            packages = with pkgs;
+              with myScripts; [
+                bashInteractive
+                # software for deployment
+                age
+                btrfs-progs
+                colmena
+                dig
+                graphviz
+                hcl2json
+                hdparm
+                inetutils
+                jq
+                libxslt
+                myTerraform
+                nixos-anywhere
+                sops
+                squashfsTools
+                tcpdump
+                terraform-docs
+
+                # software for managing cluster
+                argocd
+                etcd
+                kubectl
+                kubernetes-helm
+
+                # scripts
+                check_k8s
+                copy_img2lxd
+                deploy
+                he
+                init_lxd
+                init_nfs_instance
+                add_remote_lxd
+                k
+                mkage4mgr
+                mkage4instance
+                mkenv
+                mkimg4lxc
+                mksshhostkeys
+                ter
+              ];
           };
         };
     };
