@@ -12,9 +12,10 @@
     ../../apps/virtualization/lxd
     ../../system
     ../init
-    ./filesystem.nix
+    ./additionalfs.nix
     ./hardware-configuration.nix
     ./network.nix
+    ./rootfs.nix
     ./system.nix
     ./zfs.nix
   ] ++ lib.optional (! vmTest) ./post-install.nix;

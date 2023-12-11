@@ -8,13 +8,9 @@
 , hostname
 , ...
 }:
-let
-  inherit (pkgs.callPackage ../../../utils/consts.nix { }) cpu_bender;
-in
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    (modulesPath + "/profiles/qemu-guest.nix")
   ];
   boot = {
     initrd = {
@@ -22,5 +18,5 @@ in
       kernelModules = [ "dm-snapshot" ];
     };
   };
-  hardware.cpu.${cpu_bender hostname}.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

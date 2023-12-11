@@ -48,19 +48,19 @@ let
       };
 in
 {
-  ctrl = systemSetting {
+  primary = systemSetting {
     inherit user;
     hostname = "yui";
     system = "x86_64-linux";
-    rootDir = ./ctrl;
-    scheme = "minimal";
+    rootDir = ./primary;
+    scheme = "core";
   };
-  ctrl-test = systemSetting {
+  primary-test = systemSetting {
     inherit user;
     hostname = "yui";
     system = "x86_64-linux";
-    rootDir = ./ctrl;
-    scheme = "minimal";
+    rootDir = ./primary;
+    scheme = "core";
     vmTest = true;
   };
   # worker1 = systemSetting {

@@ -1,19 +1,18 @@
 { lib, config, ... }:
 {
   networking = {
-    useDHCP = true;
     hostId = "d8280a53";
   };
   boot = {
-    supportedFilesystems = [ "zfs" ];
+    initrd.supportedFilesystems = [ "zfs" ];
     kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
     kernelModules = [ "nohibernate" ];
     extraModprobeConfig = ''
       options zfs zfs_arc_max=4294967296
     '';
+    supportedFilesystems = [ "zfs" ];
     zfs = {
-      requestEncryptionCredentials = [ "system" ];
-      forceImportRoot = false;
+      forceImportRoot = true;
     };
   };
   services.zfs = {
@@ -21,6 +20,12 @@
     autoScrub.enable = true;
     autoSnapshot = {
       enable = false;
+      daily = 7;
+      flags = "-k -p --utc";
+      frequent = 15;
+      hourly = 24;
+      monthly = 12;
+      weekly = 4;
     };
   };
 }
