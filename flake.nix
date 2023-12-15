@@ -17,6 +17,14 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    nixos-anywhere = {
+      url = "github:nix-community/nixos-anywhere";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-unstable";
+        nixos-stable.follows = "nixpkgs";
+        disko.follows = "disko";
+      };
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -141,6 +149,13 @@
                   ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
                 '';
               }
+              {
+                help = "nixos-anywhere";
+                name = "nixos-anywhere";
+                command = ''
+                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
+                '';
+              }
             ];
             packages = with pkgs;
               with myScripts; [
@@ -157,7 +172,6 @@
                 jq
                 libxslt
                 myTerraform
-                nixos-anywhere
                 sops
                 squashfsTools
                 tcpdump
