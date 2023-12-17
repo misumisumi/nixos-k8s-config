@@ -11,14 +11,14 @@ let
     , rootDir
     , homeDirectory ? ""
     , scheme ? "minimal"
-    , vmTest ? false
+    , initial ? false
     , wm ? "none"
     , useNixOSWallpaper ? false
     }:
       with lib;
       nixosSystem {
         inherit system;
-        specialArgs = { inherit hostname inputs user stateVersion vmTest; }; # specialArgs give some args to modules
+        specialArgs = { inherit hostname inputs user stateVersion initial; }; # specialArgs give some args to modules
         modules =
           [
             inputs.sops-nix.nixosModules.sops
@@ -54,27 +54,24 @@ in
     system = "x86_64-linux";
     rootDir = ./primary;
     scheme = "core";
+    initial = true;
   };
-  primary-test = systemSetting {
+  secondary = systemSetting {
     inherit user;
-    hostname = "yui";
+    hostname = "strea";
     system = "x86_64-linux";
-    rootDir = ./primary;
+    rootDir = ./secondary;
     scheme = "core";
-    vmTest = true;
+    initial = true;
   };
-  # worker1 = systemSetting {
-  #   inherit user;
-  #   hostname = "alice";
-  #   system = "x86_64-linux";
-  #   rootDir = ./worker;
-  # };
-  # worker2 = systemSetting {
-  #   inherit user;
-  #   hostname = "strea";
-  #   system = "x86_64-linux";
-  #   rootDir = ./worker;
-  # };
+  tertiaryary = systemSetting {
+    inherit user;
+    hostname = "alice";
+    system = "x86_64-linux";
+    rootDir = ./tertiary;
+    scheme = "core";
+    initial = true;
+  };
   rescue = systemSetting {
     user = "nixos";
     hostname = "nixos";
@@ -83,3 +80,4 @@ in
     scheme = "minimal";
   };
 }
+

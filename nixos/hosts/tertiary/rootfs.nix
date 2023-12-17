@@ -3,8 +3,8 @@
 , ...
 }:
 let
-  root_device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000H1_S340NX0K748767";
-  root_device_size = 238.5; # GB
+  root_device = "/dev/disk/by-id/ata-KIOXIA-EXCERIA_SATA_SSD_822B70LKKLE4";
+  root_device_size = 223.6; # GB
   reserved_size = root_device_size - (root_device_size * 0.85);
 in
 {
@@ -29,7 +29,7 @@ in
               size = "100%";
               content = {
                 type = "zfs";
-                pool = "PoolPrimary";
+                pool = "PoolSecondary";
               };
             };
           };
@@ -37,7 +37,7 @@ in
       };
     };
     zpool = {
-      PoolPrimary = {
+      PoolSecondary = {
         type = "zpool";
         mountpoint = "/";
         rootFsOptions = {
@@ -47,7 +47,7 @@ in
         // lib.optionalAttrs (! initial) {
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
-          keylocation = "file:///tmp/rootfs.key";
+          keylocation = "file:///tmp/secondary.key";
         };
         datasets = {
           reserved = {
@@ -77,7 +77,7 @@ in
       } // lib.optionalAttrs (! initial) {
         # use this to read the key during boot
         postCreateHook = ''
-          zfs set keylocation="prompt" "PoolPrimary";
+          zfs set keylocation="prompt" "PoolSecondary";
         '';
       };
     };
