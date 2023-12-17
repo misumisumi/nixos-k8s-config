@@ -1,5 +1,5 @@
 { lib
-, vmTest ? false
+, initial ? false
 , ...
 }:
 {
@@ -18,5 +18,5 @@
     ./rootfs.nix
     ./system.nix
     ./zfs.nix
-  ] ++ lib.optional (! vmTest) ./post-install.nix;
+  ] ++ lib.optional (! initial) ./post-install.nix;
 }

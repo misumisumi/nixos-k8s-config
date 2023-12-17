@@ -1,10 +1,10 @@
 { lib
-, vmTest ? false
+, initial ? false
 , ...
 }:
 let
   root_device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000H1_S340NX0K748767";
-  root_device_size = 466.8; # GB
+  root_device_size = 238.5; # GB
   reserved_size = root_device_size - (root_device_size * 0.85);
 in
 {
@@ -44,10 +44,10 @@ in
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
         }
-        // lib.optionalAttrs (! vmTest) {
+        // lib.optionalAttrs (! initial) {
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
-          keylocation = "file:///tmp/secrets/primaryfs.key";
+          keylocation = "file:///tmp/primaryfs.key";
         };
         datasets = {
           reserved = {
@@ -74,7 +74,7 @@ in
             mountpoint = "/nix";
           };
         };
-      } // lib.optionalAttrs (! vmTest) {
+      } // lib.optionalAttrs (! initial) {
         # use this to read the key during boot
         postCreateHook = ''
           zfs set keylocation="prompt" "PoolPrimary";
