@@ -37,4 +37,5 @@
   } // lib.optionalAttrs (! builtins.hasAttr "password" config.sops.secrets) {
     password = "nixos";
   };
+  users.users.root.initialHashedPassword = "$y$j9T$2i4ZUQSB0zKtYfaf9YLuZ0$rwxfC/yKFR.zejBm.X00K/JZJSoYVOnnLkSLQ50N5T7";
 }
