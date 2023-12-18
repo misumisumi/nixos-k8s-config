@@ -25,8 +25,8 @@
 
   '';
   mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
-    nix run ".#import/lxc-container" --impure
-    nix run ".#import/lxc-virtual-machine" --impure
+    lxc image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f lxc --flake ".#lxc-virtual-machine") --alias nixos/lxc-container
+    lxc image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f qcow --flake ".#lxc-virtual-machine") --alias nixos/lxc-virtual-machine
     lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
     lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
   '';

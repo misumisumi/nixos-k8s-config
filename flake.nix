@@ -176,6 +176,7 @@
                 squashfsTools
                 tcpdump
                 terraform-docs
+                nixos-generators
 
                 # software for managing cluster
                 argocd

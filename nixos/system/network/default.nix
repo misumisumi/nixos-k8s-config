@@ -1,7 +1,7 @@
 { lib, ... }: {
   systemd = {
     network = {
-      enable = true;
+      enable = lib.mkDefault true;
       wait-online = {
         timeout = 5; # Disable wait online
         anyInterface = true;
@@ -11,7 +11,7 @@
 
   services = {
     resolved = {
-      enable = true;
+      enable = lib.mkDefault true;
       # dnssec = "allow-downgrade";
       dnssec = "false";
       extraConfig = ''
