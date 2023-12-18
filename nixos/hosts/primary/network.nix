@@ -4,7 +4,6 @@
       enable = true;
     };
   };
-  boot.initrd.availableKernelModules = [ "r8169" ];
   boot.initrd.network.udhcpc.extraArgs = [
     "-i"
     "eno1"
@@ -29,11 +28,8 @@
         "br0".netdevConfig = {
           Kind = "bridge";
           Name = "br0";
+          MACAddress = "none";
         };
-        # "br1".netdevConfig = {
-        #   Kind = "bridge";
-        #   Name = "br1";
-        # };
       };
       networks = {
         "10-wired" = {

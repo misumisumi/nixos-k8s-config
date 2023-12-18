@@ -1,7 +1,3 @@
-{ lib
-, initial ? false
-, ...
-}:
 {
   imports = [
     #./iscsi.nix
@@ -18,5 +14,5 @@
     ./rootfs.nix
     ./system.nix
     ./zfs.nix
-  ] ++ lib.optional (! initial) ./post-install.nix;
+  ];
 }

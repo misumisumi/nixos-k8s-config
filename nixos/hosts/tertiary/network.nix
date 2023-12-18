@@ -4,11 +4,6 @@
       enable = true;
     };
   };
-  boot.initrd.availableKernelModules = [ "r8169" ];
-  boot.initrd.network.udhcpc.extraArgs = [
-    "-i"
-    "eno1"
-  ];
   networking = {
     hostName = "${hostname}";
     interfaces.eno1.wakeOnLan.enable = true;
@@ -22,13 +17,13 @@
       ];
     };
   };
-
   systemd = {
     network = {
       netdevs = {
         "br0".netdevConfig = {
           Kind = "bridge";
           Name = "br0";
+          MACAddress = "";
         };
       };
       networks = {

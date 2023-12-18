@@ -12,13 +12,14 @@ let
     , homeDirectory ? ""
     , scheme ? "minimal"
     , initial ? false
+    , isVM ? false
     , wm ? "none"
     , useNixOSWallpaper ? false
     }:
       with lib;
       nixosSystem {
         inherit system;
-        specialArgs = { inherit hostname inputs user stateVersion initial; }; # specialArgs give some args to modules
+        specialArgs = { inherit hostname inputs user stateVersion initial isVM; }; # specialArgs give some args to modules
         modules =
           [
             inputs.sops-nix.nixosModules.sops
@@ -46,32 +47,53 @@ let
             }
           ];
       };
+
+  hosts = {
+    primary = {
+      inherit user;
+      hostname = "yui";
+      system = "x86_64-linux";
+      rootDir = ./primary;
+      scheme = "core";
+    };
+    secondary = {
+      inherit user;
+      hostname = "strea";
+      system = "x86_64-linux";
+      rootDir = ./secondary;
+      scheme = "core";
+    };
+    tertiary = {
+      inherit user;
+      hostname = "alice";
+      system = "x86_64-linux";
+      rootDir = ./tertiary;
+      scheme = "core";
+    };
+  };
+  attrs = {
+    "-build" = {
+      initial = false;
+      isVM = false;
+    };
+    "-install" = {
+      initial = true;
+      isVM = false;
+    };
+    "-test" = {
+      initial = true;
+      isVM = true;
+    };
+  };
 in
-{
-  primary = systemSetting {
-    inherit user;
-    hostname = "yui";
-    system = "x86_64-linux";
-    rootDir = ./primary;
-    scheme = "core";
-    initial = true;
-  };
-  secondary = systemSetting {
-    inherit user;
-    hostname = "strea";
-    system = "x86_64-linux";
-    rootDir = ./secondary;
-    scheme = "core";
-    initial = true;
-  };
-  tertiaryary = systemSetting {
-    inherit user;
-    hostname = "alice";
-    system = "x86_64-linux";
-    rootDir = ./tertiary;
-    scheme = "core";
-    initial = true;
-  };
+builtins.listToAttrs
+  (lib.flatten (
+    lib.mapAttrsToList
+      (host: value:
+        (lib.mapAttrsToList (target: args: { name = host + "${lib.removePrefix "-build" target}"; value = value // args; }) attrs))
+      hosts
+  ))
+  // {
   rescue = systemSetting {
     user = "nixos";
     hostname = "nixos";
