@@ -28,7 +28,7 @@
         "br0".netdevConfig = {
           Kind = "bridge";
           Name = "br0";
-          MACAddress = "none";
+          MACAddress = "25:e8:24:56:ef:b7";
         };
       };
       networks = {

@@ -29,7 +29,7 @@ in
               size = "100%";
               content = {
                 type = "zfs";
-                pool = "PoolSecondary";
+                pool = "PoolRootFS";
               };
             };
           };
@@ -37,7 +37,7 @@ in
       };
     };
     zpool = {
-      PoolSecondary = {
+      PoolRootFS = {
         type = "zpool";
         mountpoint = "/";
         rootFsOptions = {
@@ -47,7 +47,7 @@ in
         // lib.optionalAttrs (! initial) {
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
-          keylocation = "file:///tmp/secondary.key";
+          keylocation = "file:///tmp/rootfs.key";
         };
         datasets = {
           reserved = {
@@ -77,7 +77,7 @@ in
       } // lib.optionalAttrs (! initial) {
         # use this to read the key during boot
         postCreateHook = ''
-          zfs set keylocation="prompt" "PoolSecondary";
+          zfs set keylocation="prompt" "PoolRootFS";
         '';
       };
     };

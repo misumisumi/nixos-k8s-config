@@ -90,7 +90,7 @@ builtins.listToAttrs
   (lib.flatten (
     lib.mapAttrsToList
       (host: value:
-        (lib.mapAttrsToList (target: args: { name = host + "${lib.removePrefix "-build" target}"; value = value // args; }) attrs))
+        (lib.mapAttrsToList (target: args: { name = host + "${lib.removePrefix "-build" target}"; value = systemSetting (value // args); }) attrs))
       hosts
   ))
   // {

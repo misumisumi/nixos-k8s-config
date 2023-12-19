@@ -30,7 +30,7 @@ in
               size = "100%";
               content = {
                 type = "zfs";
-                pool = "PoolPrimary";
+                pool = "PoolRootFS";
               };
             };
           };
@@ -38,12 +38,13 @@ in
       };
     };
     zpool = {
-      PoolPrimary = {
+      PoolRootFS = {
         type = "zpool";
-        mountpoint = "/";
         rootFsOptions = {
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
+          mountpoint = "none";
+          canmount = "off";
         }
         // lib.optionalAttrs (! isVM) {
           encryption = "aes-256-gcm";
@@ -60,17 +61,55 @@ in
               reservation = "${builtins.toString reserved_size}G";
             };
           };
-          home = {
+          user = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              canmount = "off";
+              "com.sun:auto-snapshot" = "true";
+            };
+          };
+          "user/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
-            options."com.sun:auto-snapshot" = "true";
           };
-          lxd = {
+          system = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              canmount = "off";
+              "com.sun:auto-snapshot" = "false";
+            };
+          };
+          "system/root" = {
+            type = "zfs_fs";
+            mountpoint = "/";
+            options."com.sun:auto-snapshot" = "false";
+          };
+          "system/var" = {
+            type = "zfs_fs";
+            mountpoint = "/var";
+            options."com.sun:auto-snapshot" = "false";
+          };
+          "system/var/lib" = {
+            type = "zfs_fs";
+            mountpoint = "/var/lib";
+            options."com.sun:auto-snapshot" = "false";
+          };
+          "system/var/lib/lxd" = {
             type = "zfs_fs";
             mountpoint = "/var/lib/lxd";
             options."com.sun:auto-snapshot" = "true";
           };
-          nix = {
+          "local" = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              canmount = "off";
+              "com.sun:auto-snapshot" = "false";
+            };
+          };
+          "local/nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
           };
@@ -78,7 +117,7 @@ in
       } // lib.optionalAttrs (! isVM) {
         # use this to read the key during boot
         postCreateHook = ''
-          zfs set keylocation="prompt" "PoolPrimary";
+          zfs set keylocation="prompt" "PoolRootFS";
         '';
       };
     };
