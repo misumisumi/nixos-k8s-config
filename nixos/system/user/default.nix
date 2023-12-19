@@ -12,6 +12,9 @@
     enableLsColors = true;
     vteIntegration = true;
     blesh.enable = true;
+    interactiveShellInit = ''
+      bind 'set editing-mode vi'
+    '';
   };
 
   users.users.${user} = {
