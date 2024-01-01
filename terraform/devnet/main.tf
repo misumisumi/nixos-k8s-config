@@ -1,9 +1,10 @@
 locals {
-  compornents = merge([
-    for i in var.compornents : {
-      "${i.tag}" = {
-        instances       = i.instances
-        instance_config = i.instance_config
+  networks = merge([
+    for i in var.networks : {
+      "${i.name}" = {
+        ipv4_address = i.ipv4_address
+        ipv6_address = i.ipv6_address
+        nat          = i.nat
     } }
   ]...)
 }
@@ -35,12 +36,19 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-module "instances" {
-  for_each = local.compornents
-  source   = "../modules/instance"
-
-  tag             = each.key
-  instances       = each.value.instances
-  instance_config = each.value.instance_config
-  set_ip_address  = true
+resource "time_sleep" "wait_15s" {
+  depends_on       = [module.networks]
+  create_duration  = "15s"
+  destroy_duration = "15s"
 }
+
+module "networks" {
+  source   = "../modules/network"
+  for_each = local.networks
+
+  name         = each.key
+  ipv4_address = each.value.ipv4_address
+  ipv6_address = each.value.ipv6_address
+  nat          = each.value.nat
+}
+

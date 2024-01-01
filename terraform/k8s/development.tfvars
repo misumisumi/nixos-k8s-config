@@ -1,7 +1,3 @@
-network = {
-  name         = "k8sbr0"
-  ipv4_address = "10.150.10.1/24"
-}
 compornents = [
   {
     tag = "controlplane"
@@ -78,7 +74,7 @@ compornents = [
             type         = "disk"
             content_type = "block"
             properties = {
-              pool   = "ceph"
+              pool   = "devceph"
               source = "ceph1"
             }
           }
@@ -93,7 +89,7 @@ compornents = [
             type         = "disk"
             content_type = "block"
             properties = {
-              pool   = "ceph"
+              pool   = "dev-ceph"
               source = "ceph2"
             }
           }
@@ -108,7 +104,7 @@ compornents = [
             type         = "disk"
             content_type = "block"
             properties = {
-              pool   = "ceph"
+              pool   = "dev-ceph"
               source = "ceph3"
             }
           }
@@ -124,9 +120,3 @@ compornents = [
   }
 ]
 
-pools = [
-  {
-    name = "ceph"
-    size = "9GiB"
-  },
-]

@@ -1,13 +1,3 @@
-locals {
-  compornents = merge([
-    for i in var.compornents : {
-      "${i.tag}" = {
-        instances       = i.instances
-        instance_config = i.instance_config
-    } }
-  ]...)
-}
-
 terraform {
   required_providers {
     lxd = {
@@ -35,12 +25,7 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-module "instances" {
-  for_each = local.compornents
-  source   = "../modules/instance"
-
-  tag             = each.key
-  instances       = each.value.instances
-  instance_config = each.value.instance_config
-  set_ip_address  = true
+module "pools" {
+  source = "../modules/pool"
+  pools  = var.pools
 }
