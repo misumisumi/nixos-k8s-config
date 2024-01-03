@@ -1,13 +1,16 @@
 { lib
+, inputs
+, stateVersion
 , nixosConfigurations
 }:
 let
+  user = "nixos";
   inherit (import ../../utils/resources.nix { inherit lib; }) resourcesByRole machineType;
 
-  etcdHosts = map (r: r.values.name) (resourcesByRole "etcd" "k8s");
   controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane" "k8s");
-  workerHosts = map (r: r.values.name) (resourcesByRole "worker" "k8s");
+  etcdHosts = map (r: r.values.name) (resourcesByRole "etcd" "k8s");
   loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer" "k8s");
+  workerHosts = map (r: r.values.name) (resourcesByRole "worker" "k8s");
   nfsHosts = map (r: r.values.name) (resourcesByRole "nfs" "nfs");
   netbootHosts = map (r: r.values.name) (resourcesByRole "netboot" "netboot");
 
@@ -26,10 +29,6 @@ let
   workerConf = {
     imports = [ ./k8s/worker ./lxd/${machineType "worker" "k8s"} ];
   };
-  # { ... }: {
-  #   imports = [ ./init ./k8s ./k8s/worker ./lxd/${machineType "worker" "k8s"} ];
-  #   deployment.tags = [ "cardinal" "k8s" "worker" ];
-  # };
 
   # netbootConf = { name, ... }: {
   #   imports = [ ./init ./netboot ./lxd/${machineType "netboot" "netboot"} ];
@@ -40,8 +39,23 @@ let
   #   imports = [ ./init ./nfs ./lxd/${machineType "nfs" "nfs"} ];
   #   deployment.tags = [ "cardinal" "nfs" "${name}" ];
   # };
+  specialArgs4k8s = {
+    user = "nixos";
+    inherit inputs;
+    inherit stateVersion;
+  };
 in
-builtins.listToAttrs
+{
+  meta = {
+    nixpkgs = import inputs.nixpkgs {
+      system = "x86_64-linux";
+    };
+    nodeSpecialArgs = lib.listToAttrs (
+      map (name: { inherit name; value = specialArgs4k8s; }) (controlPlaneHosts ++ etcdHosts ++ loadBalancerHosts ++ workerHosts)
+    );
+  };
+}
+// builtins.listToAttrs
   (map
     (h: {
       name = h;

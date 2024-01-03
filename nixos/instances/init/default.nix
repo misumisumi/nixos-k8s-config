@@ -4,10 +4,8 @@
 }:
 {
   imports = [
-    ./ssh.nix
-    ./system.nix
+    ./modules.nix
+    ./hive.nix
   ];
-
-  deployment.targetHost = nodeIP;
   networking.hostName = name;
 }

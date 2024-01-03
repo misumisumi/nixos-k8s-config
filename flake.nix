@@ -88,14 +88,11 @@
             ];
           };
           # Cluster settings managing colmena
-          colmena = (import ./nixos/colmena {
-            inherit inputs stateVersion;
-          })
-          // (import ./nixos/instances/hive.nix {
+          colmena = import ./nixos/instances/hive.nix {
             inherit (inputs.nixpkgs) lib;
+            inherit inputs stateVersion;
             inherit (self) nixosConfigurations;
-          })
-          ;
+          };
           nixosConfigurations = (
             import ./nixos/instances {
               inherit (inputs.nixpkgs) lib;
