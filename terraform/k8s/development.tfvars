@@ -74,7 +74,7 @@ compornents = [
             type         = "disk"
             content_type = "block"
             properties = {
-              pool   = "devceph"
+              pool   = "dev-ceph"
               source = "ceph1"
             }
           }
