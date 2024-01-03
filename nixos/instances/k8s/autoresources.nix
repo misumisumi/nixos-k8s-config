@@ -17,7 +17,7 @@ in
 {
   _module.args = {
     inherit (pkgs.callPackage ../../../utils/consts.nix { }) workspace constByKey;
-    inherit (pkgs.callPackage ../../../utils/resources.nix { }) resources resourcesByRole resourcesByRoles;
+    inherit (pkgs.callPackage ../../../utils/resources.nix { }) resources resourcesByRole resourcesByRoles machineType;
     nodeIP = nodeIP self;
     virtualIP = virtualIP "k8s";
   };

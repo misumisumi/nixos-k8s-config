@@ -5,7 +5,7 @@
 }:
 let
   pwd = builtins.toPath (builtins.getEnv "PWD");
-  etcdServers = lib.mapAttrsToList (r: "https://${r.values.name}:2379") (resourcesByRole "etcd" "k8s");
+  etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd" "k8s");
 
   mkSecret = filename: {
     keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${filename}";

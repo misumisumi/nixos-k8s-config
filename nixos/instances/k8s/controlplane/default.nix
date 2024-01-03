@@ -1,29 +1,24 @@
 { lib
 , resourcesByRoles
-, workspace
 , ...
 }:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = lib.mapAttrsToList (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
+  nodes = map (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
   imports = [
+    ../../init
+    ../autoresources.nix
+    ../node
     ./apiserver.nix
     ./controller-manager.nix
-    ./scheduler.nix
+    ./hive.nix
     ./kubelet.nix
-    ../node
+    ./scheduler.nix
   ];
-
-  # For colmena
-  deployment.keys."ca.pem" = {
-    keyFile = "${pwd}/.kube/${workspace}/kubernetes/ca.pem";
-    destDir = "/var/lib/secrets/kubernetes";
-    user = "kubernetes";
-  };
-
   services.kubernetes.clusterCidr = "10.200.0.0/16";
 
-  networking.extraHosts = lib.concatMapStrings (x: x + "\n") nodes;
+  networking.extraHosts = lib.concatMapStrings
+    (x: x + "\n")
+    nodes;
 }

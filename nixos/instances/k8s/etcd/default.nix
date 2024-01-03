@@ -1,30 +1,19 @@
 { lib
+, nodeIP
 , resourcesByRole
 , resourcesByRoles
-, nodeIP
-, workspace
 , ...
 }:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
-  cluster = lib.mapAttrsToList (r: "${r.values.name}=https://${r.values.ip_address}:2380") (resourcesByRole "etcd" "k8s");
-  nodes = lib.mapAttrsToList (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
-
-  mkSecret = filename: {
-    keyFile = "${pwd}/.kube/${workspace}/etcd" + "/${filename}";
-    destDir = "/var/lib/secrets/etcd";
-    user = "etcd";
-  };
+  etcdServers = map (r: "${r.values.name}=https://${r.values.ip_address}:2380") (resourcesByRole "etcd" "k8s");
+  nodes = map (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
-  # For colmena
-  deployment.keys = {
-    "ca.pem" = mkSecret "ca.pem";
-    "peer.pem" = mkSecret "peer.pem";
-    "peer-key.pem" = mkSecret "peer-key.pem";
-    "server.pem" = mkSecret "server.pem";
-    "server-key.pem" = mkSecret "server-key.pem";
-  };
+  imports = [
+    ../../init
+    ../autoresources.nix
+    ./hive.nix
+  ];
 
   networking.firewall.allowedTCPPorts = [ 2379 2380 ];
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
@@ -34,7 +23,7 @@ in
 
     advertiseClientUrls = [ "https://${nodeIP}:2379" ];
     initialAdvertisePeerUrls = [ "https://${nodeIP}:2380" ];
-    initialCluster = lib.mkForce cluster;
+    initialCluster = lib.mkForce etcdServers;
     listenClientUrls = [ "https://${nodeIP}:2379" "https://127.0.0.1:2379" ];
     listenPeerUrls = [ "https://${nodeIP}:2380" "https://127.0.0.1:2380" ];
 

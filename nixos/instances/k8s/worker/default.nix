@@ -3,38 +3,21 @@
 , name
 , resourcesByRoles
 , virtualIP
-, workspace
 , ...
 }:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
-  nodes = lib.mapAttrsToList
-    (name: ip: "${ip} ${builtins.head (builtins.match "^.*([0-9])" name)}")
+  nodes = map
+    (r: "${r.values.ip_address} ${builtins.head (builtins.match "^.*([0-9])" r.values.name)}")
     (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
-  imports = [ ../node/default.nix ];
+  imports = [
+    ../../init
+    ../autoresources.nix
+    ../node
+    ./hive.nix
+  ];
 
-  deployment.keys = {
-    "ca.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/kubernetes/ca.pem";
-      destDir = "/var/lib/secrets/kubernetes";
-      user = "kubernetes";
-      permissions = "0644";
-    };
-
-    "kubelet.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/kubernetes/kubelet" + "/${name}.pem";
-      destDir = "/var/lib/secrets/kubernetes";
-      user = "kubernetes";
-    };
-
-    "kubelet-key.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/kubernetes/kubelet" + "/${name}-key.pem";
-      destDir = "/var/lib/secrets/kubernetes";
-      user = "kubernetes";
-    };
-  };
   boot.kernelModules = [ "ceph" ];
 
   networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;

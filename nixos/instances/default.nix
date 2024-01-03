@@ -11,7 +11,7 @@ let
     ../system/locale
     ../system/nix
     ../system/security
-    ../system/user
+    ./system/user
   ];
 in
 {
@@ -19,15 +19,16 @@ in
     nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit stateVersion inputs user; };
-      inherit modules;
+      modules = modules ++ [
+        ./lxd/container
+      ];
     };
   lxc-virtual-machine = with lib;
     nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit stateVersion inputs user; };
       modules = modules ++ [
-        inputs.sops-nix.nixosModules.sops
-        ../system/network
+        ./lxd/virtual-machine
       ];
     };
 }

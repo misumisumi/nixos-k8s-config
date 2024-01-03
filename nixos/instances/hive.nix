@@ -1,11 +1,8 @@
-{ inputs
-, stateVersion
+{ lib
 , nixosConfigurations
-,
 }:
 let
-  inherit (inputs.nixpkgs) lib;
-  inherit (import ../utils/resources.nix { inherit lib; }) resourcesByRole;
+  inherit (import ../../utils/resources.nix { inherit lib; }) resourcesByRole machineType;
 
   etcdHosts = map (r: r.values.name) (resourcesByRole "etcd" "k8s");
   controlPlaneHosts = map (r: r.values.name) (resourcesByRole "controlplane" "k8s");
@@ -13,63 +10,45 @@ let
   loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer" "k8s");
   nfsHosts = map (r: r.values.name) (resourcesByRole "nfs" "nfs");
   netbootHosts = map (r: r.values.name) (resourcesByRole "netboot" "netboot");
-  machineType = target: tag: builtins.head (map (r: r.values.type) (resourcesByRole target tag));
 
-  etcdConf = { ... }: {
-    imports = [ ./init ./k8s/etcd inputs.lxd-nixos.nixosModules.${ machineType "etcd" "k8s"} ];
-    deployment.tags = [ "cardinal" "k8s" "etcd" ];
+  controlPlaneConf = {
+    imports = [ ./k8s/controlplane ./lxd/${machineType "controlplane" "k8s"} ];
   };
 
-  controlPlaneConf = { ... }: {
-    imports = [ ./init ./k8s ./k8s/controlplane inputs.lxd-nixos.nixosModules.${ machineType "controlplane" "k8s"} ];
-    deployment.tags = [ "cardinal" "k8s" "controlplane" ];
+  etcdConf = {
+    imports = [ ./k8s/etcd ./lxd/${machineType "etcd" "k8s"} ];
   };
 
-  workerConf = { ... }: {
-    imports = [ ./init ./k8s ./k8s/worker inputs.lxd-nixos.nixosModules.${ machineType "worker" "k8s"} ];
-    deployment.tags = [ "cardinal" "k8s" "worker" ];
+  loadBalancerConf = {
+    imports = [ ./k8s/loadbalancer ./lxd/${machineType "loadbalancer" "k8s"} ];
   };
 
-  loadBalancerConf = { ... }: {
-    imports = [ ./init ./k8s ./k8s/loadbalancer inputs.lxd-nixos.nixosModules.${ machineType "loadbalancer" "k8s"} ];
-    deployment.tags = [ "cardinal" "k8s" "loadbalancer" ];
+  workerConf = {
+    imports = [ ./k8s/worker ./lxd/${machineType "worker" "k8s"} ];
   };
+  # { ... }: {
+  #   imports = [ ./init ./k8s ./k8s/worker ./lxd/${machineType "worker" "k8s"} ];
+  #   deployment.tags = [ "cardinal" "k8s" "worker" ];
+  # };
 
-  netbootConf = { name, ... }: {
-    imports = [ ./init ./netboot inputs.lxd-nixos.nixosModules.${ machineType "netboot" "netboot"} ];
-    deployment.tags = [ "cardinal" "netboot" "${ name}" ];
-  };
+  # netbootConf = { name, ... }: {
+  #   imports = [ ./init ./netboot ./lxd/${machineType "netboot" "netboot"} ];
+  #   deployment.tags = [ "cardinal" "netboot" "${name}" ];
+  # };
 
-  nfsConf = { name, ... }: {
-    imports = [ ./init ./nfs inputs.sops-nix.nixosModules.sops inputs.lxd-nixos.nixosModules.${ machineType "nfs" "nfs"} ];
-    deployment.tags = [ "cardinal" "nfs" "${ name}" ];
-  };
+  # nfsConf = { name, ... }: {
+  #   imports = [ ./init ./nfs ./lxd/${machineType "nfs" "nfs"} ];
+  #   deployment.tags = [ "cardinal" "nfs" "${name}" ];
+  # };
 in
-{
-  meta = {
-    allowApplyAll = false; # Due to mixed configuration of physical nodes and virtual machines
-    nixpkgs =
-      let
-        nixpkgs-unstable = import inputs.nixpkgs-unstable {
-          system = "x86_64-linux";
-          config = { allowUnfree = true; };
-        };
-      in
-      import inputs.nixpkgs {
-        system = "x86_64-linux";
-        overlays = [
-          inputs.flakes.overlays.default
-          (import ../patches { inherit nixpkgs-unstable; })
-        ];
-      };
-    specialArgs = {
-      inherit inputs;
-      inherit stateVersion;
-      inherit nixosConfigurations;
-    };
-  };
-}
-  // (builtins.listToAttrs
+builtins.listToAttrs
+  (map
+    (h: {
+      name = h;
+      value = controlPlaneConf;
+    })
+    controlPlaneHosts)
+// builtins.listToAttrs
   (map
     (h: {
       name = h;
@@ -79,31 +58,25 @@ in
 // builtins.listToAttrs (map
   (h: {
     name = h;
-    value = controlPlaneConf;
-  })
-  controlPlaneHosts)
-// builtins.listToAttrs (map
-  (h: {
-    name = h;
     value = loadBalancerConf;
   })
   loadBalancerHosts)
-// builtins.listToAttrs (map
+  // builtins.listToAttrs (map
   (h: {
     name = h;
     value = workerConf;
   })
   workerHosts)
-// builtins.listToAttrs (map
-  (h: {
-    name = h;
-    value = nfsConf;
-  })
-  nfsHosts)
-// builtins.listToAttrs (map
-  (h: {
-    name = h;
-    value = netbootConf;
-  })
-  netbootHosts)
-)
+# // builtins.listToAttrs (map
+#   (h: {
+#     name = h;
+#     value = nfsConf;
+#   })
+#   nfsHosts)
+# // builtins.listToAttrs (map
+#   (h: {
+#     name = h;
+#     value = netbootConf;
+#   })
+#   netbootHosts)
+
