@@ -1,29 +1,11 @@
-{ lib
-, config
-, workspace
+{ config
 , resourcesByRole
 , ...
 }:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
   etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd" "k8s");
 in
 {
-  deployment.keys = {
-    "etcd-ca.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/etcd/ca.pem";
-      destDir = "/var/lib/secrets/flannel";
-    };
-    "etcd-client.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/flannel/etcd-client.pem";
-      destDir = "/var/lib/secrets/flannel";
-    };
-    "etcd-client-key.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/flannel/etcd-client-key.pem";
-      destDir = "/var/lib/secrets/flannel";
-    };
-  };
-
   # https://github.com/NixOS/nixpkgs/blob/145084f62b6341fc4300ba3f8eb244d594168e9d/nixos/modules/services/cluster/kubernetes/flannel.nix#L41-L47
   networking.dhcpcd.denyInterfaces = [ "flannel*" ];
   networking.firewall.allowedUDPPorts = [

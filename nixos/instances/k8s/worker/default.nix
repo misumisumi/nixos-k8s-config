@@ -15,7 +15,6 @@ in
     ../../init
     ../autoresources.nix
     ../node
-    ./hive.nix
   ];
 
   boot.kernelModules = [ "ceph" ];

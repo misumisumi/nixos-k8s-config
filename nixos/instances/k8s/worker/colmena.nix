@@ -7,6 +7,10 @@ let
   pwd = builtins.toPath (builtins.getEnv "PWD");
 in
 {
+  imports = [
+    ../../init/colmena.nix
+    ../node/colmena.nix
+  ];
   deployment = {
     tags = [ "cardinal" "k8s" "worker" ];
     keys = {

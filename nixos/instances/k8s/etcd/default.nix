@@ -12,7 +12,6 @@ in
   imports = [
     ../../init
     ../autoresources.nix
-    ./hive.nix
   ];
 
   networking.firewall.allowedTCPPorts = [ 2379 2380 ];

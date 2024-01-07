@@ -17,7 +17,6 @@ in
   imports = [
     ../../init
     ../autoresources.nix
-    ./hive.nix
   ];
   # haproxyのログの取り方の参考
   # https://blog.amedama.jp/entry/2015/08/19/194522

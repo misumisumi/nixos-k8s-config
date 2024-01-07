@@ -1,22 +1,9 @@
 { lib
 , resourcesByRole
-, workspace
 , ...
 }:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
   etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd" "k8s");
-
-  mkSecret = filename: {
-    keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${filename}";
-    destDir = "/var/lib/secrets/kubernetes/apiserver";
-    user = "kubernetes";
-  };
-  mkServerSecret = filename: {
-    keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${workspace}/${filename}";
-    destDir = "/var/lib/secrets/kubernetes/apiserver";
-    user = "kubernetes";
-  };
 
   corednsPolicies =
     map
@@ -44,23 +31,6 @@ let
       };
 in
 {
-  # For colmena
-  deployment.keys = {
-    "server.pem" = mkServerSecret "server.pem";
-    "server-key.pem" = mkServerSecret "server-key.pem";
-
-    "kubelet-client.pem" = mkSecret "kubelet-client.pem";
-    "kubelet-client-key.pem" = mkSecret "kubelet-client-key.pem";
-
-    "api-etcd-ca.pem" = {
-      keyFile = "${pwd}/.kube/etcd/ca.pem";
-      destDir = "/var/lib/secrets/kubernetes/apiserver";
-      user = "kubernetes";
-    };
-    "api-etcd-client.pem" = mkSecret "etcd-client.pem";
-    "api-etcd-client-key.pem" = mkSecret "etcd-client-key.pem";
-  };
-
   networking.firewall.allowedTCPPorts = [ 6443 ];
 
   services.kubernetes.apiserver = {

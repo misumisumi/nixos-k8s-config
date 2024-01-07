@@ -8,6 +8,9 @@ let
   };
 in
 {
+  imports = [
+    ../../init/colmena.nix
+  ];
   deployment = {
     tags = [ "cardinal" "k8s" "etcd" ];
     keys = {

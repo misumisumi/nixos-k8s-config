@@ -1,26 +1,8 @@
 { lib
 , virtualIP
-, workspace
 , ...
 }:
-let
-  pwd = builtins.getEnv "PWD";
-in
 {
-  # For colmena
-  deployment.keys = {
-    "controller-manager.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/kubernetes/controller-manager.pem";
-      destDir = "/var/lib/secrets/kubernetes";
-      user = "kubernetes";
-    };
-    "controller-manager-key.pem" = {
-      keyFile = "${pwd}/.kube/${workspace}/kubernetes/controller-manager-key.pem";
-      destDir = "/var/lib/secrets/kubernetes";
-      user = "kubernetes";
-    };
-  };
-
   services.kubernetes.controllerManager = {
     enable = true;
     extraOpts = lib.strings.concatStringsSep " " [

@@ -9,12 +9,10 @@ in
   imports = [
     ../../init
     ../autoresources.nix
-    ../node
     ./apiserver.nix
     ./controller-manager.nix
-    ./hive.nix
     ./kubelet.nix
-    ./scheduler.nix
+    # ./scheduler.nix
   ];
   services.kubernetes.clusterCidr = "10.200.0.0/16";
 
