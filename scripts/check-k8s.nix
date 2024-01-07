@@ -1,6 +1,6 @@
 { writeShellApplication }:
 writeShellApplication {
-  name = "check_k8s";
+  name = "check-k8s";
   text = ''
     set -e
 

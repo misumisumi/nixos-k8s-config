@@ -1,8 +1,13 @@
 {
     "workspaces": [
         "development",
+        "staging",
         "production"
     ],
+    "lxd-setting": {
+        "storage-backend": "btrfs",
+        "storage-create-loop": "64"
+    },
     "virtualIPs": {
         "k8s": {
             "development": "10.150.10.100",

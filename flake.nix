@@ -184,17 +184,15 @@
                 kubernetes-helm
 
                 # scripts
-                check_k8s
-                copy_img2lxd
+                add-remote-lxd
+                check-k8s
+                copy-img2lxd
                 deploy
                 he
-                init_lxd
-                init_nfs_instance
-                add_remote_lxd
+                init-lxd
                 k
-                mkage4mgr
                 mkage4instance
-                mkenv
+                mkage4mgr
                 mkimg4lxc
                 mksshhostkeys
                 ter

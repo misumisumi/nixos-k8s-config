@@ -1,4 +1,8 @@
 { writeShellApplication }:
+let
+  inherit (builtins.fromJSON (builtins.readFile ../config.json)) workspaces;
+  genWS = map (ws: "[[ $(terraform workspace list | grep ${ws}) == '' ]] && terraform workspace new ${ws}") workspaces;
+in
 writeShellApplication {
   name = "ter";
   text = ''
@@ -6,12 +10,13 @@ writeShellApplication {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
-      ) <cmd> <workspace> [-h] [-v]
+      ) <cmd> [-w] [-h] [-v] -- <terraform option>
 
       Launch container and VM by terraform using workspace-specific variables
 
     Available options:
 
+    -w, --workspace Workspace name (Required for subcommands other than "ter init")
     -h, --help      Print this help and exit
     -v, --verbose   Print script debug info
     EOF
@@ -49,16 +54,22 @@ writeShellApplication {
     parse_params() {
       # default values of variables set from params
       count=0
+      cmd=""
+      workspace=""
       while (( $# > 0 )) do
         count=''$((count + 1))
         case "''${1-}" in
         -h | --help) usage ;;
         -v | --verbose) set -x ;;
-        -?*) break ;;
-        *) cmd=''${1-}
-          shift
+        -w | --workspace) shift
           workspace=''${1-}
+          count="''$((count + 2))"
         ;;
+        -- )
+          break
+        ;;
+        -?*) break ;;
+        *) cmd=''${1-} ;;
         esac
         shift
       done
@@ -70,13 +81,23 @@ writeShellApplication {
     parse_params "''$@"
 
     # check required params and arguments
-    [[ "''${workspace}" == "" ]] && die "Need workspace name"
+    if [ "''${cmd}" == "init" ]; then
+      ${builtins.concatStringsSep "\n" genWS}
+    elif [ "$(terraform workspace list | grep "''${workspace}")" == "" ]; then
+      die "''${workspace} is not listed in the workspace."
+    else
+      terraform workspace select "''${workspace}"
+    fi
 
     # script logic here
-    terraform workspace select "''${workspace}" || echo "''${workspace} is not listed in the workspace."
-    terraform "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-2)}"
-    terraform show -json | jq >"''${workspace}".json
-    terraform graph | dot -Tpng >"''${workspace}".png
-    hcl2json "''${workspace}".tfvars > terraform.json
+    terraform "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-1)}"
+    if [[ "''${cmd}" == "apply"  ]]; then
+      terraform output -json >"''${workspace}".json
+      terraform graph | dot -Tpng >"''${workspace}".png
+      hcl2json "''${workspace}".tfvars > "''${workspace}".json
+    elif [[ "''${cmd}" == "destroy" ]]; then
+      rm "''${workspace}".json
+      rm "''${workspace}".png
+    fi
   '';
 }

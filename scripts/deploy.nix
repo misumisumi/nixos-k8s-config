@@ -6,7 +6,7 @@ writeShellApplication {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
-      ) <cmd> <tag> -w <workspace> [-h] [-v] -- <colmena option>
+      ) <cmd> <tag> [-w] [-h] [-v] -- <colmena option>
 
       Deployment NixOS by colmena with workspace-specific variables
 

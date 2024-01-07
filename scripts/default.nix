@@ -10,7 +10,7 @@
 ,
 }:
 {
-  check_k8s = callPackage (import ./check_k8s.nix) { };
+  check-k8s = callPackage (import ./check-k8s.nix) { };
   deploy = callPackage (import ./deploy.nix) { };
   mkenv = callPackage (import ./mkenv.nix) { };
   mksshhostkeys = callPackage (import ./mksshhostkeys.nix) { };
@@ -30,10 +30,5 @@
     lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
     lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
   '';
-  init_nfs_instance = writeShellScriptBin "init_nfs_instance" ''
-    deploy exec nfs -w development -- drbdadm create-md r0
-    deploy exec nfs -w development -- drbdadm up r0
-    # deploy exec nfs1 -w development -- drbdadm primary r0 --force
-  '';
-} // (callPackage (import ./setup_lxd.nix) { })
+} // (callPackage (import ./setup-lxd.nix) { })
   // (callPackage (import ./mkage.nix) { })

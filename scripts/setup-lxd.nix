@@ -1,9 +1,11 @@
-{ writeShellScriptBin }: {
-  init_lxd = writeShellScriptBin "init_lxd" ''
-    lxd init --auto --storage-backend=btrfs --storage-create-loop=64
+{ writeShellScriptBin }: let
+  inherit ((builtins.fromJSON (builtins.readFile ../config.json)).lxd-setting) storage-backend storage-create-loop;
+in{
+  init-lxd = writeShellScriptBin "init-lxd" ''
+    lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
   '';
-  add_remote_lxd = writeShellScriptBin "add_remote_lxd" ''
-    colmena exec --on @hosts --impure -- lxd init --auto --storage-backend=btrfs --storage-create-loop=64
+  add-remote-lxd = writeShellScriptBin "add-remote-lxd" ''
+    colmena exec --on @hosts --impure -- lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
     colmena exec --on @hosts --impure -- lxc config set core.https_address '[::]'
     colmena exec --on @hosts --impure -- lxc config trust add --name colmena
 
@@ -14,7 +16,7 @@
         `ssh -n root@''$(echo "''${target}" | jq -r '.ip_address') lxc config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token'`
     done
   '';
-  copy_img2lxd = writeShellScriptBin "copy_img2lxd" ''
+  copy-img2lxd = writeShellScriptBin "copy-img2lxd" ''
     ALIAS_CONTAINER="nixos/lxc-container"
     ALIAS_VM="nixos/lxc-virtual-machine"
 
