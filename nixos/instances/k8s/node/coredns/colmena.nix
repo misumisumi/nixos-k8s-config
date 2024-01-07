@@ -2,7 +2,7 @@
 , ...
 }:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
+  pwd = /. + builtins.getEnv "PWD";
 in
 {
   deployment.keys = {

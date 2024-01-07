@@ -3,8 +3,7 @@
 , ...
 }:
 let
-  # TODO: DEPRECATED! Use /. + "/path"
-  pwd = builtins.toPath (builtins.getEnv "PWD");
+  pwd = /. + builtins.getEnv "PWD";
 in
 {
   imports = [

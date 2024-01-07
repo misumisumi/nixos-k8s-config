@@ -1,6 +1,9 @@
-{ workspace, name, ... }:
+{ workspace
+, name
+, ...
+}:
 let
-  pwd = builtins.toPath (builtins.getEnv "PWD");
+  pwd = /. + builtins.getEnv "PWD";
 in
 {
   imports = [
@@ -12,10 +15,12 @@ in
     ./zfs.nix
   ];
   # sops.validateSopsFiles = false;
-  sops.defaultSopsFile = ../../secrets/zfs_keyfile.yaml;
-  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-  # sops.age.keyFile = "/var/lib/sops-nix/key.txt";
-  # sops.age.generateKey = true;
-  sops.secrets."${name}/${workspace}/test" = { };
+  sops = {
+    defaultSopsFile = ../../secrets/zfs_keyfile.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    # age.keyFile = "/var/lib/sops-nix/key.txt";
+    # age.generateKey = true;
+    secrets."${name}/${workspace}/test" = { };
+  };
 }
 

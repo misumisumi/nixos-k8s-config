@@ -3,8 +3,7 @@
 , ...
 }:
 let
-  # TODO: DEPRECATED! Use /. + "/path"
-  pwd = builtins.toPath (builtins.getEnv "PWD");
+  pwd = /. + builtins.getEnv "PWD";
   mkSecret = filename: {
     keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${filename}";
     destDir = "/var/lib/secrets/kubernetes/apiserver";
