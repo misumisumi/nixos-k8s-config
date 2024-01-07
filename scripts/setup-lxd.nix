@@ -1,6 +1,26 @@
-{ writeShellScriptBin }: let
+{ writeShellScriptBin }:
+let
   inherit ((builtins.fromJSON (builtins.readFile ../config.json)).lxd-setting) storage-backend storage-create-loop;
-in{
+in
+{
+  mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
+    if [ lxc image list | grep -q nixos/lxc-container ]; then
+      lxc image delete nixos/lxc-container
+    fi
+    if [ lxc image list | grep -q nixos/lxc-virtual-machine ]; then
+      lxc image delete nixos/lxc-virtual-machine
+    fi
+    if [ lxc image list | grep -q almalinux9/lxc-container ]; then
+      lxc image delete almalinux9/lxc-container
+    fi
+    if [ lxc image list | grep -q almalinux9/lxc-virtual-machine ]; then
+      lxc image delete almalinux9/lxc-virtual-machine
+    fi
+    lxc image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f lxc --flake ".#lxc-container") --alias nixos/lxc-container
+    lxc image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f qcow --flake ".#lxc-virtual-machine") --alias nixos/lxc-virtual-machine
+    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
+    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
+  '';
   init-lxd = writeShellScriptBin "init-lxd" ''
     lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
   '';
