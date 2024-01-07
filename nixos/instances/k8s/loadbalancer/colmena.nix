@@ -3,6 +3,6 @@
     ../../init/colmena.nix
   ];
   deployment = {
-    tags = [ "cardinal" "k8s" "loadbalancer" ];
+    tags = [ "k8s" "loadbalancer" ];
   };
 }

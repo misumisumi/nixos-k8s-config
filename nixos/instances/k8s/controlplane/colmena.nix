@@ -22,7 +22,7 @@ in
     ../node/colmena.nix
   ];
   deployment = {
-    tags = [ "cardinal" "k8s" "controlplane" ];
+    tags = [ "k8s" "controlplane" ];
     keys = {
       # For k8s apiserver
       "server.pem" = mkServerSecret "server.pem";

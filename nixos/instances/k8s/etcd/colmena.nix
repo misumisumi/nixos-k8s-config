@@ -12,7 +12,7 @@ in
     ../../init/colmena.nix
   ];
   deployment = {
-    tags = [ "cardinal" "k8s" "etcd" ];
+    tags = [ "k8s" "etcd" ];
     keys = {
       "ca.pem" = mkSecret "ca.pem";
       "peer.pem" = mkSecret "peer.pem";

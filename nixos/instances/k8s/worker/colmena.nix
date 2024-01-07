@@ -12,7 +12,7 @@ in
     ../node/colmena.nix
   ];
   deployment = {
-    tags = [ "cardinal" "k8s" "worker" ];
+    tags = [ "k8s" "worker" ];
     keys = {
       "ca.pem" = {
         keyFile = "${pwd}/.kube/${workspace}/kubernetes/ca.pem";
