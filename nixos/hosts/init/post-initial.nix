@@ -7,8 +7,8 @@ let
   getKeys = filenames: builtins.filter builtins.pathExists filenames;
 
   hostKeys = getKeys [
-    /etc/secrets/${hostname}/initrd/ssh_host_ed25519_key
-    /etc/secrets/${hostname}/initrd/ssh_host_rsa_key
+    "/etc/secrets/${hostname}/initrd/ssh_host_ed25519_key"
+    "/etc/secrets/${hostname}/initrd/ssh_host_rsa_key"
   ];
 in
 {
