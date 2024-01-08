@@ -63,10 +63,9 @@ writeShellApplication {
         -v | --verbose) set -x ;;
         -w | --workspace) shift
           workspace=''${1-}
-          count="''$((count + 2))"
+          count="''$((count + 1))"
         ;;
-        -- )
-          break
+        -- ) break
         ;;
         -?*) break ;;
         *) cmd=''${1-} ;;

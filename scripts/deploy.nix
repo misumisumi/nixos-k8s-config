@@ -6,12 +6,13 @@ writeShellApplication {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
-      ) <cmd> <tag> [-w] [-h] [-v] -- <colmena option>
+      ) <cmd> <subcmd> [-t] [-w] [-h] [-v] -- <colmena option>
 
       Deployment NixOS by colmena with workspace-specific variables
 
     Available options:
 
+    -t, --tag       Tag of managed remote machine
     -w, --workspace Workspace name (default: check 'terraform workspace list')
     -h, --help      Print this help and exit
     -v, --verbose   Print script debug info
@@ -50,7 +51,9 @@ writeShellApplication {
     parse_params() {
       # default values of variables set from params
       count=0
-      workspace=""
+      workspace="dummy"
+      cmd=""
+      subcmd=""
       while (( $# > 0 )) do
         count=''$((count + 1))
         case "''${1-}" in
@@ -58,15 +61,20 @@ writeShellApplication {
         -v | --verbose) set -x ;;
         -w | --workspace) shift
           workspace=''${1-}
-          count="''$((count + 2))"
+          count="''$((count + 1))"
         ;;
-        -- )
-          break
+        -t | --tag) shift
+          tag=''${1-}
+          count="''$((count + 1))"
+        ;;
+        -- ) break
         ;;
         -?*) break;;
-        *) cmd=''${1-}
-          shift
-          tag=''${1-}
+        *) if [ "''${cmd}" == "" ]; then
+            cmd=''${1-}
+          elif [ "''${subcmd}" == "" ]; then
+            subcmd=''${1-}
+          fi
         ;;
         esac
         shift
@@ -79,11 +87,10 @@ writeShellApplication {
     parse_params "''$@"
 
     # check required params and arguments
-    # if [ "''${workspace}" = "" ]; then
-    #   die "You must select workspace using -w option."
-    # else
-    #   terraform workspace select "''${workspace}" || die "''${workspace}' is not listed in the workspace."
-    # fi
-    TF_WORKSPACE="''${workspace}" colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}"
+    if [ "''${subcmd}" == "" ]; then
+      TF_WORKSPACE="''${workspace}" colmena "''${cmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}"
+    else
+      TF_WORKSPACE="''${workspace}" colmena "''${cmd}" "''${subcmd}" --on @"''${tag}" --impure "''${@:count:(''$#-2)}"
+    fi
   '';
 }
