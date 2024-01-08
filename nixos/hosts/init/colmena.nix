@@ -6,7 +6,7 @@
 let
   inherit (pkgs.callPackage (../../../utils/hosts.nix) { inherit hostname; }) ipv4_address;
   pwd = /. + builtins.getEnv "PWD";
-  getKeys = filenames: builtins.filter (f: builtins.pathExists (/. + pwd + /secrets/${hostname}/initrd/${f})) filenames;
+  getKeys = filenames: builtins.filter (f: builtins.pathExists "/etc/secrets/${hostname}/initrd/${f}") filenames;
 
   hostKeys = getKeys [
     "ssh_host_ed25519_key"

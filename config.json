@@ -25,11 +25,11 @@
             "cpu_bender": "intel",
             "ipv4_address": "172.16.1.21"
         },
-        "alice": {
+        "strea": {
             "cpu_bender": "intel",
             "ipv4_address": "172.16.1.22"
         },
-        "strea": {
+        "alice": {
             "cpu_bender": "intel",
             "ipv4_address": "172.16.1.23"
         },
