@@ -4,7 +4,7 @@
 , ...
 }:
 let
-  conf = self.nixosConfigurations;
+  conf = with builtins; lib.filterAttrs (n: v: (match ".*-(install|test)" n) == null && (match "(lxc)-.*" n == null)) self.nixosConfigurations;
 in
 {
   meta = {
@@ -20,7 +20,7 @@ in
   // builtins.mapAttrs
   (name: value:
     let
-      extracted_name = with builtins; head (match "([a-z]+).+" name);
+      extracted_name = with builtins; head (match "([a-z]+)[0-9]?+" name);
     in
     {
       imports = value._module.args.modules

@@ -4,6 +4,6 @@
     ../init/colmena.nix
   ];
   deployment = {
-    tags = [ "hosts" "${hostname}" ];
+    tags = [ "hosts" "tertiary" "${hostname}" ];
   };
 }

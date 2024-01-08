@@ -4,10 +4,6 @@
       enable = true;
     };
   };
-  boot.initrd.network.udhcpc.extraArgs = [
-    "-i"
-    "eno1"
-  ];
   networking = {
     hostName = "${hostname}";
     interfaces.eno1.wakeOnLan.enable = true;
@@ -28,7 +24,7 @@
         "br0".netdevConfig = {
           Kind = "bridge";
           Name = "br0";
-          MACAddress = "25:e8:24:56:ef:b7";
+          MACAddress = "1c:e8:24:56:ef:b7";
         };
       };
       networks = {

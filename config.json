@@ -23,23 +23,19 @@
     "hosts": {
         "yui": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.100",
-            "label": "ctrl"
+            "ipv4_address": "172.16.1.21"
         },
         "alice": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.101",
-            "label": "worker1"
+            "ipv4_address": "172.16.1.22"
         },
         "strea": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.102",
-            "label": "worker2"
+            "ipv4_address": "172.16.1.23"
         },
         "netboot": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.101",
-            "label": "netboot"
+            "ipv4_address": "192.168.1.101"
         }
     }
 }
