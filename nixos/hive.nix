@@ -24,7 +24,7 @@ in
     in
     {
       imports = value._module.args.modules
-      ++ lib.optional (builtins.pathExists ./hosts/${lib.trace extracted_name extracted_name}/colmena.nix) ./hosts/${extracted_name}/colmena.nix
+      ++ lib.optional (builtins.pathExists ./hosts/${extracted_name}/colmena.nix) ./hosts/${extracted_name}/colmena.nix
       ++ lib.optional (builtins.pathExists ./instances/${extracted_name}/colmena.nix) ./instances/${extracted_name}/colmena.nix
       ++ lib.optional (builtins.pathExists ./instances/k8s/${extracted_name}/colmena.nix) ./instances/k8s/${extracted_name}/colmena.nix;
     })
