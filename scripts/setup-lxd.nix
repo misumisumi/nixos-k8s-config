@@ -24,16 +24,18 @@ in
   init-lxd = writeShellScriptBin "init-lxd" ''
     lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
   '';
-  add-remote-lxd = writeShellScriptBin "add-remote-lxd" ''
+  init-remote-lxd = writeShellScriptBin "init-remote-lxd" ''
     colmena exec --on @hosts --impure -- lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
     colmena exec --on @hosts --impure -- lxc config set core.https_address '[::]'
     colmena exec --on @hosts --impure -- lxc config trust add --name colmena
-
+  '';
+  add-remote-lxd = writeShellScriptBin "add-remote-lxd" ''
     declare -A remotes=()
-    jq -c ".hosts[]" config.json | while read target
+    config=$(jq -c ".hosts" config.json)
+    echo "''${config}" | jq -r "keys[]" | while read target
     do
-      lxc remote add ''$(echo ''${target} | jq -r '.name') \
-        `ssh -n root@''$(echo "''${target}" | jq -r '.ip_address') lxc config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token'`
+      lxc remote add "''${target}" \
+        $(ssh -n root@''$(echo "''${config}" | jq -r ".''${target}.ipv4_address") lxc config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token')
     done
   '';
   copy-img2lxd = writeShellScriptBin "copy-img2lxd" ''
