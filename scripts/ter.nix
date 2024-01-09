@@ -81,7 +81,9 @@ writeShellApplication {
 
     # check required params and arguments
     if [ "''${cmd}" == "init" ]; then
+      terraform init "''${@:count:(''$#-1)}"
       ${builtins.concatStringsSep "\n" genWS}
+      exit 0
     elif [ "$(terraform workspace list | grep "''${workspace}")" == "" ]; then
       die "''${workspace} is not listed in the workspace."
     else
@@ -91,9 +93,9 @@ writeShellApplication {
     # script logic here
     terraform "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-1)}"
     if [[ "''${cmd}" == "apply"  ]]; then
-      terraform output -json >"''${workspace}".json
-      terraform graph | dot -Tpng >"''${workspace}".png
-      hcl2json "''${workspace}".tfvars > "''${workspace}".json
+      terraform show -json > "''${workspace}".json
+      terraform output -json > "''${workspace}_output".json
+      terraform graph | dot -Tpng > "''${workspace}".png
     elif [[ "''${cmd}" == "destroy" ]]; then
       rm "''${workspace}".json
       rm "''${workspace}".png
