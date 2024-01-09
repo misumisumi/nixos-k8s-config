@@ -6,7 +6,7 @@
     ],
     "lxd-setting": {
         "storage-backend": "btrfs",
-        "storage-create-loop": "64"
+        "storage-create-loop": "96"
     },
     "virtualIPs": {
         "k8s": {
@@ -32,10 +32,6 @@
         "alice": {
             "cpu_bender": "intel",
             "ipv4_address": "172.16.1.23"
-        },
-        "netboot": {
-            "cpu_bender": "intel",
-            "ipv4_address": "192.168.1.101"
         }
     }
 }

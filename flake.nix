@@ -190,6 +190,7 @@
                 deploy
                 he
                 init-lxd
+                init-remote-lxd
                 k
                 mkage4instance
                 mkage4mgr
