@@ -186,6 +186,7 @@
                 # scripts
                 add-remote-lxd
                 check-k8s
+                check-disk-size
                 copy-img2lxd
                 deploy
                 he
