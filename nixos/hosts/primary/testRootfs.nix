@@ -4,7 +4,7 @@
 }:
 let
   rootDevice = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000H1_S340NX0K748767";
-  rootDeviceSize = 238.5; # GB
+  rootDeviceSize = 8; # GB
   # https://docs.oracle.com/cd/E62101_01/html/E62701/zfspools-4.html
   reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
 in
@@ -15,7 +15,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "/run/wrappers/bin/umount -R /.keystore";
-      ExecStartPost = "zfs unload-key PoolRootFS/keystore";
+      ExecStartPost = "";
     };
   };
   disko.devices = {
@@ -63,13 +63,7 @@ in
           dnodesize = "auto";
           relatime = "on";
           xattr = "sa";
-          encryption = "aes-256-gcm";
-          keyformat = "passphrase";
-          keylocation = "file:///tmp/${tag}/rootfs.key";
         };
-        postCreateHook = ''
-          zfs set keylocation="prompt" "PoolRootFS";
-        '';
         datasets = {
           reserved = {
             type = "zfs_fs";
@@ -82,20 +76,12 @@ in
           };
           keystore = {
             type = "zfs_volume";
-            size = "2G";
+            size = "1G";
             content = {
               type = "filesystem";
               format = "ext4";
               mountpoint = "/.keystore";
             };
-            options = {
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/${tag}/keystore.key";
-            };
-            postCreateHook = ''
-              zfs set keylocation="prompt" "PoolRootFS/keystore";
-            '';
             postMountHook = ''
               if [ -d /tmp/${tag} ]; then
                 find /tmp/${tag} -type f | grep -vE "keystore|rootfs" | xargs -I{} cp {} /mnt/.keystore/
@@ -104,7 +90,7 @@ in
           };
           cephMonVol = {
             type = "zfs_volume";
-            size = "36G";
+            size = "1G";
           };
           user = {
             type = "zfs_fs";

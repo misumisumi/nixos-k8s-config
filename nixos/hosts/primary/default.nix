@@ -1,3 +1,8 @@
+{ lib
+, initial
+, isVM
+, ...
+}:
 {
   imports = [
     #./iscsi.nix
@@ -8,11 +13,11 @@
     ../../apps/virtualization/lxd
     ../../system
     ../init
-    ./additionalfs.nix
     ./hardware-configuration.nix
     ./network.nix
-    ./rootfs.nix
     ./system.nix
     ./zfs.nix
-  ];
+  ] ++ lib.optional isVM ./testRootfs.nix
+  ++ lib.optional (! isVM) ./rootfs.nix
+  ++ lib.optional (! initial) ./additionalfs.nix;
 }
