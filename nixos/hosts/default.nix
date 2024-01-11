@@ -8,6 +8,7 @@ let
     { hostname
     , rootDir
     , system
+    , group
     , tag
     , user
     , homeDirectory ? ""
@@ -19,7 +20,7 @@ let
     }:
     lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit hostname inputs tag user stateVersion initial isVM; }; # specialArgs give some args to modules
+      specialArgs = { inherit hostname inputs group tag user stateVersion initial isVM; }; # specialArgs give some args to modules
       modules =
         [
           inputs.sops-nix.nixosModules.sops
@@ -53,18 +54,14 @@ let
       hosts-config = (import ../../utils/hosts.nix { }).hosts;
     in
     lib.mapAttrs
-      (tag: config: {
+      (tag: config: rec {
         inherit user tag;
-        inherit (config) hostname system;
-        rootDir = ./${tag};
+        inherit (config) group hostname system;
+        rootDir = ./${group}/${tag};
         scheme = "core";
       })
       hosts-config;
   attrs = {
-    "-build" = {
-      initial = false;
-      isVM = false;
-    };
     "-install" = {
       initial = true;
       isVM = false;
@@ -78,23 +75,13 @@ in
 builtins.listToAttrs
   (lib.flatten (
     lib.mapAttrsToList
-      (host: value:
+      (tag: value:
         (lib.mapAttrsToList
           (target: args: {
-            name = host + "${lib.removePrefix "-build" target}";
+            name = tag + target;
             value = systemSetting (value // args);
           })
           attrs))
-      hosts
-  ))
-  // {
-  rescue = systemSetting {
-    tag = "rescue";
-    user = "nixos";
-    hostname = "nixos";
-    system = "x86_64-linux";
-    rootDir = ./rescue;
-    scheme = "minimal";
-  };
-}
-
+      (lib.filterAttrs (tag: _: tag != "rescue") hosts)
+  ))//
+  (lib.mapAttrs (name: value: systemSetting value) hosts)

@@ -2,10 +2,11 @@
 , pkgs
 , hostname
 , tag
+, group
 , ...
 }:
 let
-  inherit (import ../../utils/hosts.nix { inherit tag; }) group ipv4_address;
+  inherit (import ../../utils/hosts.nix { inherit tag; }) ipv4_address;
   pwd = /. + builtins.getEnv "PWD";
   getKeys = filenames: builtins.filter (f: builtins.pathExists "/etc/secrets/${hostname}/initrd/${f}") filenames;
 
