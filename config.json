@@ -21,17 +21,26 @@
         }
     },
     "hosts": {
-        "yui": {
+        "primary": {
             "cpu_bender": "intel",
-            "ipv4_address": "172.16.1.21"
+            "hostname": "yui",
+            "ipv4_address": "172.16.1.21",
+            "system": "x86_64-linux",
+            "group": "node"
         },
-        "strea": {
+        "secondary": {
             "cpu_bender": "intel",
-            "ipv4_address": "172.16.1.22"
+            "hostname": "strea",
+            "ipv4_address": "172.16.1.22",
+            "system": "x86_64-linux",
+            "group": "node"
         },
-        "alice": {
+        "tertiary": {
             "cpu_bender": "intel",
-            "ipv4_address": "172.16.1.23"
+            "hostname": "alice",
+            "ipv4_address": "172.16.1.23",
+            "system": "x86_64-linux",
+            "group": "node"
         }
     }
 }

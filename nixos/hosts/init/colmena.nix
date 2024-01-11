@@ -1,10 +1,11 @@
 { lib
 , pkgs
 , hostname
+, tag
 , ...
 }:
 let
-  inherit (pkgs.callPackage (../../../utils/hosts.nix) { inherit hostname; }) ipv4_address;
+  inherit (import ../../utils/hosts.nix { inherit tag; }) group ipv4_address;
   pwd = /. + builtins.getEnv "PWD";
   getKeys = filenames: builtins.filter (f: builtins.pathExists "/etc/secrets/${hostname}/initrd/${f}") filenames;
 
@@ -23,6 +24,7 @@ let
 in
 {
   deployment = {
+    tags = [ "${group}" "${tag}" "${hostname}" ];
     targetHost = ipv4_address;
     keys = builtins.listToAttrs (builtins.map (key: { name = key; value = mkHostKeys key; }) hostKeys);
   };

@@ -1,7 +1,10 @@
-{ hostname, ... }:
+{ tag ? ""
+, ...
+}:
 let
-  hosts = builtins.fromJSON (builtins.readFile ../config.json);
+  config = builtins.fromJSON (builtins.readFile ../config.json);
 in
 {
-  inherit (hosts.hosts.${hostname}) cpu_bender ipv4_address;
+  inherit (config.hosts.${tag}) cpu_bender hostname ipv4_address system tag;
+  inherit (config) hosts;
 }

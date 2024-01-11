@@ -14,7 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
-      url = "github:nix-community/disko";
+      url = "github:misumisumi/disko/fix-zpool";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixos-anywhere = {
@@ -104,6 +104,9 @@
               inherit inputs stateVersion;
             }
           );
+          diskoConfigurations = import ./nixos/hosts/disk-config.nix {
+            inherit (inputs.nixpkgs) lib;
+          };
         };
       perSystem =
         { system

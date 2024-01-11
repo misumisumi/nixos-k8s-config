@@ -6,9 +6,10 @@ let
   user = "misumi";
   systemSetting =
     { hostname
-    , user
-    , system
     , rootDir
+    , system
+    , tag
+    , user
     , homeDirectory ? ""
     , scheme ? "minimal"
     , initial ? false
@@ -18,7 +19,7 @@ let
     }:
     lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit hostname inputs user stateVersion initial isVM; }; # specialArgs give some args to modules
+      specialArgs = { inherit hostname inputs tag user stateVersion initial isVM; }; # specialArgs give some args to modules
       modules =
         [
           inputs.sops-nix.nixosModules.sops
@@ -47,29 +48,18 @@ let
         ];
     };
 
-  hosts = {
-    primary = {
-      inherit user;
-      hostname = "yui";
-      system = "x86_64-linux";
-      rootDir = ./primary;
-      scheme = "core";
-    };
-    secondary = {
-      inherit user;
-      hostname = "strea";
-      system = "x86_64-linux";
-      rootDir = ./secondary;
-      scheme = "core";
-    };
-    tertiary = {
-      inherit user;
-      hostname = "alice";
-      system = "x86_64-linux";
-      rootDir = ./tertiary;
-      scheme = "core";
-    };
-  };
+  hosts =
+    let
+      hosts-config = (import ../../utils/hosts.nix { }).hosts;
+    in
+    lib.mapAttrs
+      (tag: config: {
+        inherit user tag;
+        inherit (config) hostname system;
+        rootDir = ./${tag};
+        scheme = "core";
+      })
+      hosts-config;
   attrs = {
     "-build" = {
       initial = false;
@@ -89,11 +79,17 @@ builtins.listToAttrs
   (lib.flatten (
     lib.mapAttrsToList
       (host: value:
-        (lib.mapAttrsToList (target: args: { name = host + "${lib.removePrefix "-build" target}"; value = systemSetting (value // args); }) attrs))
+        (lib.mapAttrsToList
+          (target: args: {
+            name = host + "${lib.removePrefix "-build" target}";
+            value = systemSetting (value // args);
+          })
+          attrs))
       hosts
   ))
   // {
   rescue = systemSetting {
+    tag = "rescue";
     user = "nixos";
     hostname = "nixos";
     system = "x86_64-linux";
