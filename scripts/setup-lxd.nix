@@ -1,52 +1,52 @@
 { writeShellScriptBin }:
 let
-  inherit ((builtins.fromJSON (builtins.readFile ../config.json)).lxd-setting) storage-backend storage-create-loop;
+  inherit ((builtins.fromJSON (builtins.readFile ../config.json)).incus-setting) storage-backend storage-create-loop;
 in
 {
-  mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
-    if [ lxc image list | grep -q nixos/lxc-container ]; then
-      lxc image delete nixos/lxc-container
+  mkimg4incus = writeShellScriptBin "mkimg4incus" ''
+    if [ incus image list | grep -q nixos/lxc-container ]; then
+      incus image delete nixos/lxc-container
     fi
-    if [ lxc image list | grep -q nixos/lxc-virtual-machine ]; then
-      lxc image delete nixos/lxc-virtual-machine
+    if [ incus image list | grep -q nixos/lxc-virtual-machine ]; then
+      incus image delete nixos/lxc-virtual-machine
     fi
-    if [ lxc image list | grep -q almalinux9/lxc-container ]; then
-      lxc image delete almalinux9/lxc-container
+    if [ incus image list | grep -q almalinux9/lxc-container ]; then
+      incus image delete almalinux9/lxc-container
     fi
-    if [ lxc image list | grep -q almalinux9/lxc-virtual-machine ]; then
-      lxc image delete almalinux9/lxc-virtual-machine
+    if [ incus image list | grep -q almalinux9/lxc-virtual-machine ]; then
+      incus image delete almalinux9/lxc-virtual-machine
     fi
-    lxc image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f lxc --flake ".#lxc-container") --alias nixos/lxc-container
-    lxc image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f qcow --flake ".#lxc-virtual-machine") --alias nixos/lxc-virtual-machine
-    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
-    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
+    incus image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f lxc --flake ".#lxc-container") --alias nixos/lxc-container
+    incus image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f qcow --flake ".#lxc-virtual-machine") --alias nixos/lxc-virtual-machine
+    incus image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
+    incus image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
   '';
-  init-lxd = writeShellScriptBin "init-lxd" ''
-    lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
+  init-incus = writeShellScriptBin "init-incus" ''
+    incus init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
   '';
-  init-remote-lxd = writeShellScriptBin "init-remote-lxd" ''
-    colmena exec --on @hosts --impure -- lxd init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
-    colmena exec --on @hosts --impure -- lxc config set core.https_address '[::]'
-    colmena exec --on @hosts --impure -- lxc config trust add --name colmena
+  init-remote-incus = writeShellScriptBin "init-remote-incus" ''
+    colmena exec --on @hosts --impure -- incus admin init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
+    colmena exec --on @hosts --impure -- incus config set core.https_address '[::]'
+    colmena exec --on @hosts --impure -- incus config trust add --name colmena
   '';
-  add-remote-lxd = writeShellScriptBin "add-remote-lxd" ''
+  add-remote-incus = writeShellScriptBin "add-remote-incus" ''
     declare -A remotes=()
     config=$(jq -c ".hosts" config.json)
     echo "''${config}" | jq -r "keys[]" | while read target
     do
-      lxc remote add "''${target}" \
-        $(ssh -n root@''$(echo "''${config}" | jq -r ".''${target}.ipv4_address") lxc config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token')
+      incus remote add "''${target}" \
+        $(ssh -n root@''$(echo "''${config}" | jq -r ".''${target}.ipv4_address") incus config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token')
     done
   '';
-  copy-img2lxd = writeShellScriptBin "copy-img2lxd" ''
+  copy-img2incus = writeShellScriptBin "copy-img2incus" ''
     ALIAS_CONTAINER="nixos/lxc-container"
     ALIAS_VM="nixos/lxc-virtual-machine"
 
     jq -r ".hosts[].name" config.json | while read target
     do
         echo "Copy NixOS images to ''${target}"
-        lxc image copy --mode=relay ''${ALIAS_CONTAINER} ''${target}: --alias ''${ALIAS_CONTAINER}
-        lxc image copy --mode=relay ''${ALIAS_VM} ''${taget}: --alias ''${ALIAS_VM}
+        incus image copy --mode=relay ''${ALIAS_CONTAINER} ''${target}: --alias ''${ALIAS_CONTAINER}
+        incus image copy --mode=relay ''${ALIAS_VM} ''${taget}: --alias ''${ALIAS_VM}
     done
   '';
 }

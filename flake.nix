@@ -187,18 +187,18 @@
                 kubernetes-helm
 
                 # scripts
-                add-remote-lxd
+                add-remote-incus
                 check-k8s
                 check-disk-size
-                copy-img2lxd
+                copy-img2incus
                 deploy
                 he
-                init-lxd
-                init-remote-lxd
+                init-incus
+                init-remote-incus
                 k
                 mkage4instance
                 mkage4mgr
-                mkimg4lxc
+                mkimg4incus
                 mksshhostkeys
                 ter
               ];
