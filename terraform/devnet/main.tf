@@ -1,31 +1,21 @@
-locals {
-  networks = merge([
-    for i in var.networks : {
-      "${i.name}" = {
-        ipv4_address = i.ipv4_address
-        ipv6_address = i.ipv6_address
-        nat          = i.nat
-    } }
-  ]...)
-}
-
 terraform {
+  required_version = "~> 1.6.0"
   required_providers {
-    lxd = {
-      source  = "terraform-lxd/lxd"
-      version = "~> 1.10.4"
+    incus = {
+      source  = "registry.terraform.io/lxc/incus"
+      version = "~> 0.0.2"
     }
   }
 }
 
-provider "lxd" {
+provider "incus" {
   generate_client_certificates = true
   accept_remote_certificate    = true
-  dynamic "lxd_remote" {
+  dynamic "remote" {
     for_each = var.remote_hosts
     content {
-      name    = lxd_remote.value.name
-      address = lxd_remote.value.address
+      name    = incus_remote.value.name
+      address = incus_remote.value.address
       scheme  = "https"
     }
   }
@@ -36,19 +26,16 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-resource "time_sleep" "wait_15s" {
-  depends_on       = [module.networks]
-  create_duration  = "15s"
-  destroy_duration = "15s"
-}
-
-module "networks" {
-  source   = "../modules/network"
-  for_each = local.networks
-
-  name         = each.key
-  ipv4_address = each.value.ipv4_address
-  ipv6_address = each.value.ipv6_address
-  nat          = each.value.nat
+resource "incus_network" "incus_network" {
+  for_each = var.networks
+  name = each.key
+  remote = each.value.remote
+  project = each.value.project
+  config = {
+    "ipv4.address" = each.value.config.ipv4_address
+    "ipv4.nat"      = each.value.config.nat
+    "ipv6.address" = each.value.config.ipv6_address
+    "ipv6.nat"      = each.value.config.nat
+  }
 }
 

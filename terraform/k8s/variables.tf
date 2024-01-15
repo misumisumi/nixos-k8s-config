@@ -25,6 +25,8 @@ variable "compornents" {
           name         = string
           remote       = optional(string, null)
           ipv4_address = optional(string, null)
+          ipv6_address = optional(string, null)
+          mac_address  = optional(string, null)
           devices = optional(set(
             object({
               name         = string

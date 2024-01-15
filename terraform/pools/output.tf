@@ -1,8 +1,9 @@
 output "pools_info" {
   value = zipmap(
-    [for pool in flatten(values(module.pools)) : pool.name],
-    [for pool in flatten(values(module.pools)) : {
+    [for name in flatten(keys(incus_storage_pool.pools)) : name],
+    [for pool in flatten(values(incus_storage_pool.pools)) : {
       remote = pool.remote
+      project = pool.project
       driver = pool.driver
       config = pool.config
     }]

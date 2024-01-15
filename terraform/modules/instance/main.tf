@@ -1,11 +1,13 @@
 # Spawns the given amount of machines,
 # using the given base image as their root disk,
 # attached to the same network.
-
 terraform {
   required_providers {
-    lxd = {
-      source = "terraform-lxd/lxd"
+    incus = {
+      source  = "registry.terraform.io/lxc/incus"
+    }
+    random = {
+      source  = "registry.terraform.io/hashicorp/random"
     }
   }
 }
@@ -25,9 +27,12 @@ locals {
   remotes = [for remote in var.instances[*].remote : remote]
 }
 
-module "volume" {
-  source  = "../volume"
-  volumes = local.volumes
+resource "incus_volume" "volume" {
+  for_each     = { for i in local.volumes : i.name => i }
+  name         = each.value.name
+  remote       = each.value.remote
+  pool         = each.value.pool
+  content_type = each.value.content_type
 }
 
 resource "random_id" "host_id" {
@@ -39,7 +44,7 @@ resource "random_id" "host_id" {
   byte_length = 4
 }
 
-resource "lxd_profile" "profile" {
+resource "incus_profile" "profile" {
   name     = "profile_${var.tag}"
   for_each = toset(local.remotes)
   remote   = each.value
@@ -60,7 +65,7 @@ resource "lxd_profile" "profile" {
   }
 }
 
-resource "lxd_instance" "instance" {
+resource "incus_instance" "instance" {
   for_each = { for i in var.instances : i.name => i }
   remote   = each.value.remote
 
@@ -98,6 +103,8 @@ resource "lxd_instance" "instance" {
         substr(each.value.name, -1, -1)
       )
       "ipv4.address" = each.value.ipv4_address
+      "ipv6.address" = each.value.ipv6_address
+      "hwaddr"       = each.value.mac_address
       vlan           = var.instance_config.vlan
     }
   }
@@ -109,6 +116,6 @@ resource "lxd_instance" "instance" {
       properties = device.value.properties
     }
   }
-  depends_on = [module.volume, lxd_profile.profile]
+  depends_on = [incus_volume.volume, incus_profile.profile]
 }
 
