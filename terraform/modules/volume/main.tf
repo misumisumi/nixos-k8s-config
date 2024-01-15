@@ -1,12 +1,4 @@
-terraform {
-  required_providers {
-    lxd = {
-      source = "terraform-lxd/lxd"
-    }
-  }
-}
-
-resource "lxd_volume" "volume" {
+resource "incus_volume" "volume" {
   for_each     = { for i in var.volumes : i.name => i }
   name         = each.value.name
   remote       = each.value.remote

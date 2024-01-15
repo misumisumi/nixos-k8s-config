@@ -14,6 +14,8 @@ variable "instances" {
       name         = string
       remote       = optional(string, "")
       ipv4_address = optional(string, null)
+      ipv6_address = optional(string, null)
+      mac_address =  optional(string, null)
       cpu          = optional(number, null)
       memory       = optional(string, null)
       devices = set(

@@ -1,3 +1,3 @@
-output "lxd_pool_info" {
-  value = values(lxd_storage_pool.pool)[*]
+output "incus_pool_info" {
+  value = values(incus_storage_pool.pool)[*]
 }

@@ -9,7 +9,15 @@ variable "remote_hosts" {
 }
 
 variable "pools" {
-  type        = set(any)
+  type = map(
+    object(
+      {
+        remote = optional(string, null)
+        project = optional(string, null)
+        driver = optional(string, "btrfs")
+        config = map(any)
+      }
+    )
+  )
   description = "Strage pool propaties"
-  default     = []
 }

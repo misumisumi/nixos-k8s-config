@@ -10,21 +10,25 @@ locals {
 
 terraform {
   required_providers {
-    lxd = {
-      source  = "terraform-lxd/lxd"
-      version = "~> 1.10.4"
+    incus = {
+      source  = "registry.terraform.io/lxc/incus"
+      version = "~> 0.0.2"
+    }
+    random = {
+      source  = "registry.terraform.io/hashicorp/random"
+      version = "~> 3.5.1"
     }
   }
 }
 
-provider "lxd" {
+provider "incus" {
   generate_client_certificates = true
   accept_remote_certificate    = true
-  dynamic "lxd_remote" {
+  dynamic "remote" {
     for_each = var.remote_hosts
     content {
-      name    = lxd_remote.value.name
-      address = lxd_remote.value.address
+      name    = incus_remote.value.name
+      address = incus_remote.value.address
       scheme  = "https"
     }
   }

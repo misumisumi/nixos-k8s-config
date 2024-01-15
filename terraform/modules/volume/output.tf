@@ -1,3 +1,3 @@
-output "lxd_volume_info" {
-  value = values(lxd_volume.volume)[*]
+output "incus_volume_info" {
+  value = values(incus_volume.volume)[*]
 }

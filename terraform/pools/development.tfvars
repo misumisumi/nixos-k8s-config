@@ -1,10 +1,12 @@
-pools = [
-  {
-    name = "dev-ceph"
-    size = "9GiB"
-  },
-  {
-    name = "dev-nfs"
-    size = "8GiB"
-  },
-]
+pools = {
+  ceph = {
+    config = {
+      size = "9GiB"
+    }
+  }
+  nfs = {
+    config = {
+      size = "9GiB"
+    }
+  }
+}

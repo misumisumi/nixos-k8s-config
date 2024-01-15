@@ -1,12 +1,4 @@
-terraform {
-  required_providers {
-    lxd = {
-      source = "terraform-lxd/lxd"
-    }
-  }
-}
-
-resource "lxd_storage_pool" "pool" {
+resource "incus_storage_pool" "pool" {
   for_each = { for i in var.pools : i.name => i }
   name     = each.value.name
   driver   = "btrfs"
