@@ -1,18 +1,18 @@
 { writeShellApplication }:
 let
   inherit (builtins.fromJSON (builtins.readFile ../config.json)) workspaces;
-  genWS = map (ws: "[[ $(terraform workspace list | grep ${ws}) == '' ]] && terraform workspace new ${ws}") workspaces;
+  genWS = map (ws: "[[ $(tofu workspace list | grep ${ws}) == '' ]] && tofu workspace new ${ws}") workspaces;
 in
 writeShellApplication {
-  name = "ter";
+  name = "tf";
   text = ''
     usage() {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
-      ) <cmd> [-w] [-h] [-v] -- <terraform option>
+      ) <cmd> [-w] [-h] [-v] -- <tofu option>
 
-      Launch container and VM by terraform using workspace-specific variables
+      Launch container and VM by tofu using workspace-specific variables
 
     Available options:
 
@@ -81,21 +81,21 @@ writeShellApplication {
 
     # check required params and arguments
     if [ "''${cmd}" == "init" ]; then
-      terraform init "''${@:count:(''$#-1)}"
+      tofu init "''${@:count:(''$#-1)}"
       ${builtins.concatStringsSep "\n" genWS}
       exit 0
-    elif [ "$(terraform workspace list | grep "''${workspace}")" == "" ]; then
+    elif [ "$(tofu workspace list | grep "''${workspace}")" == "" ]; then
       die "''${workspace} is not listed in the workspace."
     else
-      terraform workspace select "''${workspace}"
+      tofu workspace select "''${workspace}"
     fi
 
     # script logic here
-    terraform "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-1)}"
+    tofu "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-1)}"
     if [[ "''${cmd}" == "apply"  ]]; then
-      terraform show -json > "''${workspace}".json
-      terraform output -json > "''${workspace}_output".json
-      terraform graph | dot -Tpng > "''${workspace}".png
+      tofu show -json > "''${workspace}".json
+      tofu output -json > "''${workspace}_output".json
+      tofu graph | dot -Tpng > "''${workspace}".png
     elif [[ "''${cmd}" == "destroy" ]]; then
       rm "''${workspace}".json
       rm "''${workspace}".png
