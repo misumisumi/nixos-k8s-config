@@ -4,7 +4,7 @@ let
   genWS = map (ws: "[[ $(tofu workspace list | grep ${ws}) == '' ]] && tofu workspace new ${ws}") workspaces;
 in
 writeShellApplication {
-  name = "tf";
+  name = "ter";
   text = ''
     usage() {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
