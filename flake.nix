@@ -14,7 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
-      url = "github:misumisumi/disko/fix-zpool";
+      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixos-anywhere = {

@@ -72,16 +72,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1704891710,
-        "narHash": "sha256-gArPey9mDHOW1S1W7C57NkTtNHgaS7Q0Eii9QpKbgis=",
-        "owner": "misumisumi",
+        "lastModified": 1705281959,
+        "narHash": "sha256-9NZiSMAduz4qbFu77Cg9RNFcrjgS9UOjriD+v8FeueY=",
+        "owner": "nix-community",
         "repo": "disko",
-        "rev": "ce062747933b8f2e490247f4c371cbc4d8d2f393",
+        "rev": "2a561be6b5dd049182af1973bb7e28f7a0ac9be2",
         "type": "github"
       },
       "original": {
-        "owner": "misumisumi",
-        "ref": "fix-zpool",
+        "owner": "nix-community",
         "repo": "disko",
         "type": "github"
       }
