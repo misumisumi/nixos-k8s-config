@@ -46,9 +46,3 @@ variable "compornents" {
   )
   description = "Name and some config for instances to spawn"
 }
-
-variable "pools" {
-  type        = set(any)
-  description = "Strage pool propaties"
-  default     = []
-}

@@ -1,0 +1,3 @@
+{
+  imports = [ ./containerd ./coredns ./flannel ];
+}

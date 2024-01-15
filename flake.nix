@@ -3,22 +3,59 @@
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
+    flakes. url = "github:misumisumi/flakes";
     lxd-nixos.url = "git+https://codeberg.org/adamcstephens/lxd-nixos";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    nvfetcher.url = "github:berberman/nvfetcher";
-    sops-nix.url = "github:Mic92/sops-nix";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nur.url = "github:nix-community/NUR";
+    nvimdots.url = "github:misumisumi/nvimdots/my-config";
+    devshell = {
+      url = "github:numtide/devshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    nixos-anywhere = {
+      url = "github:nix-community/nixos-anywhere";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-unstable";
+        nixos-stable.follows = "nixpkgs";
+        disko.follows = "disko";
+      };
+    };
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.05";
+      url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flakes. url = "github:misumisumi/flakes";
-    common-config.url = "github:misumisumi/nixos-common-config";
-    nvimdots.url = "github:misumisumi/nvimdots/my-config";
+    nixgl = {
+      url = "github:guibou/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-stable.follows = "nixpkgs";
+    };
+    dotfiles = {
+      url = "github:misumisumi/home-manager-config";
+      # url = "path:/home/sumi/Templates/nix/home-manager-config";
+      inputs = {
+        flakes.follows = "flakes";
+        home-manager.follows = "home-manager";
+        nixgl.follows = "nixgl";
+        nixpkgs-stable.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-unstable";
+        nur.follows = "nur";
+        nvimdots.follows = "nvimdots";
+        sops-nix.follows = "sops-nix";
+      };
+    };
   };
 
   outputs =
@@ -33,27 +70,12 @@
       systems = [ "x86_64-linux" ];
       imports = [
         inputs.lxd-nixos.flakeModules.images
+        inputs.devshell.flakeModule
       ];
       lxd.generateImporters = true;
       flake =
         let
-
-          stateVersion = "23.05"; # For Home Manager
-
-          overlay =
-            { system }:
-            let
-              nixpkgs-unstable = import inputs.nixpkgs-unstable {
-                inherit system;
-                config = { allowUnfree = true; };
-              };
-            in
-            {
-              nixpkgs.overlays = [
-                flakes.overlays.default
-              ]
-              ++ (import ./patches { inherit nixpkgs-unstable; });
-            };
+          stateVersion = "23.11"; # For Home Manager
         in
         {
           nixConfig = {
@@ -66,24 +88,25 @@
             ];
           };
           # Cluster settings managing colmena
-          colmena = (
-            import ./instances/hive.nix {
-              inherit (self) nixosConfigurations;
-              inherit inputs overlay stateVersion;
-            }
-          );
+          colmena = import ./nixos/hive.nix {
+            inherit (inputs.nixpkgs) lib;
+            inherit inputs self;
+          };
           nixosConfigurations = (
-            import ./lxd {
+            import ./nixos/instances {
               inherit (inputs.nixpkgs) lib;
               inherit inputs stateVersion;
             }
           )
           // (
-            import ./machines {
+            import ./nixos/hosts {
               inherit (inputs.nixpkgs) lib;
-              inherit inputs overlay stateVersion;
+              inherit inputs stateVersion;
             }
           );
+          diskoConfigurations = import ./nixos/hosts/disk-config.nix {
+            inherit (inputs.nixpkgs) lib;
+          };
         };
       perSystem =
         { system
@@ -94,49 +117,6 @@
           inherit (import ./lib.nix) mkApp;
           myTerraform = pkgs.terraform.withPlugins (tp: with tp; [ lxd random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
-          _pkgs = with pkgs;
-            with myScripts; [
-              bashInteractive
-              # software for deployment
-              age
-              btrfs-progs
-              colmena
-              dig
-              graphviz
-              hcl2json
-              inetutils
-              jq
-              libxslt
-              hdparm
-              myTerraform
-              nvfetcher
-              sops
-              squashfsTools
-              tcpdump
-              terraform-docs
-
-              # software for managing cluster
-              argocd
-              etcd
-              kubectl
-              kubernetes-helm
-
-              # scripts
-              check_k8s
-              copy_img2lxd
-              deploy
-              he
-              init_lxd
-              init_nfs_instance
-              add_remote_lxd
-              k
-              mkage4mgr
-              mkage4instance
-              mkenv
-              mkimg4lxc
-              mksshhostkeys
-              ter
-            ];
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
             config = { allowUnfree = true; };
@@ -145,26 +125,83 @@
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ inputs.nvfetcher.overlays.default ]
-              ++ (import ./patches { inherit nixpkgs-unstable; });
+            overlays = [
+              inputs.flakes.overlays.default
+              (import ./patches { inherit nixpkgs-unstable; })
+            ];
             config.allowUnfree = true;
           };
           packages = {
             rescueIpxeScript = self.nixosConfigurations.rescue.config.system.build.netbootIpxeScript;
           };
           apps = with myScripts; {
-            mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "development"; }; };
-            mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./certs) { ws = "production"; }; };
+            mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "development"; }; };
+            mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
             ter = mkApp { drv = ter; };
             k = mkApp { drv = k; };
             mkimg4lxc = mkApp { drv = mkimg4lxc; };
             deploy = mkApp { drv = deploy; };
           };
-          devShells.default = pkgs.mkShell {
-            nativeBuildInputs = _pkgs;
-            buildInputs = [ ];
-            shellHooks = ''
-          '';
+          devshells.default = {
+            commands = [
+              {
+                help = "disko";
+                name = "disko";
+                command = ''
+                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
+                '';
+              }
+              {
+                help = "nixos-anywhere";
+                name = "nixos-anywhere";
+                command = ''
+                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
+                '';
+              }
+            ];
+            packages = with pkgs;
+              with myScripts; [
+                bashInteractive
+                # software for deployment
+                age
+                btrfs-progs
+                colmena
+                dig
+                graphviz
+                hcl2json
+                hdparm
+                inetutils
+                jq
+                libxslt
+                myTerraform
+                sops
+                squashfsTools
+                tcpdump
+                terraform-docs
+                nixos-generators
+
+                # software for managing cluster
+                argocd
+                etcd
+                kubectl
+                kubernetes-helm
+
+                # scripts
+                add-remote-lxd
+                check-k8s
+                check-disk-size
+                copy-img2lxd
+                deploy
+                he
+                init-lxd
+                init-remote-lxd
+                k
+                mkage4instance
+                mkage4mgr
+                mkimg4lxc
+                mksshhostkeys
+                ter
+              ];
           };
         };
     };

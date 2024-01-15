@@ -62,13 +62,6 @@ The differences between his project and this.
   | Memory           | 16GiB or more |
   | LXC default pool | 56GiB or more |
 
-- Physical machine for actual operation
-
-  | Name      | alice | yui | strea |
-  | --------- | ----- | --- | ----- |
-  | CPU (C/T) | 4/4   | 4/8 | 4/4   |
-  | RAM (GiB) | 8     | 32  | 16    |
-
 # Usage (Local Development)
 
 ## 0. Prerequisites
@@ -121,30 +114,45 @@ It has not been tested and is not supported except by NixOS, but I believe the f
 
 ## 1. Setup environment
 
-```
+```sh
 $ direnv allow          # If you use direnv
 or $ nix develop --impure  # If you do not use direnv
-$ mkenv                 # Init terraform and make workspace
 $ lxd init              # 56GiB or more size for default pool
 $ mkimg4lxc             # make container and VM image for lxc
 ```
 
 ## 2. Launch each nodes.
 
-```
-$ ter apply development
+```sh
+$ cd terraform/pools       # Setting pools
+$ mkenv                    # Init terraform and make workspace
+$ ter apply -w development # Apply terraform using `development.tfvars` (Current in `development` workspace)
+$ cd terraform/network     # Setting network
+$ mkenv
+$ ter apply -w development
+$ cd terraform/k8s         # Launch nodes for kubernetes
+$ mkenv
+$ ter apply -w development
 ```
 
 ## 3. Deploy k8s
 
 ```
-$ mkcerts                        # Generate TLS self-certificates for Kubernetes, etcd, and other daemons.
-$ deploy apply k8s development
-$ check_k8s                      # check_k8s
+# In project root
+$ mkcerts                            # Generate TLS self-certificates for Kubernetes, etcd, and other daemons.
+$ deploy apply -t k8s -w development
+$ check_k8s                          # check_k8s
 ```
 
 ## 4. Destroy k8s
 
 ```
-$ ter destroy development
+$ cd terraform/k8s
+$ ter destroy -w development
+```
+
+## memo
+
+```
+nix run github:nix-community/nixos-anywhere -- -f ".#ctrl" --option pure-eval false --vm-test
 ```

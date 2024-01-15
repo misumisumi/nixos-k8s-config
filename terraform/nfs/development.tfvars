@@ -1,7 +1,3 @@
-network = {
-  name         = "k8sbr0"
-  ipv4_address = "10.150.10.1/24"
-}
 compornents = [
   {
     tag = "nfs"
@@ -15,8 +11,17 @@ compornents = [
             type         = "disk"
             content_type = "block"
             properties = {
-              pool   = "nfs"
+              pool   = "dev-nfs"
               source = "nfs1"
+            }
+          },
+          {
+            name = "key"
+            type = "disk"
+            properties = {
+              source   = "/run/user/1000/keys/nfs1"
+              path     = "/etc/secrets"
+              readonly = true
             }
           }
         ]
@@ -30,8 +35,17 @@ compornents = [
             type         = "disk"
             content_type = "block"
             properties = {
-              pool   = "nfs"
+              pool   = "dev-nfs"
               source = "nfs2"
+            }
+          },
+          {
+            name = "key"
+            type = "disk"
+            properties = {
+              source   = "/run/user/1000/keys/nfs2"
+              path     = "/etc/secrets"
+              readonly = true
             }
           }
         ]

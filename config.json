@@ -1,8 +1,13 @@
 {
     "workspaces": [
         "development",
+        "staging",
         "production"
     ],
+    "lxd-setting": {
+        "storage-backend": "btrfs",
+        "storage-create-loop": "96"
+    },
     "virtualIPs": {
         "k8s": {
             "development": "10.150.10.100",
@@ -16,25 +21,33 @@
         }
     },
     "hosts": {
-        "yui": {
+        "primary": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.100",
-            "label": "ctrl"
+            "hostname": "yui",
+            "ipv4_address": "172.16.1.21",
+            "system": "x86_64-linux",
+            "group": "node"
         },
-        "alice": {
+        "secondary": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.101",
-            "label": "worker1"
+            "hostname": "strea",
+            "ipv4_address": "172.16.1.22",
+            "system": "x86_64-linux",
+            "group": "node"
         },
-        "strea": {
+        "tertiary": {
             "cpu_bender": "intel",
-            "ip_address": "192.168.1.102",
-            "label": "worker2"
+            "hostname": "alice",
+            "ipv4_address": "172.16.1.23",
+            "system": "x86_64-linux",
+            "group": "node"
         },
-        "netboot": {
-            "cpu_bender": "intel",
-            "ip_address": "192.168.1.101",
-            "label": "netboot"
+        "rescue": {
+            "cpu_bender": "",
+            "hostname": "nixos",
+            "ipv4_address": "",
+            "system": "x86_64-linux",
+            "group": "netboot"
         }
     }
 }

@@ -11,7 +11,6 @@ let
   tf_output_path_by_ws = part_of: ws: "${builtins.getEnv "PWD"}/terraform/${part_of}/${ws}.json";
   payloadByWS = part_of: ws: if check_path (tf_output_path_by_ws part_of ws) then builtins.fromJSON (builtins.readFile (tf_output_path_by_ws part_of ws)) else { };
   resourcesByTypeAndWS = type: part_of: ws: resourcesInModule type ((payloadByWS part_of ws).values.root_module or [ ]);
-
 in
 rec {
   resources = part_of: resourcesByType "lxd_instance" part_of;
@@ -23,7 +22,8 @@ rec {
 
   resourcesByWS = part_of: ws: resourcesByTypeAndWS "lxd_instance" part_of ws;
   resourcesByRoleAndWS = role: part_of: ws: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resourcesByWS part_of ws));
-  outputsByRole = role: part_of: (builtins.filter (r: lib.strings.hasPrefix role r.name) ((payload part_of).values.outputs.instance_info.value));
+  outputsByRole = role: part_of: (builtins.filter (r: lib.strings.hasPrefix role r.name) (payload part_of).values.outputs.instance_info.value);
 
   nodeIP = r: r.values.ip_address;
+  machineType = target: tag: builtins.head (map (r: r.values.type) (resourcesByRole target tag));
 }
