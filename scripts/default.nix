@@ -10,7 +10,7 @@
 ,
 }:
 {
-  check_k8s = callPackage (import ./check_k8s.nix) { };
+  check-k8s = callPackage (import ./check-k8s.nix) { };
   deploy = callPackage (import ./deploy.nix) { };
   mkenv = callPackage (import ./mkenv.nix) { };
   mksshhostkeys = callPackage (import ./mksshhostkeys.nix) { };
@@ -21,19 +21,11 @@
   he = writeShellScriptBin "he" ''
     ${kubernetes-helm}/bin/helm --kubeconfig .kube/admin.kubeconfig $@
   '';
+  check-disk-size = writeShellScriptBin "check-disk-size" ''
+    lsblk -b -io KNAME,TYPE,SIZE,MODEL | awk 'BEGIN{OFS="\t"; OFMT="%.1f"; print "KNAME","TYPE","SIZE","MODEL";} $2 == "disk" {if (FNR>1) print $1,$2,int($3/1073741824)"G",$4; else print $0}'
+  '';
   mkkeyfile = writeShellScriptBin "mkkeyfile" ''
 
   '';
-  mkimg4lxc = writeShellScriptBin "mkimg4lxc" ''
-    nix run ".#import/lxc-container" --impure
-    nix run ".#import/lxc-virtual-machine" --impure
-    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
-    lxc image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
-  '';
-  init_nfs_instance = writeShellScriptBin "init_nfs_instance" ''
-    deploy exec nfs -w development -- drbdadm create-md r0
-    deploy exec nfs -w development -- drbdadm up r0
-    # deploy exec nfs1 -w development -- drbdadm primary r0 --force
-  '';
-} // (callPackage (import ./setup_lxd.nix) { })
+} // (callPackage (import ./setup-lxd.nix) { })
   // (callPackage (import ./mkage.nix) { })

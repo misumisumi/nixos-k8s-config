@@ -46,6 +46,11 @@ writeText "boot-menu.ipxe" ''
   initrd https://github.com/nix-community/nixos-images/releases/download/nixos-23.05/initrd-x86_64-linux
   boot
 
+  :NixOS-installer(23.11)
+  kernel https://github.com/nix-community/nixos-images/releases/download/nixos-23.11/bzImage-x86_64-linux init=/nix/store/rw55hls1rah957jg260bw5g1s1pbvbb1-nixos-system-nixos-23.11beta-356385.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
+  initrd https://github.com/nix-community/nixos-images/releases/download/nixos-23.11/initrd-x86_64-linux
+  boot
+
   :exit
   exit
 

@@ -12,7 +12,7 @@ terraform {
   required_providers {
     lxd = {
       source  = "terraform-lxd/lxd"
-      version = "~> 1.10.2"
+      version = "~> 1.10.4"
     }
   }
 }
@@ -35,25 +35,6 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-resource "time_sleep" "wait_15s" {
-  depends_on       = [module.network]
-  create_duration  = "15s"
-  destroy_duration = "15s"
-}
-
-module "network" {
-  count  = terraform.workspace == "product" || var.network == null ? 0 : 1
-  source = "../modules/network"
-
-  name         = var.network.name
-  ipv4_address = var.network.ipv4_address
-}
-
-module "pool" {
-  source = "../modules/pool"
-  pools  = var.pools
-}
-
 module "instances" {
   for_each = local.compornents
   source   = "../modules/instance"
@@ -61,5 +42,6 @@ module "instances" {
   tag             = each.key
   instances       = each.value.instances
   instance_config = each.value.instance_config
-  depends_on      = [module.network, module.pool, time_sleep.wait_15s]
+  set_ip_address  = true
 }
+

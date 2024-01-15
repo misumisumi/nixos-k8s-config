@@ -1,0 +1,4 @@
+{ nodeIP, ... }:
+{
+  deployment.targetHost = nodeIP;
+}
