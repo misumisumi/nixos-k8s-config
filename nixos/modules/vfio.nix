@@ -98,55 +98,80 @@ in
     };
   };
   config = mkIf cfg.enable {
-    services.udev.extraRules = ''
-      SUBSYSTEM=="vfio", OWNER="root", GROUP="kvm"
-    '';
+    boot = {
+      extraModprobeConfig = optionalString (cfg.devices != [ ]) ("options vfio-pci ids=" + (concatStringsSep "," cfg.devices));
+      kernelParams =
+        (
+          if cfg.IOMMUType == "both"
+          then [
+            "intel_iommu=on"
+            "intel_iommu=igfx_off"
+            "amd_iommu=on"
+          ]
+          else if cfg.IOMMUType == "intel"
+          then [
+            "intel_iommu=on"
+            "intel_iommu=igfx_off"
+          ]
+          else [ "amd_iommu=on" ]
+        )
+        ++ (optionals cfg.applyACSpatch [
+          "pcie_acs_override=downstream,multifunction"
+          "pci=nomsi"
+        ])
+        ++ (optional cfg.disableEFIfb "video=efifb:off")
+        ++ (optionals cfg.ignoreMSRs [
+          "kvm.ignore_msrs=1"
+          "kvm.report_ignored_msrs=0"
+        ])
+        ++ [ "iommu=pt" ];
 
-    boot.extraModprobeConfig = optionalString (cfg.devices != [ ]) ("options vfio-pci ids=" + (concatStringsSep "," cfg.devices));
-    boot.kernelParams =
-      (
-        if cfg.IOMMUType == "both"
-        then [
-          "intel_iommu=on"
-          "intel_iommu=igfx_off"
-          "amd_iommu=on"
-        ]
-        else if cfg.IOMMUType == "intel"
-        then [
-          "intel_iommu=on"
-          "intel_iommu=igfx_off"
-        ]
-        else [ "amd_iommu=on" ]
-      )
-      ++ (optionals cfg.applyACSpatch [
-        "pcie_acs_override=downstream,multifunction"
-        "pci=nomsi"
-      ])
-      ++ (optional cfg.disableEFIfb "video=efifb:off")
-      ++ (optionals cfg.ignoreMSRs [
-        "kvm.ignore_msrs=1"
-        "kvm.report_ignored_msrs=0"
-      ])
-      ++ [ "iommu=pt" ];
+      # kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" "vfio_virqfd" ]
+      kernelModules = (optionals (cfg.deviceDomains == null) [ "vfio_pci" "vfio" "vfio_iommu_type1" ])
+        ++ (optionals (cfg.enableNestedVirtualization && cfg.IOMMUType == "both") [ "kvm_intel nested=1" "kvm_amd nested=1" ])
+        ++ (optional (cfg.enableNestedVirtualization && cfg.IOMMUType == "intel") "kvm_intel nested=1")
+        ++ (optional (cfg.enableNestedVirtualization && cfg.IOMMUType == "amd") "kvm_amd nested=1");
 
-    # boot.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" "vfio_virqfd" ]
-    boot.kernelModules = [ ]
-      ++ (optionals (cfg.deviceDomains == null) [ "vfio_pci" "vfio" "vfio_iommu_type1" ])
-      ++ (optionals (cfg.enableNestedVirtualization && cfg.IOMMUType == "both") [ "kvm_intel nested=1" "kvm_amd nested=1" ])
-      ++ (optional (cfg.enableNestedVirtualization && cfg.IOMMUType == "intel") "kvm_intel nested=1")
-      ++ (optional (cfg.enableNestedVirtualization && cfg.IOMMUType == "amd") "kvm_amd nested=1");
+      initrd = optionalAttrs (cfg.deviceDomains != [ ]) {
+        preDeviceCommands = ''
+          DEVS="${concatMapStrings (x: x + " ") cfg.deviceDomains}"
+          if [ -z "$(ls -A /sys/class/iommu)" ]; then
+            exit 0
+          fi
+          for DEV in $DEVS; do
+            echo "vfio-pci" > "/sys/bus/pci/devices/''$DEV/driver_override"
+          done
+        '';
+      };
+      # initrd.kernelModules =
+      #   [ "vfio_virqfd" "vfio_pci" "vfio_iommu_type1" "vfio" ];
+      blacklistedKernelModules =
+        optionals cfg.blacklistNvidia [ "nvidia" "nouveau" ];
 
-    boot.initrd = optionalAttrs (cfg.deviceDomains != [ ]) {
-      preDeviceCommands = ''
-        DEVS="${concatMapStrings (x: x + " ") cfg.deviceDomains}"
-        if [ -z "$(ls -A /sys/class/iommu)" ]; then
-          exit 0
-        fi
-        for DEV in $DEVS; do
-          echo "vfio-pci" > "/sys/bus/pci/devices/''$DEV/driver_override"
-        done
-      '';
+      kernelPatches = optionals cfg.applyACSpatch [
+        {
+          name = "add-acs-overrides";
+          patch = pkgs.fetchurl {
+            name = "add-acs-overrides.patch";
+            url = "https://raw.githubusercontent.com/slowbro/linux-vfio/v5.5.4-arch1/add-acs-overrides.patch";
+            #url =
+            #  "https://aur.archlinux.org/cgit/aur.git/plain/add-acs-overrides.patch?h=linux-vfio&id=${acscommit}";
+            sha256 = "0nbmc5bwv7pl84l1mfhacvyp8vnzwhar0ahqgckvmzlhgf1n1bii";
+          };
+        }
+        {
+          name = "i915-vga-arbiter";
+          patch = pkgs.fetchurl {
+            name = "i915-vga-arbiter.patch";
+            url = "https://raw.githubusercontent.com/slowbro/linux-vfio/v5.5.4-arch1/i915-vga-arbiter.patch";
+            #url =
+            #  "https://aur.archlinux.org/cgit/aur.git/plain/i915-vga-arbiter.patch?h=linux-vfio&id=${acscommit}";
+            sha256 = "1m5nn9pfkf685g31y31ip70jv61sblvxgskqn8a0ca60mmr38krk";
+          };
+        }
+      ];
     };
+
     systemd.services = optionalAttrs (cfg.deviceDomains != [ ]) {
       vfio-load = {
         description = "Insert vfio-pci driver";
@@ -157,33 +182,10 @@ in
         };
       };
     };
-    # boot.initrd.kernelModules =
-    #   [ "vfio_virqfd" "vfio_pci" "vfio_iommu_type1" "vfio" ];
-    boot.blacklistedKernelModules =
-      optionals cfg.blacklistNvidia [ "nvidia" "nouveau" ];
 
-    boot.kernelPatches = optionals cfg.applyACSpatch [
-      {
-        name = "add-acs-overrides";
-        patch = pkgs.fetchurl {
-          name = "add-acs-overrides.patch";
-          url = "https://raw.githubusercontent.com/slowbro/linux-vfio/v5.5.4-arch1/add-acs-overrides.patch";
-          #url =
-          #  "https://aur.archlinux.org/cgit/aur.git/plain/add-acs-overrides.patch?h=linux-vfio&id=${acscommit}";
-          sha256 = "0nbmc5bwv7pl84l1mfhacvyp8vnzwhar0ahqgckvmzlhgf1n1bii";
-        };
-      }
-      {
-        name = "i915-vga-arbiter";
-        patch = pkgs.fetchurl {
-          name = "i915-vga-arbiter.patch";
-          url = "https://raw.githubusercontent.com/slowbro/linux-vfio/v5.5.4-arch1/i915-vga-arbiter.patch";
-          #url =
-          #  "https://aur.archlinux.org/cgit/aur.git/plain/i915-vga-arbiter.patch?h=linux-vfio&id=${acscommit}";
-          sha256 = "1m5nn9pfkf685g31y31ip70jv61sblvxgskqn8a0ca60mmr38krk";
-        };
-      }
-    ];
+    services.udev.extraRules = ''
+      SUBSYSTEM=="vfio", OWNER="root", GROUP="kvm"
+    '';
 
     system.activationScripts.libvirt-hooks.text = optionalString cfg.hook.enable ''
       ln -Tfs /etc/libvirt/hooks /var/lib/libvirt/hooks

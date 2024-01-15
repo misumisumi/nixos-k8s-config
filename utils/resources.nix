@@ -22,7 +22,7 @@ rec {
 
   resourcesByWS = part_of: ws: resourcesByTypeAndWS "lxd_instance" part_of ws;
   resourcesByRoleAndWS = role: part_of: ws: (builtins.filter (r: lib.strings.hasPrefix role r.values.name) (resourcesByWS part_of ws));
-  outputsByRole = role: part_of: (builtins.filter (r: lib.strings.hasPrefix role r.name) ((payload part_of).values.outputs.instance_info.value));
+  outputsByRole = role: part_of: (builtins.filter (r: lib.strings.hasPrefix role r.name) (payload part_of).values.outputs.instance_info.value);
 
   nodeIP = r: r.values.ip_address;
   machineType = target: tag: builtins.head (map (r: r.values.type) (resourcesByRole target tag));

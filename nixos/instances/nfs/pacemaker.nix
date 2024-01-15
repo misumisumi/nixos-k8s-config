@@ -5,7 +5,7 @@
 let
   nfsServers = map
     (r: {
-      name = r.values.name;
+      inherit (r.values) name;
       nodeid = lib.strings.toInt (lib.strings.removePrefix "nfs" r.values.name);
       ring_addrs = [ r.values.ip_address ];
     })

@@ -8,33 +8,33 @@ let
   targets = types.submodule {
     options = {
       backingStores = mkOption {
-        type = types.listOf (types.str);
+        type = types.listOf types.str;
         default = [ ];
         description = "Defines a logical unit (LUN) exported by the target.";
       };
       directStores = mkOption {
-        type = types.listOf (types.str);
+        type = types.listOf types.str;
         default = [ ];
         description = "Defines a direct mapped logical unit (LUN) with the same properties as the physical devices.";
       };
       useIser = mkEnableOption "Use 'iser' driver";
       initiatorAddresses = mkOption {
-        type = types.listOf (types.str);
+        type = types.listOf types.str;
         default = [ ];
         description = "Allows connections only from the specified IP addresses.";
       };
       initiatorNames = mkOption {
-        type = types.listOf (types.str);
+        type = types.listOf types.str;
         default = [ ];
         description = "Allows connections only from the specified initiator names.";
       };
       incomingusers = mkOption {
-        type = types.listOf (types.str);
+        type = types.listOf types.str;
         default = [ ];
         description = "Define iscsi incoming authentication setting. ";
       };
       outgoingusers = mkOption {
-        type = types.listOf (types.str);
+        type = types.listOf types.str;
         default = [ ];
         description = "Define iscsi outgoing authentication setting.";
       };
@@ -71,7 +71,7 @@ in
       description = "Default value for after how many failed probes TGTD will consider the initiator dead and tear down the session";
     };
     targets = mkOption {
-      type = types.attrOf (targets);
+      type = types.attrOf targets;
       default = { };
       description = "iSCSI targets with config";
     };

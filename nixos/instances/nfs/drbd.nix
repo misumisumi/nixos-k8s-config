@@ -22,7 +22,7 @@ let
     (name: value:
       ''
         ''\t''\t${name} {
-        ''\t''\t''\tdevice minor ${builtins.head ((builtins.match "^.*[[:space:]]([[:digit:]]+)$" name))};
+        ''\t''\t''\tdevice minor ${builtins.head (builtins.match "^.*[[:space:]]([[:digit:]]+)$" name)};
         ''\t''\t''\tdisk ${value.${node}};
         ''\t''\t''\tmeta-disk internal;
         ''\t''\t}

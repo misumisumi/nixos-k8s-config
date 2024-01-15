@@ -65,7 +65,7 @@ let
   kubeletCsrs = role:
     map
       (r: {
-        name = r.values.name;
+        inherit (r.values) name;
         csr = mkCsr r.values.name {
           cn = "system:node:${r.values.name}";
           organization = "system:nodes";
