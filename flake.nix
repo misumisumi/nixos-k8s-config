@@ -115,7 +115,7 @@
         }:
         let
           inherit (import ./lib.nix) mkApp;
-          myTerraform = pkgs.terraform.withPlugins (tp: with tp; [ lxd random time ]);
+          myOpentofu = pkgs.opentofu.withPlugins (tp: with tp; [ incus random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
@@ -173,7 +173,7 @@
                 inetutils
                 jq
                 libxslt
-                myTerraform
+                myOpentofu
                 sops
                 squashfsTools
                 tcpdump
