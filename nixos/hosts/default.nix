@@ -83,5 +83,5 @@ builtins.listToAttrs
           })
           attrs))
       (lib.filterAttrs (tag: _: tag != "rescue") hosts)
-  ))//
-  (lib.mapAttrs (name: systemSetting) hosts)
+  )) //
+(lib.mapAttrs (name: systemSetting) hosts)
