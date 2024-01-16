@@ -31,11 +31,6 @@ resource "incus_network" "incus_network" {
   name = each.key
   remote = each.value.remote
   project = each.value.project
-  config = {
-    "ipv4.address" = each.value.config.ipv4_address
-    "ipv4.nat"      = each.value.config.nat
-    "ipv6.address" = each.value.config.ipv6_address
-    "ipv6.nat"      = each.value.config.nat
-  }
+  config = each.value.config
 }
 

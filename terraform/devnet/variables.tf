@@ -12,11 +12,7 @@ variable "networks" {
   type = map(object({
     project = optional(string, null)
     remote = optional(string, null)
-    config = object({
-      ipv4_address = optional(string, "none")
-      ipv6_address = optional(string, "none")
-      nat          = optional(bool, true)
-    })
+    config = map(any)
   }))
   description = "Network configs"
 }
