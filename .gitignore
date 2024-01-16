@@ -6,5 +6,5 @@ terraform/*/terraform.tfstate.backup
 terraform/*/*.json
 terraform/*/*.png
 .kube
-.keyfiles
+.keystore
 .ssh
