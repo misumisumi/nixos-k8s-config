@@ -19,7 +19,7 @@ locals {
         name         = device.properties.source
         remote       = instance.remote
         pool         = device.properties.pool
-        content_type = device.content_type
+        content_type = var.instance_config.machine_type == "container" ? "filesystem" : "block"
       } : null
     ]
   ])
@@ -45,9 +45,9 @@ resource "random_id" "host_id" {
 }
 
 resource "incus_profile" "profile" {
+    # for_each = toset(local.remotes)
   name     = "profile_${var.tag}"
-  for_each = toset(local.remotes)
-  remote   = each.value
+    # remote   = each.value
 
   config = {
     "boot.autostart" = var.instance_config.boot_autostart
@@ -57,11 +57,11 @@ resource "incus_profile" "profile" {
     type = "disk"
     name = "root"
 
-    properties = {
+    properties = merge({
       pool = "default"
       path = "/"
-      size = var.instance_config.root_size
-    }
+    }, var.instance_root_config
+        )
   }
 }
 
@@ -95,18 +95,14 @@ resource "incus_instance" "instance" {
     name = "eth0"
     type = "nic"
 
-    properties = {
+    properties = merge ({
       nictype = "bridged"
       parent  = var.instance_config.nic_parent
       host_name = format(var.instance_config.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
         substr(each.value.name, 0, 3),
         substr(each.value.name, -1, -1)
-      )
-      "ipv4.address" = each.value.ipv4_address
-      "ipv6.address" = each.value.ipv6_address
-      "hwaddr"       = each.value.mac_address
-      vlan           = var.instance_config.vlan
-    }
+    )}, each.value.network_config
+        )
   }
   dynamic "device" {
     for_each = each.value.devices

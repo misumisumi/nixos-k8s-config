@@ -4,6 +4,7 @@ locals {
       "${i.tag}" = {
         instances       = i.instances
         instance_config = i.instance_config
+        instance_root_config = i.instance_root_config
     } }
   ]...)
 }
@@ -46,5 +47,7 @@ module "instances" {
   tag             = each.key
   instances       = each.value.instances
   instance_config = each.value.instance_config
+  instance_root_config = each.value.instance_root_config
   set_ip_address  = true
 }
+

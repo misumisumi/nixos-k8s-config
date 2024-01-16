@@ -4,20 +4,27 @@ compornents = [
     instances = [
       {
         name         = "controlplane1"
-        ipv4_address = "10.150.10.20"
+        network_config = {
+          "ipv4.address" = "10.150.10.20"
+        }
       },
       {
         name         = "controlplane2"
-        ipv4_address = "10.150.10.21"
+        network_config = {
+          "ipv4.address" = "10.150.10.21"
+        }
       },
       {
         name         = "controlplane3"
-        ipv4_address = "10.150.10.22"
+        network_config = {
+          "ipv4.address" = "10.150.10.22"
+        }
       },
     ]
     instance_config = {
       cpu    = "2"
       memory = "2GiB"
+      nic_parent = "k8sbr0"
     }
   },
   {
@@ -25,20 +32,27 @@ compornents = [
     instances = [
       {
         name         = "etcd1"
-        ipv4_address = "10.150.10.10"
+        network_config = {
+          "ipv4.address" = "10.150.10.31"
+        }
       },
       {
         name         = "etcd2"
-        ipv4_address = "10.150.10.11"
+        network_config = {
+          "ipv4.address" = "10.150.10.32"
+        }
       },
       {
         name         = "etcd3"
-        ipv4_address = "10.150.10.12"
+        network_config = {
+          "ipv4.address" = "10.150.10.33"
+        }
       },
     ]
     instance_config = {
       cpu    = "2"
       memory = "2GiB"
+      nic_parent = "k8sbr0"
     }
   },
   {
@@ -46,20 +60,27 @@ compornents = [
     instances = [
       {
         name         = "loadbalancer1"
-        ipv4_address = "10.150.10.30"
+        network_config = {
+          "ipv4.address" = "10.150.10.41"
+        }
       },
       {
         name         = "loadbalancer2"
-        ipv4_address = "10.150.10.31"
+        network_config = {
+          "ipv4.address" = "10.150.10.42"
+        }
       },
       {
         name         = "loadbalancer3"
-        ipv4_address = "10.150.10.32"
+        network_config = {
+          "ipv4.address" = "10.150.10.43"
+        }
       },
     ]
     instance_config = {
       cpu    = "2"
       memory = "2GiB"
+      nic_parent = "k8sbr0"
     }
   },
   {
@@ -67,14 +88,15 @@ compornents = [
     instances = [
       {
         name         = "worker1"
-        ipv4_address = "10.150.10.40"
+        network_config = {
+          "ipv4.address" = "10.150.10.51"
+        }
         devices = [
           {
             name         = "ceph"
             type         = "disk"
-            content_type = "block"
             properties = {
-              pool   = "dev-ceph"
+              pool   = "ceph"
               source = "ceph1"
             }
           }
@@ -82,14 +104,15 @@ compornents = [
       },
       {
         name         = "worker2"
-        ipv4_address = "10.150.10.41"
+        network_config = {
+          "ipv4.address" = "10.150.10.52"
+        }
         devices = [
           {
             name         = "ceph"
             type         = "disk"
-            content_type = "block"
             properties = {
-              pool   = "dev-ceph"
+              pool   = "ceph"
               source = "ceph2"
             }
           }
@@ -97,14 +120,15 @@ compornents = [
       },
       {
         name         = "worker3"
-        ipv4_address = "10.150.10.42"
+        network_config = {
+          "ipv4.address" = "10.150.10.53"
+        }
         devices = [
           {
             name         = "ceph"
             type         = "disk"
-            content_type = "block"
             properties = {
-              pool   = "dev-ceph"
+              pool   = "ceph"
               source = "ceph3"
             }
           }
@@ -115,7 +139,10 @@ compornents = [
       machine_type = "virtual-machine"
       cpu          = "4"
       memory       = "8GiB"
-      root_size    = "16GiB"
+      nic_parent = "k8sbr0"
+    }
+    instance_root_config = {
+        size = "8GiB"
     }
   }
 ]

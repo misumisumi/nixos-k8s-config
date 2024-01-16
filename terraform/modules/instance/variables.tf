@@ -12,17 +12,14 @@ variable "instances" {
   type = set(
     object({
       name         = string
-      remote       = optional(string, "")
-      ipv4_address = optional(string, null)
-      ipv6_address = optional(string, null)
-      mac_address =  optional(string, null)
-      cpu          = optional(number, null)
-      memory       = optional(string, null)
+      remote       = optional(string)
+      network_config = optional(map(any))
+      cpu          = optional(number)
+      memory       = optional(string)
       devices = set(
         object({
           name         = string
           type         = string
-          content_type = optional(string, "filesystem")
           properties   = map(string)
       }))
     })
@@ -32,16 +29,20 @@ variable "instances" {
 
 variable "instance_config" {
   type = object({
-    cpu            = number
+    cpu            = string
     memory         = string
     nic_parent     = string
     image          = optional(string, "nixos")
     machine_type   = optional(string, "container")
-    vlan           = optional(number, null)
+    vlan           = optional(string, "0")
     boot_autostart = optional(bool, true)
-    root_size      = optional(string, null)
     mount_fs       = optional(string, "ext4")
   })
   description = "instance config"
+}
+
+variable "instance_root_config" {
+  type = map(any)
+  description = "instance root config"
 }
 

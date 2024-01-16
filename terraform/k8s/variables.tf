@@ -8,14 +8,6 @@ variable "remote_hosts" {
   default = []
 }
 
-variable "network" {
-  type = object({
-    name         = optional(string, null)
-    ipv4_address = optional(string, null)
-  })
-  default = null
-}
-
 variable "compornents" {
   type = set(
     object({
@@ -24,25 +16,19 @@ variable "compornents" {
         object({
           name         = string
           remote       = optional(string, null)
-          ipv4_address = optional(string, null)
-          ipv6_address = optional(string, null)
-          mac_address  = optional(string, null)
+          network_config = optional(map(any))
           devices = optional(set(
             object({
               name         = string
               type         = string
-              content_type = optional(string, "filesystem")
               properties   = map(string)
             })
           ), [])
         })
       )
-      instance_config = object({
-        machine_type = optional(string, "container")
-        cpu          = optional(number, 2)
-        memory       = optional(string, "1GiB")
-        nic_parent   = optional(string, "k8sbr0")
-        root_size    = optional(string, null)
+      instance_config = map(any)
+      instance_root_config = optional(map(any), {
+        path = "/"
       })
     })
   )
