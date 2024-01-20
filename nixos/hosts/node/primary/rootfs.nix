@@ -3,9 +3,8 @@
 , ...
 }:
 let
-  rootDevice = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000H1_S340NX0K748767";
-  rootDeviceSize = 238.5; # GB
-  # https://docs.oracle.com/cd/E62101_01/html/E62701/zfspools-4.html
+  rootDevice = "/dev/disk/by-id/ata-KIOXIA-EXCERIA_SATA_SSD_822B70LKKLE4";
+  rootDeviceSize = 465.8; # GB
   reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
 in
 {
@@ -82,7 +81,7 @@ in
           };
           keystore = {
             type = "zfs_volume";
-            size = "2G";
+            size = "1G";
             content = {
               type = "filesystem";
               format = "ext4";
@@ -104,7 +103,7 @@ in
           };
           cephMonVol = {
             type = "zfs_volume";
-            size = "36G";
+            size = "128G";
           };
           user = {
             type = "zfs_fs";
@@ -141,9 +140,9 @@ in
             mountpoint = "/var/lib";
             options."com.sun:auto-snapshot" = "false";
           };
-          "system/var/lib/lxd" = {
+          "system/var/lib/incus" = {
             type = "zfs_fs";
-            mountpoint = "/var/lib/lxd";
+            mountpoint = "/var/lib/incus";
             options."com.sun:auto-snapshot" = "true";
           };
           "local" = {

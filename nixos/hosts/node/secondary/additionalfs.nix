@@ -53,7 +53,7 @@ let
         reservedSize = diskSize - (diskSize * canUseCapacity);
       in
       {
-        device = "/dev/disk/by-id/scsi-360030057027804002d1262be2f91e9a2";
+        device = "/dev/disk/by-id/ata-TOSHIBA_MQ01ABF050_46FFCCZBT";
         zfs = {
           inherit type options;
           mountpoint = "/storageA";
@@ -73,7 +73,7 @@ let
         reservedSize = diskSize - (diskSize * canUseCapacity);
       in
       {
-        device = "/dev/disk/by-id/scsi-360030057027804002d1262882c5ccb03";
+        device = "/dev/disk/by-id/ata-TOSHIBA_MQ01ABF050_Y8KCTYB7T";
         zfs = {
           inherit type options;
           mountpoint = "/storageB";
@@ -93,7 +93,7 @@ let
         reservedSize = diskSize - (diskSize * canUseCapacity);
       in
       {
-        device = "/dev/disk/by-id/ata-ST8000DM004-2CX188_ZR10J24P";
+        device = "/dev/disk/by-id/ata-ST8000DM004-2CX188_WSC1KCXK";
         zfs = {
           inherit type options;
           mountpoint = "/storageC";

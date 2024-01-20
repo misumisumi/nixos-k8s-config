@@ -1,6 +1,6 @@
 {
   networking = {
-    hostId = "d8280a53";
+    hostId = "4e21f98c";
   };
   boot = {
     extraModprobeConfig = ''
