@@ -101,10 +101,6 @@ in
               fi
             '';
           };
-          cephMonVol = {
-            type = "zfs_volume";
-            size = "36G";
-          };
           user = {
             type = "zfs_fs";
             options = {
@@ -140,9 +136,9 @@ in
             mountpoint = "/var/lib";
             options."com.sun:auto-snapshot" = "false";
           };
-          "system/var/lib/lxd" = {
+          "system/var/lib/incus" = {
             type = "zfs_fs";
-            mountpoint = "/var/lib/lxd";
+            mountpoint = "/var/lib/incus";
             options."com.sun:auto-snapshot" = "true";
           };
           "local" = {
