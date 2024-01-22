@@ -1,22 +1,16 @@
-{ lib
-, tag
+{ config
+, lib
 , ...
 }:
 let
-  rootDevice = "/dev/disk/by-id/ata-KIOXIA-EXCERIA_SATA_SSD_822B70LKKLE4";
+  rootDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_2244E680233C";
   rootDeviceSize = 465.8; # GB
   reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
 in
 {
-  systemd.services.unload-keystore = {
-    description = "Unload keystore";
-    wantedBy = [ "local-fs.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "/run/wrappers/bin/umount -R /.keystore";
-      ExecStartPost = "zfs unload-key PoolRootFS/keystore";
-    };
-  };
+  boot.postBootCommands = ''
+    ${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore
+  '';
   disko.devices = {
     disk = {
       root = {
@@ -52,7 +46,6 @@ in
           ashift = "12";
           autotrim = "on";
         };
-        mountpoint = "/";
         rootFsOptions = {
           "com.sun:auto-snapshot" = "false";
           acltype = "posixacl";
@@ -64,7 +57,7 @@ in
           xattr = "sa";
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
-          keylocation = "file:///tmp/${tag}/rootfs.key";
+          keylocation = "file:///tmp/rootfs.key";
         };
         postCreateHook = ''
           zfs set keylocation="prompt" "PoolRootFS";
@@ -86,19 +79,15 @@ in
               type = "filesystem";
               format = "ext4";
               mountpoint = "/.keystore";
+              mountOptions = [ "noauto" ];
             };
             options = {
               encryption = "aes-256-gcm";
               keyformat = "passphrase";
-              keylocation = "file:///tmp/${tag}/keystore.key";
+              keylocation = "file:///tmp/keystore.key";
             };
             postCreateHook = ''
               zfs set keylocation="prompt" "PoolRootFS/keystore";
-            '';
-            postMountHook = ''
-              if [ -d /tmp/${tag} ]; then
-                find /tmp/${tag} -type f | grep -vE "keystore|rootfs" | xargs -I{} cp {} /mnt/.keystore/
-              fi
             '';
           };
           cephMonVol = {
@@ -108,7 +97,6 @@ in
           user = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "true";
             };
@@ -120,7 +108,6 @@ in
           system = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "false";
             };
@@ -148,7 +135,6 @@ in
           "local" = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "false";
             };
