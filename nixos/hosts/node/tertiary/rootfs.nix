@@ -1,4 +1,5 @@
-{ lib
+{ config
+, lib
 , tag
 , ...
 }:
@@ -8,15 +9,9 @@ let
   reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
 in
 {
-  systemd.services.unload-keystore = {
-    description = "Unload keystore";
-    wantedBy = [ "local-fs.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "/run/wrappers/bin/umount -R /.keystore";
-      ExecStartPost = "zfs unload-key PoolRootFS/keystore";
-    };
-  };
+  boot.postBootCommands = ''
+    ${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore
+  '';
   disko.devices = {
     disk = {
       root = {
@@ -86,6 +81,7 @@ in
               type = "filesystem";
               format = "ext4";
               mountpoint = "/.keystore";
+              mountOptions = [ "noauto" ];
             };
             options = {
               encryption = "aes-256-gcm";
@@ -104,7 +100,6 @@ in
           user = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "true";
             };
@@ -116,7 +111,6 @@ in
           system = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "false";
             };
@@ -144,7 +138,6 @@ in
           "local" = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "false";
             };

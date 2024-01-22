@@ -10,7 +10,7 @@
     ../../../apps/programs
     ../../../apps/services
     ../../../apps/ssh
-    ../../../apps/virtualization/lxd
+    ../../../apps/virtualization/incus
     ../../../system
     ../init
     ./hardware-configuration.nix
