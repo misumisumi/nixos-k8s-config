@@ -5,7 +5,7 @@
 let
   rootDevice = "/dev/disk/by-id/ata-CT500MX500SSD1_2244E680233C";
   rootDeviceSize = 465.8; # GB
-  reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
+  reservedSize = rootDeviceSize * (1 - 0.89);
 in
 {
   boot.postBootCommands = ''
@@ -46,6 +46,7 @@ in
           ashift = "12";
           autotrim = "on";
         };
+        mountpoint = "/";
         rootFsOptions = {
           "com.sun:auto-snapshot" = "false";
           acltype = "posixacl";
@@ -53,11 +54,11 @@ in
           canmount = "off";
           compression = "zstd";
           dnodesize = "auto";
-          relatime = "on";
-          xattr = "sa";
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
           keylocation = "file:///tmp/rootfs.key";
+          relatime = "on";
+          xattr = "sa";
         };
         postCreateHook = ''
           zfs set keylocation="prompt" "PoolRootFS";
@@ -71,6 +72,10 @@ in
               quota = "${builtins.toString reservedSize}G";
               reservation = "${builtins.toString reservedSize}G";
             };
+          };
+          cephMonVol = {
+            type = "zfs_volume";
+            size = "128G";
           };
           keystore = {
             type = "zfs_volume";
@@ -90,10 +95,6 @@ in
               zfs set keylocation="prompt" "PoolRootFS/keystore";
             '';
           };
-          cephMonVol = {
-            type = "zfs_volume";
-            size = "128G";
-          };
           user = {
             type = "zfs_fs";
             options = {
@@ -104,6 +105,10 @@ in
           "user/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
+            options = {
+              "com.sun:auto-snapshot" = "true";
+              mountpoint = "legacy";
+            };
           };
           system = {
             type = "zfs_fs";
@@ -115,22 +120,34 @@ in
           "system/root" = {
             type = "zfs_fs";
             mountpoint = "/";
-            options."com.sun:auto-snapshot" = "false";
+            options = {
+              "com.sun:auto-snapshot" = "false";
+              mountpoint = "legacy";
+            };
           };
           "system/var" = {
             type = "zfs_fs";
             mountpoint = "/var";
-            options."com.sun:auto-snapshot" = "false";
+            options = {
+              "com.sun:auto-snapshot" = "false";
+              mountpoint = "legacy";
+            };
           };
           "system/var/lib" = {
             type = "zfs_fs";
             mountpoint = "/var/lib";
-            options."com.sun:auto-snapshot" = "false";
+            options = {
+              "com.sun:auto-snapshot" = "true";
+              mountpoint = "legacy";
+            };
           };
           "system/var/lib/incus" = {
             type = "zfs_fs";
             mountpoint = "/var/lib/incus";
-            options."com.sun:auto-snapshot" = "true";
+            options = {
+              "com.sun:auto-snapshot" = "true";
+              mountpoint = "legacy";
+            };
           };
           "local" = {
             type = "zfs_fs";
@@ -142,6 +159,10 @@ in
           "local/nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
+            options = {
+              "com.sun:auto-snapshot" = "false";
+              mountpoint = "legacy";
+            };
           };
         };
       };
