@@ -7,7 +7,7 @@
 }:
 let
   nodes = map
-    (r: "${r.values.ip_address} ${builtins.head (builtins.match "^.*([0-9])" r.values.name)}")
+    (r: "${r.values.ipv4_address} ${builtins.head (builtins.match "^.*([0-9])" r.values.name)}")
     (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {

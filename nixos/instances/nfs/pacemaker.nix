@@ -7,7 +7,7 @@ let
     (r: {
       inherit (r.values) name;
       nodeid = lib.strings.toInt (lib.strings.removePrefix "nfs" r.values.name);
-      ring_addrs = [ r.values.ip_address ];
+      ring_addrs = [ r.values.ipv4_address ];
     })
     (resourcesByRole "nfs" "nfs");
 in
