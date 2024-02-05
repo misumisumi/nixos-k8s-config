@@ -19,7 +19,7 @@ in
   services = {
     flannel = {
       enable = true;
-      network = config.kubernetes.clusterCidr;
+      network = config.services.kubernetes.clusterCidr;
       storageBackend = "etcd"; # TODO: reconsider
       etcd = {
         endpoints = etcdServers;

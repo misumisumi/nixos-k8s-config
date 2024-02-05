@@ -5,8 +5,8 @@
 , ...
 }:
 let
-  etcdServers = map (r: "${r.values.name}=https://${r.values.ip_address}:2380") (resourcesByRole "etcd" "k8s");
-  nodes = map (r: "${r.values.name} ${r.values.ip_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
+  etcdServers = map (r: "${r.values.name}=https://${r.values.ipv4_address}:2380") (resourcesByRole "etcd" "k8s");
+  nodes = map (r: "${r.values.name} ${r.values.ipv4_address}") (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
 in
 {
   imports = [

@@ -26,6 +26,10 @@ compornents = [
       memory = "2GiB"
       nic_parent = "k8sbr0"
     }
+    instance_root_config = {
+      path = "/"
+      pool = "test"
+    }
   },
   {
     tag = "etcd"
@@ -54,6 +58,10 @@ compornents = [
       memory = "2GiB"
       nic_parent = "k8sbr0"
     }
+    instance_root_config = {
+      path = "/"
+      pool = "test"
+    }
   },
   {
     tag = "loadbalancer",
@@ -81,6 +89,10 @@ compornents = [
       cpu    = "2"
       memory = "2GiB"
       nic_parent = "k8sbr0"
+    }
+    instance_root_config = {
+      path = "/"
+      pool = "test"
     }
   },
   {
@@ -143,6 +155,7 @@ compornents = [
     }
     instance_root_config = {
         size = "8GiB"
+        pool = "test"
     }
   }
 ]
