@@ -1,3 +1,13 @@
+variable "remote" {
+  type    = string
+  default = "local"
+}
+
+variable "project" {
+  type    = string
+  default = null
+}
+
 variable "profiles" {
   type = set(
     object({
@@ -15,7 +25,6 @@ variable "instances" {
   type = set(
     object({
       name         = string
-      remote       = optional(string, "local")
       distro       = optional(string, "nixos")
       machine_type = optional(string, "container")
       config = object({
@@ -29,6 +38,7 @@ variable "instances" {
         object({
           name       = string
           type       = string
+          create     = optional(bool, true)
           properties = map(string)
       }))
     })

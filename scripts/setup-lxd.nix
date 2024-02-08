@@ -4,22 +4,22 @@ let
 in
 {
   mkimg4incus = writeShellScriptBin "mkimg4incus" ''
-    if [ incus image list | grep -q nixos/lxc-container ]; then
-      incus image delete nixos/lxc-container
+    if [[ $(incus image list | grep -q nixos/container) ]]; then
+      incus image delete nixos/container
     fi
-    if [ incus image list | grep -q nixos/lxc-virtual-machine ]; then
-      incus image delete nixos/lxc-virtual-machine
+    if [[ $(incus image list | grep -q nixos/virtual-machine) ]]; then
+      incus image delete nixos/virtual-machine
     fi
-    if [ incus image list | grep -q almalinux9/lxc-container ]; then
-      incus image delete almalinux9/lxc-container
+    if [[ $(incus image list | grep -q almalinux9/container) ]]; then
+      incus image delete almalinux9/container
     fi
-    if [ incus image list | grep -q almalinux9/lxc-virtual-machine ]; then
-      incus image delete almalinux9/lxc-virtual-machine
+    if [[ $(incus image list | grep -q almalinux9/virtual-machine) ]]; then
+      incus image delete almalinux9/virtual-machine
     fi
-    incus image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f lxc --flake ".#lxc-container") --alias nixos/lxc-container
-    incus image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f qcow --flake ".#lxc-virtual-machine") --alias nixos/lxc-virtual-machine
-    incus image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-container
-    incus image copy images:almalinux/9 local: --auto-update --alias almalinux9/lxc-virtual-machine --vm
+    incus image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f lxc --flake ".#lxc-container") --alias nixos/container
+    incus image import ''$(nixos-generate -f lxc-metadata) ''$(nixos-generate -f qcow --flake ".#virtual-machine") --alias nixos/virtual-machine
+    incus image copy images:almalinux/9 local: --auto-update --alias almalinux9/container
+    incus image copy images:almalinux/9 local: --auto-update --alias almalinux9/virtual-machine --vm
   '';
   init-incus = writeShellScriptBin "init-incus" ''
     incus init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
@@ -39,8 +39,8 @@ in
     done
   '';
   copy-img2incus = writeShellScriptBin "copy-img2incus" ''
-    ALIAS_CONTAINER="nixos/lxc-container"
-    ALIAS_VM="nixos/lxc-virtual-machine"
+    ALIAS_CONTAINER="nixos/container"
+    ALIAS_VM="nixos/virtual-machine"
 
     jq -r ".hosts[].name" config.json | while read target
     do

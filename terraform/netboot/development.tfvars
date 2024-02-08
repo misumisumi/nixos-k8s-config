@@ -1,9 +1,20 @@
 compornents = [
   {
-    tag = "netboot"
+    remote = "local"
+    profiles = [
+      {
+        tag       = "nfs"
+        root_pool = "instance"
+      }
+    ]
     instances = [
       {
         name = "netboot1"
+        config = {
+          nic_parent = "br0"
+          cpu        = "2"
+          memory     = "2GiB"
+        }
         devices = [
           {
             name = "http"
@@ -18,11 +29,6 @@ compornents = [
         ]
       }
     ]
-    instance_config = {
-      cpu        = "2"
-      memory     = "2GiB"
-      nic_parent = "br0"
-      # vlan       = "10"
-    }
   }
 ]
+

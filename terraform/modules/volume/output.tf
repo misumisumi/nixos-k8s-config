@@ -1,3 +1,8 @@
 output "incus_volume_info" {
-  value = values(incus_volume.volume)[*]
+  value = [for info in values(incus_volume.volume) : {
+    name   = info.name
+    pool   = info.pool
+    remote = info.remote
+  }]
 }
+

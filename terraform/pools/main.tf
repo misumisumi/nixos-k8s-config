@@ -25,9 +25,22 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-resource "incus_storage_pool" "pools" {
-  for_each = var.pools
-  name     = each.key
-  driver   = each.value.driver
-  config = each.value.config
+module "pools" {
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../modules/pool"
+
+  remote  = each.value.remote
+  project = each.value.project
+  pools   = each.value.pools
+}
+
+module "volumes" {
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../modules/volume"
+
+  remote  = each.value.remote
+  project = each.value.project
+  volumes = each.value.volumes
+
+  depends_on = [module.pools]
 }

@@ -177,6 +177,7 @@
                 sops
                 squashfsTools
                 tcpdump
+                terraform
                 terraform-docs
                 nixos-generators
 
