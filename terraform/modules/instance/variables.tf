@@ -1,48 +1,37 @@
-variable "tag" {
-  type        = string
-  description = "Tag to identify this instance"
-}
-
-variable "set_ip_address" {
-  type    = bool
-  default = false
+variable "profiles" {
+  type = set(
+    object({
+      tag        = string
+      auto_start = optional(bool, true)
+      remote     = optional(string, "local")
+      config     = map(any)
+      root_pool  = optional(string, "default")
+      root_size  = optional(string, "8GiB")
+    })
+  )
 }
 
 variable "instances" {
   type = set(
     object({
       name         = string
-      remote       = optional(string)
+      remote       = optional(string, "local")
+      distro       = optional(string, "nixos")
+      machine_type = optional(string, "container")
+      config = object({
+        cpu        = optional(number, 2)
+        memory     = optional(string, "1GiB")
+        nic_parent = optional(string, "incusbr0")
+        mount_fs   = optional(string, "ext4")
+      })
       network_config = optional(map(any))
-      cpu          = optional(number)
-      memory       = optional(string)
       devices = set(
         object({
-          name         = string
-          type         = string
-          properties   = map(string)
+          name       = string
+          type       = string
+          properties = map(string)
       }))
     })
   )
   description = "Name to give to each instances"
 }
-
-variable "instance_config" {
-  type = object({
-    cpu            = string
-    memory         = string
-    nic_parent     = string
-    image          = optional(string, "nixos")
-    machine_type   = optional(string, "container")
-    vlan           = optional(string, "0")
-    boot_autostart = optional(bool, true)
-    mount_fs       = optional(string, "ext4")
-  })
-  description = "instance config"
-}
-
-variable "instance_root_config" {
-  type = map(any)
-  description = "instance root config"
-}
-
