@@ -1,112 +1,115 @@
 compornents = [
   {
-    tag = "controlplane"
+    remote = "local"
+    profiles = [
+      { tag       = "controlplane"
+        root_pool = "test"
+      },
+      { tag       = "etcd"
+        root_pool = "test"
+      },
+      { tag       = "loadbalancer"
+        root_pool = "test"
+      },
+      { tag       = "worker"
+        root_pool = "test"
+      },
+    ]
     instances = [
       {
-        name         = "controlplane1"
+        name = "controlplane1"
         network_config = {
           "ipv4.address" = "10.150.10.20"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
       {
-        name         = "controlplane2"
+        name = "controlplane2"
         network_config = {
           "ipv4.address" = "10.150.10.21"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
       {
-        name         = "controlplane3"
+        name = "controlplane3"
         network_config = {
           "ipv4.address" = "10.150.10.22"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
-    ]
-    instance_config = {
-      cpu    = "2"
-      memory = "2GiB"
-      nic_parent = "k8sbr0"
-    }
-    instance_root_config = {
-      path = "/"
-      pool = "test"
-    }
-  },
-  {
-    tag = "etcd"
-    instances = [
       {
-        name         = "etcd1"
+        name = "etcd1"
         network_config = {
           "ipv4.address" = "10.150.10.31"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
       {
-        name         = "etcd2"
+        name = "etcd2"
         network_config = {
           "ipv4.address" = "10.150.10.32"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
       {
-        name         = "etcd3"
+        name = "etcd3"
         network_config = {
           "ipv4.address" = "10.150.10.33"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
-    ]
-    instance_config = {
-      cpu    = "2"
-      memory = "2GiB"
-      nic_parent = "k8sbr0"
-    }
-    instance_root_config = {
-      path = "/"
-      pool = "test"
-    }
-  },
-  {
-    tag = "loadbalancer",
-    instances = [
       {
-        name         = "loadbalancer1"
+        name = "loadbalancer1"
         network_config = {
           "ipv4.address" = "10.150.10.41"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
       {
-        name         = "loadbalancer2"
+        name = "loadbalancer2"
         network_config = {
           "ipv4.address" = "10.150.10.42"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
       {
-        name         = "loadbalancer3"
+        name = "loadbalancer3"
         network_config = {
           "ipv4.address" = "10.150.10.43"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
       },
-    ]
-    instance_config = {
-      cpu    = "2"
-      memory = "2GiB"
-      nic_parent = "k8sbr0"
-    }
-    instance_root_config = {
-      path = "/"
-      pool = "test"
-    }
-  },
-  {
-    tag = "worker",
-    instances = [
       {
         name         = "worker1"
+        machine_type = "virtual-machine"
         network_config = {
           "ipv4.address" = "10.150.10.51"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
         devices = [
           {
-            name         = "ceph"
-            type         = "disk"
+            name = "ceph"
+            type = "disk"
             properties = {
               pool   = "ceph"
               source = "ceph1"
@@ -116,13 +119,17 @@ compornents = [
       },
       {
         name         = "worker2"
+        machine_type = "virtual-machine"
         network_config = {
           "ipv4.address" = "10.150.10.52"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
         devices = [
           {
-            name         = "ceph"
-            type         = "disk"
+            name = "ceph"
+            type = "disk"
             properties = {
               pool   = "ceph"
               source = "ceph2"
@@ -132,13 +139,17 @@ compornents = [
       },
       {
         name         = "worker3"
+        machine_type = "virtual-machine"
         network_config = {
           "ipv4.address" = "10.150.10.53"
         }
+        config = {
+          nic_parent = "k8sbr0"
+        }
         devices = [
           {
-            name         = "ceph"
-            type         = "disk"
+            name = "ceph"
+            type = "disk"
             properties = {
               pool   = "ceph"
               source = "ceph3"
@@ -147,16 +158,6 @@ compornents = [
         ]
       }
     ]
-    instance_config = {
-      machine_type = "virtual-machine"
-      cpu          = "4"
-      memory       = "8GiB"
-      nic_parent = "k8sbr0"
-    }
-    instance_root_config = {
-        size = "8GiB"
-        pool = "test"
-    }
   }
 ]
 

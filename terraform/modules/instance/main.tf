@@ -4,10 +4,10 @@
 terraform {
   required_providers {
     incus = {
-      source  = "registry.terraform.io/lxc/incus"
+      source = "registry.terraform.io/lxc/incus"
     }
     random = {
-      source  = "registry.terraform.io/hashicorp/random"
+      source = "registry.terraform.io/hashicorp/random"
     }
   }
 }
@@ -19,7 +19,7 @@ locals {
         name         = device.properties.source
         remote       = instance.remote
         pool         = device.properties.pool
-        content_type = var.instance_config.machine_type == "container" ? "filesystem" : "block"
+        content_type = instance.machine_type == "container" ? "filesystem" : "block"
       } : null
     ]
   ])
@@ -45,23 +45,22 @@ resource "random_id" "host_id" {
 }
 
 resource "incus_profile" "profile" {
-    # for_each = toset(local.remotes)
-  name     = "profile_${var.tag}"
-    # remote   = each.value
+  for_each = { for i in var.profiles : i.tag => i }
+  name     = "profile_${each.value.tag}"
+  remote   = each.value.remote
 
-  config = {
-    "boot.autostart" = var.instance_config.boot_autostart
-  }
+  config = merge({
+    "boot.autostart" = each.value.auto_start
+  }, each.value.config)
 
   device {
-    type = "disk"
     name = "root"
-
-    properties = merge({
-      pool = "default"
+    type = "disk"
+    properties = {
+      pool = each.value.root_pool
       path = "/"
-    }, var.instance_root_config
-        )
+      size = each.value.root_size
+    }
   }
 }
 
@@ -70,14 +69,14 @@ resource "incus_instance" "instance" {
   remote   = each.value.remote
 
   name      = each.value.name
-  type      = var.instance_config.machine_type
-  image     = "${var.instance_config.image}/lxc-${var.instance_config.machine_type}"
+  type      = each.value.machine_type
+  image     = "${each.value.distro}/lxc-${each.value.machine_type}"
   ephemeral = false
-  profiles  = ["profile_${var.tag}"]
+  profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
-  config = var.instance_config.machine_type == "container" ? {
+  config = each.value.machine_type == "container" ? {
     "security.syscalls.intercept.mount"         = true
-    "security.syscalls.intercept.mount.allowed" = var.instance_config.mount_fs
+    "security.syscalls.intercept.mount.allowed" = each.value.config.mount_fs
     "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
@@ -87,22 +86,22 @@ resource "incus_instance" "instance" {
     "security.secureboot" = false
   }
   limits = {
-    cpu    = each.value.cpu == null ? var.instance_config.cpu : each.value.cpu
-    memory = each.value.memory == null ? var.instance_config.memory : each.value.memory
+    cpu    = each.value.config.cpu
+    memory = each.value.config.memory
   }
 
   device {
     name = "eth0"
     type = "nic"
 
-    properties = merge ({
+    properties = merge({
       nictype = "bridged"
-      parent  = var.instance_config.nic_parent
-      host_name = format(var.instance_config.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
+      parent  = each.value.config.nic_parent
+      host_name = format(each.value.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
         substr(each.value.name, 0, 3),
         substr(each.value.name, -1, -1)
-    )}, each.value.network_config
-        )
+      ) }, each.value.network_config
+    )
   }
   dynamic "device" {
     for_each = each.value.devices
