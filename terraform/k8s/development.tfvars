@@ -3,16 +3,16 @@ compornents = [
     remote = "local"
     profiles = [
       { tag       = "controlplane"
-        root_pool = "test"
+        root_pool = "instances"
       },
       { tag       = "etcd"
-        root_pool = "test"
+        root_pool = "instances"
       },
       { tag       = "loadbalancer"
-        root_pool = "test"
+        root_pool = "instances"
       },
       { tag       = "worker"
-        root_pool = "test"
+        root_pool = "instances"
       },
     ]
     instances = [
@@ -51,6 +51,18 @@ compornents = [
         config = {
           nic_parent = "k8sbr0"
         }
+        devices = [
+          {
+            name   = "etcd"
+            create = false
+            type   = "disk"
+            properties = {
+              pool   = "etcd"
+              source = "etcd1"
+              path   = "/var"
+            }
+          }
+        ]
       },
       {
         name = "etcd2"
@@ -60,6 +72,18 @@ compornents = [
         config = {
           nic_parent = "k8sbr0"
         }
+        devices = [
+          {
+            name   = "etcd"
+            create = false
+            type   = "disk"
+            properties = {
+              pool   = "etcd"
+              source = "etcd2"
+              path   = "/var"
+            }
+          }
+        ]
       },
       {
         name = "etcd3"
@@ -69,6 +93,18 @@ compornents = [
         config = {
           nic_parent = "k8sbr0"
         }
+        devices = [
+          {
+            name   = "etcd"
+            create = false
+            type   = "disk"
+            properties = {
+              pool   = "etcd"
+              source = "etcd3"
+              path   = "/var"
+            }
+          }
+        ]
       },
       {
         name = "loadbalancer1"

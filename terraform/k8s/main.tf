@@ -1,13 +1,3 @@
-locals {
-  compornents = merge([
-    for i in var.compornents : {
-      "${i.remote}" = {
-        instances = i.instances
-        profiles  = i.profiles
-    } }
-  ]...)
-}
-
 terraform {
   required_providers {
     incus = {
@@ -40,10 +30,10 @@ resource "terraform_data" "workspace" {
 }
 
 module "instances" {
-  for_each = local.compornents
+  for_each = { for i in var.compornents : i.remote => i }
   source   = "../modules/instance"
 
-  # tag                  = each.key
+  remote    = each.value.remote
   instances = each.value.instances
   profiles  = each.value.profiles
 }

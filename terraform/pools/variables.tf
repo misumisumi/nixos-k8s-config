@@ -8,14 +8,23 @@ variable "remote_hosts" {
   default = []
 }
 
-variable "pools" {
-  type = map(
+variable "compornents" {
+  type = set(
     object(
       {
-        remote = optional(string, null)
+        remote  = optional(string, "local")
         project = optional(string, null)
-        driver = optional(string, "btrfs")
-        config = map(any)
+        pools = set(object({
+          name   = string
+          driver = optional(string, "btrfs")
+          config = map(any)
+        }))
+        volumes = set(object({
+          name         = string
+          pool         = string
+          content_type = optional(string, null)
+          config       = optional(map(string), {})
+        }))
       }
     )
   )

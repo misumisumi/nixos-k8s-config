@@ -15,22 +15,22 @@ terraform {
 locals {
   _volumes = flatten([for instance in flatten(var.instances[*]) :
     [for device in flatten(instance.devices[*]) :
-      device.type == "disk" && contains(keys(device.properties), "pool") ? {
+      device.type == "disk" && device.create && contains(keys(device.properties), "pool") ? {
         name         = device.properties.source
-        remote       = instance.remote
+        remote       = var.remote
         pool         = device.properties.pool
         content_type = instance.machine_type == "container" ? "filesystem" : "block"
       } : null
     ]
   ])
   volumes = [for volume in local._volumes : volume if volume != null]
-  remotes = [for remote in var.instances[*].remote : remote]
 }
 
 resource "incus_volume" "volume" {
   for_each     = { for i in local.volumes : i.name => i }
   name         = each.value.name
-  remote       = each.value.remote
+  remote       = var.remote
+  project      = var.project
   pool         = each.value.pool
   content_type = each.value.content_type
 }
@@ -47,7 +47,8 @@ resource "random_id" "host_id" {
 resource "incus_profile" "profile" {
   for_each = { for i in var.profiles : i.tag => i }
   name     = "profile_${each.value.tag}"
-  remote   = each.value.remote
+  remote   = var.remote
+  project  = var.project
 
   config = merge({
     "boot.autostart" = each.value.auto_start
@@ -66,11 +67,12 @@ resource "incus_profile" "profile" {
 
 resource "incus_instance" "instance" {
   for_each = { for i in var.instances : i.name => i }
-  remote   = each.value.remote
+  remote   = var.remote
+  project  = var.project
 
   name      = each.value.name
   type      = each.value.machine_type
-  image     = "${each.value.distro}/lxc-${each.value.machine_type}"
+  image     = "${each.value.distro}/${each.value.machine_type}"
   ephemeral = false
   profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 

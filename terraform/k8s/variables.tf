@@ -11,7 +11,8 @@ variable "remote_hosts" {
 variable "compornents" {
   type = set(
     object({
-      remote = optional(string)
+      remote  = optional(string, "local")
+      project = optional(string)
       profiles = set(
         object({
           tag        = string
@@ -39,6 +40,7 @@ variable "compornents" {
             object({
               name       = string
               type       = string
+              create     = optional(bool, true)
               properties = map(string)
           })), [])
         })
