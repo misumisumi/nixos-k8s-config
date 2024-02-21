@@ -31,7 +31,7 @@ in
       "kubelet-client-key.pem" = mkSecret "kubelet-client-key.pem";
 
       "api-etcd-ca.pem" = {
-        keyFile = "${pwd}/.kube/etcd/ca.pem";
+        keyFile = "${pwd}/.kube/${workspace}/etcd/ca.pem";
         destDir = "/var/lib/secrets/kubernetes/apiserver";
         user = "kubernetes";
       };
