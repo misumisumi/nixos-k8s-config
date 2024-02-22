@@ -9,13 +9,10 @@ variable "remote_hosts" {
 }
 
 variable "networks" {
-  type = set(
-    object({
-      name         = optional(string, "devnet")
-      ipv4_address = optional(string, "none")
-      ipv6_address = optional(string, "none")
-      nat          = optional(bool, true)
-    })
-  )
+  type = map(object({
+    project = optional(string, null)
+    remote = optional(string, null)
+    config = map(any)
+  }))
   description = "Network configs"
 }

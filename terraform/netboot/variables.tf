@@ -8,14 +8,6 @@ variable "remote_hosts" {
   default = []
 }
 
-variable "network" {
-  type = object({
-    name         = optional(string, null)
-    ipv4_address = optional(string, null)
-  })
-  default = null
-}
-
 variable "compornents" {
   type = set(
     object({
@@ -24,7 +16,7 @@ variable "compornents" {
         object({
           name         = string
           remote       = optional(string, null)
-          ipv4_address = optional(string, null)
+          network_config = optional(map(any))
           devices = optional(set(
             object({
               name         = string
@@ -32,17 +24,15 @@ variable "compornents" {
               content_type = optional(string, "filesystem")
               properties   = map(string)
             })
-          ), [])
+          ))
         })
       )
-      instance_config = any
+      instance_config = map(any)
+      instance_root_config = optional(map(any), {
+        path = "/"
+      })
     })
   )
   description = "Name and some config for instances to spawn"
 }
 
-variable "pools" {
-  type        = set(any)
-  description = "Strage pool propaties"
-  default     = []
-}

@@ -1,20 +1,20 @@
 terraform {
   required_providers {
-    lxd = {
-      source  = "terraform-lxd/lxd"
-      version = "~> 1.10.4"
+    incus = {
+      source  = "registry.terraform.io/lxc/incus"
+      version = "~> 0.0.2"
     }
   }
 }
 
-provider "lxd" {
+provider "incus" {
   generate_client_certificates = true
   accept_remote_certificate    = true
-  dynamic "lxd_remote" {
+  dynamic "remote" {
     for_each = var.remote_hosts
     content {
-      name    = lxd_remote.value.name
-      address = lxd_remote.value.address
+      name    = incus_remote.value.name
+      address = incus_remote.value.address
       scheme  = "https"
     }
   }
@@ -26,6 +26,21 @@ resource "terraform_data" "workspace" {
 }
 
 module "pools" {
-  source = "../modules/pool"
-  pools  = var.pools
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../modules/pool"
+
+  remote  = each.value.remote
+  project = each.value.project
+  pools   = each.value.pools
+}
+
+module "volumes" {
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../modules/volume"
+
+  remote  = each.value.remote
+  project = each.value.project
+  volumes = each.value.volumes
+
+  depends_on = [module.pools]
 }

@@ -1,3 +1,3 @@
 output "network_info" {
-  value = module.networks
+  value = incus_network.incus_network
 }

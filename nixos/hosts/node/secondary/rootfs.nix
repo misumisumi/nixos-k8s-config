@@ -1,22 +1,17 @@
-{ lib
-, tag
+{ config
+, lib
 , ...
 }:
 let
-  rootDevice = "/dev/disk/by-id/ata-KIOXIA-EXCERIA_SATA_SSD_822B70LKKLE4";
-  rootDeviceSize = 223.6; # GB
-  reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
+  rootDevice = "/dev/disk/by-id/nvme-SAMSUNG_MZVPV256HDGL-00001_S2SANYAGB00065";
+  rootDeviceSize = 238.5; # GB
+  # https://docs.oracle.com/cd/E62101_01/html/E62701/zfspools-4.html
+  reservedSize = rootDeviceSize * (1 - 0.89);
 in
 {
-  systemd.services.unload-keystore = {
-    description = "Unload keystore";
-    wantedBy = [ "local-fs.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "/run/wrappers/bin/umount -R /.keystore";
-      ExecStartPost = "zfs unload-key PoolRootFS/keystore";
-    };
-  };
+  boot.postBootCommands = ''
+    ${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore
+  '';
   disko.devices = {
     disk = {
       root = {
@@ -60,11 +55,11 @@ in
           canmount = "off";
           compression = "zstd";
           dnodesize = "auto";
-          relatime = "on";
-          xattr = "sa";
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
-          keylocation = "file:///tmp/${tag}/rootfs.key";
+          keylocation = "file:///tmp/rootfs.key";
+          relatime = "on";
+          xattr = "sa";
         };
         postCreateHook = ''
           zfs set keylocation="prompt" "PoolRootFS";
@@ -81,34 +76,25 @@ in
           };
           keystore = {
             type = "zfs_volume";
-            size = "2G";
+            size = "1G";
             content = {
               type = "filesystem";
               format = "ext4";
               mountpoint = "/.keystore";
+              mountOptions = [ "noauto" ];
             };
             options = {
               encryption = "aes-256-gcm";
               keyformat = "passphrase";
-              keylocation = "file:///tmp/${tag}/keystore.key";
+              keylocation = "file:///tmp/keystore.key";
             };
             postCreateHook = ''
               zfs set keylocation="prompt" "PoolRootFS/keystore";
             '';
-            postMountHook = ''
-              if [ -d /tmp/${tag} ]; then
-                find /tmp/${tag} -type f | grep -vE "keystore|rootfs" | xargs -I{} cp {} /mnt/.keystore/
-              fi
-            '';
-          };
-          cephMonVol = {
-            type = "zfs_volume";
-            size = "36G";
           };
           user = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "true";
             };
@@ -116,11 +102,14 @@ in
           "user/home" = {
             type = "zfs_fs";
             mountpoint = "/home";
+            options = {
+              "com.sun:auto-snapshot" = "true";
+              mountpoint = "legacy";
+            };
           };
           system = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "false";
             };
@@ -128,27 +117,38 @@ in
           "system/root" = {
             type = "zfs_fs";
             mountpoint = "/";
-            options."com.sun:auto-snapshot" = "false";
+            options = {
+              "com.sun:auto-snapshot" = "false";
+              mountpoint = "legacy";
+            };
           };
           "system/var" = {
             type = "zfs_fs";
             mountpoint = "/var";
-            options."com.sun:auto-snapshot" = "false";
+            options = {
+              "com.sun:auto-snapshot" = "false";
+              mountpoint = "legacy";
+            };
           };
           "system/var/lib" = {
             type = "zfs_fs";
             mountpoint = "/var/lib";
-            options."com.sun:auto-snapshot" = "false";
+            options = {
+              "com.sun:auto-snapshot" = "true";
+              mountpoint = "legacy";
+            };
           };
-          "system/var/lib/lxd" = {
+          "system/var/lib/incus" = {
             type = "zfs_fs";
-            mountpoint = "/var/lib/lxd";
-            options."com.sun:auto-snapshot" = "true";
+            mountpoint = "/var/lib/incus";
+            options = {
+              "com.sun:auto-snapshot" = "true";
+              mountpoint = "legacy";
+            };
           };
           "local" = {
             type = "zfs_fs";
             options = {
-              mountpoint = "none";
               canmount = "off";
               "com.sun:auto-snapshot" = "false";
             };
@@ -156,6 +156,10 @@ in
           "local/nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
+            options = {
+              "com.sun:auto-snapshot" = "false";
+              mountpoint = "legacy";
+            };
           };
         };
       };

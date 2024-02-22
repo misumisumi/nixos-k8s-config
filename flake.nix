@@ -115,7 +115,7 @@
         }:
         let
           inherit (import ./lib.nix) mkApp;
-          myTerraform = pkgs.terraform.withPlugins (tp: with tp; [ lxd random time ]);
+          myOpentofu = pkgs.opentofu.withPlugins (tp: with tp; [ incus random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
@@ -173,10 +173,11 @@
                 inetutils
                 jq
                 libxslt
-                myTerraform
+                myOpentofu
                 sops
                 squashfsTools
                 tcpdump
+                terraform
                 terraform-docs
                 nixos-generators
 
@@ -187,18 +188,18 @@
                 kubernetes-helm
 
                 # scripts
-                add-remote-lxd
+                add-remote-incus
                 check-k8s
                 check-disk-size
-                copy-img2lxd
+                copy-img2incus
                 deploy
                 he
-                init-lxd
-                init-remote-lxd
+                init-incus
+                init-remote-incus
                 k
                 mkage4instance
                 mkage4mgr
-                mkimg4lxc
+                mkimg4incus
                 mksshhostkeys
                 ter
               ];
