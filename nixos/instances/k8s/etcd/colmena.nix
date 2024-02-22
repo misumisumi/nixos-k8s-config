@@ -2,7 +2,7 @@
 let
   pwd = /. + builtins.getEnv "PWD";
   mkSecret = filename: {
-    keyFile = "${pwd}/.kube/${workspace}/etcd" + "/${filename}";
+    keyFile = "${pwd}/.kube/${workspace}/etcd/${filename}";
     destDir = "/var/lib/secrets/etcd";
     user = "etcd";
   };
