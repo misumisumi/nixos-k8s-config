@@ -1,4 +1,4 @@
-output "cluster_info" {
+output "instance_info" {
   value = module.instances
 }
 

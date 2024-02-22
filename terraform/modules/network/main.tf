@@ -1,12 +1,4 @@
-terraform {
-  required_providers {
-    lxd = {
-      source = "terraform-lxd/lxd"
-    }
-  }
-}
-
-resource "lxd_network" "lxd_network" {
+resource "incus_network" "incus_network" {
   name = var.name
 
   config = {

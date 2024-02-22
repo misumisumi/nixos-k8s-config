@@ -1,11 +1,13 @@
 # Spawns the given amount of machines,
 # using the given base image as their root disk,
 # attached to the same network.
-
 terraform {
   required_providers {
-    lxd = {
-      source = "terraform-lxd/lxd"
+    incus = {
+      source = "registry.terraform.io/lxc/incus"
+    }
+    random = {
+      source = "registry.terraform.io/hashicorp/random"
     }
   }
 }
@@ -13,21 +15,24 @@ terraform {
 locals {
   _volumes = flatten([for instance in flatten(var.instances[*]) :
     [for device in flatten(instance.devices[*]) :
-      device.type == "disk" && contains(keys(device.properties), "pool") ? {
+      device.type == "disk" && device.create && contains(keys(device.properties), "pool") ? {
         name         = device.properties.source
-        remote       = instance.remote
+        remote       = var.remote
         pool         = device.properties.pool
-        content_type = device.content_type
+        content_type = instance.machine_type == "container" ? "filesystem" : "block"
       } : null
     ]
   ])
   volumes = [for volume in local._volumes : volume if volume != null]
-  remotes = [for remote in var.instances[*].remote : remote]
 }
 
-module "volume" {
-  source  = "../volume"
-  volumes = local.volumes
+resource "incus_volume" "volume" {
+  for_each     = { for i in local.volumes : i.name => i }
+  name         = each.value.name
+  remote       = var.remote
+  project      = var.project
+  pool         = each.value.pool
+  content_type = each.value.content_type
 }
 
 resource "random_id" "host_id" {
@@ -39,40 +44,41 @@ resource "random_id" "host_id" {
   byte_length = 4
 }
 
-resource "lxd_profile" "profile" {
-  name     = "profile_${var.tag}"
-  for_each = toset(local.remotes)
-  remote   = each.value
+resource "incus_profile" "profile" {
+  for_each = { for i in var.profiles : i.tag => i }
+  name     = "profile_${each.value.tag}"
+  remote   = var.remote
+  project  = var.project
 
-  config = {
-    "boot.autostart" = var.instance_config.boot_autostart
-  }
+  config = merge({
+    "boot.autostart" = each.value.auto_start
+  }, each.value.config)
 
   device {
-    type = "disk"
     name = "root"
-
+    type = "disk"
     properties = {
-      pool = "default"
+      pool = each.value.root_pool
       path = "/"
-      size = var.instance_config.root_size
+      size = each.value.root_size
     }
   }
 }
 
-resource "lxd_instance" "instance" {
+resource "incus_instance" "instance" {
   for_each = { for i in var.instances : i.name => i }
-  remote   = each.value.remote
+  remote   = var.remote
+  project  = var.project
 
   name      = each.value.name
-  type      = var.instance_config.machine_type
-  image     = "${var.instance_config.image}/lxc-${var.instance_config.machine_type}"
+  type      = each.value.machine_type
+  image     = "${each.value.distro}/${each.value.machine_type}"
   ephemeral = false
-  profiles  = ["profile_${var.tag}"]
+  profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
-  config = var.instance_config.machine_type == "container" ? {
+  config = each.value.machine_type == "container" ? {
     "security.syscalls.intercept.mount"         = true
-    "security.syscalls.intercept.mount.allowed" = var.instance_config.mount_fs
+    "security.syscalls.intercept.mount.allowed" = each.value.config.mount_fs
     "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
@@ -82,24 +88,22 @@ resource "lxd_instance" "instance" {
     "security.secureboot" = false
   }
   limits = {
-    cpu    = each.value.cpu == null ? var.instance_config.cpu : each.value.cpu
-    memory = each.value.memory == null ? var.instance_config.memory : each.value.memory
+    cpu    = each.value.config.cpu
+    memory = each.value.config.memory
   }
 
   device {
     name = "eth0"
     type = "nic"
 
-    properties = {
+    properties = merge({
       nictype = "bridged"
-      parent  = var.instance_config.nic_parent
-      host_name = format(var.instance_config.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
+      parent  = each.value.config.nic_parent
+      host_name = format(each.value.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
         substr(each.value.name, 0, 3),
         substr(each.value.name, -1, -1)
-      )
-      "ipv4.address" = each.value.ipv4_address
-      vlan           = var.instance_config.vlan
-    }
+      ) }, each.value.network_config
+    )
   }
   dynamic "device" {
     for_each = each.value.devices
@@ -109,6 +113,6 @@ resource "lxd_instance" "instance" {
       properties = device.value.properties
     }
   }
-  depends_on = [module.volume, lxd_profile.profile]
+  depends_on = [incus_volume.volume, incus_profile.profile]
 }
 

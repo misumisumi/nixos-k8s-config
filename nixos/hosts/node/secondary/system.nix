@@ -2,7 +2,7 @@
   boot = {
     tmp = {
       useTmpfs = true;
-      tmpfsSize = "40%";
+      tmpfsSize = "30%";
     };
   };
   powerManagement = {

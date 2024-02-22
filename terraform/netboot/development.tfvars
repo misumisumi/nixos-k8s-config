@@ -1,13 +1,20 @@
-# network = {
-#   name         = "netbootbr0"
-#   ipv4_address = "10.150.20.1/24"
-# }
 compornents = [
   {
-    tag = "netboot"
+    remote = "local"
+    profiles = [
+      {
+        tag       = "nfs"
+        root_pool = "instance"
+      }
+    ]
     instances = [
       {
         name = "netboot1"
+        config = {
+          nic_parent = "br0"
+          cpu        = "2"
+          memory     = "2GiB"
+        }
         devices = [
           {
             name = "http"
@@ -22,11 +29,6 @@ compornents = [
         ]
       }
     ]
-    instance_config = {
-      cpu        = "2"
-      memory     = "2GiB"
-      nic_parent = "br0"
-      # vlan       = "10"
-    }
   }
 ]
+

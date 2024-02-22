@@ -9,11 +9,6 @@ let
     destDir = "/var/lib/secrets/kubernetes/apiserver";
     user = "kubernetes";
   };
-  mkServerSecret = filename: {
-    keyFile = "${pwd}/.kube/${workspace}/kubernetes/apiserver/${workspace}/${filename}";
-    destDir = "/var/lib/secrets/kubernetes/apiserver";
-    user = "kubernetes";
-  };
 in
 {
   imports = [
@@ -24,14 +19,14 @@ in
     tags = [ "k8s" "controlplane" ];
     keys = {
       # For k8s apiserver
-      "server.pem" = mkServerSecret "server.pem";
-      "server-key.pem" = mkServerSecret "server-key.pem";
+      "server.pem" = mkSecret "server.pem";
+      "server-key.pem" = mkSecret "server-key.pem";
 
       "kubelet-client.pem" = mkSecret "kubelet-client.pem";
       "kubelet-client-key.pem" = mkSecret "kubelet-client-key.pem";
 
       "api-etcd-ca.pem" = {
-        keyFile = "${pwd}/.kube/etcd/ca.pem";
+        keyFile = "${pwd}/.kube/${workspace}/etcd/ca.pem";
         destDir = "/var/lib/secrets/kubernetes/apiserver";
         user = "kubernetes";
       };
