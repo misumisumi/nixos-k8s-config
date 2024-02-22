@@ -6,7 +6,7 @@
 let
   domain = "k8s.local";
 
-  inherit (callPackage ../../utils/resources.nix { }) resourcesByRoleAndWS;
+  inherit (callPackage ../../../utils/resources.nix { }) resourcesByRoleAndWS;
   inherit (callPackage ./settings.nix { }) csrConfig;
 
   writeJSONText = name: obj: writeText "${name}.json" (builtins.toJSON obj);
@@ -19,7 +19,7 @@ in
   getAltNames = role: ws:
     lib.flatten (map
       (r:
-        [ r.values.name "${r.values.name}.${domain}" r.values.ip_address ])
+        [ r.values.name "${r.values.name}.${domain}" r.values.ipv4_address ])
       (resourcesByRoleAndWS role "k8s" ws));
 
   # Form a CSR request, as expected by cfssl

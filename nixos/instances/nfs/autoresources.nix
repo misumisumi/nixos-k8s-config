@@ -12,7 +12,7 @@ let
   # Dummies are used at this time, since an error will occur if the corresponding tag is not found in the output json of `terraform`.
   # This eliminates errors but complicates debugging.
   get_resource = builtins.filter (r: r.values.name == name) (resourcesByRole name "nfs");
-  self = if get_resource == [ ] then { values.ip_address = "dummy"; } else builtins.head get_resource;
+  self = if get_resource == [ ] then { values.ipv4_address = "dummy"; } else builtins.head get_resource;
   get_output = builtins.filter (r: r.name == name) (outputsByRole name "nfs");
 in
 {

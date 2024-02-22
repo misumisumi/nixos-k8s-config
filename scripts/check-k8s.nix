@@ -4,7 +4,7 @@ writeShellApplication {
   text = ''
     set -e
 
-    etcd1_ip=$(jq -r '.values.root_module.child_modules[] | .resources[] | select(.values.id == "etcd1").values.ip_address' show.json)
+    etcd1_ip=$(jq -r '.values.root_module.child_modules[] | .resources[] | select(.values.id == "etcd1").values.ipv4_address' show.json)
 
     etcdctl --endpoints "https://''${etcd1_ip}:2379" \
       --cacert=./.kube/etcd/ca.pem \

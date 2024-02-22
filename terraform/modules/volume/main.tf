@@ -1,15 +1,19 @@
 terraform {
   required_providers {
-    lxd = {
-      source = "terraform-lxd/lxd"
+    incus = {
+      source  = "registry.terraform.io/lxc/incus"
+      version = "~> 0.0.2"
     }
   }
 }
 
-resource "lxd_volume" "volume" {
+resource "incus_volume" "volume" {
   for_each     = { for i in var.volumes : i.name => i }
-  name         = each.value.name
-  remote       = each.value.remote
-  pool         = each.value.pool
+  remote       = var.remote
+  project      = var.project
+  config       = each.value.config
   content_type = each.value.content_type
+  name         = each.value.name
+  pool         = each.value.pool
 }
+

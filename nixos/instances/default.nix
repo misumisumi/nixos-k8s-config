@@ -27,7 +27,7 @@ in
       ./lxd/container
     ];
   };
-  lxc-virtual-machine = nixosSystem {
+  virtual-machine = nixosSystem {
     inherit system specialArgs;
     modules = [
       ./init/modules.nix

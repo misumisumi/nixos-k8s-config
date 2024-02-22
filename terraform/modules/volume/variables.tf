@@ -1,3 +1,13 @@
+variable "remote" {
+  type    = string
+  default = "local"
+}
+
+variable "project" {
+  type    = string
+  default = null
+}
+
 variable "volumes" {
   type = set(
     object(
@@ -6,6 +16,7 @@ variable "volumes" {
         remote       = optional(string, null)
         pool         = optional(string, null)
         content_type = optional(string, null)
+        config       = optional(map(string), {})
       }
     )
   )

@@ -4,7 +4,7 @@
         "staging",
         "production"
     ],
-    "lxd-setting": {
+    "incus-setting": {
         "storage-backend": "btrfs",
         "storage-create-loop": "96"
     },

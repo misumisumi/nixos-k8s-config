@@ -4,7 +4,7 @@
 , ...
 }:
 let
-  conf = with builtins; lib.filterAttrs (n: v: (match ".*-(install|test)" n) == null && (match "(lxc)-.*" n == null)) self.nixosConfigurations;
+  conf = with builtins; lib.filterAttrs (n: v: (match ".*-(install|test)" n) == null && (match "(virtual-machine|lxc-container)" n == null)) self.nixosConfigurations;
 in
 {
   meta = {
@@ -24,7 +24,7 @@ in
     in
     {
       imports = value._module.args.modules
-      ++ lib.optional (builtins.pathExists ./hosts/${extracted_name}/colmena.nix) ./hosts/${extracted_name}/colmena.nix
+      ++ lib.optional (builtins.pathExists ./hosts/node/${extracted_name}/colmena.nix) ./hosts/node/${extracted_name}/colmena.nix
       ++ lib.optional (builtins.pathExists ./instances/${extracted_name}/colmena.nix) ./instances/${extracted_name}/colmena.nix
       ++ lib.optional (builtins.pathExists ./instances/k8s/${extracted_name}/colmena.nix) ./instances/k8s/${extracted_name}/colmena.nix;
     })
