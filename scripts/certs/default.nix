@@ -16,12 +16,27 @@ let
     , ip
     ,
     }: ''
+      user="developer"
+      workspace=${workspace}
+      if [ ''${workspace} == "development" ]; then
+        user="developer"
+      elif [ ''${workspace} == "staging" ]; then
+        user="stager"
+      elif [ ''${workspace} == "production" ]; then
+        user="producer"
+      else
+        echo "Invalid workspace: ${workspace}"
+        exit 1
+      fi
       ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-cluster ${workspace} \
-        --certificate-authority=./kubernetes/ca.pem \
+        --certificate-authority=${workspace}/kubernetes/ca.pem \
         --server=https://${ip}
       ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-context ${workspace} \
-        --user admin \
+        --user ''${user} \
         --cluster ${workspace}
+      ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials ''${user} \
+          --client-certificate=${workspace}/kubernetes/admin.pem \
+          --client-key=${workspace}/kubernetes/admin-key.pem
     '';
   multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig { inherit workspace ip; }) virtualIPs;
 in
@@ -66,9 +81,6 @@ writeShellApplication {
     ${callPackage ./flannel.nix {inherit ws;}}
     pushd $out > /dev/null
 
-    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config set-credentials admin \
-        --client-certificate=./kubernetes/admin.pem \
-        --client-key=./kubernetes/admin-key.pem
     ${builtins.concatStringsSep "\n" multiKubeConfig}
     ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context development > /dev/null
 
