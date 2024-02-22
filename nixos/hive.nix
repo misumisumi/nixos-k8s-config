@@ -4,7 +4,7 @@
 , ...
 }:
 let
-  conf = with builtins; lib.filterAttrs (n: v: (match ".*-(install|test)" n) == null && (match "(lxc)-.*" n == null)) self.nixosConfigurations;
+  conf = with builtins; lib.filterAttrs (n: v: (match ".*-(install|test)" n) == null && (match "(virtual-machine|lxc-container)" n == null)) self.nixosConfigurations;
 in
 {
   meta = {
