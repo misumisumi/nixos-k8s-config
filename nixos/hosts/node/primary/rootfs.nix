@@ -8,9 +8,13 @@ let
   reservedSize = rootDeviceSize - (rootDeviceSize * 0.89);
 in
 {
-  boot.postBootCommands = ''
-    ${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore
-  '';
+  # boot.postBootCommands = ''
+  #   ${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore
+  # '';
+  systemd.service.unload-zfs = {
+    after = [ "systemd-cryptsetup.target" ];
+    scrit = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+  };
   disko.devices = {
     disk = {
       root = {
