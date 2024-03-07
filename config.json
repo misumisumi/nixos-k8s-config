@@ -42,6 +42,13 @@
             "system": "x86_64-linux",
             "group": "node"
         },
+        "test": {
+            "cpu_bender": "",
+            "hostname": "nixos",
+            "ipv4_address": "",
+            "system": "x86_64-linux",
+            "group": "node"
+        },
         "rescue": {
             "cpu_bender": "",
             "hostname": "nixos",

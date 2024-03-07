@@ -27,24 +27,6 @@ let
       };
     };
   };
-  luksSetting = keyName: deviceName: {
-    size = "100%";
-    content = {
-      type = "luks";
-      name = "crypted_${deviceName}";
-      extraOpenArgs = [ ];
-      settings = {
-        keyFile = "/.keystore/${keyName}.key";
-        allowDiscards = true;
-      };
-      # additionalKeyFiles = [ "/tmp/additionalSecret.key" ];
-      initrdUnlock = false;
-      content = {
-        type = "lvm_pv";
-        vg = "PoolOf${deviceName}";
-      };
-    };
-  };
   devices = {
     a = {
       device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00005";
@@ -63,5 +45,5 @@ in
     lvm_vg = lib.mapAttrs' (idx: cfg: lib.nameValuePair "PoolDisk${lib.toUpper idx}" { type = "lvm_vg"; inherit (cfg) lvs; }) devices;
   };
   # ブート時に必要なくかつkeyfileがinitrdでunlockされるzvolに含まれているためcrypttabに記載してstage 2でunlockする
-  environment.etc.crypttab.text = lib.concatStringsSep "\n" (lib.mapAttrsToList (idx: cfg: "CryptedDisk${lib.toUpper idx} ${cfg.device} ${cfg.keyFile} luks"));
+  environment.etc.crypttab.text = lib.concatStringsSep "\n" (lib.mapAttrsToList (idx: cfg: "CryptedDisk${lib.toUpper idx} ${cfg.device}-part1 ${cfg.keyFile} luks") devices);
 }
