@@ -1,5 +1,6 @@
 { config
 , lib
+, pkgs
 , ...
 }:
 let
@@ -9,9 +10,15 @@ let
 in
 {
   systemd.services.unload-zfs = {
-    after = [ "systemd-cryptsetup.target" ];
-    script = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+    requiredBy = [ "cryptsetup.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = "yes";
+      ExecStartPre = "${pkgs.umount}/bin/umount -R /.keystore";
+      ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+    };
   };
+  systemd.tmpfiles.rules = [ "d /.keystore 0700 root root -" ];
   disko.devices = {
     disk = {
       root = {
@@ -80,7 +87,6 @@ in
               type = "filesystem";
               format = "ext4";
               mountpoint = "/.keystore";
-              mountOptions = [ "noauto" ];
             };
             options = {
               encryption = "aes-256-gcm";
