@@ -11,9 +11,9 @@ in
   # boot.postBootCommands = ''
   #   ${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore
   # '';
-  systemd.service.unload-zfs = {
+  systemd.services.unload-zfs = {
     after = [ "systemd-cryptsetup.target" ];
-    scrit = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+    script = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
   };
   disko.devices = {
     disk = {

@@ -14,13 +14,12 @@ let
     , homeDirectory ? ""
     , scheme ? "minimal"
     , initial ? false
-    , isVM ? false
     , wm ? "none"
     , useNixOSWallpaper ? false
     }:
     lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit hostname inputs group tag user stateVersion initial isVM; }; # specialArgs give some args to modules
+      specialArgs = { inherit hostname inputs group tag user stateVersion initial; }; # specialArgs give some args to modules
       modules =
         [
           inputs.sops-nix.nixosModules.sops
@@ -64,11 +63,6 @@ let
   attrs = {
     "-install" = {
       initial = true;
-      isVM = false;
-    };
-    "-test" = {
-      initial = true;
-      isVM = true;
     };
   };
 in
