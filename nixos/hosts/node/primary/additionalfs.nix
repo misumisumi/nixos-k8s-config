@@ -28,24 +28,6 @@ let
       };
     };
   };
-  luksSetting = keyName: deviceName: {
-    size = "100%";
-    content = {
-      type = "luks";
-      name = "crypted_${deviceName}";
-      extraOpenArgs = [ ];
-      settings = {
-        keyFile = "/.keystore/${keyName}.key";
-        allowDiscards = true;
-      };
-      # additionalKeyFiles = [ "/tmp/additionalSecret.key" ];
-      initrdUnlock = false;
-      content = {
-        type = "lvm_pv";
-        vg = "PoolOf${deviceName}";
-      };
-    };
-  };
   devices = {
     a = {
       device = "/dev/disk/by-id/scsi-360030057027804002d1262be2f91e9a2";
@@ -79,7 +61,7 @@ in
 {
   disko.devices = {
     disk = lib.mapAttrs (idx: cfg: deviceProperties cfg.device (lib.toUpper idx) cfg.keyFile) devices;
-    lvm_vg = lib.mapAttrs' (idx: cfg: lib.nameValuePair "PoolDisk${lib.toUpper idx}" cfg.lvs) devices;
+    lvm_vg = lib.mapAttrs' (idx: cfg: lib.nameValuePair "PoolDisk${lib.toUpper idx}" { type = "lvm_vg"; inherit (cfg) lvs; }) devices;
   };
   # ブート時に必要なくかつkeyfileがinitrdでunlockされるzvolに含まれているためcrypttabに記載してstage 2でunlockする
   environment.etc.crypttab.text = lib.concatStringsSep "\n" (lib.mapAttrsToList (idx: cfg: "CryptedDisk${lib.toUpper idx} ${cfg.device} ${cfg.keyFile} luks"));
