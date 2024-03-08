@@ -43,27 +43,27 @@
             "system": "x86_64-linux",
             "group": "node"
         },
-        "node1": {
+        "dev1": {
             "cpu_bender": "",
-            "hostname": "node1",
+            "hostname": "dev1",
             "ipv4_address": "192.168.1.6",
             "dns": "192.168.1.1",
             "gateway": "192.168.1.254",
             "system": "x86_64-linux",
             "group": "devnode"
         },
-        "node2": {
+        "dev2": {
             "cpu_bender": "",
-            "hostname": "node2",
+            "hostname": "dev2",
             "ipv4_address": "192.168.1.7",
             "dns": "192.168.1.1",
             "gateway": "192.168.1.254",
             "system": "x86_64-linux",
             "group": "devnode"
         },
-        "node3": {
+        "dev3": {
             "cpu_bender": "",
-            "hostname": "node3",
+            "hostname": "dev3",
             "ipv4_address": "192.168.1.8",
             "dns": "192.168.1.1",
             "gateway": "192.168.1.254",
