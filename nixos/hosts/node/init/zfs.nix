@@ -1,17 +1,5 @@
 { lib, config, pkgs, ... }:
 {
-  systemd = {
-    services.unload-zfs = {
-      requiredBy = [ "cryptsetup.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = "yes";
-        ExecStartPre = "${pkgs.umount}/bin/umount -R /.keystore";
-        ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
-      };
-    };
-    tmpfiles.rules = [ "d /.keystore 0700 root root -" ];
-  };
   boot = {
     initrd.supportedFilesystems = [ "zfs" ];
     kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;

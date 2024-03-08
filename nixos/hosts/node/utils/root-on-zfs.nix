@@ -73,10 +73,6 @@
           zfs set keylocation="prompt" "PoolRootFS/keystore";
         '';
       };
-      cephMonVol = {
-        type = "zfs_volume";
-        size = "128G";
-      };
       user = {
         type = "zfs_fs";
         options = {

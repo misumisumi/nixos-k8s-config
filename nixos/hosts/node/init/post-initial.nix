@@ -1,4 +1,5 @@
 { config
+, pkgs
 , tag
 , ...
 }:
@@ -31,5 +32,17 @@ in
       # r8169 is realtek, igb and e1000e is intel Gigabit Ethernet driver
       availableKernelModules = [ "r8169" "igb" "e1000e" ];
     };
+  };
+  systemd = {
+    services.unload-zfs = {
+      requiredBy = [ "cryptsetup.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = "yes";
+        ExecStartPre = "${pkgs.umount}/bin/umount -R /.keystore";
+        ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+      };
+    };
+    tmpfiles.rules = [ "d /.keystore 0700 root root -" ];
   };
 }
