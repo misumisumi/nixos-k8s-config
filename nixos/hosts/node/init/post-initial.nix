@@ -43,6 +43,5 @@ in
         ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
       };
     };
-    tmpfiles.rules = [ "d /.keystore 0700 root root -" ];
   };
 }
