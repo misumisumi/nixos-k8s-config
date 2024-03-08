@@ -6,6 +6,7 @@
 , pkgs
 , modulesPath
 , hostname
+, cpu_bender
 , ...
 }:
 {
@@ -18,5 +19,5 @@
       kernelModules = [ "dm-snapshot" ];
     };
   };
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.${cpu_bender}.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
