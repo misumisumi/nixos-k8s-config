@@ -3,31 +3,7 @@
 , ...
 }:
 let
-  deviceProperties = device: idx: keyFile: {
-    type = "disk";
-    inherit device;
-    content = {
-      type = "gpt";
-      partitions.luks = {
-        size = "100%";
-        content = {
-          type = "luks";
-          name = "CryptedDisk${idx}";
-          extraOpenArgs = [ ];
-          settings = {
-            inherit keyFile;
-            allowDiscards = true;
-          };
-          # additionalKeyFiles = [ "/tmp/additionalSecret.key" ];
-          initrdUnlock = false;
-          content = {
-            type = "lvm_pv";
-            vg = "PoolDisk${idx}";
-          };
-        };
-      };
-    };
-  };
+  inherit (import ../utils/lvm-on-luks.nix) deviceProperties;
   devices = {
     a = {
       device = "/dev/disk/by-id/ata-TOSHIBA_MQ01ABF050_Z8JQT3X8T";
