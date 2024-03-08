@@ -11,6 +11,7 @@ let
     , group
     , tag
     , user
+    , cpu_bender
     , homeDirectory ? ""
     , scheme ? "minimal"
     , initial ? false
@@ -19,7 +20,7 @@ let
     }:
     lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit hostname inputs group tag user stateVersion initial; }; # specialArgs give some args to modules
+      specialArgs = { inherit cpu_bender hostname inputs group tag user stateVersion initial; }; # specialArgs give some args to modules
       modules =
         [
           inputs.sops-nix.nixosModules.sops
@@ -47,7 +48,15 @@ let
           }
         ];
     };
-
+  devnodes = {
+    node1 =
+      {
+        config = {
+          group = "devnode";
+          hostname = "node1";
+        };
+      };
+  };
   hosts =
     let
       hosts-config = (import ../../utils/hosts.nix { }).hosts;
@@ -55,7 +64,7 @@ let
     lib.mapAttrs
       (tag: config: rec {
         inherit user tag;
-        inherit (config) group hostname system;
+        inherit (config) group hostname system cpu_bender;
         rootDir = ./${group}/${tag};
         scheme = "core";
       })
