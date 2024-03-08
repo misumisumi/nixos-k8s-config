@@ -1,17 +1,7 @@
 { config
 , pkgs
-, tag
 , ...
 }:
-let
-  pwd = /. + builtins.getEnv "PWD";
-  getKeys = filenames: builtins.filter builtins.pathExists filenames;
-
-  hostKeys = getKeys [
-    "/etc/secrets/${tag}/initrd/ssh_host_ed25519_key"
-    "/etc/secrets/${tag}/initrd/ssh_host_rsa_key"
-  ];
-in
 {
   boot = {
     initrd = {
@@ -21,7 +11,7 @@ in
         ssh = {
           enable = true;
           port = 2222;
-          inherit hostKeys;
+          hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];
           authorizedKeys = config.users.users.root.openssh.authorizedKeys.keys;
         };
         postCommands = ''
