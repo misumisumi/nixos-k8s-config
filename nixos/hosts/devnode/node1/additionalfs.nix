@@ -29,8 +29,26 @@ let
   };
   devices = {
     a = {
+      device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003";
+      keyFile = "/.keystore/ceph.key";
+      lvs = {
+        block = {
+          size = "100%FREE";
+        };
+      };
+    };
+    b = {
       device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00005";
       keyFile = "/.keystore/ceph.key";
+      lvs = {
+        block = {
+          size = "100%FREE";
+        };
+      };
+    };
+    c = {
+      device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00007";
+      keyFile = "/.keystore/nfs.key";
       lvs = {
         block = {
           size = "100%FREE";

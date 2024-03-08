@@ -11,7 +11,7 @@
     ../../../apps/ssh
     ../../../apps/virtualization/incus
     ../../../system
-    ../init
+    ../../node/init
     ./hardware-configuration.nix
     ./network.nix
     ./system.nix

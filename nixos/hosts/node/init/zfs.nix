@@ -1,12 +1,17 @@
 { lib, config, pkgs, ... }:
 {
-  # system.activationScripts.keygen-for-initrdssh.text = ''
-  #   if [ ! -d /etc/secrets/initrd ]; then
-  #     mkdir -p /etc/secrets/initrd
-  #     ${pkgs.openssh}/bin/ssh-keygen -t rsa -N "" -f /etc/secrets/initrd/ssh_host_rsa_key
-  #     ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -N "" -f /etc/secrets/initrd/ssh_host_ed25519_key
-  #   fi
-  # '';
+  systemd = {
+    services.unload-zfs = {
+      requiredBy = [ "cryptsetup.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = "yes";
+        ExecStartPre = "${pkgs.umount}/bin/umount -R /.keystore";
+        ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+      };
+    };
+    tmpfiles.rules = [ "d /.keystore 0700 root root -" ];
+  };
   boot = {
     initrd.supportedFilesystems = [ "zfs" ];
     kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
