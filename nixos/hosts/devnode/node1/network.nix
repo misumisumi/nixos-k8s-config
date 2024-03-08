@@ -1,6 +1,12 @@
-{ hostname, ... }:
+{ lib
+, hostname
+, tag
+, ...
+}:
 let
   interfaceName = "enp1s0";
+  inherit (import ../../../../utils/hosts.nix { inherit tag; }) ipv4_address hosts;
+  inherit (hosts.${tag}) dns gateway;
 in
 {
   services = {
@@ -19,9 +25,6 @@ in
       enable = true;
       trustedInterfaces = [
         "br0"
-        "br1"
-        "lxdbr0"
-        "k8sbr0"
       ];
     };
   };
@@ -32,17 +35,20 @@ in
         "br0".netdevConfig = {
           Kind = "bridge";
           Name = "br0";
-          MACAddress = "71:9a:a2:fa:05:38";
+          MACAddress = "71:9a:a2:fa:05:${toString(38 + lib.toInt (lib.removePrefix "node" tag))}";
         };
       };
       networks = {
         "10-wired" = {
-          name = "enp1s0";
+          name = interfaceName;
           bridge = [ "br0" ];
         };
         "20-br0" = {
           name = "br0";
           DHCP = "yes";
+          address = [ "${ipv4_address}/24" ];
+          dns = [ dns ];
+          gateway = [ gateway ];
         };
       };
     };

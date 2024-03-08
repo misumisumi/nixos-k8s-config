@@ -9,4 +9,8 @@
     enable = true;
     cpuFreqGovernor = "ondemand";
   };
+  services = {
+    qemuGuest.enable = true;
+    spice-vdagentd.enable = true;
+  };
 }
