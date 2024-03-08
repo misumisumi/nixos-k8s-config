@@ -115,7 +115,7 @@
         }:
         let
           inherit (import ./lib.nix) mkApp;
-          myOpentofu = pkgs.opentofu.withPlugins (tp: with tp; [ incus random time ]);
+          myOpentofu = pkgs.opentofu.withPlugins (tp: with tp; [ libvirt incus random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
