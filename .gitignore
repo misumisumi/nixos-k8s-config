@@ -7,4 +7,5 @@ terraform/*/*.json
 terraform/*/*.png
 .kube
 .keystore
+.secrets
 .ssh
