@@ -95,10 +95,10 @@ writeShellApplication {
     if [[ "''${cmd}" == "apply"  ]]; then
       tofu show -json > "''${workspace}".json
       tofu output -json > "''${workspace}_output".json
-      tofu graph | dot -Tpng > "''${workspace}".png
+      # tofu graph | dot -Tpng > "''${workspace}".png
     elif [[ "''${cmd}" == "destroy" ]]; then
       rm "''${workspace}".json
-      rm "''${workspace}".png
+      # rm "''${workspace}".png
     fi
   '';
 }
