@@ -4,21 +4,23 @@
     inherit device;
     content = {
       type = "gpt";
-      partitions.luks = {
-        size = "100%";
-        content = {
-          type = "luks";
-          name = "CryptedDisk${idx}";
-          extraOpenArgs = [ ];
-          settings = {
-            inherit keyFile;
-            allowDiscards = true;
-          };
-          # additionalKeyFiles = [ "/tmp/additionalSecret.key" ];
-          initrdUnlock = false;
+      partitions = {
+        luks = {
+          size = "100%";
           content = {
-            type = "lvm_pv";
-            vg = "PoolDisk${idx}";
+            type = "luks";
+            name = "CryptedDisk${idx}";
+            extraOpenArgs = [ ];
+            settings = {
+              inherit keyFile;
+              allowDiscards = true;
+            };
+            # additionalKeyFiles = [ "/tmp/additionalSecret.key" ];
+            initrdUnlock = false;
+            content = {
+              type = "lvm_pv";
+              vg = "PoolDisk${idx}";
+            };
           };
         };
       };
