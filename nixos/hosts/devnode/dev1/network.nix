@@ -35,7 +35,7 @@ in
         "br0".netdevConfig = {
           Kind = "bridge";
           Name = "br0";
-          MACAddress = "71:9a:a2:fa:05:${toString(38 + lib.toInt (lib.removePrefix "dev" tag))}";
+          MACAddress = "71:9a:a2:fa:05:${toString(90 + lib.toInt (lib.removePrefix "dev" tag))}";
         };
       };
       networks = {
