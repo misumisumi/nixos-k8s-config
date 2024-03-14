@@ -132,7 +132,7 @@
             config.allowUnfree = true;
           };
           packages = {
-            rescueIpxeScript = self.nixosConfigurations.rescue.config.system.build.netbootIpxeScript;
+            defaultNetbootIpxeScript = self.nixosConfigurations.netboot.config.system.build.netbootIpxeScript;
           };
           apps = with myScripts; {
             mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "development"; }; };

@@ -27,21 +27,24 @@
             "hostname": "yui",
             "ipv4_address": "172.16.1.21",
             "system": "x86_64-linux",
-            "group": "node"
+            "group": "node",
+            "user": "misumi"
         },
         "secondary": {
             "cpu_bender": "intel",
             "hostname": "strea",
             "ipv4_address": "172.16.1.22",
             "system": "x86_64-linux",
-            "group": "node"
+            "group": "node",
+            "user": "misumi"
         },
         "tertiary": {
             "cpu_bender": "intel",
             "hostname": "alice",
             "ipv4_address": "172.16.1.23",
             "system": "x86_64-linux",
-            "group": "node"
+            "group": "node",
+            "user": "misumi"
         },
         "dev1": {
             "cpu_bender": "",
@@ -50,7 +53,8 @@
             "dns": "192.168.1.1",
             "gateway": "192.168.1.254",
             "system": "x86_64-linux",
-            "group": "devnode"
+            "group": "devnode",
+            "user": "nixos"
         },
         "dev2": {
             "cpu_bender": "",
@@ -59,7 +63,8 @@
             "dns": "192.168.1.1",
             "gateway": "192.168.1.254",
             "system": "x86_64-linux",
-            "group": "devnode"
+            "group": "devnode",
+            "user": "nixos"
         },
         "dev3": {
             "cpu_bender": "",
@@ -68,14 +73,24 @@
             "dns": "192.168.1.1",
             "gateway": "192.168.1.254",
             "system": "x86_64-linux",
-            "group": "devnode"
+            "group": "devnode",
+            "user": "nixos"
         },
-        "rescue": {
+        "netboot": {
             "cpu_bender": "",
             "hostname": "nixos",
             "ipv4_address": "",
             "system": "x86_64-linux",
-            "group": "netboot"
+            "group": "liveimg",
+            "user": "nixos"
+        },
+        "livecd": {
+            "cpu_bender": "",
+            "hostname": "nixos",
+            "ipv4_address": "",
+            "system": "x86_64-linux",
+            "group": "liveimg",
+            "user": "nixos"
         }
     }
 }

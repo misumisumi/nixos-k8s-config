@@ -3,7 +3,6 @@
 , stateVersion
 }:
 let
-  user = "misumi";
   systemSetting =
     { hostname
     , rootDir
@@ -13,7 +12,7 @@ let
     , user
     , cpu_bender
     , homeDirectory ? ""
-    , scheme ? "minimal"
+    , scheme ? "core"
     , initial ? false
     , wm ? "none"
     , useNixOSWallpaper ? false
@@ -63,8 +62,8 @@ let
     in
     lib.mapAttrs
       (tag: config: rec {
-        inherit user tag;
-        inherit (config) group hostname system cpu_bender;
+        inherit tag;
+        inherit (config) user group hostname system cpu_bender;
         rootDir = ./${group}/${tag};
         scheme = "core";
       })
@@ -80,11 +79,11 @@ builtins.listToAttrs
     lib.mapAttrsToList
       (tag: value:
         (lib.mapAttrsToList
-          (target: args: {
-            name = tag + target;
+          (postfix: args: {
+            name = tag + postfix;
             value = systemSetting (value // args);
           })
           attrs))
-      (lib.filterAttrs (tag: _: tag != "rescue") hosts)
+      (lib.filterAttrs (tag: _: tag != "netboot" && tag != "livecd") hosts)
   )) //
-(lib.mapAttrs (name: systemSetting) hosts)
+(lib.mapAttrs (name: value: (systemSetting value)) hosts)
