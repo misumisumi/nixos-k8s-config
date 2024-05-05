@@ -5,8 +5,19 @@ let
   inherit (import ../utils/lvm-on-luks.nix) deviceProperties;
   devices = {
     a = {
-      device = "/dev/disk/by-id/ata-TOSHIBA_MQ01ABF050_Z8JQT3X8T";
-      keyFile = "/.keystore/nfs.key";
+      device = "/dev/disk/by-id/";
+      keyFile = "/tmp/ceph.key";
+      keyFilePath = "/.keystore/ceph.key";
+      lvs = {
+        block = {
+          size = "100%FREE";
+        };
+      };
+    };
+    b = {
+      device = "/dev/disk/by-id/";
+      keyFile = "/tmp/ceph.key";
+      keyFilePath = "/.keystore/ceph.key";
       lvs = {
         block = {
           size = "100%FREE";
