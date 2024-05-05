@@ -1,13 +1,9 @@
-{ lib
-, initial ? false
-, ...
-}:
+{ ... }:
 {
   imports = [
     ./boot.nix
+    ./initrd.nix
     ./tmpfiles.nix
     ./zfs.nix
-  ]
-  ++ lib.optional (! initial) ./post-initial.nix
-  ;
+  ];
 }

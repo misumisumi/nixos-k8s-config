@@ -1,7 +1,3 @@
-{ lib
-, initial
-, ...
-}:
 {
   imports = [
     #./iscsi.nix
@@ -12,10 +8,11 @@
     ../../../apps/virtualization/incus
     ../../../system
     ../../node/init
+    ./additionalfs.nix
     ./hardware-configuration.nix
     ./network.nix
+    ./rootfs.nix
     ./system.nix
     ./zfs.nix
-    ./rootfs.nix
-  ] ++ lib.optional (! initial) ./additionalfs.nix;
+  ];
 }
