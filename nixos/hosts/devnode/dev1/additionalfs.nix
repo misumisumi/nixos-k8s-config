@@ -6,7 +6,8 @@ let
   devices = {
     a = {
       device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003";
-      keyFile = "/.keystore/ceph.key";
+      keyFile = "/tmp/ceph.key";
+      keyFilePath = "/.keystore/ceph.key";
       lvs = {
         block = {
           size = "100%FREE";
@@ -15,7 +16,8 @@ let
     };
     b = {
       device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00005";
-      keyFile = "/.keystore/ceph.key";
+      keyFile = "/tmp/ceph.key";
+      keyFilePath = "/.keystore/ceph.key";
       lvs = {
         block = {
           size = "100%FREE";
@@ -24,7 +26,8 @@ let
     };
     c = {
       device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00007";
-      keyFile = "/.keystore/nfs.key";
+      keyFile = "/tmp/nfs.key";
+      keyFilePath = "/.keystore/nfs.key";
       lvs = {
         block = {
           size = "100%FREE";
@@ -39,5 +42,5 @@ in
     lvm_vg = lib.mapAttrs' (idx: cfg: lib.nameValuePair "PoolDisk${lib.toUpper idx}" { type = "lvm_vg"; inherit (cfg) lvs; }) devices;
   };
   # ブート時に必要なくかつkeyfileがinitrdでunlockされるzvolに含まれているためcrypttabに記載してstage 2でunlockする
-  environment.etc.crypttab.text = lib.concatStringsSep "\n" (lib.mapAttrsToList (idx: cfg: "CryptedDisk${lib.toUpper idx} ${cfg.device}-part1 ${cfg.keyFile} luks") devices);
+  environment.etc.crypttab.text = lib.concatStringsSep "\n" (lib.mapAttrsToList (idx: cfg: "CryptedDisk${lib.toUpper idx} ${cfg.device}-part1 ${cfg.keyFilePath} luks") devices);
 }
