@@ -1,4 +1,4 @@
-{ pkgs, user, ... }: {
+{ lib, pkgs, user, group, ... }: {
   users.groups = {
     incus-admin.members = [ "root" "${user}" ];
     kvm.members = [ "root" "${user}" ];
@@ -9,6 +9,9 @@
       enable = true;
       startTimeout = 300;
       preseed = {
+        config = {
+          "core.https_address" = ":8443";
+        };
         networks = [
           {
             description = "Default Incus network";
@@ -40,15 +43,24 @@
           }
         ];
         storage_pools = [
-          {
-            config = {
-              size = "4GiB";
-              source = "/var/lib/incus/disks/default.img";
-            };
-            description = "Default Incus storage";
+          ({
             name = "default";
-            driver = "btrfs";
-          }
+            description = "Default Incus storage";
+          } // lib.optionalAttrs
+            (group == "devnode")
+            {
+              driver = "dir";
+            }
+          // lib.optionalAttrs
+            (group != "devnode")
+            {
+              driver = "btrfs";
+              config = {
+                size = "8GiB";
+                source = "/var/lib/incus/disks/default.img";
+              };
+            }
+          )
         ];
       };
     };

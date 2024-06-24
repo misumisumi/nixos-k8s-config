@@ -11,28 +11,41 @@ variable "remote_hosts" {
 variable "compornents" {
   type = set(
     object({
-      tag = string
+      remote  = optional(string, "local")
+      project = optional(string)
+      profiles = set(
+        object({
+          tag        = string
+          auto_start = optional(bool, true)
+          remote     = optional(string, "local")
+          config     = optional(map(any))
+          root_pool  = optional(string, "default")
+          root_size  = optional(string, "8GiB")
+        })
+      )
       instances = set(
         object({
           name         = string
-          remote       = optional(string, null)
-          network_config = optional(map(any))
+          remote       = optional(string, "local")
+          image        = optional(string, "nixos/23.11")
+          machine_type = optional(string, "container")
+          config = object({
+            cpu      = optional(number, 2)
+            memory   = optional(string, "1GiB")
+            mount_fs = optional(string, "ext4")
+          })
+          network_config = optional(map(any),
+          { parent = "incusbr0" })
           devices = optional(set(
             object({
-              name         = string
-              type         = string
-              content_type = optional(string, "filesystem")
-              properties   = map(string)
-            })
-          ))
+              name       = string
+              type       = string
+              create     = optional(bool, true)
+              properties = map(string)
+          })), [])
         })
       )
-      instance_config = map(any)
-      instance_root_config = optional(map(any), {
-        path = "/"
-      })
     })
   )
   description = "Name and some config for instances to spawn"
 }
-

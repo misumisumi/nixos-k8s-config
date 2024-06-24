@@ -10,9 +10,11 @@
 }:
 {
   imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
   boot = {
+    # kernelParams = [ "console=tty0" "console=ttyS1,115200" ]; # for virsh console
     initrd = {
       availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" ];
       kernelModules = [ "dm-snapshot" ];

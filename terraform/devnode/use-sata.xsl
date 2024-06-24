@@ -19,7 +19,7 @@
             <xsl:attribute name="type">raw</xsl:attribute>
           </xsl:element>
           <xsl:element name="source">
-            <xsl:attribute name="file">/home/sumi/workspace/VMs/iso/nixos-minimal-23.11.1779.cf28ee258fd5-x86_64-linux.iso</xsl:attribute>
+              <xsl:attribute name="file">/home/sumi/Templates/nix/nixos-k8s-config/result/iso/nixos-23.11.20240502.383ffe0-x86_64-linux.iso</xsl:attribute>
           </xsl:element>
           <xsl:element name="target">
             <xsl:attribute name="dev">sdz</xsl:attribute>
