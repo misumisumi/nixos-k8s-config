@@ -1,54 +1,38 @@
 compornents = [
   {
-    remote = "local"
+    remote = "dev1"
     pools = [
       {
         name = "instances"
         config = {
-          size = "32GiB"
+          size = "16GiB"
         }
       },
-      {
-        name = "ceph"
-        config = {
-          size = "9GiB"
-        }
-      },
-      {
-        name = "etcd"
-        config = {
-          size = "6GiB"
-        }
-      },
-      {
-        name = "nfs"
-        config = {
-          size = "8GiB"
-        }
-      }
     ]
-    volumes = [
+    volumes = []
+  },
+  {
+    remote = "dev2"
+    pools = [
       {
-        name = "etcd1"
-        pool = "etcd"
+        name = "instances"
         config = {
-          size = "2GiB"
+          size = "16GiB"
         }
       },
-      {
-        name = "etcd2"
-        pool = "etcd"
-        config = {
-          size = "2GiB"
-        }
-      },
-      {
-        name = "etcd3"
-        pool = "etcd"
-        config = {
-          size = "2GiB"
-        }
-      }
     ]
-  }
+    volumes = []
+  },
+  {
+    remote = "dev3"
+    pools = [
+      {
+        name = "instances"
+        config = {
+          size = "16GiB"
+        }
+      },
+    ]
+    volumes = []
+  },
 ]

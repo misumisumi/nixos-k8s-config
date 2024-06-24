@@ -28,9 +28,9 @@ resource "terraform_data" "workspace" {
 
 resource "incus_network" "incus_network" {
   for_each = var.networks
-  name = each.key
-  remote = each.value.remote
-  project = each.value.project
-  config = each.value.config
+  name     = each.key
+  remote   = each.value.remote
+  project  = each.value.project
+  config   = each.value.config
 }
 

@@ -1,60 +1,28 @@
-variable "distro" {
-  type        = string
-  description = "The distribution to use"
-  default     = "nixos"
-}
-
-variable "cpu_mode" {
-  type        = string
-  description = "The CPU mode to use"
-  default     = "qemu64"
-}
-
-variable "pool" {
-  type        = string
-  description = "The storage pool to use"
-  default     = "default"
-}
-
-variable "firmware" {
-  type        = string
-  description = "The firmware to use"
-  default     = "/run/libvirt/nix-ovmf/OVMF_CODE.fd"
-}
-
-variable "emulator" {
-  type        = string
-  description = "The emulator to use"
-  default     = "/run/libvirt/nix-emulators/qemu-system-x86_64"
-}
-
-variable "vcpu" {
-  type        = number
-  description = "The number of VCPUs to use"
-  default     = 4
-}
-
-variable "memory" {
-  type        = string
-  description = "The amount of memory to use"
-  default     = "4092"
-}
-
-variable "bridge" {
-  type        = string
-  description = "The bridge to use"
-  default     = "br0"
-}
-
+# TODO: all variable move to nodes
 variable "nodes" {
   type = set(
     object({
-      name      = string
-      root_size = optional(number, 34359738368) # 32GiB
+      name   = string
+      distro = optional(string, "nixos")
+      config = optional(object({
+        cpu_mode     = optional(string, "host-model")
+        root_size    = optional(number, 34359738368) # 32GiB
+        storage_pool = optional(string, "default")
+        firmware     = optional(string, "/run/libvirt/nix-ovmf/OVMF_CODE.fd")
+        emulator     = optional(string, "/run/libvirt/nix-emulators/qemu-system-x86_64")
+        vcpu         = optional(number, 4)
+        memory       = optional(string, "4092")
+      }))
+      network = object({
+        bridge      = optional(string, "br0")
+        addresses   = optional(set(string), [])
+        mac_address = optional(string)
+      })
       disks = optional(set(
         object({
-          name = string
-          size = optional(number, 1073741824) # 1GiB
+          name         = string
+          storage_pool = optional(string, "default")
+          size         = optional(number, 1073741824) # 1GiB
         }))
       )
     })

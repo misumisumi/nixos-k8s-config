@@ -1,8 +1,7 @@
 terraform {
   required_providers {
     incus = {
-      source  = "registry.terraform.io/lxc/incus"
-      version = "~> 0.0.2"
+      source = "registry.opentofu.org/lxc/incus"
     }
   }
 }

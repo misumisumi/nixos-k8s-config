@@ -4,10 +4,10 @@
 terraform {
   required_providers {
     incus = {
-      source = "registry.terraform.io/lxc/incus"
+      source = "registry.opentofu.org/lxc/incus"
     }
     random = {
-      source = "registry.terraform.io/hashicorp/random"
+      source = "registry.opentofu.org/hashicorp/random"
     }
   }
 }
@@ -65,6 +65,15 @@ resource "incus_profile" "profile" {
   }
 }
 
+# resource "incus_image" "image" {
+#   for_each      = { for i in var.instances : i.name => i }
+#   source_remote = var.source_remote
+#   source_image  = each.value.distro
+#   type          = each.value.machine_type
+#   # aliases       = ["${each.value.distro}/${each.value.machine_type}"]
+#   copy_aliases = true
+# }
+
 resource "incus_instance" "instance" {
   for_each = { for i in var.instances : i.name => i }
   remote   = var.remote
@@ -72,7 +81,7 @@ resource "incus_instance" "instance" {
 
   name      = each.value.name
   type      = each.value.machine_type
-  image     = "${each.value.distro}/${each.value.machine_type}"
+  image     = each.value.image
   ephemeral = false
   profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
@@ -98,7 +107,6 @@ resource "incus_instance" "instance" {
 
     properties = merge({
       nictype = "bridged"
-      parent  = each.value.config.nic_parent
       host_name = format(each.value.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
         substr(each.value.name, 0, 3),
         substr(each.value.name, -1, -1)

@@ -1,11 +1,12 @@
+# https://github.com/NixOS/nixpkgs/issues/283015
 terraform {
   required_providers {
     random = {
-      source  = "registry.terraform.io/hashicorp/random"
+      source  = "hashicorp/random"
       version = "~> 3.5.1"
     }
     libvirt = {
-      source  = "registry.terraform.io/dmacvicar/libvirt"
+      source  = "dmacvicar/libvirt"
       version = "~> 0.7.4"
     }
   }
@@ -14,8 +15,9 @@ terraform {
 locals {
   disks = flatten([for node in flatten(var.nodes) :
     concat([{
-      name = "${var.distro}-${node.name}"
-      size = node.root_size
+      name         = "${node.distro}-${node.name}"
+      size         = node.config.root_size
+      storage_pool = node.config.storage_pool
     }], [for disk in flatten(node.disks) : disk])
   ])
 }
@@ -27,23 +29,26 @@ provider "libvirt" {
 resource "libvirt_volume" "volume" {
   for_each = { for i in local.disks : i.name => i }
   name     = each.value.name
-  pool     = var.pool
+  pool     = each.value.storage_pool
   size     = each.value.size
 }
 
 resource "libvirt_domain" "node" {
   for_each = { for i in var.nodes : i.name => i }
 
-  name     = "${var.distro}-${each.value.name}"
-  firmware = var.firmware
-  emulator = var.emulator
+  name     = "${each.value.distro}-${each.value.name}"
+  firmware = each.value.config.firmware
+  emulator = each.value.config.emulator
   machine  = "q35"
-  memory   = var.memory
-  vcpu     = var.vcpu
+  memory   = each.value.config.memory
+  vcpu     = each.value.config.vcpu
+  cpu {
+    mode = each.value.config.cpu_mode
+  }
 
   # For root disk
   disk {
-    volume_id = libvirt_volume.volume["${var.distro}-${each.value.name}"].id
+    volume_id = libvirt_volume.volume["${each.value.distro}-${each.value.name}"].id
   }
 
   # For external disk
@@ -55,7 +60,10 @@ resource "libvirt_domain" "node" {
   }
 
   network_interface {
-    bridge = var.bridge
+    bridge    = each.value.network.bridge
+    mac       = each.value.network.mac_address
+    addresses = each.value.network.addresses
+    hostname  = each.value.name
   }
   graphics {
     type        = "spice"
@@ -67,6 +75,11 @@ resource "libvirt_domain" "node" {
   }
   boot_device {
     dev = ["hd", "cdrom", "network"]
+  }
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
   }
   xml {
     xslt = file("use-sata.xsl")
