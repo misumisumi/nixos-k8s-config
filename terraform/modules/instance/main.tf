@@ -85,21 +85,22 @@ resource "incus_instance" "instance" {
   ephemeral = false
   profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
-  config = each.value.machine_type == "container" ? {
+  config = each.value.machine_type == "container" ? merge({
     "security.syscalls.intercept.mount"         = true
-    "security.syscalls.intercept.mount.allowed" = each.value.config.mount_fs
+    "security.syscalls.intercept.mount.allowed" = "ext4"
     "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
         lxc.cgroup.devices.allow = a
     EOT
-    } : {
+    }, each.value.config) : merge({
     "security.secureboot" = false
-  }
-  limits = {
-    cpu    = each.value.config.cpu
-    memory = each.value.config.memory
-  }
+  }, each.value.config)
+
+  limits = merge({
+    cpu    = 2
+    memory = "1GB"
+  }, each.value.limits)
 
   device {
     name = "eth0"
