@@ -1,10 +1,10 @@
 # This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
-provider "registry.terraform.io/lxc/incus" {
-  version     = "0.0.2"
-  constraints = "~> 0.0.2"
+provider "registry.opentofu.org/lxc/incus" {
+  version     = "0.1.1"
+  constraints = "~> 0.1.1"
   hashes = [
-    "h1:WrGK/gE3gIkNw0Jz7ae/wKnO7s1z3ghkfF78wyViOiI=",
+    "h1:RdfuVco6dWtft7QAVmXGri5sR34/tk0vLgH3ScuQyfE=",
   ]
 }
