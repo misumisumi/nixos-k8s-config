@@ -1,6 +1,6 @@
 compornents = [
   {
-    remote = "dev1"
+    remote = "devnode1"
     profiles = [
       {
         tag       = "nfs"
@@ -25,7 +25,7 @@ compornents = [
             name = "nfs"
             type = "disk"
             properties = {
-              source = "/dev/sda"
+              source = "/dev/sdb"
             }
           }
         ]
@@ -33,7 +33,7 @@ compornents = [
     ]
   },
   {
-    remote = "dev2"
+    remote = "devnode2"
     profiles = [
       {
         tag       = "nfs"
@@ -58,7 +58,7 @@ compornents = [
             name = "nfs"
             type = "disk"
             properties = {
-              source = "/dev/sda"
+              source = "/dev/sdb"
             }
           }
         ]
