@@ -8,7 +8,13 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     nur.url = "github:nix-community/NUR";
-    nvimdots.url = "github:misumisumi/nvimdots/my-config";
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        stable.follows = "nixpkgs";
+      };
+    };
     devshell = {
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,7 +50,6 @@
     };
     dotfiles = {
       url = "github:misumisumi/home-manager-config";
-      # url = "path:/home/sumi/Templates/nix/home-manager-config";
       inputs = {
         flakes.follows = "flakes";
         home-manager.follows = "home-manager";
@@ -52,20 +57,13 @@
         nixpkgs-stable.follows = "nixpkgs";
         nixpkgs.follows = "nixpkgs-unstable";
         nur.follows = "nur";
-        nvimdots.follows = "nvimdots";
         sops-nix.follows = "sops-nix";
       };
     };
   };
 
   outputs =
-    inputs @ { self
-    , flake-parts
-    , nixpkgs
-    , nixpkgs-unstable
-    , flakes
-    , ...
-    }:
+    inputs @ { self, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
       imports = [
@@ -92,6 +90,7 @@
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           };
+          colmenaHive = inputs.colmena.lib.makeHive self.colmena;
           nixosConfigurations = (
             import ./nixos/instances {
               inherit (inputs.nixpkgs) lib;
@@ -111,11 +110,11 @@
       perSystem =
         { system
         , pkgs
+        , lib
         , ...
         }:
         let
           inherit (import ./lib.nix) mkApp;
-          myOpentofu = pkgs.opentofu.withPlugins (tp: with tp; [ libvirt incus random time ]);
           myScripts = pkgs.callPackage (import ./scripts) { };
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
@@ -133,6 +132,7 @@
           };
           packages = {
             defaultNetbootIpxeScript = self.nixosConfigurations.netboot.config.system.build.netbootIpxeScript;
+            defaultISOImage = self.nixosConfigurations.livecd.config.system.build.isoImage;
           };
           apps = with myScripts; {
             mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "development"; }; };
@@ -159,50 +159,69 @@
                 '';
               }
             ];
-            packages = with pkgs;
-              with myScripts; [
-                bashInteractive
-                # software for deployment
-                age
-                btrfs-progs
-                colmena
-                dig
-                graphviz
-                hcl2json
-                hdparm
-                inetutils
-                jq
-                libxslt
-                myOpentofu
-                sops
-                squashfsTools
-                tcpdump
-                terraform
-                terraform-docs
-                nixos-generators
+            packages = with pkgs; with myScripts; let
+              # HACK https://github.com/NixOS/nixpkgs/issues/283015
+              tofuProvider = provider:
+                provider.override (oldArgs: {
+                  provider-source-address =
+                    lib.replaceStrings
+                      [ "https://registry.terraform.io/providers" ]
+                      [ "registry.opentofu.org" ]
+                      oldArgs.homepage;
+                });
+              myOpentofu = pkgs.opentofu.withPlugins (tp:
+                with tp; builtins.map tofuProvider [
+                  libvirt
+                  incus
+                  random
+                  time
+                  tp.null
+                  external
+                ]);
+            in
+            [
+              bashInteractive
+              # software for deployment
+              age
+              btrfs-progs
+              colmena
+              dig
+              graphviz
+              hcl2json
+              hdparm
+              inetutils
+              jq
+              libxslt
+              myOpentofu
+              sops
+              squashfsTools
+              tcpdump
+              terraform
+              terraform-docs
+              nixos-generators
 
-                # software for managing cluster
-                argocd
-                etcd
-                kubectl
-                kubernetes-helm
+              # software for managing cluster
+              argocd
+              etcd
+              kubectl
+              kubernetes-helm
 
-                # scripts
-                add-remote-incus
-                check-k8s
-                check-disk-size
-                copy-img2incus
-                deploy
-                he
-                init-incus
-                init-remote-incus
-                k
-                mkage4instance
-                mkage4mgr
-                mkimg4incus
-                mksshhostkeys
-                ter
-              ];
+              # scripts
+              add-remote-incus
+              check-k8s
+              check-disk-size
+              copy-img2incus
+              deploy
+              he
+              init-incus
+              init-remote-incus
+              k
+              mkage4instance
+              mkage4mgr
+              mkimg4incus
+              mksshhostkeys
+              ter
+            ];
           };
         };
     };
