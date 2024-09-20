@@ -24,14 +24,16 @@
     };
   };
   systemd = {
-    services.unload-zfs = {
-      requiredBy = [ "cryptsetup.target" ];
+    services.unmount-keystore = {
+      wantedBy = [ "sysinit.target" ];
+      after = [ "local-fs.target" "\x2ekeystore.mount" ];
+      requires = [ "\x2ekeystore.mount" ];
       serviceConfig = {
         Type = "oneshot";
-        RemainAfterExit = "yes";
         ExecStartPre = "${pkgs.umount}/bin/umount -R /.keystore";
         ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
       };
     };
   };
 }
+
