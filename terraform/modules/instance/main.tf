@@ -65,15 +65,6 @@ resource "incus_profile" "profile" {
   }
 }
 
-# resource "incus_image" "image" {
-#   for_each      = { for i in var.instances : i.name => i }
-#   source_remote = var.source_remote
-#   source_image  = each.value.distro
-#   type          = each.value.machine_type
-#   # aliases       = ["${each.value.distro}/${each.value.machine_type}"]
-#   copy_aliases = true
-# }
-
 resource "incus_instance" "instance" {
   for_each = { for i in var.instances : i.name => i }
   remote   = var.remote
@@ -97,10 +88,7 @@ resource "incus_instance" "instance" {
     "security.secureboot" = false
   }, each.value.config)
 
-  limits = merge({
-    cpu    = 2
-    memory = "1GB"
-  }, each.value.limits)
+  limits = each.value.limits
 
   device {
     name = "eth0"

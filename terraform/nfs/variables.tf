@@ -25,13 +25,18 @@ variable "compornents" {
       )
       instances = set(
         object({
-          name           = string
-          remote         = optional(string, "local")
-          image          = optional(string, "nixos/23.11")
-          machine_type   = optional(string, "container")
-          config         = optional(map(any), {})
-          limits         = optional(map(any), {})
-          network_config = optional(map(any), { parent = "incusbr0" })
+          name         = string
+          remote       = optional(string, "local")
+          image        = optional(string, "nixos/23.11")
+          machine_type = optional(string, "container")
+          config       = optional(map(any), {})
+          limits = optional(map(any), {
+            cpu    = 2
+            memory = "1GB"
+          })
+          network_config = optional(map(any), {
+            parent = "incusbr0"
+          })
           devices = optional(set(
             object({
               name       = string
