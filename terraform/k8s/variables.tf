@@ -27,15 +27,16 @@ variable "compornents" {
         object({
           name         = string
           remote       = optional(string, "local")
-          distro       = optional(string, "nixos")
+          image        = optional(string, "nixos/23.11")
           machine_type = optional(string, "container")
-          config = object({
-            cpu        = optional(number, 2)
-            memory     = optional(string, "1GiB")
-            nic_parent = optional(string, "incusbr0")
-            mount_fs   = optional(string, "ext4")
+          config       = optional(map(any), {})
+          limits = optional(map(any), {
+            cpu    = 2
+            memory = "1GB"
           })
-          network_config = optional(map(any))
+          network_config = optional(map(any), {
+            parent = "incusbr0"
+          })
           devices = optional(set(
             object({
               name       = string

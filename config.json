@@ -1,53 +1,97 @@
 {
-    "workspaces": [
-        "development",
-        "staging",
-        "production"
-    ],
-    "incus-setting": {
-        "storage-backend": "btrfs",
-        "storage-create-loop": "96"
-    },
-    "virtualIPs": {
-        "k8s": {
-            "development": "10.150.10.100",
-            "production": "192.168.1.100"
-        }
-    },
-    "drbdDevices": {
-        "volume 0": {
-            "nfs1": "/dev/sdb",
-            "nfs2": "/dev/sdb"
-        }
-    },
-    "hosts": {
-        "primary": {
-            "cpu_bender": "intel",
-            "hostname": "yui",
-            "ipv4_address": "172.16.1.21",
-            "system": "x86_64-linux",
-            "group": "node"
-        },
-        "secondary": {
-            "cpu_bender": "intel",
-            "hostname": "strea",
-            "ipv4_address": "172.16.1.22",
-            "system": "x86_64-linux",
-            "group": "node"
-        },
-        "tertiary": {
-            "cpu_bender": "intel",
-            "hostname": "alice",
-            "ipv4_address": "172.16.1.23",
-            "system": "x86_64-linux",
-            "group": "node"
-        },
-        "rescue": {
-            "cpu_bender": "",
-            "hostname": "nixos",
-            "ipv4_address": "",
-            "system": "x86_64-linux",
-            "group": "netboot"
-        }
+  "workspaces": [
+    "local-dev",
+    "local-eval",
+    "development",
+    "staging",
+    "production"
+  ],
+  "incus-setting": {
+    "storage-backend": "btrfs",
+    "storage-create-loop": "96"
+  },
+  "virtualIPs": {
+    "k8s": {
+      "development": "10.150.10.100",
+      "production": "192.168.1.100"
     }
+  },
+  "drbdDevices": {
+    "volume 0": {
+      "nfs1": "/dev/sdb",
+      "nfs2": "/dev/sdb"
+    }
+  },
+  "hosts": {
+    "primary": {
+      "cpu_bender": "intel",
+      "hostname": "yui",
+      "ipv4_address": "172.16.1.21",
+      "mac_address": "",
+      "system": "x86_64-linux",
+      "group": "node",
+      "user": "misumi"
+    },
+    "secondary": {
+      "cpu_bender": "intel",
+      "hostname": "strea",
+      "ipv4_address": "172.16.1.22",
+      "mac_address": "",
+      "system": "x86_64-linux",
+      "group": "node",
+      "user": "misumi"
+    },
+    "tertiary": {
+      "cpu_bender": "intel",
+      "hostname": "alice",
+      "ipv4_address": "172.16.1.23",
+      "mac_address": "",
+      "system": "x86_64-linux",
+      "group": "node",
+      "user": "misumi"
+    },
+    "devnode1": {
+      "cpu_bender": "",
+      "hostname": "devnode1",
+      "ipv4_address": "192.168.101.47",
+      "mac_address": "2a:79:46:21:9c:66",
+      "system": "x86_64-linux",
+      "group": "devnode",
+      "user": "nixos"
+    },
+    "devnode2": {
+      "cpu_bender": "",
+      "hostname": "devnode2",
+      "ipv4_address": "192.168.101.48",
+      "mac_address": "ec:13:a5:b4:22:8b",
+      "system": "x86_64-linux",
+      "group": "devnode",
+      "user": "nixos"
+    },
+    "devnode3": {
+      "cpu_bender": "",
+      "hostname": "devnode3",
+      "ipv4_address": "192.168.101.49",
+      "mac_address": "6a:f3:82:d5:b3:fe",
+      "system": "x86_64-linux",
+      "group": "devnode",
+      "user": "nixos"
+    },
+    "netboot": {
+      "cpu_bender": "",
+      "hostname": "nixos",
+      "ipv4_address": "",
+      "system": "x86_64-linux",
+      "group": "liveimg",
+      "user": "nixos"
+    },
+    "livecd": {
+      "cpu_bender": "",
+      "hostname": "nixos",
+      "ipv4_address": "",
+      "system": "x86_64-linux",
+      "group": "liveimg",
+      "user": "nixos"
+    }
+  }
 }

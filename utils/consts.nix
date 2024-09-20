@@ -27,14 +27,3 @@ rec {
   nodeIPsByRoleAndWS = role: ws: lib.filterAttrs (x: y: lib.hasPrefix role x) (constByKey "instanceIPs").${ws};
 }
 
-
-
-
-
-
-
-
-
-
-
-

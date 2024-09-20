@@ -27,7 +27,7 @@ in
     (setup-netboot-compornents.override
       {
         nixosConfigs = {
-          inherit (nixosConfigurations) rescue;
+          inherit (nixosConfigurations) netboot;
         };
         serverIP = "${nodeIP}";
         serverName = "${serverName}";

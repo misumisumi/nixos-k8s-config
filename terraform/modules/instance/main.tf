@@ -4,10 +4,10 @@
 terraform {
   required_providers {
     incus = {
-      source = "registry.terraform.io/lxc/incus"
+      source = "registry.opentofu.org/lxc/incus"
     }
     random = {
-      source = "registry.terraform.io/hashicorp/random"
+      source = "registry.opentofu.org/hashicorp/random"
     }
   }
 }
@@ -72,25 +72,23 @@ resource "incus_instance" "instance" {
 
   name      = each.value.name
   type      = each.value.machine_type
-  image     = "${each.value.distro}/${each.value.machine_type}"
+  image     = each.value.image
   ephemeral = false
   profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
-  config = each.value.machine_type == "container" ? {
+  config = each.value.machine_type == "container" ? merge({
     "security.syscalls.intercept.mount"         = true
-    "security.syscalls.intercept.mount.allowed" = each.value.config.mount_fs
+    "security.syscalls.intercept.mount.allowed" = "ext4"
     "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
         lxc.cgroup.devices.allow = a
     EOT
-    } : {
+    }, each.value.config) : merge({
     "security.secureboot" = false
-  }
-  limits = {
-    cpu    = each.value.config.cpu
-    memory = each.value.config.memory
-  }
+  }, each.value.config)
+
+  limits = each.value.limits
 
   device {
     name = "eth0"
@@ -98,7 +96,6 @@ resource "incus_instance" "instance" {
 
     properties = merge({
       nictype = "bridged"
-      parent  = each.value.config.nic_parent
       host_name = format(each.value.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
         substr(each.value.name, 0, 3),
         substr(each.value.name, -1, -1)

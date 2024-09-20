@@ -1,16 +1,7 @@
 { config
-, tag
+, pkgs
 , ...
 }:
-let
-  pwd = /. + builtins.getEnv "PWD";
-  getKeys = filenames: builtins.filter builtins.pathExists filenames;
-
-  hostKeys = getKeys [
-    "/etc/secrets/${tag}/initrd/ssh_host_ed25519_key"
-    "/etc/secrets/${tag}/initrd/ssh_host_rsa_key"
-  ];
-in
 {
   boot = {
     initrd = {
@@ -20,7 +11,7 @@ in
         ssh = {
           enable = true;
           port = 2222;
-          inherit hostKeys;
+          hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];
           authorizedKeys = config.users.users.root.openssh.authorizedKeys.keys;
         };
         postCommands = ''
@@ -32,4 +23,17 @@ in
       availableKernelModules = [ "r8169" "igb" "e1000e" ];
     };
   };
+  systemd = {
+    services.unmount-keystore = {
+      wantedBy = [ "sysinit.target" ];
+      after = [ "local-fs.target" "\x2ekeystore.mount" ];
+      requires = [ "\x2ekeystore.mount" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStartPre = "${pkgs.umount}/bin/umount -R /.keystore";
+        ExecStart = "${config.boot.zfs.package}/bin/zfs unload-key PoolRootFS/keystore";
+      };
+    };
+  };
 }
+

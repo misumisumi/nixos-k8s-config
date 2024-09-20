@@ -3,7 +3,6 @@
 , stateVersion
 }:
 let
-  user = "misumi";
   systemSetting =
     { hostname
     , rootDir
@@ -11,16 +10,15 @@ let
     , group
     , tag
     , user
+    , cpu_bender
     , homeDirectory ? ""
-    , scheme ? "minimal"
-    , initial ? false
-    , isVM ? false
+    , scheme ? "core"
     , wm ? "none"
     , useNixOSWallpaper ? false
     }:
     lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit hostname inputs group tag user stateVersion initial isVM; }; # specialArgs give some args to modules
+      specialArgs = { inherit cpu_bender hostname inputs group tag user stateVersion; }; # specialArgs give some args to modules
       modules =
         [
           inputs.sops-nix.nixosModules.sops
@@ -33,55 +31,32 @@ let
               useGlobalPkgs = true;
               useUserPackages = true;
               extraSpecialArgs = {
-                inherit inputs hostname user stateVersion homeDirectory scheme useNixOSWallpaper wm;
+                inherit inputs hostname user homeDirectory scheme useNixOSWallpaper wm;
               };
               sharedModules = [
-                inputs.flakes.nixosModules.for-hm
-                inputs.nvimdots.nixosModules.nvimdots
+                inputs.flakes.homeManagerModules.default
                 inputs.dotfiles.homeManagerModules.dotfiles
                 inputs.sops-nix.homeManagerModules.sops
               ];
               users."${user}" = {
                 dotfilesActivation = true;
+                home.stateVersion = "23.11";
               };
             };
           }
         ];
     };
-
   hosts =
     let
       hosts-config = (import ../../utils/hosts.nix { }).hosts;
     in
     lib.mapAttrs
       (tag: config: rec {
-        inherit user tag;
-        inherit (config) group hostname system;
+        inherit tag;
+        inherit (config) user group hostname system cpu_bender;
         rootDir = ./${group}/${tag};
         scheme = "core";
       })
       hosts-config;
-  attrs = {
-    "-install" = {
-      initial = true;
-      isVM = false;
-    };
-    "-test" = {
-      initial = true;
-      isVM = true;
-    };
-  };
 in
-builtins.listToAttrs
-  (lib.flatten (
-    lib.mapAttrsToList
-      (tag: value:
-        (lib.mapAttrsToList
-          (target: args: {
-            name = tag + target;
-            value = systemSetting (value // args);
-          })
-          attrs))
-      (lib.filterAttrs (tag: _: tag != "rescue") hosts)
-  )) //
-(lib.mapAttrs (name: systemSetting) hosts)
+(lib.mapAttrs (name: value: (systemSetting value)) hosts)

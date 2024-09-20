@@ -7,7 +7,7 @@ writeShellApplication {
     Usage: ''$(
         basename "''${BASH_SOURCE[0]}"
       ) [-h] [-v] -d <terraform-project-dir> -w <workspace>
-    Create an ssh key for the instance included in the terraform project
+    Create an ssh key of the instances in the terraform project
 
     Available options:
 
@@ -68,8 +68,10 @@ writeShellApplication {
     jq -r ".values.outputs.instance_info.value | .[].name" < "''${project_root}"/terraform/"''${tf_dir}"/"''${workspace}".json | while read -r instance; do
       out_path=.ssh/host_keys/"''${workspace}"/"''${instance}"
       [ ! -d "''${out_path}" ] && mkdir -p "''${out_path}"
-      ssh-keygen -t rsa -N "" -f "''${out_path}"/ssh_host_rsa_key
-      ssh-keygen -t ed25519 -N "" -f "''${out_path}"/ssh_host_ed25519_key
+      mkdir -p "''${out_path}/{ssh,initrd}"
+      ssh-keygen -t rsa -N "" -f "''${out_path}"/ssh/ssh_host_rsa_key
+      ssh-keygen -t ed25519 -N "" -f "''${out_path}"/ssh/ssh_host_ed25519_key
+      ssh-keygen -t ed25519 -N "" -f "''${out_path}"initrd/ssh_host_ed25519_key
     done
   '';
 }

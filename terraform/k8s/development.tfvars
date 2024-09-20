@@ -2,54 +2,54 @@ compornents = [
   {
     remote = "local"
     profiles = [
-      { tag       = "controlplane"
+      {
+        tag       = "controlplane"
         root_pool = "instances"
       },
-      { tag       = "etcd"
+      {
+        tag       = "etcd"
         root_pool = "instances"
       },
-      { tag       = "loadbalancer"
+      {
+        tag       = "loadbalancer"
         root_pool = "instances"
       },
-      { tag       = "worker"
+      {
+        tag       = "worker"
         root_pool = "instances"
       },
     ]
     instances = [
       {
-        name = "controlplane1"
+        name  = "controlplane1"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.20"
         }
-        config = {
-          nic_parent = "k8sbr0"
-        }
       },
       {
-        name = "controlplane2"
+        name  = "controlplane2"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.21"
         }
-        config = {
-          nic_parent = "k8sbr0"
-        }
       },
       {
-        name = "controlplane3"
+        name  = "controlplane3"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.22"
         }
-        config = {
-          nic_parent = "k8sbr0"
-        }
       },
       {
-        name = "etcd1"
+        name  = "etcd1"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.31"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
         devices = [
           {
@@ -65,12 +65,11 @@ compornents = [
         ]
       },
       {
-        name = "etcd2"
+        name  = "etcd2"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.32"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
         devices = [
           {
@@ -86,12 +85,11 @@ compornents = [
         ]
       },
       {
-        name = "etcd3"
+        name  = "etcd3"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.33"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
         devices = [
           {
@@ -107,40 +105,36 @@ compornents = [
         ]
       },
       {
-        name = "loadbalancer1"
+        name  = "loadbalancer1"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.41"
         }
-        config = {
-          nic_parent = "k8sbr0"
-        }
       },
       {
-        name = "loadbalancer2"
+        name  = "loadbalancer2"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.42"
         }
-        config = {
-          nic_parent = "k8sbr0"
-        }
       },
       {
-        name = "loadbalancer3"
+        name  = "loadbalancer3"
+        image = "nixos/container"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.43"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
       },
       {
         name         = "worker1"
+        image        = "nixos/virtual-machine"
         machine_type = "virtual-machine"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.51"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
         devices = [
           {
@@ -155,12 +149,11 @@ compornents = [
       },
       {
         name         = "worker2"
+        image        = "nixos/virtual-machine"
         machine_type = "virtual-machine"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.52"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
         devices = [
           {
@@ -175,12 +168,11 @@ compornents = [
       },
       {
         name         = "worker3"
+        image        = "nixos/virtual-machine"
         machine_type = "virtual-machine"
         network_config = {
+          parent         = "k8sbr0"
           "ipv4.address" = "10.150.10.53"
-        }
-        config = {
-          nic_parent = "k8sbr0"
         }
         devices = [
           {

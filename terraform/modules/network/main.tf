@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    incus = {
+      source = "registry.opentofu.org/lxc/incus"
+    }
+  }
+}
+
 resource "incus_network" "incus_network" {
   name = var.name
 

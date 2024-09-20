@@ -27,15 +27,19 @@ in
   init-remote-incus = writeShellScriptBin "init-remote-incus" ''
     colmena exec --on @hosts --impure -- incus admin init --auto --storage-backend="${storage-backend}" --storage-create-loop="${storage-create-loop}"
     colmena exec --on @hosts --impure -- incus config set core.https_address '[::]'
-    colmena exec --on @hosts --impure -- incus config trust add --name colmena
+    colmena exec --on @hosts --impure -- incus config trust add cluster
   '';
   add-remote-incus = writeShellScriptBin "add-remote-incus" ''
-    declare -A remotes=()
-    config=$(jq -c ".hosts" config.json)
-    echo "''${config}" | jq -r "keys[]" | while read target
+    group=$1
+    echo "Add ''${group} group nodes to remote incus"
+    jq -c ".hosts | to_entries[] | select(.value.group == \"''${group}\") | .value" config.json | while read -r config
     do
-      incus remote add "''${target}" \
-        $(ssh -n root@''$(echo "''${config}" | jq -r ".''${target}.ipv4_address") incus config trust list-tokens --format=json | jq -r '.[] | select(.ClientName == "colmena").Token')
+      ipv4_address=$(echo "''${config}" | jq -r '.ipv4_address')
+      hostname=$(echo "''${config}" | jq -r '.hostname')
+      echo "Add ''${hostname}: ''${ipv4_address}"
+      incus remote add "''${hostname}" "''${ipv4_address}" \
+        --accept-certificate \
+        --token $(ssh -n root@''${ipv4_address} incus config trust add cluster | tail -n+2)
     done
   '';
   copy-img2incus = writeShellScriptBin "copy-img2incus" ''
@@ -46,7 +50,7 @@ in
     do
         echo "Copy NixOS images to ''${target}"
         incus image copy --mode=relay ''${ALIAS_CONTAINER} ''${target}: --alias ''${ALIAS_CONTAINER}
-        incus image copy --mode=relay ''${ALIAS_VM} ''${taget}: --alias ''${ALIAS_VM}
+        incus image copy --mode=relay ''${ALIAS_VM} ''${target}: --alias ''${ALIAS_VM}
     done
   '';
 }
