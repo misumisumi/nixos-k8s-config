@@ -24,16 +24,18 @@ variable "profiles" {
 variable "instances" {
   type = set(
     object({
-      name         = string
-      distro       = optional(string, "nixos")
-      machine_type = optional(string, "container")
-      config = object({
-        cpu        = optional(number, 2)
-        memory     = optional(string, "1GiB")
-        nic_parent = optional(string, "incusbr0")
-        mount_fs   = optional(string, "ext4")
+      name          = string
+      image         = optional(string, "nixos/23.11")
+      source_remote = optional(string, "images")
+      machine_type  = optional(string, "container")
+      config        = optional(map(any), {})
+      limits = optional(map(any), {
+        cpu    = 2
+        memory = "1GB"
       })
-      network_config = optional(map(any))
+      network_config = optional(map(any), {
+        parent = "incusbr0"
+      })
       devices = set(
         object({
           name       = string

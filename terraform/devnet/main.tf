@@ -1,9 +1,9 @@
 terraform {
-  required_version = "~> 1.6.0"
+  required_version = "~> 1.7.0"
   required_providers {
     incus = {
-      source  = "registry.terraform.io/lxc/incus"
-      version = "~> 0.0.2"
+      source  = "registry.opentofu.org/lxc/incus"
+      version = "~> 0.1.1"
     }
   }
 }
@@ -21,16 +21,16 @@ provider "incus" {
   }
 }
 
-# Only use making env label for outputing show.json to use from colmena
+# Only use making env label for outputting show.json to use from colmena
 resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
 resource "incus_network" "incus_network" {
   for_each = var.networks
-  name = each.key
-  remote = each.value.remote
-  project = each.value.project
-  config = each.value.config
+  name     = each.key
+  remote   = each.value.remote
+  project  = each.value.project
+  config   = each.value.config
 }
 

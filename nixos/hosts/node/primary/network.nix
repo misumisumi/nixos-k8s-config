@@ -15,9 +15,7 @@
       enable = true;
       trustedInterfaces = [
         "br0"
-        "br1"
-        "lxdbr0"
-        "k8sbr0"
+        "incusbr0"
       ];
     };
   };

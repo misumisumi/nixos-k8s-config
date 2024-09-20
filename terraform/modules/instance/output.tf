@@ -1,4 +1,4 @@
-output "instances" {
+output "instance_outputs" {
   value = [for info in values(incus_instance.instance) : {
     name         = info.name,
     mac_address  = info.mac_address,
