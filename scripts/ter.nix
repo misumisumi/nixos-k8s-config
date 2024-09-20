@@ -1,7 +1,9 @@
 { writeShellApplication }:
 let
   inherit (builtins.fromJSON (builtins.readFile ../config.json)) workspaces;
-  genWS = map (ws: "[[ $(tofu workspace list | grep ${ws}) == '' ]] && tofu workspace new ${ws}") workspaces;
+  genWS = map (
+    ws: "[[ $(tofu workspace list | grep ${ws}) == '' ]] && tofu workspace new ${ws}"
+  ) workspaces;
 in
 writeShellApplication {
   name = "ter";
@@ -98,6 +100,7 @@ writeShellApplication {
       # tofu graph | dot -Tpng > "''${workspace}".png
     elif [[ "''${cmd}" == "destroy" ]]; then
       rm "''${workspace}".json
+      rm "''${workspace}_output".json
       # rm "''${workspace}".png
     fi
   '';
