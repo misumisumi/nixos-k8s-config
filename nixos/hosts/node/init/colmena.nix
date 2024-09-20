@@ -25,7 +25,7 @@ let
 in
 {
   deployment = {
-    tags = [ "${group}" "${tag}" "${hostname}" ];
+    tags = [ group tag hostname ];
     targetHost = ipv4_address;
     keys = builtins.listToAttrs (builtins.map (key: { name = key; value = mkHostKeys key; }) hostKeys);
   };

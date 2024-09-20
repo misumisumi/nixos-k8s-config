@@ -1,54 +1,64 @@
 compornents = [
   {
-    remote = "local"
+    remote = "devnode1"
     profiles = [
-      { tag       = "nfs"
-        root_pool = "test"
+      {
+        tag       = "nfs"
+        root_pool = "default"
       }
     ]
     instances = [
       {
         name         = "nfs1"
         machine_type = "virtual-machine"
-        distro       = "almalinux9"
-        network_config = {
-          "ipv4.address" = "10.150.10.70"
-        }
+        image        = "almalinux/9/virtual-machine"
         config = {
-          nic_parent = "k8sbr0"
-          cpu        = "2"
-          memory     = "4GiB"
+          cpu    = "2"
+          memory = "4GiB"
+        }
+        network_config = {
+          parent = "br0"
+          hwaddr = "00:16:3e:4b:4e:87"
         }
         devices = [
           {
             name = "nfs"
             type = "disk"
             properties = {
-              pool   = "nfs"
-              source = "nfs1"
+              source = "/dev/sdb"
             }
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    remote = "devnode2"
+    profiles = [
+      {
+        tag       = "nfs"
+        root_pool = "default"
+      }
+    ]
+    instances = [
       {
         name         = "nfs2"
         machine_type = "virtual-machine"
-        distro       = "almalinux9"
-        network_config = {
-          "ipv4.address" = "10.150.10.71"
-        }
+        image        = "almalinux/9/virtual-machine"
         config = {
-          nic_parent = "k8sbr0"
-          cpu        = "2"
-          memory     = "4GiB"
+          cpu    = "2"
+          memory = "4GiB"
+        }
+        network_config = {
+          parent = "br0"
+          hwaddr = "00:16:3e:e9:d9:72"
         }
         devices = [
           {
             name = "nfs"
             type = "disk"
             properties = {
-              pool   = "nfs"
-              source = "nfs2"
+              source = "/dev/sdb"
             }
           }
         ]

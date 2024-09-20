@@ -1,11 +1,11 @@
 terraform {
   required_providers {
     incus = {
-      source  = "registry.terraform.io/lxc/incus"
-      version = "~> 0.0.2"
+      source  = "registry.opentofu.org/lxc/incus"
+      version = "~> 0.1.1"
     }
     random = {
-      source  = "registry.terraform.io/hashicorp/random"
+      source  = "registry.opentofu.org/hashicorp/random"
       version = "~> 3.5.1"
     }
   }
@@ -24,7 +24,7 @@ provider "incus" {
   }
 }
 
-# Only use making env label for outputing show.json to use from colmena
+# Only use making env label for outputting show.json to use from colmena
 resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
