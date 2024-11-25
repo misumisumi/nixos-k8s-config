@@ -1,4 +1,9 @@
-{ config, pkgs, nodeIP, nixosConfigurations, ... }:
+{
+  config,
+  pkgs,
+  nodeIP,
+  ...
+}:
 let
   serverName = "myipxe.com";
 in
@@ -23,15 +28,13 @@ in
       root = "/run/current-system/sw/var/www/${serverName}";
     };
   };
-  environment.systemPackages = with pkgs; [
-    (setup-netboot-compornents.override
-      {
-        nixosConfigs = {
-          inherit (nixosConfigurations) netboot;
-        };
-        serverIP = "${nodeIP}";
-        serverName = "${serverName}";
-      })
+  environment.systemPackages = [
+    (pkgs.callPackage ./setup-netboot-compornents.nix {
+      # nixosConfigs = {
+      #   inherit (config.nixosConfigurations) netboot;
+      # };
+      inherit serverName;
+    })
   ];
   environment.pathsToLink = [
     "/var/tftp"
