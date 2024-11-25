@@ -14,9 +14,16 @@ variable "profiles" {
       tag        = string
       auto_start = optional(bool, true)
       remote     = optional(string, "local")
-      config     = map(any)
-      root_pool  = optional(string, "default")
-      root_size  = optional(string, "8GiB")
+      config     = optional(any)
+      devices = optional(list(
+        object({
+          name       = string
+          type       = string
+          properties = map(string)
+      })), [])
+      root_pool    = optional(string, "default")
+      root_size    = optional(string, "8GiB")
+      machine_type = optional(string, "container")
     })
   )
 }
@@ -28,7 +35,15 @@ variable "instances" {
       image         = optional(string, "nixos/23.11")
       source_remote = optional(string, "images")
       machine_type  = optional(string, "container")
-      config        = optional(map(any), {})
+      cloudinit = optional(object({
+        template_file = string
+        sops_file     = optional(string, "")
+        hosts_file    = optional(string, "")
+        vars          = optional(map(any), {})
+        }), {
+        template_file = ""
+      })
+      config = optional(map(any), {})
       limits = optional(map(any), {
         cpu    = 2
         memory = "1GB"
