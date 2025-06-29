@@ -1,15 +1,15 @@
-{ lib, writeText, netbootHosts ? [ ], ... }:
+{
+  lib,
+  writeText,
+  netbootHosts ? [ ],
+  ...
+}:
 let
-  extraMenu = lib.concatMapStringsSep "\n"
-    (x: "item ${x} Launch ${x}")
-    netbootHosts;
-  extraMenuItem = lib.concatMapStringsSep "\n"
-    (x: ''
-      :${x}
-      chain -ar ${x}/netboot.ipxe
-    ''
-    )
-    netbootHosts;
+  extraMenu = lib.concatMapStringsSep "\n" (x: "item ${x} Launch ${x}") netbootHosts;
+  extraMenuItem = lib.concatMapStringsSep "\n" (x: ''
+    :${x}
+    chain -ar ${x}/netboot.ipxe
+  '') netbootHosts;
 
 in
 writeText "boot-menu.ipxe" ''
@@ -37,18 +37,18 @@ writeText "boot-menu.ipxe" ''
   ${extraMenuItem}
 
   :NixOS-installer(unstable)
-  kernel https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/bzImage-x86_64-linux init=/nix/store/8r6q1gbnqd54ibxbk2rmv0vkbbr4vg99-nixos-system-nixos-23.11pre130979.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
+  kernel https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/bzImage-x86_64-linux init=/nix/store/y6s6r0gb2yzrxcya0j27rh70bighg7mf-nixos-system-nixos-24.11pre130979.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
   initrd https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/initrd-x86_64-linux
   boot
 
-  :NixOS-installer(23.05)
+  :NixOS-installer(24.05)
   kernel https://github.com/nix-community/nixos-images/releases/download/nixos-23.05/bzImage-x86_64-linux init=/nix/store/rw55hls1rah957jg260bw5g1s1pbvbb1-nixos-system-nixos-23.05beta-356385.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
   initrd https://github.com/nix-community/nixos-images/releases/download/nixos-23.05/initrd-x86_64-linux
   boot
 
-  :NixOS-installer(23.11)
-  kernel https://github.com/nix-community/nixos-images/releases/download/nixos-23.11/bzImage-x86_64-linux init=/nix/store/rw55hls1rah957jg260bw5g1s1pbvbb1-nixos-system-nixos-23.11beta-356385.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
-  initrd https://github.com/nix-community/nixos-images/releases/download/nixos-23.11/initrd-x86_64-linux
+  :NixOS-installer-test(unstable)
+  kernel https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/bzImage-x86_64-linux initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
+  initrd https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/initrd-x86_64-linux
   boot
 
   :exit
@@ -69,4 +69,3 @@ writeText "boot-menu.ipxe" ''
   :exit
   exit
 ''
-

@@ -36,15 +36,13 @@
 # })
 # Patch from https://github.com/NixOS/nixpkgs/pull/211600
 { nixpkgs-unstable, ... }:
-final: prev:
-{
+final: prev: {
   inherit (nixpkgs-unstable) doq udev-gothic-nf;
   colmena = prev.colmena.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ./colmena.patch
     ];
   });
-  setup-netboot-compornents = prev.callPackage ./setup-netboot-compornents.nix { };
   terraform-providers = prev.terraform-providers // {
     inherit (nixpkgs-unstable.terraform-providers) incus;
   };

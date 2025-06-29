@@ -1,8 +1,9 @@
-{ stateVersion, ... }: {
+{ config, ... }:
+{
   time.timeZone = "Asia/Tokyo"; # Time zone and internationalisation
 
   system = {
-    inherit stateVersion;
+    stateVersion = config.system.nixos.release;
     # NixOS settings
     autoUpgrade = {
       # Allow auto update

@@ -1,14 +1,16 @@
-{ lib
-, pkgs
-, hostname
-, tag
-, group
-, ...
+{
+  lib,
+  pkgs,
+  hostname,
+  tag,
+  group,
+  ...
 }:
 let
   inherit (import ../../../../utils/hosts.nix { inherit tag; }) ipv4_address;
   pwd = /. + builtins.getEnv "PWD";
-  getKeys = filenames: builtins.filter (f: builtins.pathExists "/etc/secrets/${tag}/initrd/${f}") filenames;
+  getKeys =
+    filenames: builtins.filter (f: builtins.pathExists "/etc/secrets/${tag}/initrd/${f}") filenames;
 
   hostKeys = getKeys [
     "ssh_host_ed25519_key"
@@ -25,8 +27,17 @@ let
 in
 {
   deployment = {
-    tags = [ group tag hostname ];
+    tags = [
+      group
+      tag
+      hostname
+    ];
     targetHost = ipv4_address;
-    keys = builtins.listToAttrs (builtins.map (key: { name = key; value = mkHostKeys key; }) hostKeys);
+    keys = builtins.listToAttrs (
+      builtins.map (key: {
+        name = key;
+        value = mkHostKeys key;
+      }) hostKeys
+    );
   };
 }

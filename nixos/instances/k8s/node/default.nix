@@ -1,3 +1,7 @@
 {
-  imports = [ ./containerd ./coredns ./flannel ];
+  imports = [
+    ./containerd
+    ./coredns
+    ./flannel
+  ];
 }

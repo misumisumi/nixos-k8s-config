@@ -6,7 +6,7 @@ terraform {
   }
 }
 
-resource "incus_volume" "volume" {
+resource "incus_storage_volume" "volume" {
   for_each     = { for i in var.volumes : i.name => i }
   remote       = var.remote
   project      = var.project

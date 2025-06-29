@@ -2,17 +2,17 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/dmacvicar/libvirt" {
-  version     = "0.7.4"
-  constraints = "~> 0.7.4"
+  version     = "0.8.1"
+  constraints = "~> 0.8.1"
   hashes = [
-    "h1:FjR8Gc/GfhWAZ01K/7TzIxcfmpnkCDLfRrv31g3IxjY=",
+    "h1:0/Yvuk3aOj1crPXAapkQ50XjLltxWI2Qg8Dp/9dIZSA=",
   ]
 }
 
 provider "registry.opentofu.org/hashicorp/random" {
-  version     = "3.5.1"
-  constraints = "~> 3.5.1"
+  version     = "3.6.3"
+  constraints = "~> 3.6.3"
   hashes = [
-    "h1:CAOHs+FLDQyxqpsDZJVczsGJ6Rzv69N3COPUHkMEl8I=",
+    "h1:QE5Ehwuz+F9NeFd1W00bIWXmpGuPT47Mfih++SW9tSE=",
   ]
 }
