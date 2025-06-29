@@ -1,0 +1,84 @@
+#cloud-config
+timezone: Asia/Tokyo
+write_files:
+  - content: |
+      ## template:jinja
+      {#
+      This file /etc/cloud/templates/hosts.redhat.tmpl is only utilized
+      if enabled in cloud-config.  Specifically, in order to enable it
+      you need to add the following to config:
+      manage_etc_hosts: True
+      -#}
+      # Your system has configured 'manage_etc_hosts' as True.
+      # As a result, if you wish for changes to this file to persist
+      # then you will need to either
+      # a.) make changes to the master file in /etc/cloud/templates/hosts.redhat.tmpl
+      # b.) change or remove the value of 'manage_etc_hosts' in
+      #     /etc/cloud/cloud.cfg or cloud-config from user-data
+      #
+      # The following lines are desirable for IPv4 capable hosts
+      127.0.0.1 {{fqdn}} {{hostname}}
+      127.0.0.1 localhost.localdomain localhost
+      127.0.0.1 localhost4.localdomain4 localhost4
+
+      # The following lines are desirable for IPv6 capable hosts
+      ::1 {{fqdn}} {{hostname}}
+      ::1 localhost.localdomain localhost
+      ::1 localhost6.localdomain6 localhost6
+
+      %{ for key, value in hosts }
+      ${key} ${value}
+      %{ endfor ~}
+
+    path: /etc/cloud/templates/hosts.tmpl
+    
+  # - content: |
+  #     zfs
+  #   path: /etc/modules-load.d/zfs.conf
+    
+  - content: |
+      drbd
+    path: /etc/modules-load.d/drbd.conf
+
+users:
+  - name: ${vars.username}
+    shell: /bin/bash
+    uid: 1000
+    lock_passwd: false
+    passwd: ${secrets.passwd_hash}
+    ssh_authorized_keys:
+      %{ for value in secrets.ssh_authorized_keys }
+      - ${value}
+      %{ endfor ~}
+
+yum_repos:
+  zfs:
+    baseurl: http://download.zfsonlinux.org/epel/$releasever/$basearch/
+    metadata_expire: 7d
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://raw.githubusercontent.com/zfsonlinux/zfsonlinux.github.com/master/zfs-release/RPM-GPG-KEY-openzfs-key2
+  epel-release:
+    baseurl: http://download.fedoraproject.org/pub/epel/9/Everything/$basearch
+    enabled: true
+    gpgcheck: true
+    countme: true
+    gpgkey: http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9
+  elrepo-release:
+    baseurl: http://elrepo.org/linux/elrepo/el9/$basearch/
+    enabled: true
+    countme: true
+    gpgcheck: true
+    gpgkey: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+package_reboot_if_required: true
+package_update: true
+packages:
+  - btrfs-progs
+  - drbd9x-utils
+  - firewalld
+  - kmod-drbd9x
+  - less
+  - neofetch
+  # - zfs
+

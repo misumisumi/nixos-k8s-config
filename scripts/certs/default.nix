@@ -1,9 +1,10 @@
-{ lib
-, callPackage
-, cfssl
-, kubectl
-, writeShellApplication
-, ws ? "development"
+{
+  lib,
+  callPackage,
+  cfssl,
+  kubectl,
+  writeShellApplication,
+  ws ? "development",
 }:
 let
   # 参考: https://qiita.com/iaoiui/items/fc2ea829498402d4a8e3
@@ -12,14 +13,17 @@ let
   inherit (callPackage ./utils/settings.nix { }) caConfig;
   virtualIPs = (constByKey "virtualIPs").k8s;
   mkKubeConfig =
-    { workspace
-    , ip
-    ,
-    }: ''
+    {
+      workspace,
+      ip,
+    }:
+    ''
       user="developer"
-      workspace=${workspace}
+      workspace="${workspace}"
       if [ ''${workspace} == "development" ]; then
         user="developer"
+      elif [ ''${workspace} == "eval" ]; then
+        user="eval"
       elif [ ''${workspace} == "staging" ]; then
         user="stager"
       elif [ ''${workspace} == "production" ]; then
@@ -38,7 +42,9 @@ let
           --client-certificate=${workspace}/kubernetes/admin.pem \
           --client-key=${workspace}/kubernetes/admin-key.pem
     '';
-  multiKubeConfig = lib.mapAttrsToList (workspace: ip: mkKubeConfig { inherit workspace ip; }) virtualIPs;
+  multiKubeConfig = lib.mapAttrsToList (
+    workspace: ip: mkKubeConfig { inherit workspace ip; }
+  ) virtualIPs;
 in
 writeShellApplication {
   name = "mkcerts";
@@ -75,14 +81,14 @@ writeShellApplication {
 
 
     out=./.kube/
-    ${callPackage ./etcd.nix {inherit ws;}}
-    ${callPackage ./kubernetes.nix {inherit ws;}}
-    ${callPackage ./coredns.nix {inherit ws;}}
-    ${callPackage ./flannel.nix {inherit ws;}}
+    ${callPackage ./etcd.nix { inherit ws; }}
+    ${callPackage ./kubernetes.nix { inherit ws; }}
+    ${callPackage ./coredns.nix { inherit ws; }}
+    ${callPackage ./flannel.nix { inherit ws; }}
     pushd $out > /dev/null
 
     ${builtins.concatStringsSep "\n" multiKubeConfig}
-    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context development > /dev/null
+    ${kubectl}/bin/kubectl --kubeconfig admin.kubeconfig config use-context ${ws}  > /dev/null
 
     popd > /dev/null
   '';

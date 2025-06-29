@@ -1,15 +1,22 @@
 { config, nodeIP, ... }:
 {
-  networking.firewall.allowedUDPPorts = [
-    67 # DHCP
-    69 # tftp
-    4011 # Proxy-DHCP
-  ];
+  networking = {
+    firewall.allowedUDPPorts = [
+      67 # DHCP
+      69 # tftp
+      4011 # Proxy-DHCP
+    ];
+  };
   services.ntp.enable = true;
   services.dnsmasq = {
     enable = true;
     settings = {
-      port = 0;
+      # port = 0;
+      no-resolv = true;
+      server = [
+        "8.8.8.8"
+        "1.1.1.1"
+      ];
       dhcp-range = [ "192.168.1.0,proxy,255.255.255.0" ];
       tftp-root = "/run/current-system/sw/var/tftp/";
       enable-tftp = true;

@@ -1,4 +1,5 @@
-{ hostname, ... }: {
+{ hostname, ... }:
+{
   services = {
     nscd = {
       enable = true;
