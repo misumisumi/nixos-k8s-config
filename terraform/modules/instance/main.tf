@@ -9,6 +9,10 @@ terraform {
     random = {
       source = "registry.opentofu.org/hashicorp/random"
     }
+    sops = {
+      source  = "carlpett/sops"
+      version = "~> 1.1.0"
+    }
   }
 }
 
@@ -26,7 +30,7 @@ locals {
   volumes = [for volume in local._volumes : volume if volume != null]
 }
 
-resource "incus_volume" "volume" {
+resource "incus_storage_volume" "volume" {
   for_each     = { for i in local.volumes : i.name => i }
   name         = each.value.name
   remote       = var.remote
@@ -42,6 +46,11 @@ resource "random_id" "host_id" {
     host_id = each.value.name
   }
   byte_length = 4
+}
+
+data "sops_file" "cloudinit" {
+  for_each    = { for i in var.instances : i.name => i if i.cloudinit.sops_file != "" }
+  source_file = each.value.cloudinit.sops_file
 }
 
 resource "incus_profile" "profile" {
@@ -63,6 +72,20 @@ resource "incus_profile" "profile" {
       size = each.value.root_size
     }
   }
+  dynamic "device" {
+    for_each = each.value.machine_type == "virtual-machine" ? concat([{
+      name = "agent"
+      type = "disk"
+      properties = {
+        source = "agent:config"
+      }
+    }], each.value.devices) : each.value.devices
+    content {
+      type       = device.value.type
+      name       = device.value.name
+      properties = device.value.properties
+    }
+  }
 }
 
 resource "incus_instance" "instance" {
@@ -76,17 +99,29 @@ resource "incus_instance" "instance" {
   ephemeral = false
   profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
-  config = each.value.machine_type == "container" ? merge({
-    "security.syscalls.intercept.mount"         = true
-    "security.syscalls.intercept.mount.allowed" = "ext4"
-    "raw.lxc"                                   = <<EOT
+  config = merge(
+    each.value.machine_type == "container" ? {
+      "security.syscalls.intercept.mount"         = true
+      "security.syscalls.intercept.mount.allowed" = "ext4"
+      "raw.lxc"                                   = <<EOT
         lxc.apparmor.profile = unconfined
         lxc.cap.drop = ""
         lxc.cgroup.devices.allow = a
     EOT
-    }, each.value.config) : merge({
-    "security.secureboot" = false
-  }, each.value.config)
+      } : {
+      "security.secureboot" = false
+    },
+    each.value.cloudinit.template_file != "" ? {
+      "cloud-init.user-data" = templatefile(each.value.cloudinit.template_file,
+        {
+          secrets = yamldecode(data.sops_file.cloudinit[each.key].raw),
+          vars    = each.value.cloudinit.vars
+          hosts   = jsondecode(file(each.value.cloudinit.hosts_file))
+        }
+      )
+    } : {},
+    each.value.config
+  )
 
   limits = each.value.limits
 
@@ -110,6 +145,5 @@ resource "incus_instance" "instance" {
       properties = device.value.properties
     }
   }
-  depends_on = [incus_volume.volume, incus_profile.profile]
+  depends_on = [incus_storage_volume.volume, incus_profile.profile]
 }
-

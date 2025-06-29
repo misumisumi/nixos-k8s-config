@@ -1,9 +1,9 @@
-{ lib, stateVersion, pkgs, ... }:
-with lib; {
+{ pkgs, ... }:
+{
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
-      plemoljp-fonts
+      moralerspace-nerd-fonts
     ];
   };
 }

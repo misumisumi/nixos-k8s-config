@@ -1,10 +1,10 @@
-{ config
-, pkgs
-, inputs
-, system
-, stateVersion
-, ...
-}: {
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
+{
   nix = {
     settings = {
       auto-optimise-store = true; # Optimise syslinks
@@ -39,7 +39,9 @@
       let
         nixpkgs-unstable = import inputs.nixpkgs-unstable {
           inherit (config.nixpkgs) system;
-          config = { allowUnfree = true; };
+          config = {
+            allowUnfree = true;
+          };
         };
       in
       [
@@ -48,10 +50,12 @@
         inputs.flakes.overlays.default
         (import ../../../patches { inherit nixpkgs-unstable; })
       ];
-    config = { allowUnfree = true; };
+    config = {
+      allowUnfree = true;
+    };
   };
   system = {
-    inherit stateVersion;
+    stateVersion = config.system.nixos.release;
     # NixOS settings
     autoUpgrade = {
       # Allow auto update

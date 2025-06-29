@@ -3,11 +3,11 @@ terraform {
   required_providers {
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.5.1"
+      version = "~> 3.6.3"
     }
     libvirt = {
       source  = "dmacvicar/libvirt"
-      version = "~> 0.7.4"
+      version = "~> 0.8.1"
     }
   }
 }

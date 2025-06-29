@@ -1,18 +1,26 @@
 # This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
-provider "registry.opentofu.org/hashicorp/random" {
-  version     = "3.5.1"
-  constraints = "~> 3.5.1"
+provider "registry.opentofu.org/carlpett/sops" {
+  version     = "1.1.1"
+  constraints = "~> 1.1.0"
   hashes = [
-    "h1:CAOHs+FLDQyxqpsDZJVczsGJ6Rzv69N3COPUHkMEl8I=",
+    "h1:Bo940xVIjk665FHwwdg2INHtHPMfFsHnQx0YLYOWOjU=",
+  ]
+}
+
+provider "registry.opentofu.org/hashicorp/random" {
+  version     = "3.6.3"
+  constraints = "~> 3.6.0"
+  hashes = [
+    "h1:QE5Ehwuz+F9NeFd1W00bIWXmpGuPT47Mfih++SW9tSE=",
   ]
 }
 
 provider "registry.opentofu.org/lxc/incus" {
-  version     = "0.1.1"
-  constraints = "~> 0.1.1"
+  version     = "0.1.4"
+  constraints = "~> 0.1.4"
   hashes = [
-    "h1:RdfuVco6dWtft7QAVmXGri5sR34/tk0vLgH3ScuQyfE=",
+    "h1:asKp156gsEMrqPfGcQUwO3gKI3VuLySdVa9ujVTt4y8=",
   ]
 }
