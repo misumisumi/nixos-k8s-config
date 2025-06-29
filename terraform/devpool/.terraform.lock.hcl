@@ -2,9 +2,9 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/lxc/incus" {
-  version     = "0.1.1"
-  constraints = "~> 0.1.1"
+  version     = "0.1.4"
+  constraints = "~> 0.1.4"
   hashes = [
-    "h1:RdfuVco6dWtft7QAVmXGri5sR34/tk0vLgH3ScuQyfE=",
+    "h1:asKp156gsEMrqPfGcQUwO3gKI3VuLySdVa9ujVTt4y8=",
   ]
 }
