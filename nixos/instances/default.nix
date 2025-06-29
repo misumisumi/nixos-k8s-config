@@ -1,9 +1,11 @@
-{ lib
-, inputs
-, stateVersion
-, ...
+{
+  lib,
+  inputs,
+  self,
+  ...
 }:
-with lib; let
+with lib;
+let
   user = "nixos";
   system = "x86_64-linux";
 
@@ -14,9 +16,11 @@ with lib; let
   loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer" "k8s");
   workerHosts = map (r: r.values.name) (resourcesByRole "worker" "k8s");
   # nfsHosts = map (r: r.values.name) (resourcesByRole "nfs" "nfs");
-  # netbootHosts = map (r: r.values.name) (resourcesByRole "netboot" "netboot");
+  netbootHosts = map (r: r.values.name) (resourcesByRole "ipxe-server" "ipxe-server");
 
-  specialArgs = { inherit stateVersion inputs user; };
+  specialArgs = {
+    inherit inputs self user;
+  };
 
 in
 {
@@ -24,67 +28,74 @@ in
     inherit system specialArgs;
     modules = [
       ./init/modules.nix
-      ./lxd/container
+      ./incus/container
     ];
   };
   virtual-machine = nixosSystem {
     inherit system specialArgs;
     modules = [
       ./init/modules.nix
-      ./lxd/virtual-machine
+      ./incus/virtual-machine
     ];
   };
 }
-// builtins.listToAttrs
-  (map
-    (h: {
-      name = h;
-      value = nixosSystem {
-        inherit system specialArgs;
-        modules = [
-          ./k8s/controlplane
-          ./lxd/${machineType "controlplane" "k8s"}
-        ];
-      };
-    })
-    controlPlaneHosts
-  )
-// builtins.listToAttrs
-  (map
-    (h: {
-      name = h;
-      value = nixosSystem {
-        inherit system specialArgs;
-        modules = [
-          ./k8s/etcd
-          ./lxd/${machineType "etcd" "k8s"}
-        ];
-      };
-    })
-    etcdHosts)
-// builtins.listToAttrs
-  (map
-    (h: {
-      name = h;
-      value = nixosSystem {
-        inherit system specialArgs;
-        modules = [
-          ./k8s/loadbalancer
-          ./lxd/${machineType "loadbalancer" "k8s"}
-        ];
-      };
-    })
-    loadBalancerHosts)
-  // builtins.listToAttrs
-  (map
-    (h: {
-      name = h;
-      value = nixosSystem {
-        inherit system specialArgs;
-        modules = [
-          ./k8s/worker
-          ./lxd/${machineType "worker" "k8s"}
-        ];
-      };
-    })
-    workerHosts)
+// builtins.listToAttrs (
+  map (h: {
+    name = h;
+    value = nixosSystem {
+      inherit system specialArgs;
+      modules = [
+        ./k8s/controlplane
+        ./lxd/${machineType "controlplane" "k8s"}
+      ];
+    };
+  }) controlPlaneHosts
+)
+// builtins.listToAttrs (
+  map (h: {
+    name = h;
+    value = nixosSystem {
+      inherit system specialArgs;
+      modules = [
+        ./k8s/etcd
+        ./lxd/${machineType "etcd" "k8s"}
+      ];
+    };
+  }) etcdHosts
+)
+// builtins.listToAttrs (
+  map (h: {
+    name = h;
+    value = nixosSystem {
+      inherit system specialArgs;
+      modules = [
+        ./k8s/loadbalancer
+        ./lxd/${machineType "loadbalancer" "k8s"}
+      ];
+    };
+  }) loadBalancerHosts
+)
+// builtins.listToAttrs (
+  map (h: {
+    name = h;
+    value = nixosSystem {
+      inherit system specialArgs;
+      modules = [
+        ./k8s/worker
+        ./lxd/${machineType "worker" "k8s"}
+      ];
+    };
+  }) workerHosts
+)
+// builtins.listToAttrs (
+  map (h: {
+    name = h;
+    value = nixosSystem {
+      inherit system specialArgs;
+      modules = [
+        ./ipxe-server
+        ./incus/${machineType "ipxe-server" "ipxe-server"}
+      ];
+    };
+  }) netbootHosts
+)

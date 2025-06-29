@@ -1,10 +1,11 @@
-{ virtualIP
-, nodeIP
-, ...
+{
+  virtualIP,
+  nodeIP,
+  ...
 }:
 {
   services = {
-    kubernetes.kubelet.clusterDns = nodeIP;
+    kubernetes.kubelet.clusterDns = [ nodeIP ];
     coredns = {
       enable = true;
       config = ''

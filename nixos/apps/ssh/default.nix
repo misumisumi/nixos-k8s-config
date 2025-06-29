@@ -1,17 +1,19 @@
-{ lib
-, config
-, stateVersion
-, user
-, ...
+{
+  lib,
+  config,
+  user,
+  ...
 }:
 let
   # read the first file that exists
   # filenames: list of paths
-  readFirst = filenames:
-    builtins.readFile
-      (builtins.head (builtins.filter builtins.pathExists filenames));
+  readFirst =
+    filenames: builtins.readFile (builtins.head (builtins.filter builtins.pathExists filenames));
 
-  sshKey = readFirst [ ~/.ssh/id_ed25519.pub ~/.ssh/id_rsa.pub ];
+  sshKey = readFirst [
+    ~/.ssh/id_ed25519.pub
+    ~/.ssh/id_rsa.pub
+  ];
 in
 {
 
@@ -29,11 +31,11 @@ in
         UsePAM yes
       '';
     }
-    // lib.attrsets.optionalAttrs (stateVersion <= "22.11") {
+    // lib.attrsets.optionalAttrs (config.system.stateVersion <= "22.11") {
       kbdInteractiveAuthentication = true;
       forwardX11 = false;
     }
-    // lib.attrsets.optionalAttrs (stateVersion > "22.11") {
+    // lib.attrsets.optionalAttrs (config.system.stateVersion > "22.11") {
       settings = {
         KbdInteractiveAuthentication = true;
         X11Forwarding = false;

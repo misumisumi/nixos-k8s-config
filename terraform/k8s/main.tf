@@ -2,11 +2,15 @@ terraform {
   required_providers {
     incus = {
       source  = "registry.opentofu.org/lxc/incus"
-      version = "~> 0.1.1"
+      version = "~> 0.1.4"
     }
     random = {
       source  = "registry.opentofu.org/hashicorp/random"
-      version = "~> 3.5.1"
+      version = "~> 3.6.0"
+    }
+    sops = {
+      source  = "carlpett/sops"
+      version = "~> 1.1.0"
     }
   }
 }

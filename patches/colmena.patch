@@ -1,4 +1,4 @@
-diff --git a/src/nix/hive/mod.rs b/src/nix/hive/mod.rs
+iff --git a/src/nix/hive/mod.rs b/src/nix/hive/mod.rs
 index f9d9227..52e3d92 100644
 --- a/src/nix/hive/mod.rs
 +++ b/src/nix/hive/mod.rs

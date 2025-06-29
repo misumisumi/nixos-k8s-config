@@ -1,10 +1,11 @@
 # Default normal user config
-{ config
-, lib
-, hostname
-, user
-, pkgs
-, ...
+{
+  config,
+  lib,
+  hostname,
+  user,
+  pkgs,
+  ...
 }:
 let
   rbash = pkgs.runCommandNoCC "rbash-${pkgs.bashInteractive.version}" { } ''
@@ -15,7 +16,7 @@ in
 {
   environment.pathsToLink = [ "/share/bash-completion" ];
   programs.bash = {
-    enableCompletion = true;
+    completion.enable = true;
     enableLsColors = true;
     vteIntegration = true;
   };

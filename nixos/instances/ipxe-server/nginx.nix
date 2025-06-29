@@ -1,4 +1,5 @@
 {
+  self,
   config,
   pkgs,
   nodeIP,
@@ -30,9 +31,9 @@ in
   };
   environment.systemPackages = [
     (pkgs.callPackage ./setup-netboot-compornents.nix {
-      # nixosConfigs = {
-      #   inherit (config.nixosConfigurations) netboot;
-      # };
+      nixosConfigs = {
+        inherit (self.nixosConfigurations) netboot;
+      };
       inherit serverName;
     })
   ];
