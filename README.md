@@ -8,7 +8,7 @@
 
 # What is this ?
 
-This project to create a High-Available kubernetes on-premise cluster with Infurastracture as Code (IaC) in your home.  
+This project is an attempt to build a Highly-Available HomeLab using Infrastructure as Code (IaC).
 Emphasis is placed on reproducibility, portability, and recoverability.
 
 ## Motivation
