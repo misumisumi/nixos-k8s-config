@@ -94,15 +94,16 @@
           inherit inputs self;
         };
         colmenaHive = inputs.colmena.lib.makeHive self.colmena;
-        nixosConfigurations =
-          (import ./nixos/instances {
+        nixosConfigurations = (
+          import ./instances {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
-          })
-          // (import ./nixos/hosts {
-            inherit (inputs.nixpkgs) lib;
-            inherit inputs self;
-          });
+          }
+        );
+        # // (import ./nixos/hosts {
+        #   inherit (inputs.nixpkgs) lib;
+        #   inherit inputs self;
+        # });
         diskoConfigurations = import ./nixos/hosts/disk-config.nix {
           inherit (inputs.nixpkgs) lib;
         };
@@ -134,9 +135,10 @@
             config.allowUnfree = true;
           };
           packages = {
-            defaultNetbootIpxeScript = self.nixosConfigurations.netboot.config.system.build.netbootIpxeScript;
-            defaultISOImage = self.nixosConfigurations.livecd.config.system.build.isoImage;
-          } // inputs.nixos-images.packages.${system};
+            # defaultNetbootIpxeScript = self.nixosConfigurations.netboot.config.system.build.netbootIpxeScript;
+            # defaultISOImage = self.nixosConfigurations.livecd.config.system.build.isoImage;
+          }
+          // inputs.nixos-images.packages.${system};
           apps = with myScripts; {
             mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "eval"; }; };
             mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
