@@ -15,8 +15,7 @@ let
   etcdHosts = map (r: r.values.name) (resourcesByRole "etcd" "k8s");
   loadBalancerHosts = map (r: r.values.name) (resourcesByRole "loadbalancer" "k8s");
   workerHosts = map (r: r.values.name) (resourcesByRole "worker" "k8s");
-  # nfsHosts = map (r: r.values.name) (resourcesByRole "nfs" "nfs");
-  # netbootHosts = map (r: r.values.name) (resourcesByRole "ipxe-server" "ipxe-server");
+  netbootHosts = map (r: r.values.name) (resourcesByRole "ipxe-server" "ipxe-server");
 
   specialArgs = {
     inherit inputs self user;
@@ -45,8 +44,9 @@ in
     value = nixosSystem {
       inherit system specialArgs;
       modules = [
-        ./k8s/nix/controlplane
         ./init/incus/${machineType "controlplane" "k8s"}
+        ./init/settings/system
+        ./k8s/nix/controlplane
       ];
     };
   }) controlPlaneHosts
@@ -57,8 +57,9 @@ in
     value = nixosSystem {
       inherit system specialArgs;
       modules = [
-        ./k8s/nix/etcd
         ./init/incus/${machineType "etcd" "k8s"}
+        ./init/settings/system
+        ./k8s/nix/etcd
       ];
     };
   }) etcdHosts
@@ -69,8 +70,9 @@ in
     value = nixosSystem {
       inherit system specialArgs;
       modules = [
-        ./k8s/nix/loadbalancer
         ./init/incus/${machineType "loadbalancer" "k8s"}
+        ./init/settings/system
+        ./k8s/nix/loadbalancer
       ];
     };
   }) loadBalancerHosts
@@ -81,21 +83,22 @@ in
     value = nixosSystem {
       inherit system specialArgs;
       modules = [
-        ./k8s/nix/worker
         ./init/incus/${machineType "worker" "k8s"}
+        ./init/settings/system
+        ./k8s/nix/worker
       ];
     };
   }) workerHosts
 )
-# // builtins.listToAttrs (
-#   map (h: {
-#     name = h;
-#     value = nixosSystem {
-#       inherit system specialArgs;
-#       modules = [
-#         ./ipxe-server
-#         ./incus/${machineType "ipxe-server" "ipxe-server"}
-#       ];
-#     };
-#   }) netbootHosts
-# )
+// builtins.listToAttrs (
+  map (h: {
+    name = h;
+    value = nixosSystem {
+      inherit system specialArgs;
+      modules = [
+        ./ipxe-server
+        ./incus/${machineType "ipxe-server" "ipxe-server"}
+      ];
+    };
+  }) netbootHosts
+)
