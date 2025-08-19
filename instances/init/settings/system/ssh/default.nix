@@ -15,11 +15,11 @@ let
     "~/.ssh/id_rsa.pub"
   ];
 in
-{ config, user, ... }:
+{ config, ... }:
 {
   networking.firewall.allowedTCPPorts = config.services.openssh.ports;
   users.users.root.openssh.authorizedKeys.keys = [ sshKey ];
-  users.users.${user}.openssh.authorizedKeys.keys = [ sshKey ];
+
   services.openssh = {
     enable = true;
     ports = [ 22 ];
