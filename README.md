@@ -1,6 +1,6 @@
 # PROJECT Cardinal
 
-<img src="logo/logo.png" width=100% height=100%>
+<img src="_assets/logo/logo.png" width=100% height=100%>
 
 > This repository is currently a work in progress.  
 > I don't know when v1.0.0 will be reached due to the large number of tasks.  
