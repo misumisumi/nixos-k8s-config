@@ -1,0 +1,139 @@
+{
+  "pools_info": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "dev1": [
+          "object",
+          {
+            "incus_pool_info": [
+              "tuple",
+              [
+                [
+                  "object",
+                  {
+                    "name": "string",
+                    "project": "string",
+                    "remote": "string"
+                  }
+                ]
+              ]
+            ]
+          }
+        ],
+        "dev2": [
+          "object",
+          {
+            "incus_pool_info": [
+              "tuple",
+              [
+                [
+                  "object",
+                  {
+                    "name": "string",
+                    "project": "string",
+                    "remote": "string"
+                  }
+                ]
+              ]
+            ]
+          }
+        ],
+        "dev3": [
+          "object",
+          {
+            "incus_pool_info": [
+              "tuple",
+              [
+                [
+                  "object",
+                  {
+                    "name": "string",
+                    "project": "string",
+                    "remote": "string"
+                  }
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "value": {
+      "dev1": {
+        "incus_pool_info": [
+          {
+            "name": "instances",
+            "project": null,
+            "remote": "dev1"
+          }
+        ]
+      },
+      "dev2": {
+        "incus_pool_info": [
+          {
+            "name": "instances",
+            "project": null,
+            "remote": "dev2"
+          }
+        ]
+      },
+      "dev3": {
+        "incus_pool_info": [
+          {
+            "name": "instances",
+            "project": null,
+            "remote": "dev3"
+          }
+        ]
+      }
+    }
+  },
+  "volumes_info": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "dev1": [
+          "object",
+          {
+            "incus_volume_info": [
+              "tuple",
+              []
+            ]
+          }
+        ],
+        "dev2": [
+          "object",
+          {
+            "incus_volume_info": [
+              "tuple",
+              []
+            ]
+          }
+        ],
+        "dev3": [
+          "object",
+          {
+            "incus_volume_info": [
+              "tuple",
+              []
+            ]
+          }
+        ]
+      }
+    ],
+    "value": {
+      "dev1": {
+        "incus_volume_info": []
+      },
+      "dev2": {
+        "incus_volume_info": []
+      },
+      "dev3": {
+        "incus_volume_info": []
+      }
+    }
+  }
+}

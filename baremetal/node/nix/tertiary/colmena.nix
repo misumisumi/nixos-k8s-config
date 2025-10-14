@@ -1,5 +1,0 @@
-{
-  imports = [
-    ../init/colmena.nix
-  ];
-}
