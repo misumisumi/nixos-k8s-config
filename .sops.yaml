@@ -4,7 +4,7 @@ keys:
     - &sumi_mother age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
     - &sumi_stacia age1znnqnxjkr0x70r5ys0n2k34ym5a3spn69yuveqa76wh0ng65catspphysl
 creation_rules:
-  - path_regex: sops/.*/secrets.yaml
+  - path_regex: ./nix/.*/sops/.*/secrets.yaml
     key_groups:
       - pgp:
           - *sumi

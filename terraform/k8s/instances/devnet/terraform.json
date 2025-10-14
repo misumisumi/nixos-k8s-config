@@ -1,0 +1,8 @@
+{
+    "networks": [
+        {
+            "ipv4_address": "10.150.10.1/24",
+            "name": "k8sbr0"
+        }
+    ]
+}
