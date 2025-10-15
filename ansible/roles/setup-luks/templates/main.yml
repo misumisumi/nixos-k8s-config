@@ -1,0 +1,4 @@
+---
+luksname: "cryptolvm"
+luksdevice: "/dev/sda"
+lukspassphrase: "foo"

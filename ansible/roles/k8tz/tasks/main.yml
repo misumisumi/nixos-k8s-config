@@ -1,0 +1,19 @@
+---
+# tasks file for ./roles/k8tz
+- name: Add k8tz chart repo
+  kubernetes.core.helm_repository:
+    name: k8tz
+    repo_url: "https://k8tz.github.io/k8tz/"
+    kubeconfig: "{{ kubeconfig }}"
+    context: "{{ stage }}"
+- name: Deploy latest version of k8tz chart
+  kubernetes.core.helm:
+    name: k8tz
+    chart_ref: k8tz/k8tz
+    values_files:
+      - roles/k8tz/files/values.yml
+    release_namespace: k8tz-chart
+    create_namespace: true
+    wait: true
+    kubeconfig: "{{ kubeconfig }}"
+    context: "{{ stage }}"

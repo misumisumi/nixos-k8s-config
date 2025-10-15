@@ -1,0 +1,21 @@
+---
+zfs_pool_name: data
+zfs_pool_mountpoint: /mnt/data
+zfs_pool_mode: mirror
+zfs_pool_devices:
+  - sda
+  - sdb
+zfs_pool_state: present
+zfs_pool_options:
+  - ashift=12
+  - autotrim=on
+zfs_root_filesystem_options:
+  - acltype=posixacl
+  - canmount=off
+  - compression=zstd
+  - dnodesize=auto
+  - normalization=formD
+  - relatime=on
+  - xattr=sa
+  # - mountpoint=/
+zfs_root:

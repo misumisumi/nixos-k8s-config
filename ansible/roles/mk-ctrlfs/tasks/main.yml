@@ -1,0 +1,157 @@
+---
+# tasks file for ./ansible/roles/zfs
+- name: Make dir to /tmp/keystore
+  ansible.builtin.command: mkdir /tmp/keystore
+
+- name: Make key of zfs native-encryption for system
+  ansible.builtin.command: dd if=/dev/random of=/tmp/keystore/pass4PoolCtrl_system bs=1 count=32
+
+- name: Make key of zfs native-encryption for local
+  ansible.builtin.command: dd if=/dev/random of=/tmp/keystore/pass4PoolCtrl_local bs=1 count=32
+
+- name: Make key of zfs native-encryption for vol4lxd0
+  ansible.builtin.command: dd if=/dev/random of=/tmp/keystore/pass4PoolCtrl_vol4lxd0 bs=1 count=32
+
+- name: Make key of zfs native-encryption for vol4lxd1
+  ansible.builtin.command: dd if=/dev/random of=/tmp/keystore/pass4PoolCtrl_vol4lxd1 bs=1 count=32
+
+- name: Make key of zfs native-encryption for vol4lxd2
+  ansible.builtin.command: dd if=/dev/random of=/tmp/keystore/pass4PoolCtrl_vol4lxd2 bs=1 count=32
+
+- name: Create postgres zpool
+  ansible.builtin.command: zpool create -f
+    -o ashift=12 -o autotrim=on
+    -O acltype=posixacl -O canmount=off -O compression=zstd -O dnodesize=auto
+    -O normalization=formD -O relatime=on -O xattr=sa -O mountpoint=none
+    "{{ pool_name }}" "{{ device_name }}"
+
+- name: Create a reservation
+  community.general.zfs:
+    name: "{{ pool_name }}/reserved"
+    state: present
+    extra_zfs_properties:
+      reservation: "{{ reserved_size }}"
+      quota: "{{ reserved_size }}"
+      mountpoint: none
+      canmount: off
+
+- name: Create a new fs called system
+  community.general.zfs:
+    name: "{{ pool_name }}/system"
+    state: present
+    extra_zfs_properties:
+      mountpoint: none
+      canmount: off
+      encryption: on
+      keyformat: raw
+      keylocation: file:///tmp/keystore/pass4PoolCtrl_system
+
+- name: Create a new dataset called root in system
+  community.general.zfs:
+    name: "{{ pool_name }}/system/root"
+    state: present
+    extra_zfs_properties:
+      mountpoint: legacy
+
+- name: Create a new dataset called home in system
+  community.general.zfs:
+    name: "{{ pool_name }}/system/home"
+    state: present
+    extra_zfs_properties:
+      mountpoint: legacy
+
+- name: Create a new dataset called var in system
+  community.general.zfs:
+    name: "{{ pool_name }}/system/var"
+    state: present
+    extra_zfs_properties:
+      mountpoint: none
+      canmount: off
+
+- name: Create a new dataset called log in system/var
+  community.general.zfs:
+    name: "{{ pool_name }}/system/var/log"
+    state: present
+    extra_zfs_properties:
+      mountpoint: legacy
+      compression: zstd-fast
+
+- name: Create a new dataset called lib in system/var
+  community.general.zfs:
+    name: "{{ pool_name }}/system/var/lib"
+    state: present
+    extra_zfs_properties:
+      mountpoint: legacy
+      compression: zstd-fast
+
+- name: Create a new fs called local
+  community.general.zfs:
+    name: "{{ pool_name }}/local"
+    state: present
+    extra_zfs_properties:
+      mountpoint: none
+      canmount: off
+      encryption: on
+      keyformat: raw
+      keylocation: file:///tmp/keystore/pass4PoolCtrl_local
+
+- name: Create a new dataset called nix in local
+  community.general.zfs:
+    name: "{{ pool_name }}/local/nix"
+    state: present
+    extra_zfs_properties:
+      mountpoint: legacy
+
+- name: Create a new fs calledkeystore
+  community.general.zfs:
+    name: "{{ pool_name }}/keystore"
+    state: present
+    extra_zfs_properties:
+      mountpoint: legacy
+
+- name: Create a new volume called vol4lxd0
+  community.general.zfs:
+    name: "{{ pool_name }}/vol4lxd0"
+    state: present
+    extra_zfs_properties:
+      volsize: "{{ vol4lxd0_size }}"
+      encryption: on
+      keyformat: raw
+      keylocation: file:///tmp/keystore/pass4PoolCtrl_vol4lxd0
+
+- name: Create a new volume called vol4lxd1
+  community.general.zfs:
+    name: "{{ pool_name }}/vol4lxd1"
+    state: present
+    extra_zfs_properties:
+      volsize: "{{ vol4lxd1_size }}"
+      encryption: on
+      keyformat: raw
+      keylocation: file:///tmp/keystore/pass4PoolCtrl_vol4lxd1
+
+- name: Create a new volume called vol4lxd2
+  community.general.zfs:
+    name: "{{ pool_name }}/vol4lxd2"
+    state: present
+    extra_zfs_properties:
+      volsize: "{{ vol4lxd2_size }}"
+      encryption: on
+      keyformat: raw
+      keylocation: file:///tmp/keystore/pass4PoolCtrl_vol4lxd2
+
+- name: Set auto-snapshot for system
+  ansible.builtin.command: zfs set com.sun:auto-snapshot=true "{{ pool_name }}/system"
+
+- name: Set auto-snapshot for vol4lxd0
+  ansible.builtin.command: zfs set com.sun:auto-snapshot=true "{{ pool_name }}/vol4lxd0"
+
+- name: Set auto-snapshot for vol4lxd1
+  ansible.builtin.command: zfs set com.sun:auto-snapshot=true "{{ pool_name }}/vol4lxd1"
+
+- name: Set auto-snapshot for vol4lxd2
+  ansible.builtin.command: zfs set com.sun:auto-snapshot=true "{{ pool_name }}/vol4lxd2"
+
+- debug:
+    msg:
+      - A native-encrypt keyfile is created in /tmp/keystore.
+      - After confirming the unlock, collect it and delete /tmp/keystore.

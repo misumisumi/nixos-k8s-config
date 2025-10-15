@@ -1,0 +1,27 @@
+csi:
+  # -- The volume of the CephCSI RBD plugin DaemonSet
+  csiRBDPluginVolume:
+    - name: lib-modules
+      hostPath:
+        path: /run/booted-system/kernel-modules/lib/modules/
+    - name: host-nix
+      hostPath:
+        path: /nix
+  # -- The volume mounts of the CephCSI RBD plugin DaemonSet
+  csiRBDPluginVolumeMount:
+    - name: host-nix
+      mountPath: /nix
+      readOnly: true
+  # -- The volume of the CephCSI CephFS plugin DaemonSet
+  csiCephFSPluginVolume:
+    - name: lib-modules
+      hostPath:
+        path: /run/booted-system/kernel-modules/lib/modules/
+    - name: host-nix
+      hostPath:
+        path: /nix
+  # -- The volume mounts of the CephCSI CephFS plugin DaemonSet
+  csiCephFSPluginVolumeMount:
+    - name: host-nix
+      mountPath: /nix
+      readOnly: true

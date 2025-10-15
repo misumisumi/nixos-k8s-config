@@ -1,0 +1,3 @@
+controller:
+  ingressClassResource:
+    default: true

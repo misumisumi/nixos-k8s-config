@@ -1,0 +1,5 @@
+---
+- import_playbook: kubernetes.yml
+- import_playbook: mk-ctrlfs.yml
+- import_playbook: setup-ha-nfs.yml
+# - import_playbook: debug.yml

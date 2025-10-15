@@ -1,0 +1,9 @@
+---
+port: 7789
+resources:
+  - target: ""
+    id: 0
+    address: ""
+    meta_disk: ""
+    disks:
+      - ""

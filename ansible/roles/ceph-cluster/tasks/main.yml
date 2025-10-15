@@ -1,0 +1,20 @@
+---
+# tasks file for rook_ceph
+- name: Add rook chart repo
+  kubernetes.core.helm_repository:
+    name: rook-release
+    repo_url: "https://charts.rook.io/release"
+    kubeconfig: "{{ kubeconfig }}"
+    context: "{{ stage }}"
+
+- name: Deploy latest version of rook/ceph-cluster chart
+  kubernetes.core.helm:
+    name: rook-ceph-cluster
+    chart_ref: rook-release/rook-ceph-cluster
+    release_namespace: rook-ceph
+    create_namespace: true
+    wait: true
+    values_files:
+      - "roles/ceph-cluster/files/{{ stage }}.yml"
+    kubeconfig: "{{ kubeconfig }}"
+    context: "{{ stage }}"

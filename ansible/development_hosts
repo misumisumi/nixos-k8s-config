@@ -1,0 +1,5 @@
+[all:vars]
+stage=development
+kubeconfig=.kube/admin.kubeconfig
+kubecerts_dir=.kube/kubernetes
+metallb_addresses="10.150.10.200-10.150.10.250"

@@ -1,0 +1,6 @@
+---
+# vars file for ./roles/external-dns-test
+domains:
+  - misumisumichan.com
+cloudflare_api_key: "Q0f_Ei_3uJ7fs_s7IxyLHTlvsM19tQAg5Y_ePp-q"
+cloudflare_email: "misumisuminan.gmail.com"

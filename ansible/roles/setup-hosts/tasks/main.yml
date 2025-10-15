@@ -1,0 +1,21 @@
+---
+- name: Load terraform outputs to var named terraform_outputs
+  ansible.builtin.include_vars:
+    file: "{{ terraform_output_path }}"
+    name: terraform_output
+
+- name: Set node addresses
+  ansible.builtin.set_fact:
+    _nodes: "{{ _nodes | default([]) + [{'hostname': item.name, 'address': item.ip_address}] }}"
+  run_once: yes
+  with_items: "{{ terraform_output['values'].outputs.instance_info.value }}"
+
+- name: Distribute hosts file
+  become: yes
+  ansible.builtin.template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
