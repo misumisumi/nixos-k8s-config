@@ -1,0 +1,28 @@
+---
+# From https://stackoverflow.com/questions/19938439/how-do-i-create-a-zfs-filesystem-zpool-using-ansible-using-zfs-linux
+- name: check ZFS pool existance
+  command: >-
+    zpool list -Ho name {{ zfs_pool_name }}
+    register: result_pool_list
+    ignore_errors: yes
+    changed_when: false
+
+- name: create ZFS pool
+  command: >-
+    zpool create
+    {{ '-o' if zfs_pool_options else '' }} {{ zfs_pool_options | join(' -o ') }}
+    {{ '-O' if zfs_root_filesystem_options else '' }} {{ zfs_root_filesystem_options | join(' -O ') }}
+    {{ '-m ' + zfs_pool_mountpoint if zfs_pool_mountpoint else '' }}
+    {{ '-R ' + zfs_root if zfs_root else '' }}
+    {{ zfs_pool_name }}
+    {{ zfs_pool_mode if zfs_pool_mode else '' }}
+    {{ zfs_pool_devices | join(' ') }}
+  when:
+    - zfs_pool_state | default('present') == 'present'
+    - result_pool_list.rc == 1
+
+- name: destroy ZFS pool
+  command: zpool destroy {{ zfs_pool_name }}
+  when:
+    - zfs_pool_state | default('present') == 'absent'
+    - result_pool_list.rc == 0

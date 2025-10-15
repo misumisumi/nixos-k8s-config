@@ -1,0 +1,8 @@
+---
+# vars file for ./ansible/roles/zfs
+pool_name: PoolCtrl
+device_name: ata-SanDisk_SDSSDH3500G_174650800534-part2
+reserved_size: 75G
+vol4lxd0_size: 96G
+vol4lxd1_size: 96G
+vol4lxd2_size: 96G

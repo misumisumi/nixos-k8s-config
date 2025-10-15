@@ -1,0 +1,107 @@
+toolbox:
+  # -- Enable Ceph debugging pod deployment. See [toolbox](../Troubleshooting/ceph-toolbox.md)
+  enabled: true
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "500Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+cephClusterSpec:
+  dashboard:
+    enabled: true
+    port: 8443
+    ssl: true
+  mgr:
+    # When higher availability of the mgr is needed, increase the count to 2.
+    # In that case, one mgr will be active and one in standby. When Ceph updates which
+    # mgr is active, Rook will update the mgr services to match the active mgr.
+    count: 2
+  storage: # cluster level storage configuration and selection
+    useAllNodes: false
+    useAllDevices: false
+    deviceFilter: "^sd."
+    config:
+      databaseSizeMB: "1024" # uncomment if the disks are smaller than 100 GB
+      journalSizeMB: "1024" # uncomment if the disks are 20 GB or smaller
+      osdsPerDevice: "1" # this value can be overridden at the node or device level
+    nodes:
+      - name: "10.150.10.30"
+        deviceFilter: "^sd."
+        # config: # configuration can be specified at the node level which overrides the cluster level config
+      - name: "10.150.10.31"
+        deviceFilter: "^sd."
+        # config: # configuration can be specified at the node level which overrides the cluster level config
+      - name: "10.150.10.32"
+        deviceFilter: "^sd."
+        # config: # configuration can be specified at the node level which overrides the cluster level config
+  resources:
+    mgr:
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+      requests:
+        cpu: "0"
+        memory: "0"
+    mon:
+      limits:
+        cpu: "2000m"
+        memory: "2Gi"
+      requests:
+        cpu: "0"
+        memory: "0"
+    osd:
+      limits:
+        cpu: "2000m"
+        memory: "4Gi"
+      requests:
+        cpu: "0"
+        memory: "0"
+    prepareosd:
+      # limits: It is not recommended to set limits on the OSD prepare job
+      #         since it's a one-time burst for memory that must be allowed to
+      #         complete without an OOM kill.  Note however that if a k8s
+      #         limitRange guardrail is defined external to Rook, the lack of
+      #         a limit here may result in a sync failure, in which case a
+      #         limit should be added.  1200Mi may suffice for up to 15Ti
+      #         OSDs ; for larger devices 2Gi may be required.
+      #         cf. https://github.com/rook/rook/pull/11103
+      requests:
+        cpu: "500m"
+        memory: "50Mi"
+    mgr-sidecar:
+      limits:
+        cpu: "500m"
+        memory: "100Mi"
+      requests:
+        cpu: "100m"
+        memory: "40Mi"
+    crashcollector:
+      limits:
+        cpu: "500m"
+        memory: "60Mi"
+      requests:
+        cpu: "100m"
+        memory: "60Mi"
+    logcollector:
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "100Mi"
+    cleanup:
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+      requests:
+        cpu: "500m"
+        memory: "100Mi"
+    exporter:
+      limits:
+        cpu: "250m"
+        memory: "128Mi"
+      requests:
+        cpu: "50m"
+        memory: "50Mi"

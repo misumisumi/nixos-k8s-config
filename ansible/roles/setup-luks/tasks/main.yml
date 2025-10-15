@@ -1,0 +1,12 @@
+---
+# tasks file for roles/setup-luks
+- name: Create LUKS container with a passphrase
+  community.crypto.luks_device:
+    device: "{{ luksdevice }}"
+    state: "opened"
+    passphrase: "{{ lukspassphrase }}"
+    name: "{{ luksname }}"
+
+- name: pause
+  pause:
+    seconds: 5

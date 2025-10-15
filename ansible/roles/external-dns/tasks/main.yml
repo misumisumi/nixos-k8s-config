@@ -1,0 +1,19 @@
+---
+# tasks file for ./roles/external-dns
+- name: Add external-dns chart repo
+  kubernetes.core.helm_repository:
+    name: external-dns
+    repo_url: "https://kubernetes-sigs.github.io/external-dns/"
+    kubeconfig: "{{ kubeconfig }}"
+    context: "{{ stage }}"
+- name: Deploy latest version of external-dns chart
+  kubernetes.core.helm:
+    name: external-dns
+    chart_ref: external-dns/external-dns
+    values_files:
+      - roles/external-dns/files/values.yml
+      - roles/external-dns/files/secrets.yml
+    release_namespace: external-dns
+    create_namespace: true
+    kubeconfig: "{{ kubeconfig }}"
+    context: "{{ stage }}"

@@ -1,0 +1,9 @@
+# setup drbd devices
+---
+- hosts: ha_nfs
+  gather_facts: false
+  roles:
+    - role: setup-drbd
+      port: "{{ drbd_port }}"
+      resources: "{{ drbd_resources }}"
+    - role: setup-btrfs

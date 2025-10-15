@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  containers:
+    - image: nginx
+      name: nginx
+      ports:
+        - containerPort: 80
+          name: http
+---
+# Podに紐つけるService
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-sample
+spec:
+  ports:
+    - port: 80
+      name: http
+  selector:
+    app: nginx
+---
+# Serviceに紐つけるIngress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-sample
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: ingress-sample
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix

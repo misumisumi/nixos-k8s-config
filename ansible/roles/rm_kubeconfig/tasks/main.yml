@@ -1,0 +1,12 @@
+---
+# tasks file for rm_kubeconfig
+- name: remove kubeconfig for k8s
+  ansible.builtin.file:
+    path: "{{ ansible_env.TMPDIR | default('/tmp') }}/{{kubeconfig | basename}}"
+    state: absent
+- name: remove certs for k8s
+  ansible.builtin.file:
+    path: "{{ ansible_env.TMPDIR | default('/tmp') }}/{{kubecerts_dir | basename}}"
+    state: absent
+  when:
+    - kubecerts_dir is defined

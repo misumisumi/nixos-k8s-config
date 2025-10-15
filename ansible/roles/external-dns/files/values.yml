@@ -1,0 +1,8 @@
+serviceAccount:
+  create: true
+sources:
+  - ingress
+policy: sync
+registry: txt
+txtOwnerId: default
+provider: cloudflare

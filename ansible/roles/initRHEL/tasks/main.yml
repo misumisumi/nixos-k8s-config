@@ -1,0 +1,34 @@
+---
+# tasks file for ./roles/initRHEL
+- name: Set timezone to Asia/Tokyo
+  community.general.timezone:
+    name: "Asia/Tokyo"
+
+- name: Import GPG key for zfs-release
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://raw.githubusercontent.com/zfsonlinux/zfsonlinux.github.com/master/zfs-release/RPM-GPG-KEY-openzfs-key2
+
+- name: Install extra repo
+  ansible.builtin.dnf:
+    name:
+      - elrepo-release
+      - epel-release
+      - https://zfsonlinux.org/epel/zfs-release-2-3.el9.noarch.rpm
+    state: latest
+
+- name: Install some packages
+  ansible.builtin.dnf:
+    name: "{{ install_pkgs }}"
+    state: latest
+    enablerepo: "{{ repos }}"
+
+- name: Load kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    persistent: present
+  with_items: "{{ modprobes }}"
+
+- name: Reboot waiting 5 miniuts
+  ansible.builtin.reboot:
+    reboot_timeout: 300
