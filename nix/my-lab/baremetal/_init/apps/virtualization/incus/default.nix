@@ -55,21 +55,20 @@
           }
         ];
         storage_pools = [
-          (
-            {
-              name = "default";
-              description = "Default Incus storage";
-            }
-            // lib.optionalAttrs (group == "devnode") {
-              driver = "dir";
-            }
-            // lib.optionalAttrs (group != "devnode") {
-              driver = "btrfs";
-              config = {
-                size = "8GiB";
-                source = "/var/lib/incus/disks/default.img";
-              };
-            }
+          ({
+            name = "default";
+            description = "Default Incus storage";
+          }
+          # // lib.optionalAttrs (group == "devnode") {
+          #   driver = "dir";
+          # }
+          # // lib.optionalAttrs (group != "devnode") {
+          #   driver = "btrfs";
+          #   config = {
+          #     size = "8GiB";
+          #     source = "/var/lib/incus/disks/default.img";
+          #   };
+          # }
           )
         ];
       };

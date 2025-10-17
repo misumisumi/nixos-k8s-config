@@ -8,6 +8,5 @@
     lm_sensors # fan speed
     pciutils # Device utils
     traceroute # Track the network route
-    usbutils # Tools for working with USB devices
   ];
 }
