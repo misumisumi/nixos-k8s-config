@@ -51,20 +51,19 @@ let
     }) hostConfigs;
 in
 (lib.mapAttrs (name: value: (systemSetting value)) hosts)
-// ({
-  diskless = lib.nixosSystem {
+// {
+  first-stage-netboot-image = lib.nixosSystem {
     system = "x86_64-linux";
     specialArgs = {
+      user = "nixos";
+      hostname = "nixos-first-stage";
       inherit
         self
         inputs
         ;
     }; # specialArgs give some args to modules
     modules = [
-      inputs.sops-nix.nixosModules.sops
-      inputs.disko.nixosModules.disko
-      ../modules
-      ./diskless/core
+      ./compute/first-stage
     ];
   };
-})
+}

@@ -80,6 +80,7 @@
         #   inherit inputs self;
         # };
         # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
+        nixosModules = import ./modules;
         nixosConfigurations = import ./baremetal {
           inherit (inputs.nixpkgs) lib;
           inherit inputs self;

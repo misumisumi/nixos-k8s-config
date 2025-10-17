@@ -1,8 +1,6 @@
 # Default normal user config
 {
-  config,
   lib,
-  hostname,
   user,
   pkgs,
   ...
@@ -25,7 +23,7 @@ in
     isNormalUser = true;
     shell = "${rbash}/bin/rbash";
     extraGroups = [ ];
-    initialHashedPassword = "$y$j9T$2i4ZUQSB0zKtYfaf9YLuZ0$rwxfC/yKFR.zejBm.X00K/JZJSoYVOnnLkSLQ50N5T7";
+    initialHashedPassword = lib.mkForce "$y$j9T$2i4ZUQSB0zKtYfaf9YLuZ0$rwxfC/yKFR.zejBm.X00K/JZJSoYVOnnLkSLQ50N5T7";
   };
-  users.users.root.initialHashedPassword = "$y$j9T$2i4ZUQSB0zKtYfaf9YLuZ0$rwxfC/yKFR.zejBm.X00K/JZJSoYVOnnLkSLQ50N5T7";
+  users.users.root.initialHashedPassword = lib.mkForce "$y$j9T$2i4ZUQSB0zKtYfaf9YLuZ0$rwxfC/yKFR.zejBm.X00K/JZJSoYVOnnLkSLQ50N5T7";
 }
