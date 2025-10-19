@@ -1,0 +1,12 @@
+{
+    "workspaces": [
+        "eval",
+        "development",
+        "staging",
+        "production"
+    ],
+    "incus-setting": {
+        "storage-backend": "btrfs",
+        "storage-create-loop": "96"
+    }
+}

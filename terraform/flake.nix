@@ -132,7 +132,7 @@
                 terraform
                 terraform-docs
 
-                # ter
+                ter
               ];
           };
         };
