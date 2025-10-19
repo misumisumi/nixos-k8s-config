@@ -81,10 +81,15 @@
         # };
         # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
         nixosModules = import ./modules;
-        nixosConfigurations = import ./baremetal {
-          inherit (inputs.nixpkgs) lib;
-          inherit inputs self;
-        };
+        nixosConfigurations =
+          (import ./baremetal {
+            inherit (inputs.nixpkgs) lib;
+            inherit inputs self;
+          })
+          // (import ./instances {
+            inherit (inputs.nixpkgs) lib;
+            inherit inputs self;
+          });
         # diskoConfigurations = import ./donfigs/disk-config.nix {
         #   inherit (inputs.nixpkgs) lib;
         # };

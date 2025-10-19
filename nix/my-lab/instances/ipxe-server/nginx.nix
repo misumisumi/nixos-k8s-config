@@ -1,13 +1,8 @@
 {
   self,
   config,
-  pkgs,
-  nodeIP,
   ...
 }:
-let
-  serverName = "homelab-ipxe-server.local";
-in
 {
   networking.firewall.allowedTCPPorts = [
     config.services.nginx.defaultHTTPListenPort
@@ -22,23 +17,23 @@ in
     # httpConfig = ''
     #   disable_symlinks off;
     # '';
-    virtualHosts."${serverName}" = {
+    virtualHosts."homelab-ipxe-server" = {
       addSSL = false;
       enableACME = false;
       # listenAddresses = [ "${nodeIP}:80" ];
-      root = "/run/current-system/sw/var/www/${serverName}";
+      root = "/run/current-system/sw/var/www";
     };
   };
-  environment.systemPackages = [
-    (pkgs.callPackage ./setup-netboot-compornents.nix {
-      nixosConfigs = {
-        inherit (self.nixosConfigurations) netboot;
-      };
-      inherit serverName;
-    })
-  ];
+  # environment.systemPackages = [
+  #   (pkgs.callPackage ./setup-netboot-compornents.nix {
+  #     nixosConfigs = {
+  #       inherit (self.nixosConfigurations) netboot;
+  #     };
+  #     inherit serverName;
+  #   })
+  # ];
   environment.pathsToLink = [
     "/var/tftp"
-    "/var/www/${serverName}"
+    "/var/www"
   ];
 }
