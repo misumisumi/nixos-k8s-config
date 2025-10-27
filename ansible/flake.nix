@@ -2,17 +2,20 @@
   description = "Playbooks for apps of my k8s cluster";
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    devenv.url = "github:cachix/devenv";
     nvfetcher.url = "github:berberman/nvfetcher";
+    devshell = {
+      url = "github:numtide/devshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.devenv.flakeModule
+        inputs.devshell.flakeModule
       ];
       systems = [ "x86_64-linux" ];
       perSystem =
@@ -24,10 +27,6 @@
           system,
           ...
         }:
-        let
-          myScripts = pkgs.callPackage (import ./scripts) { };
-          ANSIBLE_COLLECTIONS_PATH = pkgs.callPackage ./collections { };
-        in
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
@@ -46,30 +45,44 @@
             config.allowUnfree = true;
           };
 
-          devenv.shells = {
+          devshells = {
             # nvfetcher = inputs.nvfetcher.packages.${system};
-            default = {
-              env = {
-                "ANSIBLE_COLLECTIONS_PATH" = ANSIBLE_COLLECTIONS_PATH;
-                "ANSIBLE_ROLES_PATH" = "${ANSIBLE_COLLECTIONS_PATH}/roles";
+            default =
+              let
+                myScripts = pkgs.callPackage (import ./scripts) { };
+              in
+              {
+                env =
+                  let
+                    ANSIBLE_COLLECTIONS_PATH = pkgs.callPackage ./collections { };
+                  in
+                  [
+                    {
+                      name = "ANSIBLE_COLLECTIONS_PATH";
+                      value = ANSIBLE_COLLECTIONS_PATH;
+                    }
+                    {
+                      name = "ANSIBLE_ROLES_PATH";
+                      value = "${ANSIBLE_COLLECTIONS_PATH}/roles";
+                    }
+                  ];
+                packages =
+                  with pkgs;
+                  with myScripts;
+                  [
+                    bashInteractive
+                    jq
+                    yq # python-yq
+                    argocd
+                    ansible
+                    kubectl
+                    kubernetes-helm
+                    nvfetcher
+                    # MyScripts
+                    k
+                    he
+                  ];
               };
-              packages =
-                with pkgs;
-                with myScripts;
-                [
-                  bashInteractive
-                  jq
-                  yq # python-yq
-                  argocd
-                  ansible
-                  kubectl
-                  kubernetes-helm
-                  nvfetcher
-                  # MyScripts
-                  k
-                  he
-                ];
-            };
           };
         };
     };
