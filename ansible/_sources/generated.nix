@@ -3,53 +3,53 @@
 {
   collection-community-general = {
     pname = "collection-community-general";
-    version = "9.5.0";
+    version = "11.4.0";
     src = fetchurl {
-      url = "https://galaxy.ansible.com/download/community-general-9.5.0.tar.gz";
-      sha256 = "sha256-KGSbVdStb26hUON/UfSWefxeOMMxHaq2AI3NYifOUg4=";
+      url = "https://galaxy.ansible.com/download/community-general-11.4.0.tar.gz";
+      sha256 = "sha256-aS+2nYZZcdEajG71gbWT6G0Q5X24HJi0876eddM7azQ=";
     };
   };
   collection-kubernetes-core = {
     pname = "collection-kubernetes-core";
-    version = "5.0.0";
+    version = "6.2.0";
     src = fetchurl {
-      url = "https://galaxy.ansible.com/download/kubernetes-core-5.0.0.tar.gz";
-      sha256 = "sha256-9J5owjSFdbHGu5inEmF9ZZ74VlD2ur2uPYTpz7l3AAk=";
+      url = "https://galaxy.ansible.com/download/kubernetes-core-6.2.0.tar.gz";
+      sha256 = "sha256-fkQ11LtYfEsul4z34xwC/ngGO8712PB5NeoLrlLBohA=";
     };
   };
   role-ansible-role-nfs = {
     pname = "role-ansible-role-nfs";
-    version = "2.1.0";
+    version = "2.1.1";
     src = fetchFromGitHub {
       owner = "geerlingguy";
       repo = "ansible-role-nfs";
-      rev = "2.1.0";
+      rev = "2.1.1";
       fetchSubmodules = false;
-      sha256 = "sha256-hlMoONAi0ek+FJJqIBV1y1IuhcXTUyzSFWGGkNZmVu8=";
+      sha256 = "sha256-AJ0nUZku7RP8xCNb5QsHbjn7Ta0zGdmawaN9yeKJob0=";
     };
     aname = "geerlingguy.nfs";
   };
   role-ha-cluster-pacemaker = {
     pname = "role-ha-cluster-pacemaker";
-    version = "45.0.0";
+    version = "47.0.0";
     src = fetchFromGitHub {
       owner = "OndrejHome";
       repo = "ansible.ha-cluster-pacemaker";
-      rev = "45.0.0";
+      rev = "47.0.0";
       fetchSubmodules = false;
-      sha256 = "sha256-fHQw1/gulZjPaf2sKAmAra18FNAly566b41reZ2B8Gw=";
+      sha256 = "sha256-Gd3b3kLW65HU3dqWhvl3miGI++K1K2Hg+knSMbFkpmg=";
     };
     aname = "ondrejhome.ha-cluster-pacemaker";
   };
   role-pcs-module-2 = {
     pname = "role-pcs-module-2";
-    version = "30.0.0";
+    version = "36.0.0";
     src = fetchFromGitHub {
       owner = "OndrejHome";
       repo = "ansible.pcs-modules-2";
-      rev = "30.0.0";
+      rev = "36.0.0";
       fetchSubmodules = false;
-      sha256 = "sha256-B0wqsYuUGb0yl2oj+OO/qkFHVc/8N6W5iwspc/p4Ybc=";
+      sha256 = "sha256-JN0JgqYa6t11D5YOqzA3qZghyBet1HCdIeASUTPyuGU=";
     };
     aname = "ondrejhome.pcs-modules-2";
   };
