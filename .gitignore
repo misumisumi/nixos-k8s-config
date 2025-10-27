@@ -5,9 +5,11 @@ pool4devnode
 .keystore
 .secrets
 .ssh
+**/*.txt
 
-terraform/*/*.json
-terraform/*/*.png
+terraform/**/*.output.json
+terraform/**/*.show.json
+terraform/**/*.png
 
 ### Created by https://www.gitignore.io
 ### Terraform ###

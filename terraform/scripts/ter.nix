@@ -1,4 +1,8 @@
-{ writeShellApplication }:
+{
+  # jq,
+  # opentofu,
+  writeShellApplication,
+}:
 let
   inherit (builtins.fromJSON (builtins.readFile ../config.json)) workspaces;
   genWS = map (
@@ -95,12 +99,12 @@ writeShellApplication {
     # script logic here
     tofu "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-1)}"
     if [[ "''${cmd}" == "apply"  ]]; then
-      tofu show -json > "''${workspace}".json
-      tofu output -json > "''${workspace}_output".json
+      tofu show -json | jq > "''${workspace}".show.json
+      tofu output -json | jq > "''${workspace}.output".json
       # tofu graph | dot -Tpng > "''${workspace}".png
     elif [[ "''${cmd}" == "destroy" ]]; then
-      rm "''${workspace}".json
-      rm "''${workspace}_output".json
+      rm "''${workspace}.show".json
+      rm "''${workspace}.output".json
       # rm "''${workspace}".png
     fi
   '';

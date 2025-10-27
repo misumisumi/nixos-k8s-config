@@ -1,5 +1,9 @@
+{ lib, ... }:
 let
-  VFT_TableID = 200;
+  # inherit (builtins) toString;
+  inherit (lib) toInt;
+  VFT_TableID = 210;
+  VLAN = "210";
 in
 {
   services = {
@@ -11,11 +15,6 @@ in
         enable = true;
       };
       config = ''
-        vfr mgmt
-          ipv6 router ospf ${VFT_TableID}
-            log-adjacency-changes
-            # Auto generate a router-id based on the link-local ipv4 address
-
         interface bond-en
           ipv6 ospf6 cost 10
           ipv6 ospf6 area 1.1.1.1
@@ -28,24 +27,36 @@ in
   };
   systemd = {
     network = {
+      enable = true;
       netdevs = {
         "bond-en" = {
-          netDevConfig = {
-            kind = "bond";
+          netdevConfig = {
+            Kind = "bond";
+            Name = "bond-en";
           };
-          bondCOnfig = {
+          bondConfig = {
             Mode = "active-backup";
             MIIMonitorSec = "1s";
             PrimaryReselectPolicy = "always";
             UpDelaySec = "0";
             DownDelaySec = "0";
+          };
+        };
+        "bond-en.${VLAN}" = {
+          netdevConfig = {
+            Kind = "vlan";
+            Name = "bond-en.${toString VLAN}";
+          };
+          vlanConfig = {
+            Id = toInt VLAN;
           };
         };
         "bond-ib" = {
-          netDevConfig = {
-            kind = "bond";
+          netdevConfig = {
+            Kind = "bond";
+            Name = "bond-ib";
           };
-          bondCOnfig = {
+          bondConfig = {
             Mode = "active-backup";
             MIIMonitorSec = "1s";
             PrimaryReselectPolicy = "always";
@@ -53,9 +64,19 @@ in
             DownDelaySec = "0";
           };
         };
+        "bond-ib.${VLAN}" = {
+          netdevConfig = {
+            Kind = "vlan";
+            Name = "bond-ib.${VLAN}";
+          };
+          vlanConfig = {
+            Id = toInt VLAN;
+          };
+        };
         "vrf-mgmt" = {
-          netDevConfig = {
-            kind = "vrf";
+          netdevConfig = {
+            Kind = "vrf";
+            Name = "vrf-mgmt";
           };
           vrfConfig = {
             Table = VFT_TableID;
@@ -70,20 +91,33 @@ in
         "10-ib" = {
           name = "ib*";
           bond = [ "bond-en" ];
+          vlan = [ "bond-ib.${VLAN}" ];
         };
         "20-bond-en" = {
           name = "bond-en";
+          vlan = [ "bond-en.${VLAN}" ];
+          networkConfig.LinkLocalAddressing = "no";
+          linkConfig.RequiredForOnline = "carrier";
+        };
+        "20-bond-ib" = {
+          name = "bond-ib";
+          vlan = [ "bond-ib.${VLAN}" ];
+          networkConfig.LinkLocalAddressing = "no";
+          linkConfig.RequiredForOnline = "carrier";
+        };
+        "20-bond-en.${VLAN}" = {
+          name = "bond-en.${VLAN}";
           vrf = [ "vrf-mgmt" ];
           networkConfig = {
-            DHCP = "no";
+            DHCP = "yes";
             LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
           };
         };
-        "20-bond-ib" = {
-          name = "bond-en";
+        "20-bond-ib.${VLAN}" = {
+          name = "bond-en.${VLAN}";
           vrf = [ "vrf-mgmt" ];
           networkConfig = {
-            DHCP = "no";
+            DHCP = "yes";
             LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
           };
         };

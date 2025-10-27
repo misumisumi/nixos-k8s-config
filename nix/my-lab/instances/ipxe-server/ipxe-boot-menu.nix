@@ -34,9 +34,9 @@ stdenvNoCC.mkDerivation {
 
         menu Please choose an type of node you want to install
         item --gap --           -------------------------- node type -------------------------
+        ${extraMenu}
         item NixOS-installer (unstable)  Launch NixOS-unstable installer
         item NixOS-installer (${stableVersion})     Launch NixOS-${stableVersion} installer
-        ${extraMenu}
         item --gap --           -------------------------- Advanced Option --------------------
         item --key c config     Configure settings
         item shell              Drop to iPXE shell
@@ -89,6 +89,7 @@ stdenvNoCC.mkDerivation {
           (ipxe.override {
             additionalOptions = [
               "VLAN_CMD"
+              "NET_PROTO_IPV6"
             ];
           }).overrideAttrs
             (old: {

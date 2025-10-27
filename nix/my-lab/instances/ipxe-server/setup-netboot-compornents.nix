@@ -23,8 +23,6 @@ stdenvNoCC.mkDerivation {
     runHook preInstall
 
     mkdir -p $out/var/tftp/pxelinux.cfg
-    mkdir -p $out/var/www/${serverName}
-
     cp ${syslinux}/share/syslinux/pxelinux.0 $out/var/tftp/pxelinux.0
     cp ${syslinux}/share/syslinux/lpxelinux.0 $out/var/tftp/lpxelinux.0
     cp ${syslinux}/share/syslinux/ldlinux.c32 $out/var/tftp/ldlinux.c32
@@ -42,12 +40,13 @@ stdenvNoCC.mkDerivation {
         })
     }/* $out/var/tftp/
 
-    cp ${ipxeBootMenu} $out/var/www/${serverName}/boot-menu.ipxe
+    mkdir -p $out/var/www/${serverName}
+    cp ${ipxeBootMenu}/var/www/boot-menu.ipxe $out/var/www/${serverName}
     ${lib.concatStringsSep "\n" (
       lib.mapAttrsToList (n: v: ''
         mkdir -p $out/var/www/${serverName}/${n}
-        cp ${v.config.system.build.kernel}/bzImage $out/var/www/${serverName}/${n}/bzImage
-        cp ${v.config.system.build.netbootRamdisk}/initrd $out/var/www/${serverName}/${n}/initrd
+        cp ${v.config.system.build.netbootImage}/bzImage $out/var/www/${serverName}/${n}/bzImage
+        cp ${v.config.system.build.netbootImage}/initrd $out/var/www/${serverName}/${n}/initrd
         cp ${v.config.system.build.netbootIpxeScript}/netboot.ipxe $out/var/www/${serverName}/${n}/netboot.ipxe
       '') nixosConfigs
     )}

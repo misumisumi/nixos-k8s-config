@@ -23,6 +23,7 @@
         mkdir -p $out
         ln -s "${config.system.build.toplevel}/kernel-params" $out/kernel-params
         ln -s "${config.system.build.toplevel}/init" $out/init
+        ln -s "${config.system.build.netbootIpxeScript}/netboot.ipxe" $out/
       '')
     ];
     preferLocalBuild = true;

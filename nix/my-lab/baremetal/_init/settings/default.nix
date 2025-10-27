@@ -6,6 +6,5 @@
     ./nix
     ./security
     ./ssh
-    ./user/limited
   ];
 }
