@@ -11,7 +11,7 @@ variable "project" {
 variable "profiles" {
   type = set(
     object({
-      tag        = string
+      name       = string
       auto_start = optional(bool, true)
       remote     = optional(string, "local")
       config     = optional(any)
@@ -26,6 +26,7 @@ variable "profiles" {
       machine_type = optional(string, "container")
     })
   )
+  default = []
 }
 
 variable "instances" {
@@ -43,15 +44,15 @@ variable "instances" {
         }), {
         template_file = ""
       })
-      config = optional(map(any), {})
-      limits = optional(map(any), {
-        cpu    = 2
-        memory = "1GB"
-      })
-      network_config = optional(map(any), {
-        parent = "incusbr0"
-      })
-      devices = set(
+      profiles = optional(list(any), null)
+      config   = optional(map(any), {})
+
+      networks = optional(list(map(any)), [{
+        parent  = "incusbr0"
+        nictype = "bridged"
+      }])
+
+      devices = list(
         object({
           name       = string
           type       = string

@@ -21,7 +21,8 @@ in
 
   users.users."${user}" = {
     isNormalUser = true;
-    shell = "${rbash}/bin/rbash";
+    # shell = "${rbash}/bin/rbash";
+    shell = pkgs.bashInteractive;
     extraGroups = [ ];
     initialHashedPassword = lib.mkForce "$y$j9T$2i4ZUQSB0zKtYfaf9YLuZ0$rwxfC/yKFR.zejBm.X00K/JZJSoYVOnnLkSLQ50N5T7";
   };

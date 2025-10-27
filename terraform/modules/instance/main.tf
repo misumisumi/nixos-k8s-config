@@ -10,8 +10,7 @@ terraform {
       source = "registry.opentofu.org/hashicorp/random"
     }
     sops = {
-      source  = "carlpett/sops"
-      version = "~> 1.1.0"
+      source = "carlpett/sops"
     }
   }
 }
@@ -54,8 +53,8 @@ data "sops_file" "cloudinit" {
 }
 
 resource "incus_profile" "profile" {
-  for_each = { for i in var.profiles : i.tag => i }
-  name     = "profile_${each.value.tag}"
+  for_each = { for i in var.profiles : i.name => i }
+  name     = each.value.name
   remote   = var.remote
   project  = var.project
 
@@ -97,7 +96,7 @@ resource "incus_instance" "instance" {
   type      = each.value.machine_type
   image     = each.value.image
   ephemeral = false
-  profiles  = ["profile_${replace(each.value.name, "/[[:digit:]]+/", "")}"]
+  profiles  = each.value.profiles != [] ? each.value.profiles : ["${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
   config = merge(
     each.value.machine_type == "container" ? {
@@ -111,7 +110,7 @@ resource "incus_instance" "instance" {
       } : {
       "security.secureboot" = false
     },
-    each.value.cloudinit.template_file != "" ? {
+    each.value.cloudinit.template_file != "" ? regex("(\\.[^.]+)$", each.value.cloudinit.template_file) == ".tftpl" ? {
       "cloud-init.user-data" = templatefile(each.value.cloudinit.template_file,
         {
           secrets = yamldecode(data.sops_file.cloudinit[each.key].raw),
@@ -119,24 +118,28 @@ resource "incus_instance" "instance" {
           hosts   = jsondecode(file(each.value.cloudinit.hosts_file))
         }
       )
-    } : {},
+      } : {
+      "cloud-init.user-data" = file(each.value.cloudinit.template_file)
+    }
+    : {},
     each.value.config
   )
 
-  limits = each.value.limits
-
-  device {
-    name = "eth0"
-    type = "nic"
-
-    properties = merge({
-      nictype = "bridged"
-      host_name = format(each.value.machine_type == "container" ? "veth_%s%s" : "tap_%s%s",
-        substr(each.value.name, 0, 3),
-        substr(each.value.name, -1, -1)
-      ) }, each.value.network_config
-    )
+  dynamic "device" {
+    for_each = each.value.networks
+    content {
+      name = format("eth%d", device.key)
+      type = "nic"
+      properties = merge({
+        host_name = format(each.value.machine_type == "container" ? "veth_%s%s_%s" : "tap_%s%s_%s",
+          substr(each.value.name, 0, 3),
+          substr(each.value.name, -1, -1),
+          device.key
+        ) }, device.value
+      )
+    }
   }
+
   dynamic "device" {
     for_each = each.value.devices
     content {

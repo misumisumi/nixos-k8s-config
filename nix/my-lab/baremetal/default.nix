@@ -30,7 +30,7 @@ let
       modules = [
         inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
-        ../modules
+        self.nixosModules.default
         rootDir # Each machine config
       ];
     };

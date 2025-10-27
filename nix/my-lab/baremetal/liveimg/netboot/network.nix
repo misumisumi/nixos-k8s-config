@@ -11,6 +11,7 @@
 
   systemd = {
     network = {
+      enable = true;
       networks = {
         "10-wired" = {
           name = "en*";

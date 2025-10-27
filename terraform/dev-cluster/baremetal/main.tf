@@ -5,6 +5,14 @@ terraform {
       source  = "registry.opentofu.org/lxc/incus"
       version = "~> 0.3.1"
     }
+    random = {
+      source  = "registry.opentofu.org/hashicorp/random"
+      version = "~> 3.7.2"
+    }
+    sops = {
+      source  = "carlpett/sops"
+      version = "~> 1.2.0"
+    }
   }
 }
 
@@ -26,10 +34,12 @@ resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-resource "incus_network" "incus_network" {
-  for_each = var.networks
-  name     = each.key
-  remote   = each.value.remote
-  project  = each.value.project
-  config   = each.value.config
+module "instances" {
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../../modules/instance"
+
+  remote    = each.value.remote
+  instances = each.value.instances
+  profiles  = each.value.profiles
 }
+

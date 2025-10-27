@@ -29,6 +29,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nixos-anywhere = {
       url = "github:nix-community/nixos-anywhere";
       inputs = {
@@ -50,6 +54,7 @@
       ];
       perSystem =
         {
+          self,
           system,
           pkgs,
           lib,
@@ -91,6 +96,13 @@
                 name = "nixos-anywhere";
                 command = ''
                   ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
+                '';
+              }
+              {
+                help = "nixos-generate";
+                name = "nixos-generate";
+                command = ''
+                  ${inputs.nixos-generators.packages.${system}.nixos-generate}/bin/nixos-generate ''${@}
                 '';
               }
             ];
