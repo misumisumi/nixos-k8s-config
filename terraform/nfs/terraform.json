@@ -1,0 +1,57 @@
+{
+    "compornents": [
+        {
+            "instance_config": {
+                "cpu": "2",
+                "image": "almalinux9",
+                "machine_type": "virtual-machine",
+                "memory": "4GiB",
+                "nic_parent": "k8sbr0"
+            },
+            "instances": [
+                {
+                    "devices": [
+                        {
+                            "content_type": "block",
+                            "name": "nfs",
+                            "properties": {
+                                "pool": "nfs",
+                                "source": "nfs1"
+                            },
+                            "type": "disk"
+                        }
+                    ],
+                    "ipv4_address": "10.150.10.70",
+                    "name": "nfs1"
+                },
+                {
+                    "devices": [
+                        {
+                            "content_type": "block",
+                            "name": "nfs",
+                            "properties": {
+                                "pool": "nfs",
+                                "source": "nfs2"
+                            },
+                            "type": "disk"
+                        }
+                    ],
+                    "ipv4_address": "10.150.10.71",
+                    "name": "nfs2"
+                }
+            ],
+            "tag": "nfs"
+        }
+    ],
+    "network": {
+        "ipv4_address": "10.150.10.1/24",
+        "name": "k8sbr0"
+    },
+    "pools": [
+        {
+            "name": "nfs",
+            "size": "5GiB",
+            "volume_size": "2GiB"
+        }
+    ]
+}
