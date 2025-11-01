@@ -6,10 +6,12 @@ pool4devnode
 .secrets
 .ssh
 **/*.txt
+**/images/**
 
 terraform/**/*.output.json
 terraform/**/*.show.json
 terraform/**/*.png
+
 
 ### Created by https://www.gitignore.io
 ### Terraform ###
