@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 let
   # inherit (builtins) toString;
   inherit (lib) toInt;
@@ -10,21 +10,15 @@ in
     nscd = {
       enable = true;
     };
-    frr = {
-      ospf6d = {
-        enable = true;
-      };
-      config = ''
-        interface bond-en
-          ipv6 ospf6 cost 10
-          ipv6 ospf6 area 1.1.1.1
-
-        interface bond-ib
-          ipv6 ospf6 area 1.1.1.1
-          ipv6 ospf6 cost 1       # Prefer ib over en
-      '';
-    };
   };
+  networking = {
+    hostName = lib.mkForce "";
+    hosts = lib.mkForce { };
+  };
+  system.activationScripts.mkRandomHostName.text = ''
+    echo "Create hostname"
+    ${pkgs.diceware}/bin/diceware -n 2 --no-caps -d - > /etc/hostname
+  '';
   systemd = {
     network = {
       enable = true;
@@ -87,11 +81,14 @@ in
         "10-en" = {
           name = "en*";
           bond = [ "bond-en" ];
+          networkConfig.LinkLocalAddressing = "no";
+          linkConfig.RequiredForOnline = "carrier";
         };
         "10-ib" = {
           name = "ib*";
           bond = [ "bond-en" ];
-          vlan = [ "bond-ib.${VLAN}" ];
+          networkConfig.LinkLocalAddressing = "no";
+          linkConfig.RequiredForOnline = "carrier";
         };
         "20-bond-en" = {
           name = "bond-en";
@@ -107,18 +104,18 @@ in
         };
         "20-bond-en.${VLAN}" = {
           name = "bond-en.${VLAN}";
-          vrf = [ "vrf-mgmt" ];
+          # vrf = [ "vrf-mgmt" ];
           networkConfig = {
             DHCP = "yes";
-            LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
+            # LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
           };
         };
         "20-bond-ib.${VLAN}" = {
           name = "bond-en.${VLAN}";
-          vrf = [ "vrf-mgmt" ];
+          # vrf = [ "vrf-mgmt" ];
           networkConfig = {
             DHCP = "yes";
-            LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
+            # LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
           };
         };
       };

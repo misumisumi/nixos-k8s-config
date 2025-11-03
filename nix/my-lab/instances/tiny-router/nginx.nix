@@ -1,13 +1,14 @@
 {
   config,
   pkgs,
-  lan_ip,
-  lan_ipv6,
+  pxeInet,
+  kexecInet,
   ...
 }:
 let
   app = "ipxe";
   dataDir = "/var/www/${app}";
+  inherit (builtins) head;
 in
 {
   networking.firewall.allowedTCPPorts = [
@@ -44,22 +45,14 @@ in
       addSSL = false;
       enableACME = false;
       root = dataDir;
-      serverName = "${config.networking.hostName}";
+      serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.pxe.domain}";
       listen = [
         {
-          addr = "127.0.0.1";
+          addr = "${pxeInet.lan_ip}";
           port = 80;
         }
         {
-          addr = "[::1]";
-          port = 80;
-        }
-        {
-          addr = "${lan_ip}";
-          port = 80;
-        }
-        {
-          addr = "[${lan_ipv6}]";
+          addr = "[${pxeInet.lan_ipv6}]";
           port = 80;
         }
       ];
@@ -74,25 +67,18 @@ in
     virtualHosts."kexec" = {
       addSSL = false;
       enableACME = false;
+      root = "/var/www/kexec";
+      serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.kexec.domain}";
       listen = [
         {
-          addr = "127.0.0.1";
-          port = 8080;
+          addr = "${kexecInet.lan_ip}";
+          port = 80;
         }
         {
-          addr = "[::1]";
-          port = 8080;
-        }
-        {
-          addr = "${lan_ip}";
-          port = 8080;
-        }
-        {
-          addr = "[${lan_ipv6}]";
-          port = 8080;
+          addr = "[${kexecInet.lan_ipv6}]";
+          port = 80;
         }
       ];
-      root = "/var/www/kexec";
     };
   };
   users.users.${app} = {

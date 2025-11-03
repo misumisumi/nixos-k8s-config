@@ -16,7 +16,7 @@ let
     generators
     mapAttrs
     mapAttrs'
-    nameValuePairs
+    nameValuePair
     ;
 
   cfg = config.services.dnsmasq;
@@ -28,19 +28,29 @@ let
   # lib.mkForce)
   formatKeyValue =
     name: value:
-    if value then
+    if value == true then
       name
-    else if !value then
+    else if value == false then
       "# setting `${name}` explicitly set to false"
     else
-      generators.mkKeyValueDefault { } "=" name value;
+      lib.generators.mkKeyValueDefault { } "=" name value;
 
   settingsFormat = pkgs.formats.keyValue {
     mkKeyValue = formatKeyValue;
     listsAsDuplicateKeys = true;
   };
 
-  dnsmasqConfs = mapAttrs (name: settings: settingsFormat.generate name settings) cfg.multiple;
+  dnsmasqConfs = mapAttrs (
+    name: settings:
+    settingsFormat.generate name (
+      settings
+      // {
+        # Common multiple dnsmasq settings
+        bind-interfaces = true;
+        except-interface = [ "lo" ];
+      }
+    )
+  ) cfg.multipleSessions;
 in
 {
   ###### interface
@@ -48,43 +58,47 @@ in
   options = {
 
     services.dnsmasq = {
+      multipleSessions = lib.mkOption {
+        type =
+          let
+            settings = submodule {
+              freeformType = settingsFormat.type;
 
-      multiple = lib.mkOption {
-        type = attrsOf submodule {
-          freeformType = settingsFormat.type;
+              options.server = lib.mkOption {
+                type = lib.types.listOf lib.types.str;
+                default = [ ];
+                example = [
+                  "8.8.8.8"
+                  "8.8.4.4"
+                ];
+                description = ''
+                  The DNS servers which dnsmasq should query.
+                '';
+              };
 
-          options.server = lib.mkOption {
-            type = listOf str;
-            default = [ ];
-            example = [
-              "8.8.8.8"
-              "8.8.4.4"
-            ];
-            description = ''
-              The DNS servers which dnsmasq should query.
-            '';
-          };
-          default = { };
-          description = ''
-            Configuration of dnsmasq. Lists get added one value per line (empty
-            lists and false values don't get added, though false values get
-            turned to comments). Gets merged with
+            };
+          in
+          attrsOf settings;
+        default = { };
+        description = ''
+          Configuration of dnsmasq. Lists get added one value per line (empty
+          lists and false values don't get added, though false values get
+          turned to comments). Gets merged with
 
-                eth1 = {
-                  inhterface = "eth1";
-                  dhcp-leasefile = "dnsmasq/dnsmasq@<name>.leases";
-                  conf-file = optional cfg.resolveLocalQueries "/etc/dnsmasq@<name>-conf.conf";
-                  resolv-file = optional cfg.resolveLocalQueries "/etc/dnsmasq@<name>-resolv.conf";
-                }
-          '';
-          example = lib.literalExpression ''
-            eth1 = {
-              inhterface = "eth1";
-              domain-needed = true;
-              dhcp-range = [ "192.168.0.2,192.168.0.254" ];
-            }
-          '';
-        };
+              eth1 = {
+                inhterface = "eth1";
+                dhcp-leasefile = "dnsmasq/dnsmasq@<name>.leases";
+                conf-file = optional cfg.resolveLocalQueries "/etc/dnsmasq@<name>-conf.conf";
+                resolv-file = optional cfg.resolveLocalQueries "/etc/dnsmasq@<name>-resolv.conf";
+              }
+        '';
+        example = lib.literalExpression ''
+          eth1 = {
+            inhterface = "eth1";
+            domain-needed = true;
+            dhcp-range = [ "192.168.0.2,192.168.0.254" ];
+          }
+        '';
       };
 
       configFiles = lib.mkOption {
@@ -107,10 +121,13 @@ in
       configFiles = dnsmasqConfs;
     };
 
-    systemd.services = mapAttrs' (
-      name: confFile:
-      nameValuePairs "dnsmasq@${name}" {
-        description = "Dnsmasq Daemon of ${name}";
+    systemd.services = {
+      dnsmasq.enable = lib.mkForce false; # avoid conflict
+    }
+    // (mapAttrs' (
+      name: configFile:
+      nameValuePair "dnsmasq@${name}" {
+        description = "Dnsmasq Daemon for ${name}";
         after = [
           "network.target"
           "systemd-resolved.service"
@@ -120,15 +137,16 @@ in
         preStart = ''
           mkdir -m 755 -p ${stateDir}
           mkdir -m 755 -p /var/run/dnsmasq
-          touch ${stateDir}/dnsmasq.leases
+          touch ${stateDir}/dnsmasq@${name}.leases
           chown -R dnsmasq ${stateDir}
           ${lib.optionalString cfg.resolveLocalQueries "touch /etc/dnsmasq@${name}-{conf,resolv}.conf"}
-          dnsmasq --test -C ${cfg.configFile} -x /var/run/dnsmasq/dnsmasq@${name}.pid
+          dnsmasq --test -C ${configFile} -x /var/run/dnsmasq/dnsmasq@${name}.pid
         '';
         serviceConfig = {
-          Type = "dbus";
-          BusName = "uk.org.thekelleys.dnsmasq";
-          ExecStart = "${dnsmasq}/bin/dnsmasq -k --enable-dbus --user=dnsmasq -C ${cfg.configFile} -x /var/run/dnsmasq/dnsmasq@${name}.pid";
+          # Type = "dbus";
+          # BusName = "uk.org.thekelleys.dnsmasq";
+          Type = "simple";
+          ExecStart = "${dnsmasq}/bin/dnsmasq -k --user=dnsmasq -C ${configFile} -x /var/run/dnsmasq/dnsmasq@${name}.pid";
           ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
           PrivateTmp = true;
           ProtectSystem = true;
@@ -137,6 +155,6 @@ in
         };
         restartTriggers = [ config.environment.etc.hosts.source ];
       }
-    );
+    ) cfg.configFiles);
   };
 }

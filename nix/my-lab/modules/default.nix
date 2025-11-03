@@ -2,12 +2,14 @@
   default = {
     imports = [
       ./kexec.nix
-      ./multiple-dnsmasq.nix
       ./netboot.nix
       ./tgtd.nix
       ./vfio.nix
       ./virtualisation.nix
     ];
+  };
+  multiple-dnsmasq = {
+    imports = [ ./multiple-dnsmasq.nix ];
   };
   kexec = {
     imports = [ ./kexec.nix ];
