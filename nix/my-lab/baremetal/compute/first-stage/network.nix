@@ -14,6 +14,8 @@ in
   networking = {
     hostName = lib.mkForce "";
     hosts = lib.mkForce { };
+    useDHCP = false;
+    firewall.enable = false;
   };
   system.activationScripts.mkRandomHostName.text = ''
     echo "Create hostname"

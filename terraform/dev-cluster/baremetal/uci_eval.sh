@@ -122,7 +122,7 @@ uci set firewall.wan.output="ACCEPT"
 uci set firewall.wan.forward="REJECT"
 
 uci set network.lan2wan=rule
-uci set network.lan2wan.src='lan_ipxe'
+uci set network.lan2wan.src='ipxe'
 uci set network.lan2wan.dest='wan'
 uci set network.lan2wan.lookup='200'
 
