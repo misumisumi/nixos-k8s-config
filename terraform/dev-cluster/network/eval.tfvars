@@ -1,6 +1,7 @@
 networks = {
   dev-cluster-lan = {
     config = {
+      "bridge.driver" = "openvswitch"
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false

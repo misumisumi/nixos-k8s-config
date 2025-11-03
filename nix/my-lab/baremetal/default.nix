@@ -52,7 +52,7 @@ let
 in
 (lib.mapAttrs (name: value: (systemSetting value)) hosts)
 // {
-  first-stage-netboot-image = lib.nixosSystem {
+  first-stage-netboot = lib.nixosSystem {
     system = "x86_64-linux";
     specialArgs = {
       user = "nixos";

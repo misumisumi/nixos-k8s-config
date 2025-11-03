@@ -47,7 +47,7 @@ variable "instances" {
       profiles = optional(list(any), null)
       config   = optional(map(any), {})
 
-      networks = optional(list(map(any)), [{
+      networks = optional(list(map(string)), [{
         parent  = "incusbr0"
         nictype = "bridged"
       }])

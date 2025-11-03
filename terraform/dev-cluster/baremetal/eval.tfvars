@@ -19,6 +19,7 @@ compornents = [
           {
             parent  = "dev-cluster-lan"
             nictype = "bridged"
+            # "vlan.tagged" = "210"
           },
         ]
         devices = [

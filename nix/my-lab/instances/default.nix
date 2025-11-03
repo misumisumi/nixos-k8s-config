@@ -15,22 +15,8 @@
         ;
     }; # specialArgs give some args to modules
     modules = [
+      self.nixosModules.multiple-dnsmasq
       ./tiny-router
-      ./_init/incus/container
-    ];
-  };
-  ipxe-server = lib.nixosSystem {
-    system = "x86_64-linux";
-    specialArgs = {
-      user = "nixos";
-      hostname = "ipxe-server";
-      inherit
-        self
-        inputs
-        ;
-    }; # specialArgs give some args to modules
-    modules = [
-      ./ipxe-server
       ./_init/incus/container
     ];
   };
