@@ -1,6 +1,7 @@
 <?php
+
 // 1. Composerのオートローダーを読み込む
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
@@ -49,4 +50,3 @@ try {
 // 5. iPXEスクリプトとして応答
 header('Content-Type: text/plain'); // iPXEはtext/plainを期待
 echo $ipxe_script;
-?>

@@ -13,14 +13,18 @@ compornents = [
         }
         networks = [
           {
-            parent  = "dev-cluster-wan"
+            parent  = "dev-wan"
             nictype = "bridged"
           },
           {
-            parent  = "dev-cluster-lan"
+            parent  = "dev-lan"
             nictype = "bridged"
-            # "vlan.tagged" = "210"
           },
+          # {
+          #   name    = "eth1.210"
+          #   parent  = "dev-lan.210"
+          #   nictype = "bridged"
+          # },
         ]
         devices = [
           {
@@ -28,8 +32,8 @@ compornents = [
             type = "disk"
 
             properties = {
-              path   = "/var/www/ipxe"
-              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/nix/my-lab/instances/tiny-router/ipxe"
+              path   = "/var/www"
+              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/nix/my-lab/instances/tiny-router/www"
             }
           }
         ]

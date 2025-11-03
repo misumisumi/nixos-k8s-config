@@ -148,9 +148,9 @@ in
           Type = "simple";
           ExecStart = "${dnsmasq}/bin/dnsmasq -k --user=dnsmasq -C ${configFile} -x /var/run/dnsmasq/dnsmasq@${name}.pid";
           ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
-          PrivateTmp = true;
-          ProtectSystem = true;
-          ProtectHome = true;
+          PrivateTmp = lib.mkDefault true;
+          ProtectSystem = lib.mkDefault true;
+          ProtectHome = lib.mkDefault true;
           Restart = if cfg.alwaysKeepRunning then "always" else "on-failure";
         };
         restartTriggers = [ config.environment.etc.hosts.source ];

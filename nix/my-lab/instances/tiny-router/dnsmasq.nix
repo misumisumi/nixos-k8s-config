@@ -60,12 +60,13 @@
         no-resolv = true;
         dhcp-authoritative = true;
         interface = "eth1";
+        except-interface = "lo";
         server = [ "8.8.8.8" ];
         strict-order = true;
 
         #NOTE: DHCP PROXYモードでPXEサーバを構成する場合、コメントアウト
-        # server = [ "${pxeInet.lan_base_ip}.1" ]; # 上位DNSサーバの指定
-        # dhcp-range = [ "${pxeInet.lan_base_ip}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
+        # server = [ "${pxeInet.base_ip}.1" ]; # 上位DNSサーバの指定
+        # dhcp-range = [ "${pxeInet.base_ip}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
         # port = 0; # DNSサーバを起動しない (この場合、option6を変更)
 
         # DHCPとPXEサーバを共存させる場合
@@ -73,17 +74,17 @@
         dhcp-range =
           let
             inherit (lib) removeSuffix;
-            base = removeSuffix ".1" pxeInet.lan_ip;
+            base = removeSuffix ".1" pxeInet.ip;
           in
           [
             "${base}.10,${base}.254,255.255.255.0,1h"
             "::,constructor:${interface},ra-stateless,1h"
           ];
         dhcp-option = [
-          "3,${pxeInet.lan_ip}" # default gateway
-          "6,${pxeInet.lan_ip}" # DNS server
+          "3,${pxeInet.ip}" # default gateway
+          "6,${pxeInet.ip}" # DNS server
           "15,${domain}" # published domain name
-          "option6:dns-server,${pxeInet.lan_ipv6}"
+          "option6:dns-server,${pxeInet.ipv6}"
         ];
         domain = "pxe";
         local = "/${domain}/";
@@ -108,8 +109,8 @@
         ];
         #NOTE: DHCP PROXYモードでPXEサーバを構成する場合、コメントアウト
         # pxe-service = [
-        #   "tag:iPXE,X86PC,'iPXE boot menu',http://${lan_ip}/boot-menu.php"
-        #   "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${lan_ip}/boot-menu.php"
+        #   "tag:iPXE,X86PC,'iPXE boot menu',http://${ip}/boot-menu.php"
+        #   "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${ip}/boot-menu.php"
         #   # "tag:iPXE,X86PC,'iPXE boot menu',http://${config.networking.hostName}/boot-menu.php"
         #   # "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${config.networking.hostName}/boot-menu.php"
         #   "tag:!iPXE,X86PC,'undionly.kpxe',undionly.kpxe"
@@ -131,28 +132,29 @@
         no-resolv = true;
         dhcp-authoritative = true;
         interface = "eth1.210";
+        except-interface = "lo";
         # server = [ "8.8.8.8" ];
         strict-order = true;
 
         #NOTE: DHCP PROXYモードでPXEサーバを構成する場合、コメントアウト
-        # server = [ "${pxeInet.lan_base_ip}.1" ]; # 上位DNSサーバの指定
-        # dhcp-range = [ "${pxeInet.lan_base_ip}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
+        # server = [ "${pxeInet.base_ip}.1" ]; # 上位DNSサーバの指定
+        # dhcp-range = [ "${pxeInet.base_ip}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
         # port = 0; # DNSサーバを起動しない (この場合、option6を変更)
         enable-ra = true;
         dhcp-range =
           let
             inherit (lib) removeSuffix;
-            base = removeSuffix ".1" kexecInet.lan_ip;
+            base = removeSuffix ".1" kexecInet.ip;
           in
           [
             "${base}.10,${base}.254,255.255.255.0,1h"
             "::,constructor:${interface},ra-stateless,1h"
           ];
         dhcp-option = [
-          "3,${kexecInet.lan_ip}" # default gateway
-          "6,${kexecInet.lan_ip}" # DNS server
+          "3,${kexecInet.ip}" # default gateway
+          "6,${kexecInet.ip}" # DNS server
           "15,${domain}" # published domain name
-          "option6:dns-server,${kexecInet.lan_ipv6}"
+          "option6:dns-server,${kexecInet.ipv6}"
         ];
         domain = "kexec";
         local = "/${domain}/";
@@ -166,6 +168,16 @@
         rebind-localhost-ok = true;
         local-service = true;
 
+        # tftp
+        enable-tftp = true;
+        #WARNING: 他のネットワーク経路からTFTPサーバへのアクセスを遮断するファイアウォールを適切に設定すること
+        # このサーバが一時的かつ、プライマリな設定が無いこと
+        # cockpitによる1st-boot時の一時的なマシン管理のためのssh認証を簡便化するためであり、セキュリティリスクは低いと考えられる
+        tftp-root = "${config.users.users."nixos".home}/.ssh";
+        user = "nixos";
+        group = "users";
+        tftp-secure = true;
+
         log-queries = true;
         log-dhcp = true;
         log-facility = "/var/log/dnsmasq.${domain}.log";
@@ -173,4 +185,5 @@
       };
     };
   };
+  systemd.services."dnsmasq@kexec".serviceConfig.ProtectHome = false;
 }

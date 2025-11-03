@@ -128,7 +128,8 @@ resource "incus_instance" "instance" {
   dynamic "device" {
     for_each = each.value.networks
     content {
-      name = format("eth%d", device.key)
+      # name = format("eth%d", device.key)
+      name = contains(keys(device.value), "name") ? device.value.name : format("eth%d", device.key)
       type = "nic"
       properties = merge({
         host_name = format(each.value.machine_type == "container" ? "veth_%s%s_%s" : "tap_%s%s_%s",

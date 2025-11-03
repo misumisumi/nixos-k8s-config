@@ -12,16 +12,20 @@
     in
     {
       pxeInet = rec {
-        lan_ip = "10.10.0.${suffix}";
-        lan_ipv6 = "fd42:3a98:dc40:10::${suffix}";
-        lan_base_ip = removeSuffix ".${suffix}" lan_ip;
-        lan_base_ipv6 = removeSuffix "::${suffix}" lan_ipv6;
+        ip = "10.10.0.${suffix}";
+        ipv6 = "fd42:3a98:dc40:10::${suffix}";
+        ip_prefix = "/24";
+        ipv6_prefix = "/64";
+        base_ip = removeSuffix ".${suffix}" ip;
+        base_ipv6 = removeSuffix "::${suffix}" ipv6;
       };
       kexecInet = rec {
-        lan_ip = "10.20.0.${suffix}";
-        lan_ipv6 = "fd42:3a98:dc40:20::${suffix}";
-        lan_base_ip = removeSuffix ".${suffix}" lan_ip;
-        lan_base_ipv6 = removeSuffix "::${suffix}" lan_ipv6;
+        ip = "10.20.0.${suffix}";
+        ipv6 = "fd42:3a98:dc40:20::${suffix}";
+        ip_prefix = "/24";
+        ipv6_prefix = "/64";
+        base_ip = removeSuffix ".${suffix}" ip;
+        base_ipv6 = removeSuffix "::${suffix}" ipv6;
       };
     };
 }
