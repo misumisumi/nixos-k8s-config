@@ -1,9 +1,7 @@
-!lib
 result
 pool4devnode
 .kube
 .keystore
-.secrets
 .ssh
 **/*.txt
 **/images/**
