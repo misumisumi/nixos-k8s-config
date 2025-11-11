@@ -95,6 +95,9 @@
                 '';
               }
             ];
+            startup = {
+              compinit.text = '''';
+            };
             packages = with pkgs; [
               bashInteractive
               ansible
