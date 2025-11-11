@@ -1,0 +1,11 @@
+services:
+  devshell:
+    build: .
+    image: cardinal/devshell
+    tty: true
+    stdin_open: true
+    environment:
+      - INCUS_HOST=127.0.0.1:8443
+    volumes:
+      - .:/workdir
+    network_mode: host
