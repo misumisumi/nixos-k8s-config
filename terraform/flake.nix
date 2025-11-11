@@ -46,107 +46,33 @@
   };
 
   outputs =
-    inputs@{ self, flake-parts, ... }:
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
       imports = [
         inputs.devshell.flakeModule
       ];
-      perSystem =
-        {
-          self,
-          system,
-          pkgs,
-          lib,
-          ...
-        }:
-        let
-          inherit (import ./lib.nix) mkApp;
-          myScripts = pkgs.callPackage (import ./scripts) { };
-          nixpkgs-unstable = import inputs.nixpkgs-unstable {
-            system = "x86_64-linux";
-            config = {
-              allowUnfree = true;
-            };
-          };
-        in
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              inputs.flakes.overlays.default
-              (import ./patches { inherit nixpkgs-unstable; })
-            ];
-            config.allowUnfree = true;
-          };
-          apps = with myScripts; {
-            ter = mkApp { drv = ter; };
-          };
-          devshells.default = {
-            commands = [
-              {
-                help = "disko";
-                name = "disko";
-                command = ''
-                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
-                '';
-              }
-              {
-                help = "nixos-anywhere";
-                name = "nixos-anywhere";
-                command = ''
-                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
-                '';
-              }
-              {
-                help = "nixos-generate";
-                name = "nixos-generate";
-                command = ''
-                  ${inputs.nixos-generators.packages.${system}.nixos-generate}/bin/nixos-generate ''${@}
-                '';
-              }
-            ];
-            packages =
-              let
-                # HACK https://github.com/NixOS/nixpkgs/issues/283015
-                tofuProvider =
-                  provider:
-                  provider.override (oldArgs: {
-                    provider-source-address =
-                      lib.replaceStrings
-                        [ "https://registry.terraform.io/providers" ]
-                        [
-                          "registry.opentofu.org"
-                        ]
-                        oldArgs.homepage;
-                  });
-                myOpentofu = pkgs.opentofu.withPlugins (
-                  tp:
-                  with tp;
-                  builtins.map tofuProvider [
-                    external
-                    incus
-                    libvirt
-                    random
-                    sops
-                    time
-                    tp.null
-                  ]
-                );
-              in
-              with pkgs;
-              with myScripts;
-              [
-                bashInteractive
-                # software for deployment
-                myOpentofu
+      flake = rec {
+        overlay = overlays.default;
+        overlays.default =
+          final: prev:
+          let
+            myScripts = prev.callPackage (import ./scripts) { };
+          in
+          {
+            inherit (myScripts) ter;
+            tofu-w-plugins = prev.opentofu.withPlugins (
+              tp: with tp; [
+                external
+                incus
+                libvirt
+                random
                 sops
-                terraform
-                terraform-docs
-
-                ter
-              ];
+                time
+                tp.null
+              ]
+            );
           };
-        };
+      };
     };
 }
