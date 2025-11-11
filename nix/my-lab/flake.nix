@@ -1,10 +1,9 @@
 {
-  #TODO: fix description
-  description = "Each my machine NixOS System Flake Configuration";
+  description = "Terraform nix environment";
   nixConfig = {
     extra-substituters = [
       "https://misumisumi.cachix.org"
-      "https://cuda-maintainers.cachix.org"
+      "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
       "misumisumi.cachix.org-1:f+5BKpIhAG+00yTSoyG/ihgCibcPuJrfQL3M9qw1REY="
@@ -94,59 +93,5 @@
         #   inherit (inputs.nixpkgs) lib;
         # };
       };
-      perSystem =
-        {
-          self,
-          system,
-          pkgs,
-          lib,
-          ...
-        }:
-        let
-          nixpkgs-unstable = import inputs.nixpkgs-unstable {
-            system = "x86_64-linux";
-            config = {
-              allowUnfree = true;
-            };
-          };
-        in
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              inputs.flakes.overlays.default
-              (import ./patches { inherit nixpkgs-unstable; })
-            ];
-            config.allowUnfree = true;
-          };
-          devshells.default = {
-            commands = [
-              {
-                help = "disko";
-                name = "disko";
-                command = ''
-                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
-                '';
-              }
-              {
-                help = "nixos-anywhere";
-                name = "nixos-anywhere";
-                command = ''
-                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
-                '';
-              }
-              {
-                help = "nixos-generate";
-                name = "nixos-generate";
-                command = ''
-                  ${inputs.nixos-generators.packages.${system}.nixos-generate}/bin/nixos-generate ''${@}
-                '';
-              }
-            ];
-            packages = with pkgs; [
-              bashInteractive
-            ];
-          };
-        };
     };
 }

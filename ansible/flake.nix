@@ -1,5 +1,5 @@
 {
-  description = "Playbooks for apps of my k8s cluster";
+  description = "Playbooks for apps of my homelab";
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
@@ -18,72 +18,36 @@
         inputs.devshell.flakeModule
       ];
       systems = [ "x86_64-linux" ];
-      perSystem =
-        {
-          config,
-          self',
-          inputs',
-          pkgs,
-          system,
-          ...
-        }:
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              (final: prev: {
-                python3Packages = prev.python3Packages.override {
-                  overrides = pfinal: pprev: {
-                    ansible-core = pprev.ansible-core.overridePythonAttrs (old: {
-                      buildInputs = (old.buildInputs or [ ]) ++ [ pprev.kubernetes ];
-                      makeWrapperArgs = (old.makeWrapperArgs or [ ]) ++ [ "--set PYTHONPATH $PYTHONPATH" ];
-                    });
-                  };
-                };
-              })
-            ];
-            config.allowUnfree = true;
-          };
-
-          devshells = {
-            # nvfetcher = inputs.nvfetcher.packages.${system};
-            default =
-              let
-                myScripts = pkgs.callPackage (import ./scripts) { };
-              in
-              {
-                env =
+      flake = rec {
+        overlay = overlays.default; # deprecated attributes for retro compatibility
+        overlays.default = final: prev: {
+          pythonPackagesOverlays = (prev.pythonPackagesOverlays or [ ]) ++ [
+            (pfinal: pprev: {
+              ansible-core = pprev.ansible-core.overridePythonAttrs (old: {
+                buildInputs = (old.buildInputs or [ ]) ++ [ pprev.kubernetes ];
+                makeWrapperArgs =
                   let
-                    ANSIBLE_COLLECTIONS_PATH = pkgs.callPackage ./collections { };
+                    extra = prev.callPackage ./collections { ansible = pprev.ansible-core; };
                   in
-                  [
-                    {
-                      name = "ANSIBLE_COLLECTIONS_PATH";
-                      value = ANSIBLE_COLLECTIONS_PATH;
-                    }
-                    {
-                      name = "ANSIBLE_ROLES_PATH";
-                      value = "${ANSIBLE_COLLECTIONS_PATH}/roles";
-                    }
+                  old.makeWrapperArgs or [ ]
+                  ++ [
+                    "--set PYTHONPATH $PYTHONPATH"
+                    "--set ANSIBLE_COLLECTIONS_PATH ${extra.collections}"
+                    "--set ANSIBLE_ROLES_PATH ${extra.roles}"
                   ];
-                packages =
-                  with pkgs;
-                  with myScripts;
-                  [
-                    bashInteractive
-                    jq
-                    yq # python-yq
-                    argocd
-                    ansible
-                    kubectl
-                    kubernetes-helm
-                    nvfetcher
-                    # MyScripts
-                    k
-                    he
-                  ];
+              });
+            })
+          ];
+          python3 =
+            let
+              self = prev.python3.override {
+                inherit self;
+                packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
               };
-          };
+            in
+            self;
+          python3Packages = final.python3.pkgs;
         };
+      };
     };
 }
