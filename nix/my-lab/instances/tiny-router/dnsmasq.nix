@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  configPath,
   pkgs,
   pxeInet,
   kexecInet,
@@ -80,12 +81,6 @@
             "${base}.10,${base}.254,255.255.255.0,1h"
             "::,constructor:${interface},ra-stateless,1h"
           ];
-        dhcp-option = [
-          "3,${pxeInet.ip}" # default gateway
-          "6,${pxeInet.ip}" # DNS server
-          "15,${domain}" # published domain name
-          "option6:dns-server,${pxeInet.ipv6}"
-        ];
         domain = "pxe";
         local = "/${domain}/";
         cache-size = 1000;
@@ -107,21 +102,25 @@
           "set:X86-64_EFI,option:client-arch,7"
           "set:X86-64_EFI,option:client-arch,9"
         ];
-        #NOTE: DHCP PROXYモードでPXEサーバを構成する場合、コメントアウト
-        # pxe-service = [
-        #   "tag:iPXE,X86PC,'iPXE boot menu',http://${ip}/boot-menu.php"
-        #   "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${ip}/boot-menu.php"
-        #   # "tag:iPXE,X86PC,'iPXE boot menu',http://${config.networking.hostName}/boot-menu.php"
-        #   # "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${config.networking.hostName}/boot-menu.php"
-        #   "tag:!iPXE,X86PC,'undionly.kpxe',undionly.kpxe"
-        #   "tag:!iPXE,X86-64_EFI,'ipxe.efi',ipxe.efi"
-        # ];
+        dhcp-option = [
+          "3,${pxeInet.ip}" # default gateway
+          "6,${pxeInet.ip}" # DNS server
+          "15,${domain}" # published domain name
+          "option6:dns-server,${pxeInet.ipv6}"
+        ];
         dhcp-boot = [
-          "tag:iPXE,tag:X86PC,http://${config.networking.hostName}.${domain}/boot-menu.php"
-          "tag:iPXE,tag:X86-64_EFI,http://${config.networking.hostName}.${domain}/boot-menu.php"
+          "tag:iPXE,tag:X86PC,http://${pxeInet.ip}.${domain}/boot-menu.php"
+          "tag:iPXE,tag:X86-64_EFI,http://${pxeInet.ip}.${domain}/boot-menu.php"
           "tag:!iPXE,tag:X86PC,undionly.kpxe"
           "tag:!iPXE,tag:X86-64_EFI,ipxe.efi"
         ];
+        #NOTE: DHCP PROXYモードでPXEサーバを構成する場合、コメントアウト
+        # pxe-service = [
+        #   "tag:iPXE,X86PC,'iPXE boot menu',http://${pxeI:et.ip}/boot-menu.php"
+        #   "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${pxeInet.ip}/boot-menu.php"
+        #   "tag:!iPXE,X86PC,'undionly.kpxe',undionly.kpxe"
+        #   "tag:!iPXE,X86-64_EFI,'ipxe.efi',ipxe.efi"
+        # ];
         log-queries = true;
         log-dhcp = true;
         log-facility = "/var/log/dnsmasq.${domain}.log";

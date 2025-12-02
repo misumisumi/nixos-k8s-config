@@ -36,6 +36,7 @@
     };
     # local modules
     homelab-ansible.url = "path:./ansible";
+    homelab-mylab.url = "path:./nix/my-lab";
     homelab-terraform.url = "path:./terraform";
   };
   outputs =
@@ -45,6 +46,9 @@
       imports = [
         inputs.devshell.flakeModule
       ];
+      flake = {
+        nixosConfigurations = inputs.homelab-mylab.nixosConfigurations;
+      };
       perSystem =
         {
           system,
@@ -95,7 +99,7 @@
                 '';
               }
             ];
-            startup = {
+            devshell.startup = {
               compinit.text = '''';
             };
             packages = with pkgs; [
@@ -105,6 +109,9 @@
               tofu-w-plugins
 
               incus
+              openssl
+              python3
+              gawk
             ];
           };
         };

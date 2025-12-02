@@ -1,6 +1,7 @@
 { config, ... }:
 {
   imports = [
+    ../_init/autoresources.nix
     ./autoresources.nix
     ./cockpit.nix
     ./dnsmasq.nix
