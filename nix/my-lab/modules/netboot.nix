@@ -10,6 +10,7 @@
 {
   imports = [
     (modulesPath + "/installer/netboot/netboot.nix")
+    (modulesPath + "/profile/minimal.nix")
   ];
   netboot.squashfsCompression = "zstd -Xcompression-level 19";
   services.getty.autologinUser = lib.mkForce "${user}";

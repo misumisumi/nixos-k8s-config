@@ -12,25 +12,15 @@
   };
 
   inputs = {
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nur.url = "github:nix-community/NUR";
+    flakes.url = "github:misumisumi/flakes";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
     devshell = {
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    nur.url = "github:nix-community/NUR";
-
-    nixos-images.url = "github:nix-community/nixos-images";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     colmena = {
@@ -40,20 +30,14 @@
         stable.follows = "nixpkgs";
       };
     };
-    disko = {
-      url = "github:nix-community/disko";
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    nixos-anywhere = {
-      url = "github:nix-community/nixos-anywhere";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixos-stable.follows = "nixpkgs";
-        disko.follows = "disko";
-      };
-    };
-
-    flakes.url = "github:misumisumi/flakes";
   };
 
   outputs =
