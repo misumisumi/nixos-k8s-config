@@ -60,7 +60,7 @@
       pxe = rec {
         no-resolv = true;
         dhcp-authoritative = true;
-        interface = "eth1";
+        interface = "${config.systemd.network.networks."20-pxe-service".name}";
         except-interface = "lo";
         server = [ "8.8.8.8" ];
         strict-order = true;
@@ -109,8 +109,8 @@
           "option6:dns-server,${pxeInet.ipv6}"
         ];
         dhcp-boot = [
-          "tag:iPXE,tag:X86PC,http://${pxeInet.ip}.${domain}/boot-menu.php"
-          "tag:iPXE,tag:X86-64_EFI,http://${pxeInet.ip}.${domain}/boot-menu.php"
+          "tag:iPXE,tag:X86PC,http://${pxeInet.ip}/boot-menu.php"
+          "tag:iPXE,tag:X86-64_EFI,http://${pxeInet.ip}/boot-menu.php"
           "tag:!iPXE,tag:X86PC,undionly.kpxe"
           "tag:!iPXE,tag:X86-64_EFI,ipxe.efi"
         ];
@@ -130,7 +130,7 @@
       kexec = rec {
         no-resolv = true;
         dhcp-authoritative = true;
-        interface = "eth1.210";
+        interface = "${config.systemd.network.networks."20-kexec-service".name}";
         except-interface = "lo";
         # server = [ "8.8.8.8" ];
         strict-order = true;

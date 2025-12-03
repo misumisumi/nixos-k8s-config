@@ -2,7 +2,6 @@
 let
   # inherit (builtins) toString;
   inherit (lib) toInt;
-  VFT_TableID = 210;
   VLAN = "210";
 in
 {
@@ -69,15 +68,6 @@ in
             Id = toInt VLAN;
           };
         };
-        "vrf-mgmt" = {
-          netdevConfig = {
-            Kind = "vrf";
-            Name = "vrf-mgmt";
-          };
-          vrfConfig = {
-            Table = VFT_TableID;
-          };
-        };
       };
       networks = {
         "10-en" = {
@@ -89,7 +79,10 @@ in
         "10-ib" = {
           name = "ib*";
           bond = [ "bond-en" ];
-          networkConfig.LinkLocalAddressing = "no";
+          networkConfig = {
+            LinkLocalAddressing = "no";
+            PrimarySlave = true;
+          };
           linkConfig.RequiredForOnline = "carrier";
         };
         "20-bond-en" = {
@@ -106,18 +99,14 @@ in
         };
         "20-bond-en.${VLAN}" = {
           name = "bond-en.${VLAN}";
-          # vrf = [ "vrf-mgmt" ];
           networkConfig = {
             DHCP = "yes";
-            # LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
           };
         };
         "20-bond-ib.${VLAN}" = {
           name = "bond-en.${VLAN}";
-          # vrf = [ "vrf-mgmt" ];
           networkConfig = {
             DHCP = "yes";
-            # LinkLocalAddressing = "yes"; # Generate a link-local address for ipv4 and ipv6
           };
         };
       };
