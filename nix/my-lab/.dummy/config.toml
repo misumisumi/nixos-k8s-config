@@ -1,15 +1,22 @@
 [instances.tiny-router]
 dhcpRelay = false
-[instances.tiny-router.network]
-[instances.tiny-router.network.pxeInet]
-suffix = "1"
-base_ip = "10.10.0."
+
+[instances.tiny-router.pxe]
+[instances.tiny-router.pxe.network]
+suffix1 = ".1"
+suffix2 = ".10"
+base_ip = "10.0"
 base_ipv6 = "fd42:3a98:dc40:10::"
 ip_prefix = "/24"
 ipv6_prefix = "/64"
-[instances.tiny-router.network.kexecInet]
+
+[instances.tiny-router.kexec]
+[instances.tiny-router.kexec.networks]
 suffix = "1"
 base_ip = "10.20.0."
 base_ipv6 = "fd42:3a98:dc40:20::"
 ip_prefix = "/24"
 ipv6_prefix = "/64"
+[instances.tiny-router.network.networks.kexec1.vlan]
+name = "bond.210"
+id = 210

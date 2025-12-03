@@ -17,14 +17,17 @@ compornents = [
             nictype = "bridged"
           },
           {
-            parent  = "dev-lan"
+            parent  = "dev-1g"
             nictype = "bridged"
           },
-          # {
-          #   name    = "eth1.210"
-          #   parent  = "dev-lan.210"
-          #   nictype = "bridged"
-          # },
+          {
+            parent  = "dev-10g"
+            nictype = "bridged"
+          },
+          {
+            parent  = "dev-40g"
+            nictype = "bridged"
+          },
         ]
         devices = [
           {

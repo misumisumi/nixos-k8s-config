@@ -73,10 +73,16 @@ in
       {
         enable = true;
         netdevs = {
-          "eth1.${kexecVLAN}" = {
+          "br0" = {
+            netdevConfig = {
+              Kind = "bridge";
+              Name = "br0";
+            };
+          };
+          "br0.${kexecVLAN}" = {
             netdevConfig = {
               Kind = "vlan";
-              Name = "eth1.${kexecVLAN}";
+              Name = "br0.${kexecVLAN}";
             };
             vlanConfig = {
               Id = toInt kexecVLAN;
@@ -88,18 +94,20 @@ in
             name = "eth0";
             DHCP = "yes";
           };
-          "10-lan" = {
-            name = "eth1";
-            vlan = [
-              "eth1.${kexecVLAN}"
-            ];
+          "10-eth" = {
+            name = "eth1 eth2 eth3";
+            bridge = [ "br0" ];
+          };
+          "20-pxe-service" = {
+            name = "br0";
+            vlan = [ "br0.${kexecVLAN}" ];
             address = [
               "${pxeInet.ip}${pxeInet.ip_prefix}"
               "${pxeInet.ipv6}${pxeInet.ipv6_prefix}"
             ];
           };
-          "20-lan.210" = {
-            name = "eth1.${kexecVLAN}";
+          "20-kexec-service" = {
+            name = "br0.${kexecVLAN}";
             address = [
               "${kexecInet.ip}${kexecInet.ip_prefix}"
               "${kexecInet.ipv6}${kexecInet.ipv6_prefix}"

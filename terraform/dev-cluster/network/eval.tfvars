@@ -1,5 +1,5 @@
 networks = {
-  dev-lan = {
+  dev-1g = {
     config = {
       "bridge.driver" = "openvswitch"
       "ipv4.address"  = "none"
@@ -12,18 +12,30 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  "dev-lan.210" = {
+  dev-10g = {
     config = {
-      "bridge.driver"              = "openvswitch"
-      "bridge.external_interfaces" = "br0.210/br0/210"
-      "ipv4.address"               = "none"
-      "ipv4.nat"                   = false
-      "ipv4.dhcp"                  = false
-      "ipv4.firewall"              = true
-      "ipv6.address"               = "none"
-      "ipv6.nat"                   = false
-      "ipv6.dhcp"                  = false
-      "ipv6.firewall"              = true
+      "bridge.driver" = "openvswitch"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = true
+    }
+  },
+  dev-40g = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = true
     }
   },
   dev-wan = {
