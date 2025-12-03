@@ -14,7 +14,7 @@ let
 
     ${pkgs.gnutar}/bin/tar -xzf "$OUTPUT_PATH" -C "/tmp"
 
-    ${pkgs.kexec-tools}/bin/kexec -l "/tmp/kexec/bzImage" --initrd="/tmp/kexec/initrd.img"
+    /tmp/kexec/run
   '';
 in
 {
