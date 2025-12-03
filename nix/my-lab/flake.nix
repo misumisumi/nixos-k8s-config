@@ -69,7 +69,7 @@
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           })
-          // (import ./instances {
+          // (import ./instance {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           });

@@ -56,7 +56,7 @@ in
     system = "x86_64-linux";
     specialArgs = {
       user = "nixos";
-      hostname = "nixos-first-stage";
+      hostname = "first-stage";
       inherit
         self
         inputs
@@ -64,6 +64,20 @@ in
     }; # specialArgs give some args to modules
     modules = [
       ./compute/first-stage
+    ];
+  };
+  kexec-test = lib.nixosSystem {
+    system = "x86_64-linux";
+    specialArgs = {
+      user = "nixos";
+      hostname = "kexec-test";
+      inherit
+        self
+        inputs
+        ;
+    }; # specialArgs give some args to modules
+    modules = [
+      ./compute/kexec-test
     ];
   };
 }

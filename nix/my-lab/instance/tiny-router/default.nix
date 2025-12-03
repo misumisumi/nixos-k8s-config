@@ -1,13 +1,13 @@
-{ config, ... }:
+{ self, config, ... }:
 {
   imports = [
-    ../_init/autoresources.nix
-    ./autoresources.nix
     ./cockpit.nix
     ./dnsmasq.nix
-    ./networking.nix
+    ./network.nix
     ./nginx.nix
     ./ssh.nix
+    self.nixosModules.multiple-dnsmasq
+    self.nixosModules.static
   ];
   system.stateVersion = config.system.nixos.release;
 }

@@ -3,7 +3,6 @@
   user,
   pkgs,
   config,
-  secretPath,
   ...
 }:
 let
@@ -30,7 +29,7 @@ in
         inherit (builtins) getEnv readFile;
         keyFiles = [
           "${getEnv "HOME"}/.ssh/id_ed25519.pub"
-          "${secretPath}/instance/tiny-router/ssh/id_ed25519.pub"
+          # ../../../instances/.secrets/tiny-router/ssh/id_ed25519.pub
         ];
       in
       map readFile keyFiles;

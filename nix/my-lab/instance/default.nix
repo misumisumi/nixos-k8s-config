@@ -9,13 +9,13 @@
     specialArgs = {
       user = "nixos";
       hostname = "tiny-router";
+      type = "instance";
       inherit
         self
         inputs
         ;
     }; # specialArgs give some args to modules
     modules = [
-      self.nixosModules.multiple-dnsmasq
       ./tiny-router
       ./_init/incus/container
     ];

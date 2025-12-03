@@ -36,7 +36,7 @@ compornents = [
 
             properties = {
               path   = "/var/www"
-              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/nix/my-lab/instances/tiny-router/www"
+              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/nix/my-lab/instance/tiny-router/www"
             }
           }
         ]
