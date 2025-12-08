@@ -1,0 +1,5 @@
+[second-stage-boot]
+imageServer = "https://tiny-router.kexec"
+
+[servers]
+"<motherboard-serial-number" = ".tar.gz"

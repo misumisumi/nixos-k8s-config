@@ -1,7 +1,8 @@
 {
   default = {
     imports = [
-      ./kexec.nix
+      ./diskless
+      ./kexec
       ./netboot.nix
       ./static.nix
       ./tgtd.nix
@@ -9,11 +10,14 @@
       ./virtualisation.nix
     ];
   };
-  multiple-dnsmasq = {
-    imports = [ ./multiple-dnsmasq.nix ];
+  diskless = {
+    imports = [ ./diskless ];
   };
   kexec = {
     imports = [ ./kexec ];
+  };
+  multiple-dnsmasq = {
+    imports = [ ./multiple-dnsmasq.nix ];
   };
   netboot = {
     imports = [ ./netboot.nix ];
@@ -21,5 +25,4 @@
   static = {
     imports = [ ./static.nix ];
   };
-  # config.lib = import ./lib { inherit tag; };
 }
