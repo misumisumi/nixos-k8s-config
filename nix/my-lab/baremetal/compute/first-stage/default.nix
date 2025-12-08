@@ -10,7 +10,7 @@
     ../_init/hardware-configuration.nix
     ./infiniband.nix
     ./network.nix
+    ./second-stage-boot.nix
     ./ssh.nix
-    # ./second-stage-boot.nix
   ];
 }

@@ -33,7 +33,7 @@ let
     else if value == false then
       "# setting `${name}` explicitly set to false"
     else
-      lib.generators.mkKeyValueDefault { } "=" name value;
+      generators.mkKeyValueDefault { } "=" name value;
 
   settingsFormat = pkgs.formats.keyValue {
     mkKeyValue = formatKeyValue;
@@ -65,7 +65,7 @@ in
               freeformType = settingsFormat.type;
 
               options.server = lib.mkOption {
-                type = lib.types.listOf lib.types.str;
+                type = listOf str;
                 default = [ ];
                 example = [
                   "8.8.8.8"

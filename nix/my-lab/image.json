@@ -1,0 +1,12 @@
+{
+    "hoge": {
+        "serial": "1234567890",
+        "mac_address": "12:34:56:78:90:ab",
+        "image": "hoge.tar.gz"
+    },
+    "foo": {
+        "serial": "1234567891",
+        "mac_address": "12:35:56:78:90:ab",
+        "image": "foo.tar.gz"
+    }
+}
