@@ -10,4 +10,7 @@
       };
     };
   };
+  systemd.tmpfiles.rules = [
+    "d /etc/cockpit/machines.d 0766 root root -"
+  ];
 }

@@ -33,18 +33,13 @@ $hostname = $_POST['hostname'];
 $user = $_POST['user'];
 $serial = $_POST['serial'];
 
-// 4. Twigテンプレートのレンダリング
-try {
-    $data = $twig->render('cockpit.json.twig', [
-        'hostname' => $hostname,
-        'user' => $user,
-    ]);
-} catch (\Exception $e) {
-    // エラー処理（デバッグ時のみ）
-    header('Content-Type: text/plain');
-    echo "#!ipxe\necho Template rendering error: " . $e->getMessage();
-    exit;
-}
+$data = array($hostname =>
+            array("address" => $ip,
+                "visible" => true,
+                "user" => $user,
+                "color" => "blue"
+                )
+        );
 
 // JSONにエンコード
 $jsonData = json_encode($data, JSON_PRETTY_PRINT);
