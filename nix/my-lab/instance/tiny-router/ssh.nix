@@ -3,7 +3,7 @@
   user,
   pkgs,
   config,
-  secretsPath,
+  secretPath,
   ...
 }:
 let
@@ -76,19 +76,19 @@ in
           target = "/etc/os-release";
         }
         {
-          source = "${secretsPath}/instance/tiny-router/ssh/id_ed25519";
+          source = "${secretPath}/instance/tiny-router/ssh/id_ed25519";
           target = "/home/${user}/.ssh/id_ed25519";
         }
         {
-          source = "${secretsPath}/instance/tiny-router/ssh/id_ed25519.pub";
+          source = "${secretPath}/instance/tiny-router/ssh/id_ed25519.pub";
           target = "/home/${user}/.ssh/id_ed25519.pub";
         }
         {
-          source = "${secretsPath}/instance/tiny-router/ssh/ssh_host_ed25519_key";
+          source = "${secretPath}/instance/tiny-router/ssh/ssh_host_ed25519_key";
           target = "/etc/ssh/ssh_host_ed25519";
         }
         {
-          source = "${secretsPath}/instance/tiny-router/ssh/ssh_host_ed25519_key.pub";
+          source = "${secretPath}/instance/tiny-router/ssh/ssh_host_ed25519_key.pub";
           target = "/etc/ssh/ssh_host_ed25519_key.pub";
         }
       ];

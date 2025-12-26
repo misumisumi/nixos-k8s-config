@@ -28,6 +28,11 @@ in
     config.services.nginx.defaultSSLListenPort
     8080
   ];
+  systemd.services."phpfpm-${kexecApp.app}".serviceConfig = {
+    ReadWritePaths = [
+      "/etc/cockpit/machines.d"
+    ];
+  };
   services.phpfpm.pools = listToAttrs (
     map
       (
