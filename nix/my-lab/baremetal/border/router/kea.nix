@@ -1,5 +1,0 @@
-{
-  services.kea = {
-    enable = true;
-  };
-}

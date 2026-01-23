@@ -20,4 +20,20 @@
       ./_init/incus/container
     ];
   };
+  border = lib.nixosSystem {
+    system = "x86_64-linux";
+    specialArgs = {
+      user = "nixos";
+      hostname = "border";
+      type = "instance";
+      inherit
+        self
+        inputs
+        ;
+    }; # specialArgs give some args to modules
+    modules = [
+      ../baremetal/border
+      ./_init/incus/virtual-machine
+    ];
+  };
 }
