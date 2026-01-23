@@ -31,7 +31,7 @@
       };
     };
     microvm = {
-      url = "github:microvm-nix/microvm.nix";
+      url = "github:elsbrock/microvm.nix/feature/machined-registration";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {

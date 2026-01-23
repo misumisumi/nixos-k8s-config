@@ -1,0 +1,1 @@
+../baremetal/variables.tf
