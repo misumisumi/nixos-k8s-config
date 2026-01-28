@@ -65,11 +65,11 @@
         # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
         nixosModules = import ./modules;
         nixosConfigurations =
-          (import ./baremetal {
+          (import ./baremetals {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           })
-          // (import ./instance {
+          // (import ./guests {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           });
