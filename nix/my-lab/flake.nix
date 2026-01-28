@@ -7,13 +7,13 @@
     ];
     extra-trusted-public-keys = [
       "misumisumi.cachix.org-1:f+5BKpIhAG+00yTSoyG/ihgCibcPuJrfQL3M9qw1REY="
-      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
+    connect-timeout = 5;
   };
 
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
 
@@ -48,21 +48,23 @@
         inputs.devshell.flakeModule
       ];
       flake = {
-        nixConfig = {
-          extra-substituters = [
-            "https://nix-community.cachix.org"
-            "https://cache.nixos.org/"
-          ];
-          extra-trusted-public-keys = [
-            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-          ];
-        };
         # Cluster settings managing colmena
         # colmena = import ./nixos/hive.nix {
         #   inherit (inputs.nixpkgs) lib;
         #   inherit inputs self;
         # };
         # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
+        overlay = self.overlays.default;
+        overlays.default =
+          let
+            nixpkgs-unstable = import inputs.nixpkgs-unstable {
+              system = "x86_64-linux";
+              config = {
+                allowUnfree = true;
+              };
+            };
+          in
+          import ./patches { inherit nixpkgs-unstable; };
         nixosModules = import ./modules;
         nixosConfigurations =
           (import ./baremetals {

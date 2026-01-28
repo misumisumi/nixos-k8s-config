@@ -6,6 +6,7 @@
     extra-trusted-public-keys = [
       "misumisumi.cachix.org-1:f+5BKpIhAG+00yTSoyG/ihgCibcPuJrfQL3M9qw1REY="
     ];
+    connect-timeout = 5;
   };
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";

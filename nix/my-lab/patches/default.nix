@@ -49,4 +49,5 @@
 # })
 { nixpkgs-unstable, ... }:
 final: prev: {
+  inherit (nixpkgs-unstable) frr;
 }
