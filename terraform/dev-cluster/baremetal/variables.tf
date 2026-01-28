@@ -30,6 +30,7 @@ variable "compornents" {
           image        = optional(string, "nixos/23.11")
           machine_type = optional(string, "container")
           config       = optional(map(any), {})
+          profiles     = optional(list(any), null)
           cloudinit = optional(object({
             template_file = string
             sops_file     = optional(string, "")

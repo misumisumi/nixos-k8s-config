@@ -5,14 +5,6 @@ terraform {
       source  = "registry.opentofu.org/lxc/incus"
       version = "~> 0.3.1"
     }
-    random = {
-      source  = "registry.opentofu.org/hashicorp/random"
-      version = "~> 3.7.2"
-    }
-    sops = {
-      source  = "carlpett/sops"
-      version = "~> 1.2.0"
-    }
   }
 }
 
@@ -29,16 +21,27 @@ provider "incus" {
   }
 }
 
-# Only use making env label for outputting show.json to use from colmena
+# Only use making env label for outputing show.json to use from colmena
 resource "terraform_data" "workspace" {
   input = terraform.workspace
 }
 
-module "instances" {
+module "pools" {
   for_each = { for i in var.compornents : i.remote => i }
-  source   = "../../modules/instance"
+  source   = "../../modules/pool"
 
-  remote    = each.value.remote
-  instances = each.value.instances
-  profiles  = each.value.profiles
+  remote  = each.value.remote
+  project = each.value.project
+  pools   = each.value.pools
+}
+
+module "volumes" {
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../../modules/volume"
+
+  remote  = each.value.remote
+  project = each.value.project
+  volumes = each.value.volumes
+
+  depends_on = [module.pools]
 }
