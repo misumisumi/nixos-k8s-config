@@ -17,9 +17,9 @@ in
   imports = [
     ../_init/core
     ../autoresources.nix
-    ./apiserver.nix
-    ./controller-manager.nix
-    ./kubelet.nix
+    ./system/apiserver.nix
+    ./system/controller-manager.nix
+    ./system/kubelet.nix
     # ./scheduler.nix
   ];
   services.kubernetes.clusterCidr = "10.200.0.0/16";
