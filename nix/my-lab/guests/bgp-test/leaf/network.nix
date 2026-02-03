@@ -44,122 +44,110 @@
         };
       };
     };
-    # netdevs = {
-    #   vlan10agw = {
-    #     netdevConfig = {
-    #       Name = "vlan10agw";
-    #       Kind = "macvlan";
-    #       MACAddress = "02:00:00:00:10:01";
-    #     };
-    #     macvlanConfig = {
-    #       Mode = "private";
-    #     };
-    #   };
-    #   br0 = {
-    #     netdevConfig = {
-    #       Name = "br0";
-    #       Kind = "brswitch_idge";
-    #       MACAddress = "11:22:33:44:55:66";
-    #     };
-    #     brswitch_idgeConfig = {
-    #       DefaultPVswitch_id = "none";
-    #       VLANFiltering = true;
-    #     };
-    #   };
-    #   vxlan0 = {
-    #     netdevConfig = {
-    #       Name = "vxlan0";
-    #       Kind = "vxlan";
-    #       MACAddress = "11:22:33:44:55:66";
-    #     };
-    #     vxlanConfig = {
-    #       DestinationPort = 4789;
-    #       MacLearning = true;
-    #       ReduceARPProxy = true;
-    #     };
-    #     extraConfig = ''
-    #       [VXLAN]
-    #       External=yes
-    #       VNIFilter=yes
-    #     '';
-    #   };
-    #   vrf1 = {
-    #     netdevConfig = {
-    #       Name = "vrf1";
-    #       Kind = "vrf";
-    #     };
-    #     vrfConfig = {
-    #       Table = 1100;
-    #     };
-    #   };
-    #   "br0.vrf1" = {
-    #     netdevConfig = {
-    #       Name = "br0.vrf1";
-    #       Kind = "vlan";
-    #       MACAddress = "11:22:33:44:55:66";
-    #     };
-    #   };
-    #   vrf2 = {
-    #     netdevConfig = {
-    #       Name = "vrf2";
-    #       Kind = "vrf";
-    #     };
-    #     vrfConfig = {
-    #       Table = 1200;
-    #     };
-    #   };
-    #   "br0.vrf2" = {
-    #     netdevConfig = {
-    #       Name = "br0.vrf2";
-    #       Kind = "vlan";
-    #       MACAddress = "11:22:33:44:55:66";
-    #     };
-    #   };
-    #   vrf3 = {
-    #     netdevConfig = {
-    #       Name = "vrf3";
-    #       Kind = "vrf";
-    #     };
-    #     vrfConfig = {
-    #       Table = 1300;
-    #     };
-    #   };
-    #   vlan10 = {
-    #     netdevConfig = {
-    #       Name = "vlan10";
-    #       Kind = "vlan";
-    #       MACAddress = "aa:bb:cc:10:00:0${switch_id}";
-    #     };
-    #   };
-    #   vlan20 = {
-    #     netdevConfig = {
-    #       Name = "vlan20";
-    #       Kind = "vlan";
-    #       MACAddress = "aa:bb:cc:20:00:0${switch_id}";
-    #     };
-    #   };
-    #   vlan30 = {
-    #     netdevConfig = {
-    #       Name = "vlan30";
-    #       Kind = "vlan";
-    #       MACAddress = "aa:bb:cc:30:00:0${switch_id}";
-    #     };
-    #   };
-    #   vlan40 = {
-    #     netdevConfig = {
-    #       Name = "vlan40";
-    #       Kind = "vlan";
-    #       MACAddress = "aa:bb:cc:40:00:0${switch_id}";
-    #     };
-    #   };
-    #   vlan50 = {
-    #     netdevConfig = {
-    #       Name = "vlan50";
-    #       Kind = "vlan";
-    #       MACAddress = "aa:bb:cc:50:00:0${switch_id}";
-    #     };
-    #   };
-    # };
+    netdevs = {
+      #   vlan10agw = {
+      #     netdevConfig = {
+      #       Name = "vlan10agw";
+      #       Kind = "macvlan";
+      #       MACAddress = "02:00:00:00:10:01";
+      #     };
+      #     macvlanConfig = {
+      #       Mode = "private";
+      #     };
+      #   };
+      br0 = {
+        netdevConfig = {
+          Name = "br0";
+          Kind = "bridge";
+          MACAddress = "11:22:33:44:55:66";
+        };
+        bridgeConfig = {
+          DefaultPVswitch_id = "none";
+          VLANFiltering = true;
+        };
+      };
+      vxlan0 = {
+        netdevConfig = {
+          Name = "vxlan0";
+          Kind = "vxlan";
+          MACAddress = "11:22:33:44:55:66";
+        };
+        vxlanConfig = {
+          DestinationPort = 4789;
+          MacLearning = true;
+          ReduceARPProxy = true;
+        };
+        extraConfig = ''
+          [VXLAN]
+          VNI=10000
+          VNI=20000
+          VNI=11000
+          VNI=22000
+        '';
+      };
+      vrf10000 = {
+        netdevConfig = {
+          Name = "vrf10000";
+          Kind = "vrf";
+        };
+        vrfConfig = {
+          Table = 10000;
+        };
+      };
+      vrf20000 = {
+        netdevConfig = {
+          Name = "vrf20000";
+          Kind = "vrf";
+        };
+        vrfConfig = {
+          Table = 20000;
+        };
+      };
+      vrf30000 = {
+        netdevConfig = {
+          Name = "vrf30000";
+          Kind = "vrf";
+        };
+        vrfConfig = {
+          Table = 30000;
+        };
+      };
+      vrf10000br0 = {
+        netdevConfig = {
+          Name = "vrf10000br0";
+          Kind = "vlan";
+          MACAddress = "11:22:33:44:55:66";
+        };
+      };
+      vrf20000br0 = {
+        netdevConfig = {
+          Name = "vrf20000br0";
+          Kind = "vlan";
+          MACAddress = "11:22:33:44:55:66";
+        };
+      };
+      vlan10 = {
+        netdevConfig = {
+          Name = "vlan10";
+          Kind = "vlan";
+          MacAddress = "aa:bb:cc:00:00:6e";
+        };
+      };
+      vlan20 = {
+        netdevConfig = {
+          Name = "vlan20";
+          Kind = "vlan";
+          MacAddress = "aa:bb:cc:00:00:dc";
+        };
+      };
+      vlan30 = {
+        netdevConfig = {
+          Name = "vlan30";
+          Kind = "vlan";
+          MacAddress = "aa:bb:cc:00:01:4a";
+        };
+      };
+    };
     networks = {
       "5-lo0" = {
         name = "lo0";
@@ -173,156 +161,148 @@
       };
       "10-enp5s0" = {
         name = "enp5s0";
+        bridge = [ "br0" ];
         address = [
           "192.168.11${switch_id}.2/30"
         ];
       };
       "10-enp6s0" = {
         name = "enp6s0";
+        bridge = [ "br0" ];
       };
       "10-enp7s0.${switch_id}" = {
         name = "enp7s0.${switch_id}";
+        bridge = [ "br0" ];
         address = [
           "192.168.21${switch_id}.2/30"
         ];
       };
-      # "20-br0" = {
-      #   name = "br0";
-      #   vlan = [
-      #     "br0.vrf1"
-      #     "br0.vrf2"
-      #   ];
-      #   networkConfig = {
-      #     LinkLocalAddressing = false;
-      #   };
-      #   brswitch_idgeVLANs = [
-      #     {
-      #       VLAN = 10;
-      #     }
-      #     {
-      #       VLAN = 20;
-      #     }
-      #     {
-      #       VLAN = 30;
-      #     }
-      #     {
-      #       VLAN = 1100;
-      #     }
-      #     {
-      #       VLAN = 1200;
-      #     }
-      #     {
-      #       VLAN = 1300;
-      #     }
-      #   ];
-      # };
-      # "20-vxlan0" = {
-      #   name = "vxlan0";
-      #   brswitch_idge = [ "br0" ];
-      #   networkConfig = {
-      #     LinkLocalAddressing = false;
-      #   };
-      #   # brswitch_idgeConfig = {
-      #   #   VLANTunnel = true;
-      #   # };
-      # };
-      # "30-br0.vrf1" = {
-      #   name = "br0.vrf1";
-      #   vrf = [ "vrf1" ];
-      #   networkConfig = {
-      #     LinkLocalAddressing = false;
-      #   };
-      # };
-      # "30-br0.vrf2" = {
-      #   name = "br0.vrf2";
-      #   vrf = [ "vrf2" ];
-      #   networkConfig = {
-      #     LinkLocalAddressing = false;
-      #   };
-      # };
-      # "40-vlan10" = {
-      #   name = "vlan10";
-      #   vrf = [ "vrf1" ];
-      #   address = [
-      #     "10.0.10.1/24"
-      #     "2001:db8:0:10::1/64"
-      #   ];
-      # };
-      # "40-vlan20" = {
-      #   name = "vlan20";
-      #   vrf = [ "vrf2" ];
-      #   address = [
-      #     "10.0.20.1/24"
-      #     "2001:db8:0:20::1/64"
-      #   ];
-      # };
-      # "40-vlan30" = {
-      #   name = "vlan30";
-      #   vrf = [ "vrf3" ];
-      #   address = [
-      #     "10.0.30.1/24"
-      #     "2001:db8:0:30::1/64"
-      #   ];
-      # };
-      # "40-vlan40" = {
-      #   name = "vlan40";
-      #   address = [
-      #     "10.0.40.1/24"
-      #     "2001:db8:0:40::1/64"
-      #   ];
-      # };
-      # "40-vlan50" = {
-      #   name = "vlan50";
-      #   address = [
-      #     "10.0.50.1/24"
-      #     "2001:db8:0:50::1/64"
-      #   ];
-      #   networkConfig = {
-      #     IPv4Forwarding = false;
-      #     IPv6Forwarding = false;
-      #   };
-      # };
-      # "20-vlan10agw" = {
-      #   name = "vlan10agw";
-      #   address = [
-      #     "10.0.10.1/24"
-      #     "2001:db:0:10::/64"
-      #   ];
-      # };
+      "20-br0" = {
+        name = "br0";
+        vlan = [
+          "vlan10"
+          "vlan20"
+        ];
+        networkConfig = {
+          LinkLocalAddressing = false;
+        };
+        bridgeVLANs = [
+          {
+            VLAN = 10;
+          }
+          {
+            VLAN = 20;
+          }
+          {
+            VLAN = 30;
+          }
+          {
+            VLAN = 10000;
+          }
+          {
+            VLAN = 20000;
+          }
+          {
+            VLAN = 30000;
+          }
+        ];
+      };
+      "20-vxlan0" = {
+        name = "vxlan0";
+        bridge = [ "br0" ]; # connect vxlan0 to br0
+        networkConfig = {
+          LinkLocalAddressing = false;
+        };
+        bridgeConfig = {
+          VLANTunnel = true;
+        };
+        bridgeVLANs = [
+          {
+            VLAN = 10;
+          }
+          {
+            VLAN = 20;
+          }
+          {
+            VLAN = 30;
+          }
+          {
+            VLAN = 10000;
+          }
+          {
+            VLAN = 20000;
+          }
+          {
+            VLAN = 30000;
+          }
+        ];
+      };
+      "30-vrf10000br0" = {
+        name = "vrf10000br0";
+        vrf = [ "vrf10000" ];
+        networkConfig = {
+          LinkLocalAddressing = false;
+        };
+      };
+      "30-vrf20000br0" = {
+        name = "vrf20000br0";
+        vrf = [ "vrf20000" ];
+        networkConfig = {
+          LinkLocalAddressing = false;
+        };
+      };
+      "40-vlan10" = {
+        name = "vlan10";
+        vrf = [ "vrf10000" ];
+        address = [
+          "172.16.10.1/24"
+        ];
+      };
+      "40-vlan20" = {
+        name = "vlan20";
+        vrf = [ "vrf20000" ];
+        address = [
+          "172.16.20.1/24"
+        ];
+      };
+      "40-vlan30" = {
+        name = "vlan30";
+        vrf = [ "vrf30000" ];
+        address = [
+          "172.16.30.1/24"
+        ];
+      };
     };
   };
-  # systemd.services = {
-  #   "tunneling-vxlan" = {
-  #     description = "Set up VXLAN tunneling";
-  #     after = [ "network.target" ];
-  #     wantedBy = [ "multi-user.target" ];
-  #     serviceConfig = {
-  #       Type = "oneshot";
-  #       RemainAfterExit = true;
-  #     };
-  #     script =
-  #       let
-  #         inherit (lib) concatStringsSep mapAttrsToList;
-  #         brswitch_idge = "${pkgs.iproute2}/bin/brswitch_idge";
-  #         vswitch_id_vni_pairs = {
-  #           "1100" = "100"; # L3VNI
-  #           "1200" = "200"; # L3VNI
-  #           "10" = "110"; # L2VNI
-  #           "20" = "220"; # L2VNI
-  #           "30" = "330"; # L2VNI
-  #           "40" = "440"; # L2VNI
-  #           "50" = "550"; # L2VNI
-  #         };
-  #         script_per_pair = vswitch_id: vni: ''
-  #           ${brswitch_idge} vlan add dev vxlan0 vswitch_id ${vswitch_id}
-  #           ${brswitch_idge} vlan add dev vxlan0 vni ${vni}
-  #           ${brswitch_idge} vlan add dev vxlan vswitch_id ${vswitch_id} tunnel_info switch_id ${vni}
-  #         '';
-  #       in
-  #       ''
-  #         ${brswitch_idge} link set dev vxlan vlan_tunnel on
-  #         ${concatStringsSep "\n" (mapAttrsToList script_per_pair vswitch_id_vni_pairs)}
-  #       '';
-  #   };
-  # };
+  systemd.services = {
+    "tunneling-vxlan" = {
+      description = "Set up VXLAN tunneling";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script =
+        let
+          inherit (lib) concatStringsSep mapAttrsToList;
+          bridge = "${pkgs.iproute2}/bin/bridge";
+          vid_vni_pairs = {
+            "10000" = "10000"; # L3VNI
+            "20000" = "20000"; # L3VNI
+            "10" = "11000"; # L2VNI
+            "20" = "22000"; # L2VNI
+            "30" = "33000"; # L2VNI
+            "40" = "44000"; # L2VNI
+            "50" = "55000"; # L2VNI
+          };
+          script_per_pair = vswitch_id: vni: ''
+            ${bridge} vlan add dev vxlan v ${vswitch_id} tunnel_info id ${vni}
+          '';
+        in
+        ''
+          ${concatStringsSep "\n" (mapAttrsToList script_per_pair vid_vni_pairs)}
+        '';
+    };
+  };
 }

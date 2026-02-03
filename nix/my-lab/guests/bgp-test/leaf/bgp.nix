@@ -19,9 +19,17 @@
       exit
 
       route-map UNDERLAY_ANYCAST_IP permit 10
-        match interface enp5s0
+        match ip address prefix-list UNDERLAY_SUBNET
         set extcommunity bandwidth cumulative
       exit
+
+      vrf vrf10000
+        vni 100000
+      exit-vrf
+
+      vrf vrf20000
+        vni 200000
+      exit-vrf
 
       router bgp 6500${switch_id}
         bgp router-id 10.0.254.${switch_id}
@@ -49,10 +57,27 @@
         neighbor EVPN remote-as external
         neighbor EVPN ebgp-multihop 2
         neighbor EVPN update-source lo
-
         address-family l2vpn evpn
           advertise-all-vni
           advertise-svi-ip
+        exit-address-family
+
+      router bgp 6500${switch_id} vrf vrf10000
+        address-family ipv4 unicast
+          redistribute static
+        exit-address-family
+
+        address-family l2vpn evpn
+          advertise ipv4 unicast
+        exit-address-family
+
+      router bgp 6500${switch_id} vrf vrf20000
+        address-family ipv4 unicast
+          redistribute static
+        exit-address-family
+
+        address-family l2vpn evpn
+          advertise ipv4 unicast
         exit-address-family
     '';
     # address-family ipv4 unicast
