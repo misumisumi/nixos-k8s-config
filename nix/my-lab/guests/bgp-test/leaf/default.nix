@@ -15,5 +15,7 @@
     ethtool
     socat
     traceroute
+    wireshark-cli
   ];
+  fonts.fontconfig.enable = false;
 }

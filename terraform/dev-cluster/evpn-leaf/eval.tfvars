@@ -63,60 +63,60 @@ compornents = [
           },
         ]
       },
-      {
-        name         = "leaf6"
-        image        = "mylab/leaf6"
-        machine_type = "virtual-machine"
-        profiles     = ["leaf"]
-        config = {
-          "limits.cpu"    = 2
-          "limits.memory" = "4GB"
-        }
-        networks = [
-          {
-            parent       = "br2-1g"
-            nictype      = "bridged"
-            "limits.max" = "1000Mbit"
-          },
-          {
-            parent       = "br2-10g"
-            nictype      = "bridged"
-            "limits.max" = "2000Mbit"
-          },
-          {
-            parent       = "br0-40g"
-            nictype      = "bridged"
-            "limits.max" = "3000Mbit"
-          },
-        ]
-      },
-      {
-        name         = "leaf7"
-        image        = "mylab/leaf7"
-        machine_type = "virtual-machine"
-        profiles     = ["leaf"]
-        config = {
-          "limits.cpu"    = 2
-          "limits.memory" = "4GB"
-        }
-        networks = [
-          {
-            parent       = "br3-1g"
-            nictype      = "bridged"
-            "limits.max" = "1000Mbit"
-          },
-          {
-            parent       = "br3-10g"
-            nictype      = "bridged"
-            "limits.max" = "2000Mbit"
-          },
-          {
-            parent       = "br0-40g"
-            nictype      = "bridged"
-            "limits.max" = "3000Mbit"
-          },
-        ]
-      },
+      # {
+      #   name         = "leaf6"
+      #   image        = "mylab/leaf6"
+      #   machine_type = "virtual-machine"
+      #   profiles     = ["leaf"]
+      #   config = {
+      #     "limits.cpu"    = 2
+      #     "limits.memory" = "4GB"
+      #   }
+      #   networks = [
+      #     {
+      #       parent       = "br2-1g"
+      #       nictype      = "bridged"
+      #       "limits.max" = "1000Mbit"
+      #     },
+      #     {
+      #       parent       = "br2-10g"
+      #       nictype      = "bridged"
+      #       "limits.max" = "2000Mbit"
+      #     },
+      #     {
+      #       parent       = "br0-40g"
+      #       nictype      = "bridged"
+      #       "limits.max" = "3000Mbit"
+      #     },
+      #   ]
+      # },
+      # {
+      #   name         = "leaf7"
+      #   image        = "mylab/leaf7"
+      #   machine_type = "virtual-machine"
+      #   profiles     = ["leaf"]
+      #   config = {
+      #     "limits.cpu"    = 2
+      #     "limits.memory" = "4GB"
+      #   }
+      #   networks = [
+      #     {
+      #       parent       = "br3-1g"
+      #       nictype      = "bridged"
+      #       "limits.max" = "1000Mbit"
+      #     },
+      #     {
+      #       parent       = "br3-10g"
+      #       nictype      = "bridged"
+      #       "limits.max" = "2000Mbit"
+      #     },
+      #     {
+      #       parent       = "br0-40g"
+      #       nictype      = "bridged"
+      #       "limits.max" = "3000Mbit"
+      #     },
+      #   ]
+      # },
     ]
   }
 ]
