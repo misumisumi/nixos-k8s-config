@@ -17,95 +17,101 @@
     useDHCP = false;
     firewall.enable = false;
   };
-  systemd.network = {
-    config.networkConfig = {
-      #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
-      ManageForeignNextHops = false;
-      ManageForeignRoutes = false;
-      ManageForeignRoutingPolicyRules = false;
-    };
-    netdevs = {
-      lo0 = {
-        netdevConfig = {
-          Name = "lo0";
-          Kind = "dummy";
-          MTUBytes = 65536;
+  systemd.network =
+    let
+      inherit (builtins)
+        foldl'
+        ;
+      inherit (lib)
+        range
+        mkMerge
+        ;
+      mergeAttrsListRecursive =
+        attrsList: foldl' (merged: attrs: lib.recursiveUpdate merged attrs) { } attrsList;
+
+      underlayMacvlanIF =
+        _id:
+        let
+          id = toString _id;
+        in
+        {
+          netdevs = {
+            "macvlan${id}" = {
+              netdevConfig = {
+                Name = "macvlan${toString id}";
+                Kind = "macvlan";
+              };
+              macvlanConfig = {
+                Mode = "vepa";
+              };
+            };
+          };
+          networks = {
+            "10-macvlan${id}" = {
+              name = "macvlan${id}";
+              address = [ "192.168.13${id}.1/30" ];
+              # routes = {
+              #   Destination = "10.254.254.${id}";
+              #   Gateway = "192.168.13${id}.2";
+              # };
+            };
+          };
+        };
+      underlayMacvlanIFs = (map underlayMacvlanIF (range 3 4)) ++ (map underlayMacvlanIF (range 5 6));
+      networkConfs = [
+        {
+          netdevs = {
+            lo0 = {
+              netdevConfig = {
+                Name = "lo0";
+                Kind = "dummy";
+              };
+            };
+          };
+          networks = {
+            "5-lo0" = {
+              name = "lo0";
+              address = [
+                "10.1.254.2/32"
+              ];
+            };
+            "5-enp5s0" = {
+              name = "enp5s0";
+              macvlan = map (x: "macvlan${toString x}") (range 4 5);
+            };
+            "5-enp6s0" = {
+              name = "enp6s0";
+              macvlan = map (x: "macvlan${toString x}") (range 6 7);
+            };
+          };
+        }
+      ]
+      ++ underlayMacvlanIFs;
+    in
+    {
+      config.networkConfig = {
+        #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
+        ManageForeignNextHops = false;
+        ManageForeignRoutes = false;
+        ManageForeignRoutingPolicyRules = false;
+      };
+      netdevs = {
+        lo0 = {
+          netdevConfig = {
+            Name = "lo0";
+            Kind = "dummy";
+          };
         };
       };
-      "enp5s0.4" = {
-        netdevConfig = {
-          Name = "enp5s0.4";
-          Kind = "vlan";
-        };
-        vlanConfig = {
-          Id = 4;
-        };
-      };
-      "enp5s0.5" = {
-        netdevConfig = {
-          Name = "enp5s0.5";
-          Kind = "vlan";
-        };
-        vlanConfig = {
-          Id = 5;
+      networks = {
+        "5-lo0" = {
+          name = "lo0";
+          address = [
+            "10.1.254.2/32"
+          ];
+          routes = map (x: { Gateway = "192.168.130.${toString x}"; }) (range 1 4);
         };
       };
-      "enp6s0.6" = {
-        netdevConfig = {
-          Name = "enp6s0.6";
-          Kind = "vlan";
-        };
-        vlanConfig = {
-          Id = 6;
-        };
-      };
-      "enp6s0.7" = {
-        netdevConfig = {
-          Name = "enp6s0.7";
-          Kind = "vlan";
-        };
-        vlanConfig = {
-          Id = 7;
-        };
-      };
-    };
-    networks = {
-      "5-lo0" = {
-        name = "lo0";
-        address = [
-          "10.0.254.2/32"
-        ];
-      };
-      "5-enp5s0" = {
-        name = "enp5s0";
-        vlan = [
-          "enp5s0.4"
-          "enp5s0.5"
-        ];
-      };
-      "5-enp6s0" = {
-        name = "enp6s0";
-        vlan = [
-          "enp6s0.6"
-          "enp6s0.7"
-        ];
-      };
-      "10-enp5s0.4" = {
-        name = "enp5s0.4";
-        address = [ "192.168.214.1/30" ];
-      };
-      "10-enp5s0.5" = {
-        name = "enp5s0.5";
-        address = [ "192.168.215.1/30" ];
-      };
-      "10-enp6s0.6" = {
-        name = "enp6s0.6";
-        address = [ "192.168.216.1/30" ];
-      };
-      "10-enp6s0.7" = {
-        name = "enp6s0.7";
-        address = [ "192.168.217.1/30" ];
-      };
-    };
-  };
+    }
+    // mergeAttrsListRecursive networkConfs;
 }

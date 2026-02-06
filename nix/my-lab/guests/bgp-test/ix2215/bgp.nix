@@ -11,12 +11,8 @@
       frr defaults datacenter
       log syslog informational
 
-      route-map REDISTRIBUTE_LOOPBACK_INTERFACE permit 10
-        match interface Loopback0.0
-      exit
-
       router bgp 65001
-        bgp router-id 10.0.254.1
+        bgp router-id 10.1.254.1
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -26,16 +22,17 @@
         neighbor LEAF timers 1 3
         neighbor LEAF timers connect 5
         neighbor LEAF capability extended-nexthop
-        neighbor LEAF update-source Loopback0.0
-        neighbor LEAF ebgp-multihop 2
         neighbor LEAF remote-as external
         bgp listen range 192.168.0.0/16 peer-group LEAF
 
         address-family ipv4 unicast
-          network 10.0.254.1/32
+          network 10.1.254.1/32
           neighbor LEAF activate
+          maximum-paths 64
         exit-address-family
     '';
+    # neighbor LEAF update-source Loopback0.0
+    # neighbor LEAF ebgp-multihop 2
     # address-family ipv4 unicast
     #   redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
     #   neighbor LEAF activate
