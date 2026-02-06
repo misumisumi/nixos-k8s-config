@@ -38,7 +38,7 @@
       "5-lo0" = {
         name = "lo0";
         address = [
-          "10.0.254.${switch_id}/32"
+          "10.1.254.${switch_id}/32"
         ];
       };
     }
@@ -54,7 +54,9 @@
           let
             x' = toString x;
           in
-          nameValuePair "10-enp${x'}s0" { name = "enp${x'}s0"; }
+          nameValuePair "10-enp${x'}s0" {
+            name = "enp${x'}s0";
+          }
         ) (range 5 8);
       in
       listToAttrs interfaces
