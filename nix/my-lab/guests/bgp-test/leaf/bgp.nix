@@ -21,6 +21,7 @@ let
 in
 {
   # FRR (Free Range Routing) を有効にする
+  # systemd.services.frr.wantedBy = lib.mkForce [ ];
   services.frr = {
     bgpd.enable = true;
     bfdd.enable = true;
@@ -79,8 +80,8 @@ in
 
         address-family l2vpn evpn
           neighbor OVERLAY activate
-          advertise ipv4 unicast
           advertise-all-vni
+          advertise-svi-ip
         exit-address-family
 
       router bgp 6500${switch_id} vrf vrf10001
