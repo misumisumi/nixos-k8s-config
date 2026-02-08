@@ -7,7 +7,7 @@
 {
   imports = [
     # self.nixosModules.kexec
-    ./network.nix
+    ./network_svi.nix
     ./bgp.nix
   ];
   environment.systemPackages = with pkgs; [
@@ -15,7 +15,7 @@
     ethtool
     socat
     traceroute
-    wireshark-cli
+    tshark
   ];
   fonts.fontconfig.enable = false;
 }
