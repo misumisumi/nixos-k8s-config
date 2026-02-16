@@ -1,0 +1,903 @@
+diff --git a/src/network/meson.build b/src/network/meson.build
+index 78a0e72b3a..e0dc6fca74 100644
+--- a/src/network/meson.build
++++ b/src/network/meson.build
+@@ -41,6 +41,7 @@ systemd_networkd_extract_sources = files(
+         'networkd-bridge-fdb.c',
+         'networkd-bridge-mdb.c',
+         'networkd-bridge-vlan.c',
++        'networkd-bridge-vni.c',
+         'networkd-can.c',
+         'networkd-conf.c',
+         'networkd-dhcp-common.c',
+diff --git a/src/network/networkd-bridge-vlan.c b/src/network/networkd-bridge-vlan.c
+index 0b3fb62860..a10ca08af8 100644
+--- a/src/network/networkd-bridge-vlan.c
++++ b/src/network/networkd-bridge-vlan.c
+@@ -12,6 +12,7 @@
+ #include "networkd-bridge-vlan.h"
+ #include "networkd-link.h"
+ #include "networkd-network.h"
++#include "netdev/vxlan.h"
+ #include "parse-util.h"
+ #include "string-util.h"
+ #include "vlan-util.h"
+@@ -83,6 +84,31 @@ static int add_range(sd_netlink_message *m, uint16_t begin, uint16_t end, bool u
+         return 0;
+ }
+ 
++static int add_tunnel_info(sd_netlink_message *m, uint16_t vid, uint32_t vni, uint16_t flags, char **str) {
++        int r;
++
++        assert(m);
++
++        if (DEBUG_LOGGING)
++                (void) strextendf_with_separator(str, ",", "%u->%u%s",
++                                                 vid, vni,
++                                                 flags ? (flags == BRIDGE_VLAN_INFO_RANGE_BEGIN ? "(range_begin)" : "(range_end)") : "");
++
++        r = sd_netlink_message_append_u16(m, IFLA_BRIDGE_VLAN_TUNNEL_VID, vid);
++        if (r < 0)
++                return r;
++
++        r = sd_netlink_message_append_u32(m, IFLA_BRIDGE_VLAN_TUNNEL_ID, vni);
++        if (r < 0)
++                return r;
++
++        r = sd_netlink_message_append_u16(m, IFLA_BRIDGE_VLAN_TUNNEL_FLAGS, flags);
++        if (r < 0)
++                return r;
++
++        return 0;
++}
++
+ static uint16_t link_get_pvid(Link *link, bool *ret_untagged) {
+         assert(link);
+         assert(link->network);
+@@ -231,6 +257,153 @@ static int bridge_vlan_append_del_info(Link *link, sd_netlink_message *m) {
+         return 0;
+ }
+ 
++static int bridge_vlan_append_set_tunnel_info(Link *link, sd_netlink_message *m) {
++        _cleanup_free_ char *add_str = NULL;
++        int r;
++
++        assert(link);
++        assert(link->network);
++        assert(m);
++
++        /* Process configured entries that are not yet applied */
++        for (size_t i = 0; i < link->network->bridge_vlan_tunnel_vni.n_entries; i++) {
++                BridgeVLANTunnelEntry *entry = &link->network->bridge_vlan_tunnel_vni.entries[i];
++
++                /* Skip if already configured in the kernel */
++                if (entry->is_configured)
++                        continue;
++
++                /* Open IFLA_BRIDGE_VLAN_TUNNEL_INFO container for this entry */
++                r = sd_netlink_message_open_container(m, IFLA_BRIDGE_VLAN_TUNNEL_INFO);
++                if (r < 0)
++                        return r;
++
++                if (entry->vid_start == entry->vid_end) {
++                        /* Single VLAN */
++                        r = add_tunnel_info(m, entry->vid_start, entry->vni_start, 0, &add_str);
++                } else {
++                        /* VLAN range */
++                        r = add_tunnel_info(m, entry->vid_start, entry->vni_start, BRIDGE_VLAN_INFO_RANGE_BEGIN, &add_str);
++                        if (r < 0)
++                                goto close_container;
++
++                        r = add_tunnel_info(m, entry->vid_end, entry->vni_end, BRIDGE_VLAN_INFO_RANGE_END, &add_str);
++                }
++
++                if (r < 0)
++                        goto close_container;
++
++                /* Close IFLA_BRIDGE_VLAN_TUNNEL_INFO container for this entry */
++                r = sd_netlink_message_close_container(m);
++                if (r < 0)
++                        return r;
++
++                continue;
++
++close_container:
++                sd_netlink_message_close_container(m);
++                return r;
++        }
++
++        if (add_str)
++                log_link_debug(link, "Setting Bridge VLAN Tunnel VNI: %s", add_str);
++
++        return 0;
++}
++
++static int bridge_vlan_append_del_tunnel_info(Link *link, sd_netlink_message *m) {
++        _cleanup_free_ char *del_str = NULL;
++        int r;
++
++        assert(link);
++        assert(link->network);
++        assert(m);
++
++        /* Delete entries that exist in kernel but not in configuration */
++        for (size_t i = 0; i < link->bridge_vlan_tunnel_existing.n_entries; i++) {
++                BridgeVLANTunnelEntry *existing = &link->bridge_vlan_tunnel_existing.entries[i];
++
++                /* Check if this entry is in the configured set */
++                for (size_t j = 0; j < link->network->bridge_vlan_tunnel_vni.n_entries; j++) {
++                        BridgeVLANTunnelEntry *configured = &link->network->bridge_vlan_tunnel_vni.entries[j];
++                        if (configured->vid_start == existing->vid_start &&
++                            configured->vid_end == existing->vid_end &&
++                            configured->vni_start == existing->vni_start &&
++                            configured->vni_end == existing->vni_end)
++                                goto next_existing;
++                }
++
++                /* Not in config, mark for deletion */
++                r = sd_netlink_message_open_container(m, IFLA_BRIDGE_VLAN_TUNNEL_INFO);
++                if (r < 0)
++                        return r;
++
++                if (existing->vid_start == existing->vid_end) {
++                        /* Single VLAN deletion */
++                        r = add_tunnel_info(m, existing->vid_start, 0, 0, &del_str);
++                } else {
++                        /* VLAN range deletion */
++                        r = add_tunnel_info(m, existing->vid_start, 0, BRIDGE_VLAN_INFO_RANGE_BEGIN, &del_str);
++                        if (r < 0)
++                                goto close_container;
++
++                        r = add_tunnel_info(m, existing->vid_end, 0, BRIDGE_VLAN_INFO_RANGE_END, &del_str);
++                }
++
++                if (r < 0)
++                        goto close_container;
++
++                r = sd_netlink_message_close_container(m);
++                if (r < 0)
++                        return r;
++
++        next_existing:
++                continue;
++
++close_container:
++                sd_netlink_message_close_container(m);
++                return r;
++        }
++
++        if (del_str)
++                log_link_debug(link, "Deleting Bridge VLAN Tunnel VNI: %s", del_str);
++
++        return 0;
++}
++
++
++int bridge_vlan_set_tunnel_message(Link *link, sd_netlink_message *m, bool is_set) {
++        int r;
++
++        assert(link);
++        assert(m);
++
++        /* Check if we have TunnelVNI entries */
++        if (!link->network->bridge_vlan_tunnel_vni.entries || link->network->bridge_vlan_tunnel_vni.n_entries == 0)
++                return 0;
++
++        r = sd_rtnl_message_link_set_family(m, AF_BRIDGE);
++        if (r < 0)
++                return r;
++
++        r = sd_netlink_message_open_container(m, IFLA_AF_SPEC);
++        if (r < 0)
++                return r;
++
++        if (is_set)
++                r = bridge_vlan_append_set_tunnel_info(link, m);
++        else
++                r = bridge_vlan_append_del_tunnel_info(link, m);
++        if (r < 0)
++                return r;
++
++        r = sd_netlink_message_close_container(m);
++        if (r < 0)
++                return r;
++
++        return 0;
++}
++
+ int bridge_vlan_set_message(Link *link, sd_netlink_message *m, bool is_set) {
+         int r;
+ 
+@@ -326,6 +499,108 @@ int link_update_bridge_vlan(Link *link, sd_netlink_message *m) {
+         return 0;
+ }
+ 
++int link_update_bridge_vlan_tunnel_info(Link *link, sd_netlink_message *m) {
++        _cleanup_free_ void *data = NULL;
++        _cleanup_free_ BridgeVLANTunnelEntry *existing_entries = NULL;
++        size_t len, n_existing = 0;
++        int r, family;
++
++        assert(link);
++        assert(m);
++
++        r = sd_rtnl_message_get_family(m, &family);
++        if (r < 0)
++                return r;
++
++        if (family != AF_BRIDGE)
++                return 0;
++
++        r = sd_netlink_message_read_data(m, IFLA_AF_SPEC, &len, &data);
++        if (r == -ENODATA)
++                return 0;
++        if (r < 0)
++                return r;
++
++        /* Parse tunnel info from IFLA_AF_SPEC */
++        for (struct rtattr *rta = data; RTA_OK(rta, len); rta = RTA_NEXT(rta, len)) {
++                uint16_t vid = UINT16_MAX, vid_end = UINT16_MAX;
++                uint32_t vni = 0, vni_end = 0;
++                size_t attr_len;
++
++                if (RTA_TYPE(rta) != IFLA_BRIDGE_VLAN_TUNNEL_INFO)
++                        continue;
++
++                attr_len = RTA_PAYLOAD(rta);
++                for (struct rtattr *attr = RTA_DATA(rta);
++                     RTA_OK(attr, attr_len);
++                     attr = RTA_NEXT(attr, attr_len)) {
++
++                        switch (RTA_TYPE(attr)) {
++                        case IFLA_BRIDGE_VLAN_TUNNEL_VID:
++                                if (RTA_PAYLOAD(attr) != sizeof(uint16_t))
++                                        break;
++                                if (vid == UINT16_MAX)
++                                        vid = *(uint16_t *) RTA_DATA(attr);
++                                else
++                                        vid_end = *(uint16_t *) RTA_DATA(attr);
++                                break;
++                        case IFLA_BRIDGE_VLAN_TUNNEL_ID:
++                                if (RTA_PAYLOAD(attr) != sizeof(uint32_t))
++                                        break;
++                                if (vni == 0)
++                                        vni = *(uint32_t *) RTA_DATA(attr);
++                                else
++                                        vni_end = *(uint32_t *) RTA_DATA(attr);
++                                break;
++                        }
++                }
++
++                /* Add to existing entries if valid (vni != 0, not marked for deletion) */
++                if (vid != UINT16_MAX && vni != 0) {
++                        BridgeVLANTunnelEntry *new_entries = reallocarray(
++                                existing_entries,
++                                n_existing + 1,
++                                sizeof(BridgeVLANTunnelEntry));
++                        if (!new_entries)
++                                return log_oom();
++
++                        existing_entries = new_entries;
++                        new_entries[n_existing] = (BridgeVLANTunnelEntry) {
++                                .vid_start = vid,
++                                .vid_end = vid_end != UINT16_MAX ? vid_end : vid,
++                                .vni_start = vni,
++                                .vni_end = vni_end != 0 ? vni_end : vni,
++                                .is_configured = false,
++                        };
++                        n_existing++;
++                }
++        }
++
++        /* Update is_configured flag for entries that match the configuration */
++        for (size_t i = 0; i < link->network->bridge_vlan_tunnel_vni.n_entries; i++) {
++                BridgeVLANTunnelEntry *configured = &link->network->bridge_vlan_tunnel_vni.entries[i];
++
++                for (size_t j = 0; j < n_existing; j++) {
++                        BridgeVLANTunnelEntry *existing = &existing_entries[j];
++                        if (existing->vid_start == configured->vid_start &&
++                            existing->vid_end == configured->vid_end &&
++                            existing->vni_start == configured->vni_start &&
++                            existing->vni_end == configured->vni_end) {
++                                configured->is_configured = true;
++                                break;
++                        }
++                }
++        }
++
++        /* Copy back to link struct for future use */
++        link->bridge_vlan_tunnel_existing.entries = mfree(link->bridge_vlan_tunnel_existing.entries);
++        link->bridge_vlan_tunnel_existing.entries = existing_entries;
++        link->bridge_vlan_tunnel_existing.n_entries = n_existing;
++        existing_entries = NULL;
++
++        return 0;
++}
++
+ void network_adjust_bridge_vlan(Network *network) {
+         assert(network);
+ 
+@@ -391,7 +666,8 @@ int config_parse_bridge_vlan_id_range(
+                 void *data,
+                 void *userdata) {
+ 
+-        uint32_t *bitmap = ASSERT_PTR(data);
++        Network *network = ASSERT_PTR(userdata);
++        uint32_t *bitmap = data;
+         uint16_t vid, vid_end;
+         int r;
+ 
+@@ -413,8 +689,111 @@ int config_parse_bridge_vlan_id_range(
+                 return 0;
+         }
+ 
++        /* Track the VLAN range for TunnelVNI */
++        network->bridge_vlan_section_start = vid;
++        network->bridge_vlan_section_end = vid_end;
++
+         for (; vid <= vid_end; vid++)
+                 set_bit(vid, bitmap);
+ 
+         return 0;
+ }
++
++void bridge_vlan_mark_tunnel_vni_configured(Link *link) {
++        assert(link);
++        assert(link->network);
++
++        /* Mark all tunnel VNI entries as configured after successful Netlink operation */
++        for (size_t i = 0; i < link->network->bridge_vlan_tunnel_vni.n_entries; i++) {
++                BridgeVLANTunnelEntry *entry = &link->network->bridge_vlan_tunnel_vni.entries[i];
++                entry->is_configured = true;
++        }
++}
++
++int config_parse_bridge_vlan_tunnel_vni(
++                const char *unit,
++                const char *filename,
++                unsigned line,
++                const char *section,
++                unsigned section_line,
++                const char *lvalue,
++                int ltype,
++                const char *rvalue,
++                void *data,
++                void *userdata) {
++
++        Network *network = ASSERT_PTR(userdata);
++        uint32_t vni, vni_end;
++        char *dash;
++        int r;
++
++        assert(filename);
++        assert(section);
++        assert(lvalue);
++        assert(rvalue);
++
++        if (isempty(rvalue))
++                return 0;
++
++        /* Parse VNI range: "10001" or "10001-10005" */
++        dash = strchr(rvalue, '-');
++        if (dash) {
++                _cleanup_free_ char *vni_str = NULL;
++                vni_str = strndup(rvalue, dash - rvalue);
++                if (!vni_str)
++                        return log_oom();
++
++                r = safe_atou32(vni_str, &vni);
++                if (r < 0) {
++                        log_syntax(unit, LOG_WARNING, filename, line, r,
++                                   "Failed to parse VNI start value, ignoring: %s",
++                                   vni_str);
++                        return 0;
++                }
++
++                r = safe_atou32(dash + 1, &vni_end);
++                if (r < 0) {
++                        log_syntax(unit, LOG_WARNING, filename, line, r,
++                                   "Failed to parse VNI end value, ignoring: %s",
++                                   dash + 1);
++                        return 0;
++                }
++        } else {
++                r = safe_atou32(rvalue, &vni);
++                if (r < 0) {
++                        log_syntax(unit, LOG_WARNING, filename, line, r,
++                                   "Failed to parse VNI, ignoring: %s",
++                                   rvalue);
++                        return 0;
++                }
++                vni_end = vni;
++        }
++
++        /* Validate VNI range (24-bit) */
++        if (vni > VXLAN_VID_MAX || vni_end > VXLAN_VID_MAX || vni > vni_end) {
++                log_syntax(unit, LOG_WARNING, filename, line, 0,
++                           "Invalid VNI range, ignoring: %s",
++                           rvalue);
++                return 0;
++        }
++
++        /* Add entry to tunnel VNI array */
++        BridgeVLANTunnelEntry *new_entries = reallocarray(
++                network->bridge_vlan_tunnel_vni.entries,
++                network->bridge_vlan_tunnel_vni.n_entries + 1,
++                sizeof(BridgeVLANTunnelEntry));
++        if (!new_entries)
++                return log_oom();
++
++        network->bridge_vlan_tunnel_vni.entries = new_entries;
++        new_entries[network->bridge_vlan_tunnel_vni.n_entries] = (BridgeVLANTunnelEntry) {
++                .vid_start = network->bridge_vlan_section_start,
++                .vid_end = network->bridge_vlan_section_end,
++                .vni_start = vni,
++                .vni_end = vni_end,
++                .is_configured = false,
++        };
++        network->bridge_vlan_tunnel_vni.n_entries++;
++
++        return 0;
++}
+diff --git a/src/network/networkd-bridge-vlan.h b/src/network/networkd-bridge-vlan.h
+index f497a1f670..b84b6caf70 100644
+--- a/src/network/networkd-bridge-vlan.h
++++ b/src/network/networkd-bridge-vlan.h
+@@ -15,11 +15,29 @@
+ #define BRIDGE_VLAN_REMOVE_PVID (UINT16_MAX - 1)
+ assert_cc(BRIDGE_VLAN_REMOVE_PVID > VLANID_MAX);
+ 
++typedef struct {
++        uint16_t vid_start;
++        uint16_t vid_end;
++        uint32_t vni_start;
++        uint32_t vni_end;
++        bool is_configured;
++} BridgeVLANTunnelEntry;
++
++typedef struct {
++        BridgeVLANTunnelEntry *entries;
++        size_t n_entries;
++} BridgeVLANTunnelVNI;
++
+ void network_adjust_bridge_vlan(Network *network);
+ 
+ int bridge_vlan_set_message(Link *link, sd_netlink_message *m, bool is_set);
++int bridge_vlan_set_tunnel_message(Link *link, sd_netlink_message *m, bool is_set);
+ 
+ int link_update_bridge_vlan(Link *link, sd_netlink_message *m);
++int link_update_bridge_vlan_tunnel_info(Link *link, sd_netlink_message *m);
++
++void bridge_vlan_mark_tunnel_vni_configured(Link *link);
+ 
+ CONFIG_PARSER_PROTOTYPE(config_parse_bridge_vlan_id);
+ CONFIG_PARSER_PROTOTYPE(config_parse_bridge_vlan_id_range);
++CONFIG_PARSER_PROTOTYPE(config_parse_bridge_vlan_tunnel_vni);
+diff --git a/src/network/networkd-bridge-vni.c b/src/network/networkd-bridge-vni.c
+new file mode 100644
+index 0000000000..b49513deaa
+--- /dev/null
++++ b/src/network/networkd-bridge-vni.c
+@@ -0,0 +1,140 @@
++/* SPDX-License-Identifier: LGPL-2.1-or-later */
++
++#include <linux/if_link.h>
++
++#include "sd-netlink.h"
++
++#include "alloc-util.h"
++#include "netlink-util.h"
++#include "networkd-bridge-vlan.h"
++#include "networkd-bridge-vni.h"
++#include "networkd-link.h"
++#include "networkd-network.h"
++#include "networkd-util.h"
++#include "string-util.h"
++
++static int add_vnifilter_entry(sd_netlink_message *m, uint32_t vni_start, uint32_t vni_end, char **str) {
++        int r;
++
++        assert(m);
++
++        if (DEBUG_LOGGING)
++                (void) strextendf_with_separator(str, ",", "vni=%u%s%u",
++                                                 vni_start,
++                                                 vni_end ? "-" : "",
++                                                 vni_end ? vni_end : 0);
++
++        r = sd_netlink_message_append_u32(m, VXLAN_VNIFILTER_ENTRY_START, vni_start);
++        if (r < 0)
++                log_warning("Failed to append VXLAN_VNIFILTER_ENTRY_START: %d", r);
++                return r;
++
++        if (vni_end > vni_start) {
++                r = sd_netlink_message_append_u32(m, VXLAN_VNIFILTER_ENTRY_END, vni_end);
++                if (r < 0)
++                        return r;
++        }
++
++        return 0;
++}
++
++static int bridge_vni_append_set_vnifilter_entry(Link *link, sd_netlink_message *m) {
++        _cleanup_free_ char *add_str = NULL;
++        int r;
++
++        assert(link);
++        assert(link->network);
++        assert(m);
++
++        /* Process configured tunnel VNI entries that are not yet applied */
++        for (size_t i = 0; i < link->network->bridge_vlan_tunnel_vni.n_entries; i++) {
++                BridgeVLANTunnelEntry *entry = &link->network->bridge_vlan_tunnel_vni.entries[i];
++
++                /* Skip if already configured in the kernel */
++                /* if (entry->is_configured) */
++                /*         continue; */
++
++                /* Add VNI mapping */
++
++                /* Open VXLAN_VNIFILTER_ENTRY container */
++                r = sd_netlink_message_open_array(m, VXLAN_VNIFILTER_ENTRY);
++                if (r < 0)
++                        log_link_debug(link, "Failed to open VXLAN_VNIFILTER_ENTRY container");
++
++                r = add_vnifilter_entry(m, entry->vni_start, entry->vni_end, &add_str);
++                if (r < 0)
++                        log_link_debug(link, "Failed to add VNIFILTER ENTRY: %u-%u", entry->vni_start, entry->vni_end);
++
++                /* Close VXLAN_VNIFILTER_ENTRY container */
++                r = sd_netlink_message_close_container(m);
++                if (r < 0)
++                        log_link_debug(link, "Failed to close VXLAN_VNIFILTER_ENTRY container");
++        }
++
++        if (add_str)
++                log_link_debug(link, "Setting VXLAN VNI ENTRY: %s", add_str);
++
++        return 0;
++}
++
++static int bridge_vni_append_del_vnifilter_entry(Link *link, sd_netlink_message *m) {
++        _cleanup_free_ char *del_str = NULL;
++        int r;
++
++        assert(link);
++        assert(link->network);
++        assert(m);
++
++        /* Delete entries that exist in kernel but not in configuration */
++        for (size_t i = 0; i < link->bridge_vlan_tunnel_existing.n_entries; i++) {
++                BridgeVLANTunnelEntry *existing = &link->bridge_vlan_tunnel_existing.entries[i];
++
++                /* Check if this entry is in the configured set */
++                for (size_t j = 0; j < link->network->bridge_vlan_tunnel_vni.n_entries; j++) {
++                        BridgeVLANTunnelEntry *configured = &link->network->bridge_vlan_tunnel_vni.entries[j];
++                        if (configured->vni_start == existing->vni_start &&
++                            configured->vni_end == existing->vni_end)
++                                goto next_existing;
++                }
++
++                r = sd_netlink_message_open_array(m, VXLAN_VNIFILTER_ENTRY);
++                if (r < 0)
++                        log_link_debug(link, "Failed to open VXLAN_VNIFILTER_ENTRY container");
++
++                r = add_vnifilter_entry(m, existing->vni_start, existing->vni_end, &del_str);
++                if (r < 0)
++                        log_link_debug(link, "Failed to delete VNIFILTER ENTRY: %u-%u", existing->vni_start, existing->vni_end);
++
++                /* Close VXLAN_VNIFILTER_ENTRY container */
++                r = sd_netlink_message_close_container(m);
++                if (r < 0)
++                        log_link_debug(link, "Failed to close VXLAN_VNIFILTER_ENTRY container");
++
++        next_existing:
++                continue;
++        }
++
++        if (del_str)
++                log_link_debug(link, "Deleting VXLAN VNIFILTER: %s", del_str);
++
++        return 0;
++}
++
++int bridge_vni_set_vnifilter_entry_message(Link *link, sd_netlink_message *m, bool is_set) {
++        int r;
++
++        assert(link);
++        assert(m);
++
++        /* Check if we have TunnelVNI entries or existing entries to delete */
++        if ((!link->network->bridge_vlan_tunnel_vni.entries || link->network->bridge_vlan_tunnel_vni.n_entries == 0) &&
++            (!link->bridge_vlan_tunnel_existing.entries || link->bridge_vlan_tunnel_existing.n_entries == 0))
++                return 0;
++
++        if (is_set)
++                r = bridge_vni_append_set_vnifilter_entry(link, m);
++        else
++                r = bridge_vni_append_del_vnifilter_entry(link, m);
++
++        return r;
++}
+diff --git a/src/network/networkd-bridge-vni.h b/src/network/networkd-bridge-vni.h
+new file mode 100644
+index 0000000000..54cd269eba
+--- /dev/null
++++ b/src/network/networkd-bridge-vni.h
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: LGPL-2.1-or-later */
++#pragma once
++
++/***
++  Copyright © 2024 systemd Project. All rights reserved.
++***/
++
++#include "networkd-forward.h"
++
++typedef struct {
++        uint32_t vni_start;
++        uint32_t vni_end;
++} VXLANVNIFilterEntry;
++
++typedef struct {
++        VXLANVNIFilterEntry *entries;
++        size_t n_entries;
++} VXLANVNIFilter;
++
++int bridge_vni_set_vnifilter_entry_message(Link *link, sd_netlink_message *m, bool is_set);
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 9c3de19766..1d047838a3 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -295,6 +295,8 @@ static Link* link_free(Link *link) {
+ 
+         set_free(link->slaves);
+ 
++        link->bridge_vlan_tunnel_existing.entries = mfree(link->bridge_vlan_tunnel_existing.entries);
++
+         network_unref(link->network);
+ 
+         sd_event_source_disable_unref(link->carrier_lost_timer);
+@@ -1245,6 +1247,14 @@ static int link_configure(Link *link) {
+         if (r < 0)
+                 return r;
+ 
++        r = link_request_to_set_bridge_vlan_tunnel(link);
++        if (r < 0)
++                return r;
++
++        r = link_request_to_set_bridge_vnifilter_entry(link);
++        if (r < 0)
++                return r;
++
+         r = link_request_to_activate(link);
+         if (r < 0)
+                 return r;
+@@ -2702,6 +2712,10 @@ static int link_update(Link *link, sd_netlink_message *message) {
+         if (r < 0)
+                 return r;
+ 
++        r = link_update_bridge_vlan_tunnel_info(link, message);
++        if (r < 0)
++                return r;
++
+         return needs_reconfigure;
+ }
+ 
+diff --git a/src/network/networkd-link.h b/src/network/networkd-link.h
+index 02e1a5a363..0b00fbb70c 100644
+--- a/src/network/networkd-link.h
++++ b/src/network/networkd-link.h
+@@ -64,6 +64,7 @@ typedef struct Link {
+         uint16_t bridge_vlan_pvid;
+         bool bridge_vlan_pvid_is_untagged;
+         uint32_t bridge_vlan_bitmap[BRIDGE_VLAN_BITMAP_LEN];
++        BridgeVLANTunnelVNI bridge_vlan_tunnel_existing;
+ 
+         /* to prevent multiple ethtool calls */
+         bool ethtool_driver_read;
+diff --git a/src/network/networkd-network-gperf.gperf b/src/network/networkd-network-gperf.gperf
+index 52fc0ab444..86733a7d5e 100644
+--- a/src/network/networkd-network-gperf.gperf
++++ b/src/network/networkd-network-gperf.gperf
+@@ -421,6 +421,7 @@ BridgeMDB.MulticastGroupAddress,             config_parse_mdb_group_address,
+ BridgeMDB.VLANId,                            config_parse_mdb_vlan_id,                                 0,                             0
+ BridgeVLAN.PVID,                             config_parse_bridge_vlan_id,                              0,                             offsetof(Network, bridge_vlan_pvid)
+ BridgeVLAN.VLAN,                             config_parse_bridge_vlan_id_range,                        0,                             offsetof(Network, bridge_vlan_bitmap)
++BridgeVLAN.TunnelVNI,                        config_parse_bridge_vlan_tunnel_vni,                      0,                             offsetof(Network, bridge_vlan_tunnel_vni)
+ BridgeVLAN.EgressUntagged,                   config_parse_bridge_vlan_id_range,                        0,                             offsetof(Network, bridge_vlan_untagged_bitmap)
+ DHCPPrefixDelegation.UplinkInterface,        config_parse_uplink,                                      0,                             0
+ DHCPPrefixDelegation.SubnetId,               config_parse_dhcp_pd_subnet_id,                           0,                             offsetof(Network, dhcp_pd_subnet_id)
+diff --git a/src/network/networkd-network.h b/src/network/networkd-network.h
+index 677d337e0f..9f58131c24 100644
+--- a/src/network/networkd-network.h
++++ b/src/network/networkd-network.h
+@@ -298,6 +298,9 @@ typedef struct Network {
+         uint16_t bridge_vlan_pvid;
+         uint32_t bridge_vlan_bitmap[BRIDGE_VLAN_BITMAP_LEN];
+         uint32_t bridge_vlan_untagged_bitmap[BRIDGE_VLAN_BITMAP_LEN];
++        uint16_t bridge_vlan_section_start;
++        uint16_t bridge_vlan_section_end;
++        BridgeVLANTunnelVNI bridge_vlan_tunnel_vni;
+ 
+         /* CAN support */
+         uint32_t can_bitrate;
+diff --git a/src/network/networkd-queue.c b/src/network/networkd-queue.c
+index bc2e7095fa..9266ab44d9 100644
+--- a/src/network/networkd-queue.c
++++ b/src/network/networkd-queue.c
+@@ -382,6 +382,10 @@ static const char *const request_type_table[_REQUEST_TYPE_MAX] = {
+         [REQUEST_TYPE_SET_LINK_BRIDGE]                  = "bridge configurations",
+         [REQUEST_TYPE_SET_LINK_BRIDGE_VLAN]             = "bridge VLAN configurations (step 1)",
+         [REQUEST_TYPE_DEL_LINK_BRIDGE_VLAN]             = "bridge VLAN configurations (step 2)",
++        [REQUEST_TYPE_DEL_LINK_BRIDGE_VLAN_TUNNEL]      = "bridge VLAN tunnel configurations (step 1)",
++        [REQUEST_TYPE_SET_LINK_BRIDGE_VLAN_TUNNEL]      = "bridge VLAN tunnel configurations (step 2)",
++        [REQUEST_TYPE_SET_LINK_BRIDGE_VNIFILTER_ENTRY]  = "bridge VXLAN VNI configurations (step 1)",
++        [REQUEST_TYPE_DEL_LINK_BRIDGE_VNIFILTER_ENTRY]  = "bridge VXLAN VNI configurations (step 2)",
+         [REQUEST_TYPE_SET_LINK_CAN]                     = "CAN interface configurations",
+         [REQUEST_TYPE_SET_LINK_FLAGS]                   = "link flags",
+         [REQUEST_TYPE_SET_LINK_GROUP]                   = "interface group",
+diff --git a/src/network/networkd-queue.h b/src/network/networkd-queue.h
+index 16db5e3ba5..d2e76feea5 100644
+--- a/src/network/networkd-queue.h
++++ b/src/network/networkd-queue.h
+@@ -29,7 +29,11 @@ typedef enum RequestType {
+         REQUEST_TYPE_SET_LINK_BOND,                    /* Setting bond configs. */
+         REQUEST_TYPE_SET_LINK_BRIDGE,                  /* Setting bridge configs. */
+         REQUEST_TYPE_SET_LINK_BRIDGE_VLAN,             /* Setting bridge VLAN configs. */
++        REQUEST_TYPE_SET_LINK_BRIDGE_VLAN_TUNNEL,      /* Setting bridge VLAN tunnel configs. */
+         REQUEST_TYPE_DEL_LINK_BRIDGE_VLAN,             /* Removing bridge VLAN configs. */
++        REQUEST_TYPE_DEL_LINK_BRIDGE_VLAN_TUNNEL,      /* Removing bridge VLAN tunnel configs. */
++        REQUEST_TYPE_SET_LINK_BRIDGE_VNIFILTER_ENTRY,  /* Setting bridge VXLAN VNI configs. */
++        REQUEST_TYPE_DEL_LINK_BRIDGE_VNIFILTER_ENTRY,  /* Removing bridge VXLAN VNI configs. */
+         REQUEST_TYPE_SET_LINK_CAN,                     /* Setting CAN interface configs. */
+         REQUEST_TYPE_SET_LINK_FLAGS,                   /* Setting IFF_NOARP or friends. */
+         REQUEST_TYPE_SET_LINK_GROUP,                   /* Setting interface group. */
+diff --git a/src/network/networkd-setlink.c b/src/network/networkd-setlink.c
+index ed51ecdd79..357d9e4992 100644
+--- a/src/network/networkd-setlink.c
++++ b/src/network/networkd-setlink.c
+@@ -11,6 +11,8 @@
+ #include "netif-util.h"
+ #include "netlink-util.h"
+ #include "networkd-address.h"
++#include "networkd-bridge-vlan.h"
++#include "networkd-bridge-vni.h"
+ #include "networkd-can.h"
+ #include "networkd-ipv4acd.h"
+ #include "networkd-ipv4ll.h"
+@@ -126,6 +128,33 @@ static int link_del_bridge_vlan_handler(sd_netlink *rtnl, sd_netlink_message *m,
+         return set_link_handler_internal(rtnl, m, req, link, /* ignore = */ false, NULL);
+ }
+ 
++static int link_set_bridge_tunnel_info_handler(sd_netlink *rtnl, sd_netlink_message *m, Request *req, Link *link, void *userdata) {
++        int r;
++
++        assert(link);
++
++        r = set_link_handler_internal(rtnl, m, req, link, /* ignore = */ false, NULL);
++        if (r <= 0)
++                return r;
++
++        /* Mark entries as configured only after successful Netlink operation */
++        bridge_vlan_mark_tunnel_vni_configured(link);
++
++        return 0;
++}
++
++static int link_del_bridge_tunnel_info_handler(sd_netlink *rtnl, sd_netlink_message *m, Request *req, Link *link, void *userdata) {
++        return set_link_handler_internal(rtnl, m, req, link, /* ignore = */ false, NULL);
++}
++
++static int link_set_bridge_vnifilter_entry_handler(sd_netlink *rtnl, sd_netlink_message *m, Request *req, Link *link, void *userdata) {
++        return set_link_handler_internal(rtnl, m, req, link, /* ignore = */ false, NULL);
++}
++
++static int link_del_bridge_vnifilter_entry_handler(sd_netlink *rtnl, sd_netlink_message *m, Request *req, Link *link, void *userdata) {
++        return set_link_handler_internal(rtnl, m, req, link, /* ignore = */ false, NULL);
++}
++
+ static int link_set_can_handler(sd_netlink *rtnl, sd_netlink_message *m, Request *req, Link *link, void *userdata) {
+         return set_link_handler_internal(rtnl, m, req, link, /* ignore = */ false, NULL);
+ }
+@@ -362,7 +391,8 @@ static int link_configure_fill_message(
+                 }
+ 
+                 if (link->network->bridge_vlan_tunnel >= 0) {
+-                        r = sd_netlink_message_append_u8(req, IFLA_BRPORT_VLAN_TUNNEL, link->network->bridge_vlan_tunnel);
++                        r = sd_netlink_message_append_u8(
++                                        req, IFLA_BRPORT_VLAN_TUNNEL, link->network->bridge_vlan_tunnel);
+                         if (r < 0)
+                                 return r;
+                 }
+@@ -381,6 +411,26 @@ static int link_configure_fill_message(
+                 if (r < 0)
+                         return r;
+                 break;
++        case REQUEST_TYPE_SET_LINK_BRIDGE_VLAN_TUNNEL:
++                r = bridge_vlan_set_tunnel_message(link, req, /* is_set = */ true);
++                if (r < 0)
++                        return r;
++                break;
++        case REQUEST_TYPE_DEL_LINK_BRIDGE_VLAN_TUNNEL:
++                r = bridge_vlan_set_tunnel_message(link, req, /* is_set = */ false);
++                if (r < 0)
++                        return r;
++                break;
++        case REQUEST_TYPE_SET_LINK_BRIDGE_VNIFILTER_ENTRY:
++                r = bridge_vni_set_vnifilter_entry_message(link, req, /* is_set = */ true);
++                if (r < 0)
++                        return r;
++                break;
++        case REQUEST_TYPE_DEL_LINK_BRIDGE_VNIFILTER_ENTRY:
++                r = bridge_vni_set_vnifilter_entry_message(link, req, /* is_set = */ false);
++                if (r < 0)
++                        return r;
++                break;
+         case REQUEST_TYPE_SET_LINK_CAN:
+                 r = can_set_netlink_message(link, req);
+                 if (r < 0)
+@@ -856,6 +906,50 @@ int link_request_to_set_bridge_vlan(Link *link) {
+         return 0;
+ }
+ 
++int link_request_to_set_bridge_vlan_tunnel(Link *link) {
++        int r;
++
++        assert(link);
++        assert(link->network);
++
++
++        r = link_request_set_link(link, REQUEST_TYPE_DEL_LINK_BRIDGE_VLAN_TUNNEL,
++                                  link_del_bridge_tunnel_info_handler,
++                                  NULL);
++        if (r < 0)
++                return r;
++
++        r = link_request_set_link(link, REQUEST_TYPE_SET_LINK_BRIDGE_VLAN_TUNNEL,
++                                  link_set_bridge_tunnel_info_handler,
++                                  NULL);
++        if (r < 0)
++                return r;
++
++        return 0;
++}
++
++int link_request_to_set_bridge_vnifilter_entry(Link *link) {
++        int r;
++
++        assert(link);
++        assert(link->network);
++
++        r = link_request_set_link(link, REQUEST_TYPE_SET_LINK_BRIDGE_VNIFILTER_ENTRY,
++                                  link_set_bridge_vnifilter_entry_handler,
++                                  NULL);
++        if (r < 0)
++                return r;
++
++        r = link_request_set_link(link, REQUEST_TYPE_DEL_LINK_BRIDGE_VNIFILTER_ENTRY,
++                                  link_del_bridge_vnifilter_entry_handler,
++                                  NULL);
++        if (r < 0)
++                return r;
++
++
++        return 0;
++}
++
+ int link_request_to_set_can(Link *link) {
+         assert(link);
+         assert(link->network);
+diff --git a/src/network/networkd-setlink.h b/src/network/networkd-setlink.h
+index 41ebe52f0d..24929607e1 100644
+--- a/src/network/networkd-setlink.h
++++ b/src/network/networkd-setlink.h
+@@ -7,6 +7,8 @@ int link_request_to_set_addrgen_mode(Link *link);
+ int link_request_to_set_bond(Link *link);
+ int link_request_to_set_bridge(Link *link);
+ int link_request_to_set_bridge_vlan(Link *link);
++int link_request_to_set_bridge_vlan_tunnel(Link *link);
++int link_request_to_set_bridge_vnifilter_entry(Link *link);
+ int link_request_to_set_can(Link *link);
+ int link_request_to_set_flags(Link *link);
+ int link_request_to_set_group(Link *link);

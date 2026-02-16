@@ -1,24 +1,8 @@
 {
   lib,
   config,
-  switch_id,
   ...
 }:
-let
-  inherit (builtins) head match;
-  inherit (lib)
-    concatMapStringsSep
-    mapAttrsToList
-    filterAttrs
-    hasPrefix
-    ;
-  physicalNetworks = filterAttrs (name: _: hasPrefix "10-" name) config.systemd.network.networks;
-  IFIPs = mapAttrsToList (
-    _: config: "${head (match "(.*).[[:didit:]]/.*" (head config.address))}"
-  ) physicalNetworks;
-  neighborConfig = group: concatMapStringsSep "\n  " (ip: "neighbor ${ip} peer-group ${group}") IFIPs;
-  # ${neighborConfig "SPINE"}
-in
 {
   # FRR (Free Range Routing) を有効にする
   # systemd.services.frr.wantedBy = lib.mkForce [ ];
@@ -34,6 +18,10 @@ in
         match interface lo0
       exit
 
+      route-map REDISTRIBUTE_WAN_INTERFACE permit 10
+        match interface enp0s5
+      exit
+
       route-map UNDERLAY_ANYCAST_IP permit 10
         match ip address prefix-list UNDERLAY_SUBNET
         set extcommunity bandwidth cumulative
@@ -42,12 +30,13 @@ in
       vrf vrf10001
         vni 10001
       exit-vrf
-      vrf vrf10002
-        vni 10002
+
+      vrf vrf91001
+        vni 91001
       exit-vrf
 
-      router bgp 6500${switch_id}
-        bgp router-id 10.1.254.${switch_id}
+      router bgp 65101
+        bgp router-id 10.1.254.254
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -59,8 +48,8 @@ in
         neighbor SPINE timers 1 3
         neighbor SPINE timers connect 5
         neighbor SPINE capability extended-nexthop
-        neighbor enp6s0 interface peer-group SPINE
-        neighbor 192.168.13${switch_id}.1 peer-group SPINE
+        neighbor 192.168.137.1 peer-group SPINE
+        neighbor 192.168.254.1 peer-group SPINE
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
@@ -71,6 +60,15 @@ in
         neighbor OVERLAY ebgp-multihop
         neighbor 10.1.254.1 peer-group OVERLAY
         neighbor 10.1.254.2 peer-group OVERLAY
+
+        neighbor ROUTER peer-group
+        neighbor ROUTER remote-as external
+        neighbor ROUTER advertisement-interval 0
+        neighbor ROUTER timers 1 3
+        neighbor ROUTER timers connect 5
+        neighbor ROUTER update-source lo0
+        neighbor ROUTER ebgp-multihop
+        neighbor 10.254.254.1 peer-group ROUTER
 
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
@@ -83,7 +81,7 @@ in
           advertise-svi-ip
         exit-address-family
 
-      router bgp 6500${switch_id} vrf vrf10001
+      router bgp 65101 vrf vrf10001
         address-family ipv4 unicast
           redistribute connected
         exit-address-family
@@ -92,7 +90,10 @@ in
           advertise ipv4 unicast
         exit-address-family
 
-      router bgp 6500${switch_id} vrf vrf10002
+      router bgp 65101 vrf vrf91001
+        bgp router-id 10.254.254.2
+        neighbor 192.168.255.1 remote-as external
+
         address-family ipv4 unicast
           redistribute connected
         exit-address-family

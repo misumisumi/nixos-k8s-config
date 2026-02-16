@@ -18,7 +18,7 @@
       exit
 
       router bgp 65001
-        bgp router-id 10.1.254.2
+        bgp router-id 10.1.254.1
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
