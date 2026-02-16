@@ -44,6 +44,7 @@ in
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
         bgp listen range 10.1.254.0/24 peer-group OVERLAY
+        bgp listen range 10.254.254.0/30 peer-group OVERLAY
 
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE

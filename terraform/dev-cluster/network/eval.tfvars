@@ -125,14 +125,14 @@ networks = {
   },
   brx-wan = {
     config = {
-      "ipv4.address"  = "10.0.150.1/24"
+      "ipv4.address"  = "10.150.150.1/24"
       "ipv4.nat"      = true
       "ipv4.dhcp"     = true
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "fd42:3a98:dc40:52c6::1/64"
       "ipv6.nat"      = true
       "ipv6.dhcp"     = true
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   }
 }

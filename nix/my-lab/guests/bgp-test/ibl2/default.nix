@@ -7,8 +7,10 @@
 {
   imports = [
     # self.nixosModules.kexec
-    ./network.nix
+    inputs.microvm.nixosModules.host
     ./bgp.nix
+    ./microvm.nix
+    ./network.nix
   ];
   environment.systemPackages = with pkgs; [
     dig

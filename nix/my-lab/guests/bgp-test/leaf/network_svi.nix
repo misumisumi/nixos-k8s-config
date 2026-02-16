@@ -173,12 +173,12 @@ in
             "10.1.254.${switch_id}/32"
           ];
         };
-        "10-enp5s0" = {
-          name = "enp5s0";
-          address = [
-            "192.168.1${switch_id}.2/30"
-          ];
-        };
+        # "10-enp5s0" = {
+        #   name = "enp5s0";
+        #   address = [
+        #     "192.168.1${switch_id}.2/30"
+        #   ];
+        # };
         "10-enp6s0" = {
           name = "enp6s0";
         };
@@ -187,6 +187,12 @@ in
           address = [
             "192.168.13${switch_id}.2/30"
           ];
+          # routes = [
+          #   {
+          #     Destination = "10.1.254.2";
+          #     Gateway = "192.168.13${switch_id}.1";
+          #   }
+          # ];
         };
         "20-vrf10001" = {
           name = "vrf10001";
@@ -276,19 +282,19 @@ in
           vrf = [ "vrf10001" ];
           address = [ "172.16.20.1/24" ];
         };
-      };
-    }
-    // lib.optionalAttrs (switch_id == "5") {
-      "30-tn1-vlan30" = {
-        name = "tn1-vlan30";
-        vrf = [ "vrf10001" ];
-        macvlan = [ "tn1-vlan30agw" ];
-        address = [ "172.16.30.1${switch_id}/24" ];
-      };
-      "30-tn1-vlan30agw" = {
-        name = "tn1-vlan30agw";
-        vrf = [ "vrf10001" ];
-        address = [ "172.16.30.1/24" ];
+      }
+      // lib.optionalAttrs (switch_id == "5") {
+        "30-tn1-vlan30" = {
+          name = "tn1-vlan30";
+          vrf = [ "vrf10001" ];
+          macvlan = [ "tn1-vlan30agw" ];
+          address = [ "172.16.30.1${switch_id}/24" ];
+        };
+        "30-tn1-vlan30agw" = {
+          name = "tn1-vlan30agw";
+          vrf = [ "vrf10001" ];
+          address = [ "172.16.30.1/24" ];
+        };
       };
     };
   systemd.services.systemd-networkd =
@@ -323,6 +329,7 @@ in
             ${bridge} vlan add dev vxlan0 vid 1001
             ${bridge} vni add dev vxlan0 vni 10001
             ${bridge} vlan add dev vxlan0 vid 1001 tunnel_info id 10001
+
             ${concatStringsSep "\n" (mapAttrsToList script_per_pair vni_vid_pairs)}
             echo "Configured VNI VLAN tunneling."
             break

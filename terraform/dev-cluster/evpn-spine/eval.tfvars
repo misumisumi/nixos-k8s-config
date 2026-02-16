@@ -9,40 +9,8 @@ compornents = [
       },
     ]
     instances = [
-      # {
-      #   name         = "spine1"
-      #   image        = "mylab/ix2215"
-      #   machine_type = "virtual-machine"
-      #   config = {
-      #     "limits.cpu"    = 2
-      #     "limits.memory" = "4GB"
-      #   }
-      #   profiles = ["spine"]
-      #   networks = [
-      #     {
-      #       parent       = "br0-1g"
-      #       nictype      = "bridged"
-      #       "limits.max" = "1000Mbit"
-      #     },
-      #     {
-      #       parent       = "br1-1g"
-      #       nictype      = "bridged"
-      #       "limits.max" = "1000Mbit"
-      #     },
-      #     {
-      #       parent       = "br2-1g"
-      #       nictype      = "bridged"
-      #       "limits.max" = "1000Mbit"
-      #     },
-      #     {
-      #       parent       = "br3-1g"
-      #       nictype      = "bridged"
-      #       "limits.max" = "1000Mbit"
-      #     },
-      #   ]
-      # },
       {
-        name         = "spine2"
+        name         = "spine1"
         image        = "mylab/ibl2"
         machine_type = "virtual-machine"
         profiles     = ["spine"]
@@ -61,11 +29,21 @@ compornents = [
             nictype      = "bridged"
             "limits.max" = "3000Mbit"
           },
+          {
+            parent       = "br3-10g"
+            nictype      = "bridged"
+            "limits.max" = "2000Mbit"
+          },
+          {
+            parent       = "brx-wan"
+            nictype      = "bridged"
+            "limits.max" = "2000Mbit"
+          },
         ]
       },
       {
-        name         = "spine3"
-        image        = "mylab/spine3"
+        name         = "spine2"
+        image        = "mylab/spine2"
         machine_type = "virtual-machine"
         profiles     = ["spine"]
         config = {

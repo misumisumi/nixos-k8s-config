@@ -68,6 +68,11 @@
         role = "ibl2";
       }))
     ];
+    border-leaf = [
+      (nameValuePair "bgp.border-leaf" (switch {
+        role = "border-leaf";
+      }))
+    ];
     spines = map (
       x:
       let
@@ -78,7 +83,7 @@
         role = "spine";
         id = x';
       })
-    ) (range 3 3);
+    ) (range 2 2);
     leafs = map (
       x:
       let
@@ -88,8 +93,8 @@
         role = "leaf";
         id = x';
       })
-    ) (range 4 7);
-    testNodes = ix2215 ++ ibl2 ++ spines ++ leafs;
+    ) (range 4 6);
+    testNodes = ix2215 ++ ibl2 ++ spines ++ leafs ++ border-leaf;
   in
   listToAttrs testNodes
 )
