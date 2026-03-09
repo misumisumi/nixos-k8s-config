@@ -25,7 +25,17 @@ compornents = [
             "limits.max" = "3000Mbit"
           },
           {
-            parent       = "br0-40g"
+            parent       = "br1-40g"
+            nictype      = "bridged"
+            "limits.max" = "3000Mbit"
+          },
+          {
+            parent       = "br2-40g"
+            nictype      = "bridged"
+            "limits.max" = "3000Mbit"
+          },
+          {
+            parent       = "br3-40g"
             nictype      = "bridged"
             "limits.max" = "3000Mbit"
           },

@@ -28,12 +28,8 @@
       route-map MAP_VTEP_OUT permit 1
       exit
 
-      vrf vrf91001
-        vni 91001
-      exit-vrf
-
       router bgp 64601
-        bgp router-id 10.254.254.1
+        bgp router-id 10.1.254.254
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -44,12 +40,28 @@
         neighbor BORDER timers 1 3
         neighbor BORDER timers connect 5
         neighbor BORDER capability extended-nexthop
-        neighbor 192.168.255.2 peer-group BORDER
+        neighbor enp0s3 interface peer-group BORDER
+
+        neighbor OVERLAY peer-group
+        neighbor OVERLAY remote-as external
+        neighbor OVERLAY advertisement-interval 0
+        neighbor OVERLAY timers 1 3
+        neighbor OVERLAY timers connect 5
+        neighbor OVERLAY update-source lo0
+        neighbor OVERLAY ebgp-multihop
+        neighbor 10.1.254.253 peer-group OVERLAY
 
         address-family ipv4 unicast
+          redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
           neighbor BORDER activate
+        exit-address-family
+
+        address-family l2vpn evpn
+          neighbor OVERLAY activate
+          advertise ipv4 unicast
           redistribute kernel
         exit-address-family
     '';
+    # neighbor 10.2.254.1 peer-group BORDER
   };
 }

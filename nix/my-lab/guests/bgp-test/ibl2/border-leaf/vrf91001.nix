@@ -1,140 +1,74 @@
-let
-  vxlan1_macaddr = "b2:4b:95:b6:b5:b3";
-  vlan_macaddr = tennant: vid: "aa:bb:cc:ee:0${toString tennant}:${toString vid}";
-in
 {
   systemd.network = {
     netdevs = {
-      br1 = {
+      br91001 = {
         netdevConfig = {
-          Name = "br1";
+          Name = "br91001";
           Kind = "bridge";
-          Description = "Sigle VLAN Aware Bridge";
-          MACAddress = "${vxlan1_macaddr}";
-        };
-        bridgeConfig = {
-          DefaultPVID = 1;
-          VLANFiltering = true;
+          Description = "Bridge for VNI 91001";
         };
       };
-      vxlan1 = {
+      vxlan91001 = {
         netdevConfig = {
-          Name = "vxlan1";
+          Name = "vxlan91001";
           Kind = "vxlan";
-          Description = "Sigle VXLAN Aware Interface";
-          MACAddress = "${vxlan1_macaddr}";
+          Description = "VXLAN VNI 91001";
+          # MACAddress = "${vxlan_macaddr}";
         };
         vxlanConfig = {
-          DestinationPort = 4790;
+          VNI = 91001;
+          DestinationPort = 4791;
           MacLearning = false;
           ReduceARPProxy = true;
           Independent = true;
-          Local = "10.1.254.254";
         };
-        extraConfig = ''
-          [VXLAN]
-          VNIFilter=yes
-          External=yes
-        '';
       };
       vrf91001 = {
         netdevConfig = {
           Name = "vrf91001";
           Kind = "vrf";
-          Description = "tennent 1";
+          Description = "WAN";
         };
         vrfConfig = {
           Table = 91001;
         };
       };
-      vni91001 = {
+      lo91001 = {
         netdevConfig = {
-          Name = "vni91001";
-          Kind = "vlan";
-          Description = "VLAN 10 for tennent 1";
-          MACAddress = "${vxlan1_macaddr}";
-        };
-        vlanConfig = {
-          Id = 1001;
-        };
-      };
-      tnx-vlan1 = {
-        netdevConfig = {
-          Name = "tnx-vlan1";
-          Kind = "vlan";
-          Description = "VLAN 1 for tennent X";
-        };
-        vlanConfig = {
-          Id = 1;
-        };
-      };
-      tnx-vlan1agw = {
-        netdevConfig = {
-          Name = "tn1-vlan10agw";
-          Kind = "macvlan";
-          Description = "Anycast Gateway VLAN 1 for tennent X";
-          MACAddress = "${vlan_macaddr 1 "01"}";
-        };
-        macvlanConfig = {
-          Mode = "private";
+          Name = "lo91001";
+          Kind = "dummy";
         };
       };
     };
     networks = {
+      "10-enp0s5" = {
+        name = "enp0s5";
+        vrf = [ "vrf91001" ];
+        networkConfig = {
+          Description = "WAN Interface";
+        };
+      };
+      "10-lo91001" = {
+        name = "lo91001";
+        vrf = [ "vrf91001" ];
+        address = [
+          "10.1.254.253/32"
+        ];
+      };
       "20-vrf91001" = {
         name = "vrf91001";
       };
-      "20-br1" = {
-        name = "br1";
-        networkConfig = {
-          IPv6LinkLocalAddressGenerationMode = "none";
-        };
-        vlan = [
-          "vni91001"
-        ];
-        bridgeVLANs = [
-          {
-            VLAN = 1001;
-          }
-        ];
-        bridgeFDBs = [
-          {
-            MACAddress = "${vlan_macaddr 1 "01"}";
-          }
-        ];
+      "20-br91001" = {
+        name = "br91001";
+        vrf = [ "vrf91001" ];
       };
-      "21-vxlan1" = {
-        name = "vxlan1";
-        bridge = [ "br1" ];
-        networkConfig = {
-          IPv6LinkLocalAddressGenerationMode = "none";
-        };
+      "21-vxlan91001" = {
+        name = "vxlan91001";
+        bridge = [ "br91001" ];
         bridgeConfig = {
           NeighborSuppression = false;
           Learning = false;
         };
-        extraConfig = ''
-          [Bridge]
-          VLANTunnel=yes
-        '';
-      };
-      "21-vni91001" = {
-        name = "vni91001";
-        vrf = [ "vrf91001" ];
-        networkConfig = {
-          IPv6LinkLocalAddressGenerationMode = "none";
-        };
-      };
-      "30-tn1-vlan10" = {
-        name = "tn1-vlan10";
-        vrf = [ "vrf91001" ];
-        macvlan = [ "tn1-vlan1agw" ];
-        address = [ "172.16.10.100/24" ];
-      };
-      "30-tn1-vlan10agw" = {
-        name = "tn1-vlan1agw";
-        vrf = [ "vrf91001" ];
-        address = [ "172.16.10.1/24" ];
       };
     };
   };

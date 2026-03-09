@@ -123,6 +123,48 @@ networks = {
       "ipv6.firewall" = true
     }
   },
+  br1-40g = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "dns.mode"      = "none"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = true
+    }
+  },
+  br2-40g = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "dns.mode"      = "none"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = true
+    }
+  },
+  br3-40g = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "dns.mode"      = "none"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = true
+    }
+  },
   brx-wan = {
     config = {
       "ipv4.address"  = "10.150.150.1/24"
