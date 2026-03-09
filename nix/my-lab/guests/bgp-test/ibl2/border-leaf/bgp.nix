@@ -36,7 +36,7 @@
       exit-vrf
 
       router bgp 65101
-        bgp router-id 10.1.254.254
+        bgp router-id 10.1.254.253
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -48,8 +48,8 @@
         neighbor SPINE timers 1 3
         neighbor SPINE timers connect 5
         neighbor SPINE capability extended-nexthop
-        neighbor 192.168.137.1 peer-group SPINE
-        neighbor 192.168.254.1 peer-group SPINE
+        neighbor enp0s3 interface peer-group SPINE
+        neighbor enp0s4 interface peer-group SPINE
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
@@ -60,15 +60,6 @@
         neighbor OVERLAY ebgp-multihop
         neighbor 10.1.254.1 peer-group OVERLAY
         neighbor 10.1.254.2 peer-group OVERLAY
-
-        neighbor ROUTER peer-group
-        neighbor ROUTER remote-as external
-        neighbor ROUTER advertisement-interval 0
-        neighbor ROUTER timers 1 3
-        neighbor ROUTER timers connect 5
-        neighbor ROUTER update-source lo0
-        neighbor ROUTER ebgp-multihop
-        neighbor 10.254.254.1 peer-group ROUTER
 
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
@@ -91,15 +82,35 @@
         exit-address-family
 
       router bgp 65101 vrf vrf91001
-        bgp router-id 10.254.254.2
-        neighbor 192.168.255.1 remote-as external
+        bgp router-id 10.1.254.253
+        no bgp default ipv4-unicast
+
+        neighbor ROUTER peer-group
+        neighbor ROUTER bfd
+        neighbor ROUTER remote-as external
+        neighbor ROUTER advertisement-interval 0
+        neighbor ROUTER timers 1 3
+        neighbor ROUTER timers connect 5
+        neighbor ROUTER capability extended-nexthop
+        neighbor enp0s5 interface peer-group ROUTER
+
+        neighbor OVERLAY peer-group
+        neighbor OVERLAY remote-as external
+        neighbor OVERLAY advertisement-interval 0
+        neighbor OVERLAY timers 1 3
+        neighbor OVERLAY timers connect 5
+        neighbor OVERLAY update-source lo91001
+        neighbor OVERLAY ebgp-multihop
+        neighbor 10.1.254.254 peer-group OVERLAY
 
         address-family ipv4 unicast
           redistribute connected
+          neighbor ROUTER activate
         exit-address-family
 
         address-family l2vpn evpn
           advertise ipv4 unicast
+          neighbor OVERLAY activate
         exit-address-family
     '';
   };

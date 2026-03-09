@@ -60,7 +60,7 @@ in
         neighbor SPINE timers connect 5
         neighbor SPINE capability extended-nexthop
         neighbor enp6s0 interface peer-group SPINE
-        neighbor 192.168.13${switch_id}.1 peer-group SPINE
+        neighbor enp7s0 interface peer-group SPINE
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external

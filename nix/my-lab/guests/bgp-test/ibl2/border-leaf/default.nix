@@ -3,8 +3,7 @@
   imports = [
     ./bgp.nix
     ./network.nix
-    # ./vrf91001.nix
-    ./vrf91001_.nix
+    ./vrf91001.nix
   ];
   services.openssh = {
     enable = true;

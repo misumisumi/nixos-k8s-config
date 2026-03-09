@@ -2,25 +2,44 @@
 {
   systemd.network = {
     netdevs = {
-      bridge4border = {
+      br_leaf2router = {
         netdevConfig = {
-          Name = "bridge4border";
+          Name = "br_leaf2router";
+          Kind = "bridge";
+          Description = "Bridge for border leaf VM";
+        };
+      };
+      br_leaf2host = {
+        netdevConfig = {
+          Name = "br_leaf2host";
           Kind = "bridge";
           Description = "Bridge for border leaf VM";
         };
       };
     };
     networks = {
-      "15-bridge4border" = {
-        name = "bridge4border";
+      "15-br_leaf2router" = {
+        name = "br_leaf2router";
         networkConfig = {
           IPv6LinkLocalAddressGenerationMode = "none";
         };
       };
-      "16-border-network" = {
-        bridge = [ "bridge4border" ];
+      "16-leaf2router-network" = {
+        bridge = [ "br_leaf2router" ];
         matchConfig = {
-          Name = [ "vm_border*" ];
+          Name = [
+            "vm_borderLeaf"
+            "vm_borderRouter"
+          ];
+        };
+      };
+      "15-br_leaf2host" = {
+        name = "br_leaf2host";
+      };
+      "16-border2host-network" = {
+        bridge = [ "br_leaf2host" ];
+        matchConfig = {
+          Name = [ "vm_40g" ];
         };
       };
     };
@@ -48,20 +67,16 @@
           ];
           interfaces = [
             {
-              type = "macvtap";
+              type = "tap";
               id = "vm_40g";
-              mac = "20:00:00:00:00:40";
-              macvtap = {
-                link = "enp6s0";
-                mode = "bridge";
-              };
+              mac = "20:00:00:00:00:01";
             }
             {
               type = "macvtap";
               id = "vm_10g";
-              mac = "20:00:00:00:00:10";
+              mac = "20:00:00:00:00:02";
               macvtap = {
-                link = "enp7s0";
+                link = "enp9s0";
                 mode = "passthru";
               };
             }
@@ -106,7 +121,7 @@
               id = "vm_wan";
               mac = "20:10:00:00:00:02";
               macvtap = {
-                link = "enp8s0";
+                link = "enp10s0";
                 mode = "bridge";
               };
             }

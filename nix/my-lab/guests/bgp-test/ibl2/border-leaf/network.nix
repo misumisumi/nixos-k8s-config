@@ -195,19 +195,19 @@ in
         "5-lo0" = {
           name = "lo0";
           address = [
-            "10.1.254.254/32"
+            "10.1.254.253/32"
           ];
         };
         "10-enp0s3" = {
           name = "enp0s3";
-          address = [ "192.168.137.2/30" ];
+          # address = [ "192.168.137.2/30" ];
           networkConfig = {
             Description = "40G Interface";
           };
         };
         "10-enp0s4" = {
           name = "enp0s4";
-          address = [ "192.168.254.2/30" ];
+          # address = [ "192.168.254.2/30" ];
           networkConfig = {
             Description = "10G Interface";
           };
@@ -244,15 +244,9 @@ in
             ${bridge} vni add dev vxlan0 vni 10001
             ${bridge} vlan add dev vxlan0 vid 1001 tunnel_info id 10001
 
-            # ${bridge} vlan add dev vxlan1 vid 1001
-            # ${bridge} vni add dev vxlan1 vni 91001
-            # ${bridge} vlan add dev vxlan1 vid 1001 tunnel_info id 91001
-            # ${bridge} vlan add dev vxlan1 vid 1
-            # ${bridge} vni add dev vxlan1 vni 91001
-            # ${bridge} vlan add dev vxlan1 vid 1 tunnel_info id 91001
-
             ${concatStringsSep "\n" (mapAttrsToList script_per_pair vni_vid_pairs)}
             echo "Configured VNI VLAN tunneling."
+            break
           else
             sleep 2
           fi

@@ -2,6 +2,9 @@
   lib,
   ...
 }:
+let
+  inherit (lib) concatMapStringsSep range;
+in
 {
   # FRR (Free Range Routing) を有効にする
   services.frr = {
@@ -29,7 +32,10 @@
         neighbor LEAF timers 1 3
         neighbor LEAF timers connect 5
         neighbor LEAF capability extended-nexthop
-        bgp listen range 192.168.0.0/16 peer-group LEAF
+        ${concatMapStringsSep "\n  " (x: "neighbor enp${toString x}s0 interface peer-group LEAF") (
+          range 5 8
+        )}
+        neighbor br_leaf2host interface peer-group LEAF
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external

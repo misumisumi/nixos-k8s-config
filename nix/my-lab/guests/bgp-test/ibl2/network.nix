@@ -17,111 +17,47 @@
     useDHCP = false;
     firewall.enable = false;
   };
-  systemd.network =
-    let
-      inherit (builtins)
-        foldl'
-        ;
-      inherit (lib)
-        range
-        mkMerge
-        ;
-      mergeAttrsListRecursive =
-        attrsList: foldl' (merged: attrs: lib.recursiveUpdate merged attrs) { } attrsList;
-
-      loopbackIFs = [
-        {
-          netdevs = {
-            lo0 = {
-              netdevConfig = {
-                Name = "lo0";
-                Kind = "dummy";
-              };
-            };
-          };
-          networks = {
-            "5-lo0" = {
-              name = "lo0";
-              address = [
-                "10.1.254.1/32"
-              ];
-            };
-            "5-enp7s0" = {
-              name = "enp7s0";
-              networkConfig = {
-                IPv6LinkLocalAddressGenerationMode = "none";
-              };
-            };
-            "5-enp8s0" = {
-              name = "enp8s0";
-              networkConfig = {
-                IPv6LinkLocalAddressGenerationMode = "none";
-              };
-            };
-          };
-        }
-      ];
-      underlayMacvlanIF =
-        _id:
-        let
-          id = toString _id;
-        in
-        {
-          netdevs = {
-            "macvlan${id}" = {
-              netdevConfig = {
-                Name = "macvlan${toString id}";
-                Kind = "macvlan";
-              };
-              macvlanConfig = {
-                Mode = "bridge"; # NOTE: VMと通信する必要がある場合はvepaはダメ
-              };
-            };
-          };
-          networks = {
-            "10-macvlan${id}" = {
-              name = "macvlan${id}";
-              address = [ "192.168.13${id}.1/30" ];
-              # routes = [
-              #   {
-              #     Destination = "10.1.254.${id}";
-              #     Gateway = "192.168.13${id}.2";
-              #   }
-              # ];
-            };
-          };
+  systemd.network = {
+    config.networkConfig = {
+      #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
+      ManageForeignNextHops = false;
+      ManageForeignRoutes = false;
+      ManageForeignRoutingPolicyRules = false;
+    };
+    netdevs = {
+      lo0 = {
+        netdevConfig = {
+          Name = "lo0";
+          Kind = "dummy";
         };
-      underlayMacvlanIFs = (map underlayMacvlanIF (range 4 5)) ++ (map underlayMacvlanIF (range 6 7));
-      networkConfs = [
-        {
-          networks = {
-            "5-enp5s0" = {
-              name = "enp5s0";
-              macvlan = map (x: "macvlan${toString x}") (range 4 5);
-              networkConfig = {
-                IPv6LinkLocalAddressGenerationMode = "none";
-              };
-            };
-            "5-enp6s0" = {
-              name = "enp6s0";
-              macvlan = map (x: "macvlan${toString x}") (range 6 7);
-              networkConfig = {
-                IPv6LinkLocalAddressGenerationMode = "none";
-              };
-            };
-          };
-        }
-      ]
-      ++ underlayMacvlanIFs
-      ++ loopbackIFs;
-    in
-    {
-      config.networkConfig = {
-        #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
-        ManageForeignNextHops = false;
-        ManageForeignRoutes = false;
-        ManageForeignRoutingPolicyRules = false;
+      };
+    };
+    networks = {
+      "5-lo0" = {
+        name = "lo0";
+        address = [
+          "10.1.254.1/32"
+        ];
       };
     }
-    // mergeAttrsListRecursive networkConfs;
+    // (
+      let
+        inherit (lib)
+          range
+          listToAttrs
+          nameValuePair
+          ;
+        interfaces = map (
+          x:
+          let
+            x' = toString x;
+          in
+          nameValuePair "10-enp${x'}s0" {
+            name = "enp${x'}s0";
+          }
+        ) (range 5 10);
+      in
+      listToAttrs interfaces
+    );
+  };
 }

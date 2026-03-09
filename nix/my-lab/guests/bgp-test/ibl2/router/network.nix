@@ -33,7 +33,7 @@ in
           content = ''
             chain postrouting {
               type nat hook postrouting priority 100; policy accept;
-              oifname "enp0s4" ip saddr 192.168.255.0/24 masquerade
+              oifname "enp0s4" masquerade
             }
           '';
         };
@@ -117,12 +117,11 @@ in
         "5-lo0" = {
           name = "lo0";
           address = [
-            "10.254.254.1/32"
+            "10.1.254.254/32"
           ];
         };
         "10-enp0s3" = {
           name = "enp0s3";
-          address = [ "192.168.255.1/30" ];
           networkConfig = {
             Description = "Point to Point link";
           };

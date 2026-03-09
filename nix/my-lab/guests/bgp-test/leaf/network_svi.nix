@@ -184,9 +184,6 @@ in
         };
         "10-enp7s0" = {
           name = "enp7s0";
-          address = [
-            "192.168.13${switch_id}.2/30"
-          ];
           # routes = [
           #   {
           #     Destination = "10.1.254.2";
