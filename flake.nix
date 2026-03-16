@@ -6,10 +6,9 @@
     extra-trusted-public-keys = [
       "misumisumi.cachix.org-1:f+5BKpIhAG+00yTSoyG/ihgCibcPuJrfQL3M9qw1REY="
     ];
-    connect-timeout = 5;
   };
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nur.url = "github:nix-community/NUR";
     # develop env tools
@@ -36,7 +35,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # local modules
-    homelab-ansible.url = "path:./ansible";
+    # homelab-ansible.url = "path:./ansible";
     homelab-mylab.url = "path:./nix/my-lab";
     homelab-terraform.url = "path:./terraform";
   };
@@ -71,7 +70,7 @@
               [
                 # inputs.flakes.overlays.default
                 # (import ./patches { inherit nixpkgs-unstable; })
-                inputs.homelab-ansible.overlays.default
+                # inputs.homelab-ansible.overlays.default
                 inputs.homelab-terraform.overlays.default
               ];
             config.allowUnfree = true;
@@ -101,7 +100,7 @@
               }
             ];
             devshell.startup = {
-              compinit.text = '''';
+              compinit.text = "";
             };
             packages = with pkgs; [
               bashInteractive

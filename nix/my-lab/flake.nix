@@ -16,6 +16,12 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
+    nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-pcsd";
+
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     devshell = {

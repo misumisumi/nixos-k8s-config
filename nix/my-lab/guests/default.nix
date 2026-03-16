@@ -56,6 +56,7 @@
           ./bgp-test/${role}
           ./_init/incus/virtual-machine
           ./_init/nix
+          inputs.nixos-linstor.nixosModules.default
         ];
       };
     ix2215 = [

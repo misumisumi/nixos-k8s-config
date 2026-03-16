@@ -4,26 +4,31 @@
   lib,
 }:
 let
+  inherit (builtins) head;
+  inherit (lib)
+    nameValuePair
+    mapAttrs'
+    mapAttrsToList
+    importTOML
+    optional
+    ;
   systemSetting =
     {
-      hostname,
-      rootDir,
-      system,
       group,
       tag,
+      system,
+      hostname,
       user,
-      cpu_bender,
+      isTest ? false,
     }:
     lib.nixosSystem {
       inherit system;
       specialArgs = {
         inherit
           self
-          cpu_bender
-          hostname
           inputs
+          hostname
           group
-          tag
           user
           ;
       }; # specialArgs give some args to modules
@@ -31,53 +36,22 @@ let
         inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
         self.nixosModules.default
-        rootDir # Each machine config
-      ];
+        ./${group}/${tag}/software
+      ]
+      ++ optional isTest ./${group}/${tag}/test
+      ++ optional (!isTest) ./${group}/${tag}/hardware;
     };
-  hosts =
-    let
-      inherit (import ../modules/lib/hosts.nix) hostConfigs;
-    in
-    lib.mapAttrs (tag: config: rec {
-      inherit tag;
-      inherit (config)
-        user
-        group
-        hostname
-        system
-        cpu_bender
-        ;
-      rootDir = ./${group}/${tag};
-    }) hostConfigs;
+  group_and_hosts = importTOML ./static.toml;
 in
-(lib.mapAttrs (name: value: (systemSetting value)) hosts)
-// {
-  first-stage-netboot = lib.nixosSystem {
-    system = "x86_64-linux";
-    specialArgs = {
-      user = "nixos";
-      hostname = "first-stage";
-      inherit
-        self
-        inputs
-        ;
-    }; # specialArgs give some args to modules
-    modules = [
-      ./compute/first-stage
-    ];
-  };
-  kexec-test = lib.nixosSystem {
-    system = "x86_64-linux";
-    specialArgs = {
-      user = "nixos";
-      hostname = "kexec-test";
-      inherit
-        self
-        inputs
-        ;
-    }; # specialArgs give some args to modules
-    modules = [
-      ./compute/kexec-test
-    ];
-  };
-}
+head (
+  mapAttrsToList (
+    group: hosts:
+    (mapAttrs' (
+      tag: value:
+      nameValuePair "${group}_${tag}" (systemSetting {
+        inherit group tag;
+        inherit (value) system hostname user;
+      })
+    ) hosts)
+  ) group_and_hosts
+)
