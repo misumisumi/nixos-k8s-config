@@ -1,0 +1,19 @@
+[liveimg.first-stage]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "first-stage"
+
+[liveimg.kexec]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "nixos-kexec"
+
+[liveimg.livecd]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "nixos-livecd"
+
+[liveimg.netboot]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "nixos-netboot"

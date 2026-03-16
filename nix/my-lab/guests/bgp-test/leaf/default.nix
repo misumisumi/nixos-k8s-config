@@ -9,6 +9,8 @@
     # self.nixosModules.kexec
     ./network_svi.nix
     ./bgp.nix
+    ../../_init/nix
+    ./linstor.nix
   ];
   environment.systemPackages = with pkgs; [
     dig

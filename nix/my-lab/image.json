@@ -1,12 +1,10 @@
 {
     "hoge": {
-        "serial": "1234567890",
-        "mac_address": "12:34:56:78:90:ab",
+        "system_uuid": "40e85eb1-32a6-4dcc-b67d-fb3551dfaa40",
         "image": "hoge.tar.gz"
     },
     "foo": {
-        "serial": "1234567891",
-        "mac_address": "12:35:56:78:90:ab",
+        "system_uuid": "0ec8a247-5fac-4392-aa64-24ea2f77ed7f",
         "image": "foo.tar.gz"
     }
 }

@@ -17,10 +17,7 @@
   system.build.kexecImageTarball =
     let
       tarName =
-        if config.networking.hostName != "" then
-          "${config.networking.hostName}.tar.gz"
-        else
-          "kexec-image.tar.gz";
+        if config.networking.hostName != "" then "${config.networking.hostName}.tar.gz" else "nixos.tar.gz";
       kexecRunScript = pkgs.replaceVarsWith {
         src = ./kexec-run.sh;
         isExecutable = true;

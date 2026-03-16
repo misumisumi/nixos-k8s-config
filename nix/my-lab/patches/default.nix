@@ -50,4 +50,9 @@
 { nixpkgs-unstable, ... }:
 final: prev: {
   inherit (nixpkgs-unstable) frr;
+
+  rbash = prev.runCommandNoCC "rbash-${prev.bashInteractive.version}" { } ''
+    mkdir -p $out/bin
+    ln -s ${prev.bashInteractive}/bin/bash $out/bin/rbash
+  '';
 }

@@ -1,10 +1,13 @@
 {
+  build = {
+    imports = [ ./build.nix ];
+  };
   default = {
     imports = [
+      ./build.nix
       ./diskless
       ./kexec
       ./netboot.nix
-      ./static.nix
       ./tgtd.nix
       ./vfio.nix
       ./virtualisation.nix
@@ -21,8 +24,5 @@
   };
   netboot = {
     imports = [ ./netboot.nix ];
-  };
-  static = {
-    imports = [ ./static.nix ];
   };
 }
