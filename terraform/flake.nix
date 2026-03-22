@@ -17,7 +17,7 @@
     };
 
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
 
     sops-nix = {
@@ -63,13 +63,13 @@
             inherit (myScripts) ter;
             tofu-w-plugins = prev.opentofu.withPlugins (
               tp: with tp; [
-                external
-                incus
-                libvirt
-                random
-                sops
-                time
-                tp.null
+                hashicorp_external
+                lxc_incus
+                dmacvicar_libvirt
+                hashicorp_random
+                carlpett_sops
+                hashicorp_time
+                hashicorp_null
               ]
             );
           };

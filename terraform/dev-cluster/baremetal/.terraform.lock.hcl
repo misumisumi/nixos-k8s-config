@@ -2,10 +2,10 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/carlpett/sops" {
-  version     = "1.2.0"
-  constraints = "~> 1.2.0"
+  version     = "1.3.0"
+  constraints = "~> 1.3.0"
   hashes = [
-    "h1:OnPaijg9wUckYgg4zVXKH0M9Q8TeXy8os3sWdnuzTJE=",
+    "h1:aYi4hGgtEWLuAU0VnjEmTvQTOtJXO+ho2yeX2MZe+TA=",
   ]
 }
 
@@ -13,14 +13,14 @@ provider "registry.opentofu.org/hashicorp/random" {
   version     = "3.7.2"
   constraints = "~> 3.7.2"
   hashes = [
-    "h1:ODsVS/utXYR2TNXP8M6E9ATYrKzGFD4Y8GmPTnTwieA=",
+    "h1:fnSM3II9Sd70hThOvT0MAc21NJm+dcyEW6pwQT+7oCg=",
   ]
 }
 
 provider "registry.opentofu.org/lxc/incus" {
-  version     = "0.3.1"
-  constraints = "~> 0.3.1"
+  version     = "1.0.0"
+  constraints = "~> 1.0.0"
   hashes = [
-    "h1:l+bT2FUniwevrFWhVPgtDoIISh7uGqoDx68o0Bu22PY=",
+    "h1:Ovi4/wSJqbt4p08+Hciyxa3MWLlMTnkXVV8rP33RpPA=",
   ]
 }

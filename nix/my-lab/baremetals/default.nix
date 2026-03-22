@@ -19,7 +19,8 @@ let
       system,
       hostname,
       user,
-      isTest ? false,
+      isNixOSTest ? false,
+      isTF ? false,
     }:
     lib.nixosSystem {
       inherit system;
@@ -36,10 +37,11 @@ let
         inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
         self.nixosModules.default
-        ./${group}/${tag}/software
+        ./${group}/${tag}/common
       ]
-      ++ optional isTest ./${group}/${tag}/test
-      ++ optional (!isTest) ./${group}/${tag}/hardware;
+      ++ optional isNixOSTest ./${group}/${tag}/test
+      ++ optional isTF ./${group}/${tag}/tf
+      ++ optional (!(isNixOSTest && isTF)) ./${group}/${tag}/production;
     };
   group_and_hosts = importTOML ./static.toml;
 in

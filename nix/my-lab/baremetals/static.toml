@@ -1,7 +1,7 @@
-[liveimg.first-stage]
+[liveimg.first-image]
 system = "x86_64-linux"
 user = "nixos"
-hostname = "first-stage"
+hostname = "first-image"
 
 [liveimg.kexec]
 system = "x86_64-linux"

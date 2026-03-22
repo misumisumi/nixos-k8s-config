@@ -38,7 +38,7 @@ in
         {
           name = "mynet";
           type = "flannel";
-          cniVersion = "0.3.1";
+          cniVersion = "1.0.0";
           delegate = {
             isDefaultGateway = true;
             bridge = "mynet";
