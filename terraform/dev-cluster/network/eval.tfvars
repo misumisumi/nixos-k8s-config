@@ -1,5 +1,5 @@
 networks = {
-  br0-1g = {
+  dev-1g-0 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -13,7 +13,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br1-1g = {
+  dev-10g-0 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -27,7 +27,20 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br2-1g = {
+  dev-10g-1 = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = true
+    }
+  },
+  dev-10g-2 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -41,20 +54,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br3-1g = {
-    config = {
-      "bridge.driver" = "openvswitch"
-      "ipv4.address"  = "none"
-      "ipv4.nat"      = false
-      "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
-      "ipv6.address"  = "none"
-      "ipv6.nat"      = false
-      "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
-    }
-  },
-  br0-10g = {
+  dev-10g-3 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -68,20 +68,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br1-10g = {
-    config = {
-      "bridge.driver" = "openvswitch"
-      "ipv4.address"  = "none"
-      "ipv4.nat"      = false
-      "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
-      "ipv6.address"  = "none"
-      "ipv6.nat"      = false
-      "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
-    }
-  },
-  br2-10g = {
+  dev-40g-0 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -95,7 +82,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br3-10g = {
+  dev-40g-1 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -109,7 +96,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br0-40g = {
+  dev-40g-2 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -123,7 +110,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br1-40g = {
+  dev-40g-3 = {
     config = {
       "bridge.driver" = "openvswitch"
       "dns.mode"      = "none"
@@ -137,35 +124,7 @@ networks = {
       "ipv6.firewall" = true
     }
   },
-  br2-40g = {
-    config = {
-      "bridge.driver" = "openvswitch"
-      "dns.mode"      = "none"
-      "ipv4.address"  = "none"
-      "ipv4.nat"      = false
-      "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
-      "ipv6.address"  = "none"
-      "ipv6.nat"      = false
-      "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
-    }
-  },
-  br3-40g = {
-    config = {
-      "bridge.driver" = "openvswitch"
-      "dns.mode"      = "none"
-      "ipv4.address"  = "none"
-      "ipv4.nat"      = false
-      "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
-      "ipv6.address"  = "none"
-      "ipv6.nat"      = false
-      "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
-    }
-  },
-  brx-wan = {
+  dev-wan = {
     config = {
       "ipv4.address"  = "10.150.150.1/24"
       "ipv4.nat"      = true

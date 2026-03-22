@@ -1,9 +1,9 @@
 terraform {
-  required_version = "~> 1.9.1"
+  required_version = "~> 1.10.0"
   required_providers {
     incus = {
       source  = "registry.opentofu.org/lxc/incus"
-      version = "~> 0.3.1"
+      version = "~> 1.0.0"
     }
     random = {
       source  = "registry.opentofu.org/hashicorp/random"
@@ -11,7 +11,7 @@ terraform {
     }
     sops = {
       source  = "carlpett/sops"
-      version = "~> 1.2.0"
+      version = "~> 1.3.0"
     }
   }
 }
@@ -24,7 +24,6 @@ provider "incus" {
     content {
       name    = incus_remote.value.name
       address = incus_remote.value.address
-      scheme  = "https"
     }
   }
 }

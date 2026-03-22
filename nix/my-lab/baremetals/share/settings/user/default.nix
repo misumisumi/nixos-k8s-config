@@ -8,7 +8,7 @@
 }:
 let
   inherit (builtins) hasAttr;
-  inherit (lib.attrsets) optionalAttrs;
+  inherit (lib) optionalAttrs;
 in
 {
   users.users.${user} = {
@@ -33,12 +33,10 @@ in
       }
     ];
   }
-  // lib.optionalAttrs (hasAttr "password" config.sops.userHashedPassword) {
-    hashedPasswordFile = config.sops.secrets.userHashedPassword.password.path;
+  // optionalAttrs (hasAttr "password" (config.sops.userHashedPassword or { })) {
+    hashedPasswordFile = config.sops.secrets.userHashedPassword.path;
   };
-  users.users.root.hashedPasswordFile =
-    optionalAttrs (hasAttr "password" config.sops.rootHashedPassword)
-      {
-        hashedPasswordFile = config.sops.secrets.rootHashedPassword.path;
-      };
+  users.users.root = optionalAttrs (hasAttr "password" (config.sops.rootHashedPassword or { })) {
+    hashedPasswordFile = config.sops.secrets.rootHashedPassword.path;
+  };
 }

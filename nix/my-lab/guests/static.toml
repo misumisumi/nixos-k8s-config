@@ -1,0 +1,34 @@
+[mngr.admiral]
+system = "x86_64-linux"
+user = "admiral"
+hostname = "admiral"
+[mngr.admiral.wan]
+ip = "10.150.150.40"
+prefix = "/24"
+[mngr.admiral.pxe]
+ip = "192.168.2.40"
+prefix = "/24"
+[mngr.admiral.kexec]
+ip = "192.168.20.40"
+prefix = "/24"
+vlanId = "20"
+
+[mngr.image-server]
+system = "x86_64-linux"
+user = "mngr-image"
+hostname = "image-server"
+[mngr.image-server.pxe]
+ip = "192.168.2.36"
+prefix = "/24"
+[mngr.image-server.pxe.dnsmasq]
+rangeStart = "150"
+port = "53"
+server = []
+[mngr.image-server.kexec]
+ip = "192.168.20.36"
+prefix = "/24"
+vlanId = "20"
+[mngr.image-server.kexec.dnsmasq]
+rangeStart = "150"
+port = "53"
+server = []

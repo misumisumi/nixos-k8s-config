@@ -23,7 +23,7 @@ provider "incus" {
     content {
       name    = incus_remote.value.name
       address = incus_remote.value.address
-      scheme  = "https"
+      
     }
   }
 }

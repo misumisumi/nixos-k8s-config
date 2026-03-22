@@ -6,8 +6,8 @@
     imports = [
       ./build.nix
       ./diskless
-      ./kexec
-      ./netboot.nix
+      # ./kexec
+      # ./netboot.nix
       ./tgtd.nix
       ./vfio.nix
       ./virtualisation.nix

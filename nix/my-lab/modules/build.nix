@@ -14,8 +14,10 @@ in
     system.build.extraContents = mkOption {
       type = types.listOf (
         types.submodule {
-          source = mkOption { types = types.path; };
-          target = mkOption { types = types.path; };
+          options = {
+            source = mkOption { type = types.path; };
+            target = mkOption { type = types.path; };
+          };
         }
       );
       default = [ ];
