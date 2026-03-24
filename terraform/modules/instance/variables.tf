@@ -33,7 +33,7 @@ variable "instances" {
   type = set(
     object({
       name          = string
-      image         = optional(string, "nixos/23.11")
+      image         = optional(string, null)
       source_remote = optional(string, "images")
       machine_type  = optional(string, "container")
       cloudinit = optional(object({
@@ -47,10 +47,7 @@ variable "instances" {
       profiles = optional(list(any), null)
       config   = optional(map(any), {})
 
-      networks = optional(list(map(string)), [{
-        parent  = "incusbr0"
-        nictype = "bridged"
-      }])
+      networks = optional(list(map(string)), [{}])
 
       devices = list(
         object({

@@ -8,6 +8,7 @@
     ../../../share/settings/nix
     ../../../share/settings/security
     ../../../share/settings/ssh
+    ../../../share/settings/user
     ../../share/ssh.nix
   ];
 }

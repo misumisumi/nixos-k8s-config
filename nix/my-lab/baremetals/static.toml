@@ -2,11 +2,13 @@
 system = "x86_64-linux"
 user = "nixos"
 hostname = "first-image"
+vlanId = "20"            # separate manage network
 
-[liveimg.kexec]
+[liveimg.second-image]
 system = "x86_64-linux"
 user = "nixos"
-hostname = "nixos-kexec"
+hostname = "second-image"
+vlanId = "20"             # separate manage network
 
 [liveimg.livecd]
 system = "x86_64-linux"

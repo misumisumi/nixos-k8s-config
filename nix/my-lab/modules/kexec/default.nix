@@ -8,16 +8,17 @@
 }:
 {
   imports = [
-    (modulesPath + "/installer/netboot/netboot-minimal.nix")
+    (modulesPath + "/installer/netboot/netboot.nix")
+    (modulesPath + "/profiles/base.nix")
   ];
+  hardware.enableAllHardware = true;
   boot.initrd.compressor = "xz";
   services.getty.autologinUser = lib.mkForce "${user}";
 
   #NOTE: from https://github.com/nix-community/nixos-images/blob/main/nix/kexec-installer/module.nix
   system.build.kexecImageTarball =
     let
-      tarName =
-        if config.networking.hostName != "" then "${config.networking.hostName}.tar.gz" else "nixos.tar.gz";
+      tarName = "nixos-kexec.tar.gz";
       kexecRunScript = pkgs.replaceVarsWith {
         src = ./kexec-run.sh;
         isExecutable = true;
@@ -36,7 +37,8 @@
       cp "${kexecRunScript}" kexec/run
       cp "${pkgs.pkgsStatic.kexec-tools}/bin/kexec" kexec/kexec
       cp "${iprouteStatic}/bin/ip" kexec/ip
-      ${lib.optionalString (pkgs.hostPlatform == pkgs.buildPlatform) ''
+      cp "${pkgs.cpio}/bin/cpio" kexec/cpio
+      ${lib.optionalString (pkgs.stdenv.hostPlatform == pkgs.stdenv.buildPlatform) ''
         kexec/ip -V
         kexec/kexec --version
       ''}

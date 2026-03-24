@@ -8,13 +8,13 @@
 let
   inherit (builtins) listToAttrs head map;
   inherit (lib) mapAttrsToList nameValuePair;
-  ipxeApp = rec {
-    app = "ipxe";
-    dataDir = "/var/www/${app}";
+  initialApp = {
+    app = "initial";
+    dataDir = "/var/www";
   };
-  kexecApp = rec {
-    app = "kexec";
-    dataDir = "/var/www/${app}";
+  manageApp = {
+    app = "manage";
+    dataDir = "/var/www/kexec";
   };
 in
 {
@@ -28,11 +28,6 @@ in
     config.services.nginx.defaultSSLListenPort
     8080
   ];
-  systemd.services."phpfpm-${kexecApp.app}".serviceConfig = {
-    ReadWritePaths = [
-      "/etc/cockpit/machines.d"
-    ];
-  };
   services.phpfpm.pools = listToAttrs (
     map
       (
@@ -54,21 +49,21 @@ in
         }
       )
       [
-        ipxeApp
-        kexecApp
+        initialApp
+        manageApp
       ]
   );
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "${ipxeApp.app}" = {
+      "${initialApp.app}" = {
         addSSL = false;
         enableACME = false;
-        root = ipxeApp.dataDir;
-        serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.pxe.domain}";
+        root = initialApp.dataDir;
+        serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.initial.domain}";
         listen = [
           {
-            addr = "${static.pxe.ip}";
+            addr = "${static.initial.ip}";
             port = 80;
           }
         ];
@@ -76,20 +71,24 @@ in
           "~ [^/]\.php(/|$)" = {
             extraConfig = ''
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
-              fastcgi_pass unix:${config.services.phpfpm.pools.${ipxeApp.app}.socket};
+              fastcgi_pass unix:${config.services.phpfpm.pools.${initialApp.app}.socket};
               include ${pkgs.nginx}/conf/fastcgi.conf;
             '';
           };
         };
       };
-      "${kexecApp.app}" = {
+      "${manageApp.app}" = {
         addSSL = false;
         enableACME = false;
-        root = kexecApp.dataDir;
-        serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.kexec.domain}";
+        root = manageApp.dataDir;
+        serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.manage.domain}";
         listen = [
           {
-            addr = "${static.kexec.ip}";
+            addr = "${static.initial.ip}";
+            port = 80;
+          }
+          {
+            addr = "${static.manage.ip}";
             port = 80;
           }
         ];
@@ -97,7 +96,7 @@ in
           "~ [^/]\.php(/|$)" = {
             extraConfig = ''
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
-              fastcgi_pass unix:${config.services.phpfpm.pools.${kexecApp.app}.socket};
+              fastcgi_pass unix:${config.services.phpfpm.pools.${manageApp.app}.socket};
               include ${pkgs.nginx}/conf/fastcgi.conf;
             '';
           };
@@ -119,14 +118,14 @@ in
         }
       )
       [
-        ipxeApp
-        kexecApp
+        initialApp
+        manageApp
       ]
   );
   users.groups = listToAttrs (
     map (x: nameValuePair x.app { }) [
-      ipxeApp
-      kexecApp
+      initialApp
+      manageApp
     ]
   );
 }

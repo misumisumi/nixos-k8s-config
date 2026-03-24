@@ -19,8 +19,7 @@ let
       system,
       hostname,
       user,
-      isNixOSTest ? false,
-      isTF ? false,
+      isTest ? false,
     }:
     lib.nixosSystem {
       inherit system;
@@ -31,21 +30,22 @@ let
           hostname
           group
           user
+          isTest
           ;
       }; # specialArgs give some args to modules
       modules = [
         inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
         self.nixosModules.default
+        ./share/modules/static.nix
         ./${group}/${tag}/common
       ]
-      ++ optional isNixOSTest ./${group}/${tag}/test
-      ++ optional isTF ./${group}/${tag}/tf
-      ++ optional (!(isNixOSTest && isTF)) ./${group}/${tag}/production;
+      ++ optional isTest ./${group}/${tag}/test
+      ++ optional (!isTest) ./${group}/${tag}/production;
     };
   group_and_hosts = importTOML ./static.toml;
 in
-head (
+(head (
   mapAttrsToList (
     group: hosts:
     (mapAttrs' (
@@ -56,4 +56,17 @@ head (
       })
     ) hosts)
   ) group_and_hosts
-)
+))
+// (head (
+  mapAttrsToList (
+    group: hosts:
+    (mapAttrs' (
+      tag: value:
+      nameValuePair "test_${group}_${tag}" (systemSetting {
+        inherit group tag;
+        inherit (value) system hostname user;
+        isTest = true;
+      })
+    ) hosts)
+  ) group_and_hosts
+))

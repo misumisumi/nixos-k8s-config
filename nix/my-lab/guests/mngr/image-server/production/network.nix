@@ -12,7 +12,8 @@ in
     hostName = hostname;
     hosts = {
       "127.0.0.2" = lib.mkForce [ ];
-      "192.168.2.36" = [ hostname ];
+      "${static.initial.ip}" = [ "${hostname}.initial.home" ];
+      "${static.manage.ip}" = [ "${hostname}.manage.home" ];
     };
     useNetworkd = true;
     firewall = {
@@ -32,8 +33,8 @@ in
             chain rpfilter {
               type filter hook prerouting priority filter - 20;
 
-              iifname "eth0" oifname "eth0.${static.kexec.vlanId}" drop
-              iifname "eth0.${static.kexec.vlanId}" oifname "eth0" drop
+              iifname "eth1" oifname "eth1.${static.manage.vlanId}" drop
+              iifname "eth1.${static.manage.vlanId}" oifname "eth1" drop
 
               udp dport 69 ct helper set "tftp"
             }
@@ -45,7 +46,7 @@ in
 
             chain forward {
               # Don't access manage segment to the outside
-              iifname "eth0" oifname "eth0" drop
+              iifname "eth1" oifname "eth1" drop
             }
           '';
         };
@@ -57,28 +58,28 @@ in
     network = {
       enable = true;
       netdevs = {
-        "eth0.${static.kexec.vlanId}" = {
+        "eth1.${static.manage.vlanId}" = {
           netdevConfig = {
             Kind = "vlan";
-            Name = "eth0.${static.kexec.vlanId}";
+            Name = "eth1.${static.manage.vlanId}";
           };
           vlanConfig = {
-            Id = toInt static.kexec.vlanId;
+            Id = toInt static.manage.vlanId;
           };
         };
       };
       networks = {
-        "20-pxe" = {
-          name = "eth0";
+        "20-initial" = {
+          name = "eth1";
           vlan = [
-            "eth0.${static.kexec.vlanId}"
+            "eth1.${static.manage.vlanId}"
           ];
-          address = [ "${static.pxe.ip}${static.pxe.prefix}" ];
+          address = [ "${static.initial.ip}${static.initial.prefix}" ];
         };
-        "20-kexec" = {
-          name = "eth0.${static.kexec.vlanId}";
+        "20-manage" = {
+          name = "eth1.${static.manage.vlanId}";
           address = [
-            "${static.kexec.ip}${static.kexec.prefix}"
+            "${static.manage.ip}${static.manage.prefix}"
           ];
         };
       };

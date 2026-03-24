@@ -29,8 +29,8 @@
             chain rpfilter {
               type filter hook prerouting priority filter - 20;
 
-              iifname "eth1" oifname "eth1.${static.kexec.vlanId}" drop
-              iifname "eth1.${static.kexec.vlanId}" oifname "eth1" drop
+              iifname "eth2" oifname "eth2.${static.manage.vlanId}" drop
+              iifname "eth2.${static.manage.vlanId}" oifname "eth2" drop
 
               udp dport 69 ct helper set "tftp"
             }
@@ -42,7 +42,7 @@
 
             chain forward {
               # Don't access manage segment to the outside
-              iifname "eth1" oifname "eth1" drop
+              iifname "eth2" oifname "eth2" drop
             }
           '';
         };
@@ -58,29 +58,32 @@
           inherit (lib) toInt;
         in
         {
-          "eth1.${static.kexec.vlanId}" = {
+          "eth2.${static.manage.vlanId}" = {
             netdevConfig = {
               Kind = "vlan";
-              Name = "eth1.${static.kexec.vlanId}";
+              Name = "eth2.${static.manage.vlanId}";
             };
             vlanConfig = {
-              Id = toInt static.kexec.vlanId;
+              Id = toInt static.manage.vlanId;
             };
           };
         };
       networks = {
-        "5-eth0" = {
-          name = "eth0";
-          address = [ "${static.wan.ip}${static.wan.prefix}" ];
-        };
-        "10-eth1" = {
+        "5-eth1" = {
           name = "eth1";
-          vlan = [ "eth1.${static.kexec.vlanId}" ];
-          address = [ "${static.pxe.ip}${static.pxe.prefix}" ];
+          address = [ "${static.wan.ip}${static.wan.prefix}" ];
+          networkConfig = {
+            Description = "WAN";
+          };
         };
-        "10-eth1.${static.kexec.vlanId}" = {
-          name = "eth1.${static.kexec.vlanId}";
-          address = [ "${static.kexec.ip}${static.kexec.prefix}" ];
+        "10-eth2" = {
+          name = "eth2";
+          vlan = [ "eth1.${static.manage.vlanId}" ];
+          address = [ "${static.initial.ip}${static.initial.prefix}" ];
+        };
+        "10-eth2.${static.manage.vlanId}" = {
+          name = "eth1.${static.manage.vlanId}";
+          address = [ "${static.manage.ip}${static.manage.prefix}" ];
         };
       };
     };

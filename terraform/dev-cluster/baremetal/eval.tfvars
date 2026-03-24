@@ -1,12 +1,15 @@
 compornents = [
   {
-    remote   = "local"
-    profiles = []
+    remote = "local"
+    profiles = [{
+      name = "mngr"
+    }]
     instances = [
       {
         name         = "admiral"
-        image        = "mngr/admiral"
+        image        = "test/mngr/admiral"
         machine_type = "container"
+        profiles     = ["mngr"]
         config = {
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
@@ -24,8 +27,9 @@ compornents = [
       },
       {
         name         = "image-server"
-        image        = "mngr/image-server"
+        image        = "test/mngr/image-server"
         machine_type = "container"
+        profiles     = ["mngr"]
         config = {
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
@@ -38,14 +42,29 @@ compornents = [
         ]
         devices = [
           {
-            name = "ipxe-images"
+            name = "www-root"
             type = "disk"
 
             properties = {
               path   = "/var/www"
               source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/nix/my-lab/guests/mngr/image-server/common/www"
             }
-          }
+          },
+        ]
+      },
+      {
+        name         = "test"
+        machine_type = "virtual-machine"
+        profiles     = ["mngr"]
+        config = {
+          "limits.cpu"    = 2
+          "limits.memory" = "12GB"
+        }
+        networks = [
+          {
+            parent  = "dev-1g-0"
+            nictype = "bridged"
+          },
         ]
       },
     ]

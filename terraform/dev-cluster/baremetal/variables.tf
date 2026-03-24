@@ -27,7 +27,7 @@ variable "compornents" {
         object({
           name         = string
           remote       = optional(string, "local")
-          image        = optional(string, "nixos/23.11")
+          image        = optional(string, null)
           machine_type = optional(string, "container")
           config       = optional(map(any), {})
           profiles     = optional(list(any), null)

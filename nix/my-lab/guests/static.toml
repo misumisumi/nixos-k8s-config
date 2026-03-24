@@ -5,10 +5,10 @@ hostname = "admiral"
 [mngr.admiral.wan]
 ip = "10.150.150.40"
 prefix = "/24"
-[mngr.admiral.pxe]
+[mngr.admiral.initial]
 ip = "192.168.2.40"
 prefix = "/24"
-[mngr.admiral.kexec]
+[mngr.admiral.manage]
 ip = "192.168.20.40"
 prefix = "/24"
 vlanId = "20"
@@ -17,18 +17,18 @@ vlanId = "20"
 system = "x86_64-linux"
 user = "mngr-image"
 hostname = "image-server"
-[mngr.image-server.pxe]
+[mngr.image-server.initial]
 ip = "192.168.2.36"
 prefix = "/24"
-[mngr.image-server.pxe.dnsmasq]
+[mngr.image-server.initial.dnsmasq]
 rangeStart = "150"
 port = "53"
 server = []
-[mngr.image-server.kexec]
+[mngr.image-server.manage]
 ip = "192.168.20.36"
 prefix = "/24"
 vlanId = "20"
-[mngr.image-server.kexec.dnsmasq]
+[mngr.image-server.manage.dnsmasq]
 rangeStart = "150"
 port = "53"
 server = []
