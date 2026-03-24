@@ -1,4 +1,3 @@
-{ self, pkgs, ... }:
 {
   imports = [
     ../../../share/apps/bash
@@ -9,5 +8,6 @@
     ../../../share/settings/security
     ../../../share/settings/ssh
     ../../share/ssh.nix
+    ./network.nix
   ];
 }

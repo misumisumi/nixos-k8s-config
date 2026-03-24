@@ -3,15 +3,13 @@
 # to /etc/nixos/configuration.nix instead.
 {
   self,
-  config,
-  lib,
   modulesPath,
   ...
 }:
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    self.nixosModules.netboot
+    self.nixosModules.kexec
     ./network.nix
   ];
   boot = {
@@ -26,9 +24,5 @@
       ];
       kernelModules = [ "dm-snapshot" ];
     };
-  };
-  hardware.cpu = {
-    amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
 }

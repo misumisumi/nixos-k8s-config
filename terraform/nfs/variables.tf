@@ -28,7 +28,7 @@ variable "compornents" {
         object({
           name         = string
           remote       = optional(string, "local")
-          image        = optional(string, "nixos/23.11")
+          image        = optional(string, null)
           machine_type = optional(string, "container")
           cloudinit = optional(object({
             template_file = string

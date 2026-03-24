@@ -7,6 +7,7 @@
     ../../../share/settings/nix
     ../../../share/settings/security
     ../../../share/settings/user
+    ./network.nix
     ./second-stage-boot.nix
     ./ssh.nix
   ];

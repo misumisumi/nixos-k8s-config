@@ -62,21 +62,21 @@ in
     {
       enable = true;
       multipleSessions = {
-        pxe =
+        initial =
           let
-            interface = "${config.systemd.network.networks."20-pxe".name}";
-            ipSegment = head (match "([0-9]+.[0-9]+.[0-9]+).[0-9]+" static.pxe.ip);
+            interface = "${config.systemd.network.networks."20-initial".name}";
+            ipSegment = head (match "([0-9]+.[0-9]+.[0-9]+).[0-9]+" static.initial.ip);
           in
           rec {
             inherit interface;
-            inherit (static.pxe.dnsmasq) server port;
+            inherit (static.initial.dnsmasq) server port;
 
             no-resolv = true;
             dhcp-authoritative = true;
             except-interface = "lo";
             strict-order = true;
             # DNS settings
-            domain = "pxe";
+            domain = "initial.home";
             local = "/${domain}/";
             cache-size = 1000;
             domain-needed = true;
@@ -104,15 +104,15 @@ in
 
             dhcp-option =
               optionals (port != 0) [
-                "6,${static.pxe.ip}" # DNS server
+                "6,${static.initial.ip}" # DNS server
                 "15,${domain}" # published domain name
                 # "option6:dns-server,${ipv6}"
               ]
-              ++ optionals (static.pxe.dnsmasq.rangeStart != "") [
-                "3,${static.pxe.ip}" # default gateway
+              ++ optionals (static.initial.dnsmasq.rangeStart != "") [
+                "3,${static.initial.ip}" # default gateway
               ];
           }
-          // optionalAttrs (static.pxe.dnsmasq.rangeStart != "") {
+          // optionalAttrs (static.initial.dnsmasq.rangeStart != "") {
             # DHCPとPXEサーバを共存させる場合
             enable-ra = true;
             dhcp-range = [
@@ -120,38 +120,38 @@ in
               "::,constructor:${interface},ra-stateless,1h"
             ];
             dhcp-boot = [
-              "tag:iPXE,tag:X86PC,http://${static.pxe.ip}/boot-menu.php"
-              "tag:iPXE,tag:X86-64_EFI,http://${static.pxe.ip}/boot-menu.php"
+              "tag:iPXE,tag:X86PC,http://${static.initial.ip}/ipxe/boot-menu.php"
+              "tag:iPXE,tag:X86-64_EFI,http://${static.initial.ip}/ipxe/boot-menu.php"
               "tag:!iPXE,tag:X86PC,undionly.kpxe"
               "tag:!iPXE,tag:X86-64_EFI,ipxe.efi"
             ];
           }
-          // optionalAttrs (static.pxe.dnsmasq.rangeStart == "") {
+          // optionalAttrs (static.initial.dnsmasq.rangeStart == "") {
             #NOTE: DHCP PROXYモードでPXEサーバを構成する場合
             dhcp-range = [ "${ipSegment}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
             pxe-service = [
-              "tag:iPXE,X86PC,'iPXE boot menu',http://${static.pxe.ip}/boot-menu.php"
-              "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${static.pxe.ip}/boot-menu.php"
+              "tag:iPXE,X86PC,'iPXE boot menu',http://${static.initial.ip}/ipxe/boot-menu.php"
+              "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${static.initial.ip}/ipxe/boot-menu.php"
               "tag:!iPXE,X86PC,'undionly.kpxe',undionly.kpxe"
               "tag:!iPXE,X86-64_EFI,'ipxe.efi',ipxe.efi"
             ];
           };
 
-        kexec =
+        manage =
           let
-            interface = "${config.systemd.network.networks."20-kexec".name}";
-            ipSegment = head (match "([0-9]+.[0-9]+.[0-9]+).[0-9]+" static.kexec.ip);
+            interface = "${config.systemd.network.networks."20-manage".name}";
+            ipSegment = head (match "([0-9]+.[0-9]+.[0-9]+).[0-9]+" static.manage.ip);
           in
           rec {
             inherit interface;
-            inherit (static.kexec.dnsmasq) server port;
+            inherit (static.manage.dnsmasq) server port;
 
             no-resolv = true;
             dhcp-authoritative = true;
             except-interface = "lo";
             strict-order = true;
 
-            domain = "kexec";
+            domain = "manage.home";
             local = "/${domain}/";
             cache-size = 1000;
             domain-needed = true;
@@ -180,36 +180,24 @@ in
 
             dhcp-option =
               optionals (port != 0) [
-                "6,${static.kexec.ip}" # DNS server
+                "6,${static.manage.ip}" # DNS server
                 "15,${domain}" # published domain name
               ]
-              ++ optionals (static.kexec.dnsmasq.rangeStart != "") [
-                "3,${static.pxe.ip}" # default gateway
+              ++ optionals (static.manage.dnsmasq.rangeStart != "") [
+                "3,${static.initial.ip}" # default gateway
               ];
           }
-          // optionalAttrs (static.kexec.dnsmasq.rangeStart != "") {
+          // optionalAttrs (static.manage.dnsmasq.rangeStart != "") {
             # DHCPとPXEサーバを共存させる場合
             enable-ra = true;
             dhcp-range = [
               "${ipSegment}.150,${ipSegment}.254,255.255.255.0,1h"
               "::,constructor:${interface},ra-stateless,1h"
             ];
-            # dhcp-boot = [
-            #   "tag:iPXE,tag:X86PC,http://${static.kexec.ip}/boot-menu.php"
-            #   "tag:iPXE,tag:X86-64_EFI,http://${static.kexec.ip}/boot-menu.php"
-            #   "tag:!iPXE,tag:X86PC,undionly.kpxe"
-            #   "tag:!iPXE,tag:X86-64_EFI,ipxe.efi"
-            # ];
           }
-          // optionalAttrs (static.kexec.dnsmasq.rangeStart == "") {
+          // optionalAttrs (static.manage.dnsmasq.rangeStart == "") {
             #NOTE: DHCP PROXYモードでPXEサーバを構成する場合
             dhcp-range = [ "${ipSegment}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
-            # pxe-service = [
-            #   "tag:iPXE,X86PC,'iPXE boot menu',http://${static.kexec.ip}/boot-menu.php"
-            #   "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${static.kexec.ip}/boot-menu.php"
-            #   "tag:!iPXE,X86PC,'undionly.kpxe',undionly.kpxe"
-            #   "tag:!iPXE,X86-64_EFI,'ipxe.efi',ipxe.efi"
-            # ];
           };
       };
     };

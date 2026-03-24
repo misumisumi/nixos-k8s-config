@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # This script provides from https://github.com/nix-community/nixos-images/blob/main/nix/kexec-installer/kexec-run.sh
 
 # Set pipefail if the shell supports it.
@@ -9,11 +9,16 @@ fi
 set -eux
 
 kexec_extra_flags=""
+loadOnly=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
   --kexec-extra-flags)
     kexec_extra_flags="$2"
+    shift
+    ;;
+  --load-only)
+    loadOnly=1
     shift
     ;;
   esac
@@ -94,14 +99,19 @@ if ! sh -c "'$SCRIPT_DIR/kexec' --load '$SCRIPT_DIR/bzImage' \
   exit 1
 fi
 
-# Disconnect our background kexec from the terminal
-echo "machine will boot into nixos in 6s..."
-if test -e /dev/kmsg; then
-  # this makes logging visible in `dmesg`, or the system console or tools like journald
-  exec >/dev/kmsg 2>&1
+if [ "$loadOnly" -eq 0 ]; then
+  # Disconnect our background kexec from the terminal
+  echo "machine will boot into nixos in 6s..."
+  if test -e /dev/kmsg; then
+    # this makes logging visible in `dmesg`, or the system console or tools like journald
+    exec >/dev/kmsg 2>&1
+  else
+    exec >/dev/null 2>&1
+  fi
+  # We will kexec in background so we can cleanly finish the script before the hosts go down.
+  # This makes integration with tools like terraform easier.
+  nohup sh -c "sleep 6 && '$SCRIPT_DIR/kexec' -e ${kexec_extra_flags}" &
 else
-  exec >/dev/null 2>&1
+  echo "waiting 6s before next step..."
+  nohup sh -c "sleep 6" &
 fi
-# We will kexec in background so we can cleanly finish the script before the hosts go down.
-# This makes integration with tools like terraform easier.
-nohup sh -c "sleep 6 && '$SCRIPT_DIR/kexec' -e ${kexec_extra_flags}" &

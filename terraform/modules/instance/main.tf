@@ -96,6 +96,7 @@ resource "incus_instance" "instance" {
   type      = each.value.machine_type
   image     = each.value.image
   ephemeral = false
+  running   = each.value.image != null ? true : false
   profiles  = each.value.profiles != [] ? each.value.profiles : ["${replace(each.value.name, "/[[:digit:]]+/", "")}"]
 
   config = merge(
@@ -128,10 +129,11 @@ resource "incus_instance" "instance" {
   dynamic "device" {
     for_each = each.value.networks
     content {
-      # name = format("eth%d", device.key)
-      name = contains(keys(device.value), "name") ? device.value.name : format("eth%d", device.key)
+      #NOTE: +1 to start from eth1, because `virtualisation.vlans` of NixOS creates eth1 as the first NIC and uses a same network.nix with this
+      name = contains(keys(device.value), "name") ? device.value.name : format("eth%d", device.key + 1)
       type = "nic"
       properties = merge({
+        name = contains(keys(device.value), "name") ? device.value.name : format("eth%d", device.key + 1)
         host_name = format(each.value.machine_type == "container" ? "veth_%s%s_%s" : "tap_%s%s_%s",
           substr(each.value.name, 0, 3),
           substr(each.value.name, -1, -1),

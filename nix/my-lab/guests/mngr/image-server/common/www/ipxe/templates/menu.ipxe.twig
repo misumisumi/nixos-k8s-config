@@ -1,9 +1,9 @@
 #!ipxe
 
 # dhcp
-# Some menu defaults
 set menu-timeout 15000
 set sebmenu_timeout 15000
+set menu-default First-boot
 isset ${menu-default} || set menu-default exit
 
 :start
@@ -13,8 +13,9 @@ item --gap --           -------------------------- node type -------------------
 {% for item in boot_items %}
 item {{ item.name }} Launch {{ item.name }}
 {% endfor %}
-item NixOS-installer(25.05)     Launch NixOS-25.05 installer
-item NixOS-installer(unstable)  Launch NixOS-unstable installer
+item First-boot                          Launch first boot NixOS image
+item Official-NixOS-installer(25.11)     Launch NixOS-25.11 installer
+item Official-NixOS-installer(unstable)  Launch NixOS-unstable installer
 item --gap --           -------------------------- Advanced Option --------------------
 item --key c config     Configure settings
 item shell              Drop to iPXE shell
@@ -28,12 +29,16 @@ echo Booting from {{ item.name }}...
 chain -ar images/{{ item.name }}/netboot.ipxe
 {% endfor %}
 
-:NixOS-installer(25.05)
-kernel https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/bzImage-x86_64-linux initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
-initrd https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/initrd-x86_64-linux
+:First-boot
+echo Booting from first stage image...
+chain -ar images/first-image/netboot.ipxe
+
+:Official-NixOS-installer(25.11)
+kernel https://github.com/nix-community/nixos-images/releases/download/nixos-25.11/bzImage-x86_64-linux initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
+initrd https://github.com/nix-community/nixos-images/releases/download/nixos-25.11/initrd-x86_64-linux
 boot
 
-:NixOS-installer(unstable)
+:Official-NixOS-installer(unstable)
 kernel https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/bzImage-x86_64-linux initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
 initrd https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/initrd-x86_64-linux
 boot

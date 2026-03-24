@@ -1,9 +1,9 @@
 { self, ... }:
 {
   imports = [ self.nixosModules.diskless ];
-  # services.diskless.kexec = {
-  #   enable = true;
-  #   serverURL = "http://image-server.kexec";
-  #   imageFile = "kexec-test.tar.gz";
-  # };
+  services.diskless.kexec = {
+    enable = true;
+    serverURL = "http://image-server.initial.home/kexec";
+    fallBackImage = "second-image/nixos-kexec.tar.gz";
+  };
 }

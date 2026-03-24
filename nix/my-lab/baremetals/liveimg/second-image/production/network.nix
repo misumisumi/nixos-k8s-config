@@ -1,25 +1,8 @@
 {
-  lib,
-  pkgs,
-  hostname,
+  static,
   ...
 }:
 {
-  services = {
-    nscd = {
-      enable = true;
-    };
-  };
-  networking = {
-    hostName = hostname;
-    hosts = lib.mkForce { };
-    useDHCP = false;
-    firewall.enable = false;
-  };
-  system.activationScripts.mkRandomHostName.text = ''
-    echo "Create hostname"
-    ${pkgs.diceware}/bin/diceware -n 2 --no-caps -d - > /etc/hostname
-  '';
   systemd = {
     network = {
       enable = true;
@@ -28,19 +11,6 @@
           netdevConfig = {
             Kind = "bond";
             Name = "bond-en";
-          };
-          bondConfig = {
-            Mode = "active-backup";
-            MIIMonitorSec = "1s";
-            PrimaryReselectPolicy = "always";
-            UpDelaySec = "0";
-            DownDelaySec = "0";
-          };
-        };
-        "bond-ib" = {
-          netdevConfig = {
-            Kind = "bond";
-            Name = "bond-ib";
           };
           bondConfig = {
             Mode = "active-backup";

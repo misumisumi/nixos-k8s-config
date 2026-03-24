@@ -5,7 +5,7 @@
       networks = {
         #NOTE: manage network assumes ethernet
         "20-manage" = {
-          name = "en*";
+          name = "eth*";
           DHCP = "yes";
         };
       };

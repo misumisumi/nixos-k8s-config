@@ -5,7 +5,7 @@
   dmidecode,
   curl,
   serverURL,
-  imageFile ? "",
+  fallBackImage ? "nixos-kexec.tar.gz",
   imageMetaJSON ? "",
   useUUID ? false,
 }:
@@ -13,8 +13,8 @@ let
   inherit (lib) optionalString;
 in
 writeShellScriptBin "fetch-and-kexec" (
-  optionalString (imageFile != "") ''
-    IMAGE_URL="${serverURL}/images/${imageFile}"
+  ''
+    FALLBACK_IMAGE_FILE="${fallBackImage}"
   ''
   + optionalString useUUID ''
     IMAGE_JSON_URL="${serverURL}/${imageMetaJSON}"
@@ -25,17 +25,17 @@ writeShellScriptBin "fetch-and-kexec" (
 
     if [ "$IS_DOWNLOADED" -ne 200 ]; then
       echo "Image metadata not found at $IMAGE_JSON_URL."
-      exit 1
+      IMAGE_FILE=""
     fi
-
-    if [ -z "$IMAGE_FILE" ]; then
-      echo "No matching image metadata found."
-      echo "Failback IMAGE_FILE=nixos.tar.gz to fetch image"
-      IMAGE_FILE="nixos.tar.gz"
-    fi
-    IMAGE_URL="${serverURL}/images/$IMAGE_FILE"
   ''
   + ''
+    if [ -z "$IMAGE_FILE" ]; then
+      echo "No matching image metadata found."
+      echo "Failback IMAGE_FILE=$FALLBACK_IMAGE_FILE to fetch image"
+      IMAGE_FILE="$FALLBACK_IMAGE_FILE"
+    fi
+    IMAGE_URL="${serverURL}/images/$IMAGE_FILE"
+
     OUTPUT_PATH="/tmp/kexec-image.tar.gz"
 
     IS_DOWNLOADED=$(${curl}/bin/curl -s -o "$OUTPUT_PATH" -w "%{http_code}" "$IMAGE_URL")

@@ -3,8 +3,6 @@
 # to /etc/nixos/configuration.nix instead.
 {
   self,
-  config,
-  lib,
   modulesPath,
   ...
 }:
@@ -26,9 +24,5 @@
       ];
       kernelModules = [ "dm-snapshot" ];
     };
-  };
-  hardware.cpu = {
-    amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
 }
