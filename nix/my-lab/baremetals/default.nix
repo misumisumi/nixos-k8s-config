@@ -4,10 +4,10 @@
   lib,
 }:
 let
-  inherit (builtins) head;
+  inherit (builtins) listToAttrs;
   inherit (lib)
+    flatten
     nameValuePair
-    mapAttrs'
     mapAttrsToList
     importTOML
     optional
@@ -44,29 +44,33 @@ let
       ++ optional (!isTest) ./${group}/${tag}/production;
     };
   group_and_hosts = importTOML ./static.toml;
+  variants = {
+    prod = {
+      isDev = false;
+      isNixOSTest = false;
+    };
+    dev = {
+      isDev = true;
+      isNixOSTest = false;
+    };
+    test = {
+      isDev = true;
+      isNixOSTest = true;
+    };
+  };
+  config_per_variant =
+    n: v:
+    mapAttrsToList (
+      group: hosts:
+      (mapAttrsToList (
+        tag: value:
+        nameValuePair "${n}_${group}_${tag}" (systemSetting {
+          inherit group tag;
+          inherit (value) system hostname user;
+          inherit (v) isDev isNixOSTest;
+        })
+      ) hosts)
+    ) group_and_hosts;
+
 in
-(head (
-  mapAttrsToList (
-    group: hosts:
-    (mapAttrs' (
-      tag: value:
-      nameValuePair "${group}_${tag}" (systemSetting {
-        inherit group tag;
-        inherit (value) system hostname user;
-      })
-    ) hosts)
-  ) group_and_hosts
-))
-// (head (
-  mapAttrsToList (
-    group: hosts:
-    (mapAttrs' (
-      tag: value:
-      nameValuePair "test_${group}_${tag}" (systemSetting {
-        inherit group tag;
-        inherit (value) system hostname user;
-        isTest = true;
-      })
-    ) hosts)
-  ) group_and_hosts
-))
+listToAttrs (flatten (mapAttrsToList config_per_variant variants))

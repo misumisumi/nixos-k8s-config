@@ -1,5 +1,7 @@
+{ self, ... }:
 {
   imports = [
+    self.nixosModules.netboot
     ../../../share/apps/bash
     ../../../share/modules/static.nix
     ../../../share/settings/console
@@ -11,4 +13,8 @@
     ./second-stage-boot.nix
     ./ssh.nix
   ];
+  hardware.cpu = {
+    intel.updateMicrocode = true;
+    amd.updateMicrocode = true;
+  };
 }
