@@ -2,14 +2,12 @@
 # and may be overwritten by future invocations.  Please make changes
 # to /etc/nixos/configuration.nix instead.
 {
-  self,
   modulesPath,
   ...
 }:
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    self.nixosModules.netboot
     ./network.nix
   ];
   boot = {

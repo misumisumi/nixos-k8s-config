@@ -2,20 +2,36 @@
 system = "x86_64-linux"
 user = "nixos"
 hostname = "first-image"
-vlanId = "20"            # separate manage network
-
 [liveimg.second-image]
 system = "x86_64-linux"
 user = "nixos"
 hostname = "second-image"
-vlanId = "20"             # separate manage network
-
 [liveimg.livecd]
 system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-livecd"
-
 [liveimg.netboot]
 system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-netboot"
+
+[compute.ajisai]
+system = "x86_64-linux"
+user = "renako"
+hostname = "ajisai"
+vlanId = "20"           # separate manage network
+[compute.mao]
+system = "x86_64-linux"
+user = "renako"
+hostname = "renako"
+vlanId = "20"           # separate manage network
+[compute.satsuki]
+system = "x86_64-linux"
+user = "renako"
+hostname = "satsuki"
+vlanId = "20"           # separate manage network
+[router.kaho]
+system = "x86_64-linux"
+user = "renako"
+hostname = "kaho"
+vlanId = "20"           # separate manage network

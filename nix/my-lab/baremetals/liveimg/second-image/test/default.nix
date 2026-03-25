@@ -9,7 +9,6 @@
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    self.nixosModules.kexec
     ./network.nix
   ];
   boot = {
