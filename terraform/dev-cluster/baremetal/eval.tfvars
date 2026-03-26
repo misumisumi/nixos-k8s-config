@@ -7,7 +7,7 @@ compornents = [
     instances = [
       {
         name         = "admiral"
-        image        = "test/mngr/admiral"
+        image        = "dev/mngr/admiral"
         machine_type = "container"
         profiles     = ["mngr"]
         config = {
@@ -27,7 +27,7 @@ compornents = [
       },
       {
         name         = "image-server"
-        image        = "test/mngr/image-server"
+        image        = "dev/mngr/image-server"
         machine_type = "container"
         profiles     = ["mngr"]
         config = {
@@ -42,18 +42,27 @@ compornents = [
         ]
         devices = [
           {
-            name = "www-root"
+            name = "ipxe-images"
             type = "disk"
 
             properties = {
-              path   = "/var/www"
-              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/nix/my-lab/guests/mngr/image-server/common/www"
+              path   = "/var/www/ipxe/images"
+              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/mnt/develop/www/ipxe/images"
+            }
+          },
+          {
+            name = "kexec-images"
+            type = "disk"
+
+            properties = {
+              path   = "/var/www/kexec/images"
+              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/mnt/develop/www/kexec/images"
             }
           },
         ]
       },
       {
-        name         = "test"
+        name         = "empty-vm"
         machine_type = "virtual-machine"
         profiles     = ["mngr"]
         config = {

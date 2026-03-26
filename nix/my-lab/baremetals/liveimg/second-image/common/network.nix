@@ -4,17 +4,17 @@
   hostname,
   ...
 }:
+let
+  inherit (lib) mkForce;
+in
 {
-  services = {
-    nscd = {
-      enable = true;
-    };
+  services.nscd = {
+    enable = true;
   };
   networking = {
     useNetworkd = true;
     hostName = hostname;
-    hosts = lib.mkForce { };
-    useDHCP = false;
+    hosts = mkForce { };
     firewall.enable = false;
   };
   system.activationScripts.mkRandomHostName.text = ''

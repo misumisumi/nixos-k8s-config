@@ -11,6 +11,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nur.url = "github:nix-community/NUR";
+    flake-root.url = "github:srid/flake-root";
     # develop env tools
     flake-parts.url = "github:hercules-ci/flake-parts";
     devshell = {
@@ -45,13 +46,16 @@
       systems = [ "x86_64-linux" ];
       imports = [
         inputs.devshell.flakeModule
+        inputs.flake-root.flakeModule
       ];
       flake = {
         nixosConfigurations = inputs.homelab-mylab.nixosConfigurations;
       };
       perSystem =
         {
+          config,
           system,
+          lib,
           pkgs,
           ...
         }:
@@ -71,6 +75,7 @@
                 # inputs.flakes.overlays.default
                 # (import ./patches { inherit nixpkgs-unstable; })
                 # inputs.homelab-ansible.overlays.default
+                inputs.homelab-mylab.overlays.default
                 inputs.homelab-terraform.overlays.default
               ];
             config.allowUnfree = true;
@@ -101,6 +106,10 @@
             ];
             devshell.startup = {
               compinit.text = "";
+              flakeRoot.text = ''
+                FLAKE_ROOT="''$(${lib.getExe config.flake-root.package})"
+                export FLAKE_ROOT
+              '';
             };
             packages = with pkgs; [
               bashInteractive
@@ -112,6 +121,10 @@
               openssl
               python3
               gawk
+
+              mkimg-lxc
+              mkimg-kexec
+              mkimg-ipxe
             ];
           };
         };

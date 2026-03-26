@@ -19,7 +19,8 @@ let
       system,
       hostname,
       user,
-      isTest ? false,
+      isDev ? false,
+      isNixOSTest ? false,
     }:
     lib.nixosSystem {
       inherit system;
@@ -30,7 +31,8 @@ let
           hostname
           group
           user
-          isTest
+          isDev
+          isNixOSTest
           ;
       }; # specialArgs give some args to modules
       modules = [
@@ -40,8 +42,9 @@ let
         ./share/modules/static.nix
         ./${group}/${tag}/common
       ]
-      ++ optional isTest ./${group}/${tag}/test
-      ++ optional (!isTest) ./${group}/${tag}/production;
+      ++ optional isDev ./${group}/${tag}/develop
+      ++ optional (!isDev) ./${group}/${tag}/production
+      ++ optional isNixOSTest ./${group}/${tag}/develop/nixos-test.nix;
     };
   group_and_hosts = importTOML ./static.toml;
   variants = {

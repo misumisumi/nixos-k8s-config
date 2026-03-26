@@ -29,7 +29,7 @@ in
       };
       fallBackImage = mkOption {
         type = types.str;
-        default = "nixos-kexec.tar.gz";
+        default = "nixos-kexec.tar.xz";
         description = "Name of the fallback boot image to fetch for this system.";
       };
       imageMetaJSON = mkOption {
@@ -73,11 +73,10 @@ in
         description = "Fetch and kexec for live booting diskless system";
         #NOTE: for modules/kexec/kexec-run.sh
         path = with pkgs; [
-          coreutils
-          cpio
-          gzip
           bash
-          util-linux
+          gzip
+          kexec-tools
+          xz
         ];
         wantedBy = [ "multi-user.target" ];
         wants = [
