@@ -15,8 +15,8 @@
   netboot.squashfsCompression = "zstd -Xcompression-level 19";
   services.getty.autologinUser = lib.mkForce "${user}";
 
-  system.build.netbootImage = pkgs.symlinkJoin {
-    name = "netboot";
+  system.build.ipxeImage = pkgs.symlinkJoin {
+    name = "ipxe";
     paths = with config.system.build; [
       netbootRamdisk
       kernel

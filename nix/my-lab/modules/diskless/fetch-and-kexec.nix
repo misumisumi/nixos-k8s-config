@@ -36,7 +36,8 @@ writeShellScriptBin "fetch-and-kexec" (
     fi
     IMAGE_URL="${serverURL}/images/$IMAGE_FILE"
 
-    OUTPUT_PATH="/tmp/kexec-image.tar.gz"
+    EXT="''${IMAGE_FILE##*.}"
+    OUTPUT_PATH="/tmp/kexec-image.tar.$EXT"
 
     IS_DOWNLOADED=$(${curl}/bin/curl -s -o "$OUTPUT_PATH" -w "%{http_code}" "$IMAGE_URL")
     if [ "$IS_DOWNLOADED" -ne 200 ]; then
@@ -44,7 +45,9 @@ writeShellScriptBin "fetch-and-kexec" (
       exit 1
     fi
 
-    ${gnutar}/bin/tar -xzf "$OUTPUT_PATH" -C "/tmp"
-    /tmp/kexec/run
+    rm -rf "/tmp/kexec" "/tmp/kexec-image.tar.$EXT"
+    mkdir -p "/tmp/kexec"
+    ${gnutar}/bin/tar -xf "$OUTPUT_PATH" -C "/tmp/kexec"
+    /tmp/kexec/kexec_nixos
   ''
 )

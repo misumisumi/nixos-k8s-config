@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (builtins) listToAttrs head map;
+  inherit (builtins) listToAttrs head;
   inherit (lib) mapAttrsToList nameValuePair;
   initialApp = {
     app = "initial";
@@ -18,6 +18,29 @@ let
   };
 in
 {
+
+  systemd = {
+    services.nginx.wants = [ "pre-nginx.service" ];
+    services.pre-nginx = {
+      description = "Set nginx data directory permissions";
+      after = [ "nginx.service" ];
+      wants = [ "nginx.service" ];
+      script =
+        let
+          src = ./www;
+          dst = "/var/www";
+        in
+        ''
+          while read -r path; do
+            rel="''${path#${src}/}"
+            parent="$(dirname "${dst}/$rel")"
+            mkdir -p "$parent"
+            ln -s "$path" "${dst}/$rel"
+          done< <(find ${src} -type f)
+        '';
+    };
+  };
+
   networking.firewall.allowedTCPPorts = [
     config.services.nginx.defaultHTTPListenPort
     config.services.nginx.defaultSSLListenPort

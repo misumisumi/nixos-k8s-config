@@ -6,8 +6,6 @@
     imports = [
       ./build.nix
       ./diskless
-      # ./kexec
-      # ./netboot.nix
       ./tgtd.nix
       ./vfio.nix
       ./virtualisation.nix
@@ -19,10 +17,10 @@
   kexec = {
     imports = [ ./kexec ];
   };
+  ipxe = {
+    imports = [ ./ipxe.nix ];
+  };
   multiple-dnsmasq = {
     imports = [ ./multiple-dnsmasq.nix ];
-  };
-  netboot = {
-    imports = [ ./netboot.nix ];
   };
 }

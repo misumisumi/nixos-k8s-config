@@ -8,6 +8,9 @@ let
   inherit (lib) mkForce;
 in
 {
+  imports = [
+    ./network.nix
+  ];
   image.modules = mkForce {
     inherit (self.nixosModules) kexec;
     lxc = modulesPath + "/virtualisation/lxc-container.nix";

@@ -1,3 +1,4 @@
+mnt
 result
 pool4devnode
 .useSecrets
@@ -52,4 +53,3 @@ terraform.rc
 ### direnv ###
 .direnv
 .envrc
-

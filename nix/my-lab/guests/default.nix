@@ -32,6 +32,7 @@ let
           group
           user
           isDev
+          isNixOSTest
           ;
       }; # specialArgs give some args to modules
       modules = [

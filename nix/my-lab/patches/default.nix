@@ -55,4 +55,5 @@ final: prev: {
     mkdir -p $out/bin
     ln -s ${prev.bashInteractive}/bin/bash $out/bin/rbash
   '';
+  inherit (prev.callPackage ../scripts/mkimg.nix { }) mkimg-lxc mkimg-kexec mkimg-ipxe;
 }

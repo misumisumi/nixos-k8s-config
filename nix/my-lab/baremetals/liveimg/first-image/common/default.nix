@@ -1,7 +1,15 @@
-{ self, ... }:
+{
+  self,
+  lib,
+  modulesPath,
+  ...
+}:
+let
+  inherit (lib) mkForce;
+in
 {
   imports = [
-    self.nixosModules.netboot
+    self.nixosModules.ipxe
     ../../../share/apps/bash
     ../../../share/modules/static.nix
     ../../../share/settings/console
