@@ -23,4 +23,7 @@
   multiple-dnsmasq = {
     imports = [ ./multiple-dnsmasq.nix ];
   };
+  vlan-aware-vxlan = {
+    imports = [ ./vlan-aware-vxlan.nix ];
+  };
 }
