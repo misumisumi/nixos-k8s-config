@@ -20,18 +20,23 @@ system = "x86_64-linux"
 user = "renako"
 hostname = "ajisai"
 vlanId = "20"           # separate manage network
+bgpId = "5"
 [compute.mao]
 system = "x86_64-linux"
 user = "renako"
 hostname = "renako"
 vlanId = "20"           # separate manage network
+bgpId = "6"
 [compute.satsuki]
 system = "x86_64-linux"
 user = "renako"
 hostname = "satsuki"
 vlanId = "20"           # separate manage network
+bgpId = "7"
+
 [router.kaho]
 system = "x86_64-linux"
 user = "renako"
 hostname = "kaho"
 vlanId = "20"           # separate manage network
+bgpId = "1"

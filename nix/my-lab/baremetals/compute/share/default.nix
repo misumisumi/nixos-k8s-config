@@ -9,6 +9,7 @@ let
 in
 {
   imports = [
+    self.nixosModules.vlan-aware-vxlan
     ./network.nix
   ];
   image.modules = mkForce {
