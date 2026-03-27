@@ -29,8 +29,8 @@
             chain rpfilter {
               type filter hook prerouting priority filter - 20;
 
-              iifname "eth2" oifname "eth2.${static.manage.vlanId}" drop
-              iifname "eth2.${static.manage.vlanId}" oifname "eth2" drop
+              iifname "enp6s0" oifname "enp6s0.${static.manage.vlanId}" drop
+              iifname "enp6s0.${static.manage.vlanId}" oifname "enp6s0" drop
 
               udp dport 69 ct helper set "tftp"
             }
@@ -42,7 +42,7 @@
 
             chain forward {
               # Don't access manage segment to the outside
-              iifname "eth2" oifname "eth2" drop
+              iifname "enp6s0" oifname "enp6s0" drop
             }
           '';
         };
@@ -58,10 +58,10 @@
           inherit (lib) toInt;
         in
         {
-          "eth2.${static.manage.vlanId}" = {
+          "enp6s0.${static.manage.vlanId}" = {
             netdevConfig = {
               Kind = "vlan";
-              Name = "eth2.${static.manage.vlanId}";
+              Name = "enp6s0.${static.manage.vlanId}";
             };
             vlanConfig = {
               Id = toInt static.manage.vlanId;
@@ -69,20 +69,20 @@
           };
         };
       networks = {
-        "5-eth1" = {
-          name = "eth1";
+        "5-enp5s0" = {
+          name = "enp5s0";
           address = [ "${static.wan.ip}${static.wan.prefix}" ];
           networkConfig = {
             Description = "WAN";
           };
         };
-        "10-eth2" = {
-          name = "eth2";
-          vlan = [ "eth1.${static.manage.vlanId}" ];
+        "10-enp6s0" = {
+          name = "enp6s0";
+          vlan = [ "enp6s0.${static.manage.vlanId}" ];
           address = [ "${static.initial.ip}${static.initial.prefix}" ];
         };
-        "10-eth2.${static.manage.vlanId}" = {
-          name = "eth1.${static.manage.vlanId}";
+        "10-enp6s0.${static.manage.vlanId}" = {
+          name = "enp6s0.${static.manage.vlanId}";
           address = [ "${static.manage.ip}${static.manage.prefix}" ];
         };
       };

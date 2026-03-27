@@ -1,16 +1,14 @@
 {
-  # jq,
-  # opentofu,
   writeShellApplication,
+  opentofu,
+  jq,
 }:
-let
-  inherit (builtins.fromJSON (builtins.readFile ../config.json)) workspaces;
-  genWS = map (
-    ws: "[[ $(tofu workspace list | grep ${ws}) == '' ]] && tofu workspace new ${ws}"
-  ) workspaces;
-in
 writeShellApplication {
   name = "ter";
+  runtimeInputs = [
+    opentofu
+    jq
+  ];
   text = ''
     usage() {
       cat <<EOF # remove the space between << and EOF, this is due to web plugin issue
@@ -86,26 +84,28 @@ writeShellApplication {
     parse_params "''$@"
 
     # check required params and arguments
-    if [ "''${cmd}" == "init" ]; then
+    if [ "$cmd" == "init" ]; then
       tofu init "''${@:count:(''$#-1)}"
-      ${builtins.concatStringsSep "\n" genWS}
+      while read -r ws; do
+        tofu workspace list | grep -q "$ws" || tofu workspace new "$ws"
+      done < <(find . -maxdepth 1 -type f -name "*.tfvars" -exec basename {} \; | sed 's/\.tfvars$//')
       exit 0
-    elif [ "$(tofu workspace list | grep "''${workspace}")" == "" ]; then
-      die "''${workspace} is not listed in the workspace."
+    elif ! tofu workspace list | grep -q "$workspace" ; then
+      die "$workspace is not listed in the workspace."
     else
-      tofu workspace select "''${workspace}"
+      tofu workspace select "$workspace"
     fi
 
     # script logic here
-    tofu "''${cmd}" -var-file="''${workspace}".tfvars "''${@:count:(''$#-1)}"
-    if [[ "''${cmd}" == "apply"  ]]; then
-      tofu show -json | jq > "''${workspace}".show.json
-      tofu output -json | jq > "''${workspace}.output".json
-      # tofu graph | dot -Tpng > "''${workspace}".png
-    elif [[ "''${cmd}" == "destroy" ]]; then
-      rm "''${workspace}.show".json
-      rm "''${workspace}.output".json
-      # rm "''${workspace}".png
+    tofu "$cmd" -var-file="$workspace".tfvars "''${@:count:(''$#-1)}"
+    if [[ "$cmd" == "apply"  ]]; then
+      tofu show -json | jq > "$workspace".show.json
+      tofu output -json | jq > "$workspace.output".json
+      # tofu graph | dot -Tpng > "$workspace".png
+    elif [[ "$cmd" == "destroy" ]]; then
+      rm "$workspace.show".json
+      rm "$workspace.output".json
+      # rm "$workspace".png
     fi
   '';
 }

@@ -33,8 +33,8 @@ in
             chain rpfilter {
               type filter hook prerouting priority filter - 20;
 
-              iifname "eth1" oifname "eth1.${static.manage.vlanId}" drop
-              iifname "eth1.${static.manage.vlanId}" oifname "eth1" drop
+              iifname "enp5s0" oifname "enp5s0.${static.manage.vlanId}" drop
+              iifname "enp5s0.${static.manage.vlanId}" oifname "enp5s0" drop
 
               udp dport 69 ct helper set "tftp"
             }
@@ -46,7 +46,7 @@ in
 
             chain forward {
               # Don't access manage segment to the outside
-              iifname "eth1" oifname "eth1" drop
+              iifname "enp5s0" oifname "enp5s0" drop
             }
           '';
         };
@@ -58,10 +58,10 @@ in
     network = {
       enable = true;
       netdevs = {
-        "eth1.${static.manage.vlanId}" = {
+        "enp5s0.${static.manage.vlanId}" = {
           netdevConfig = {
             Kind = "vlan";
-            Name = "eth1.${static.manage.vlanId}";
+            Name = "enp5s0.${static.manage.vlanId}";
           };
           vlanConfig = {
             Id = toInt static.manage.vlanId;
@@ -70,14 +70,14 @@ in
       };
       networks = {
         "20-initial" = {
-          name = "eth1";
+          name = "enp5s0";
           vlan = [
-            "eth1.${static.manage.vlanId}"
+            "enp5s0.${static.manage.vlanId}"
           ];
           address = [ "${static.initial.ip}${static.initial.prefix}" ];
         };
         "20-manage" = {
-          name = "eth1.${static.manage.vlanId}";
+          name = "enp5s0.${static.manage.vlanId}";
           address = [
             "${static.manage.ip}${static.manage.prefix}"
           ];
