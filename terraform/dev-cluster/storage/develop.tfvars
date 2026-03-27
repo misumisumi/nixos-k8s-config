@@ -1,10 +1,11 @@
+# For k8s on incus
 compornents = [
   {
     pools = [
       {
-        name = "eval-baremetal"
+        name = "dev-baremetal"
         config = {
-          size = "128GiB"
+          size = "256GiB"
         }
       },
     ]
