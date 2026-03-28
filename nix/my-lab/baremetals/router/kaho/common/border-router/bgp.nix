@@ -3,7 +3,23 @@
   config,
   ...
 }:
+let
+  inherit (builtins) attrValues;
+  inherit (lib)
+    concatMapStringsSep
+    filterAttrs
+    hasPrefix
+    ;
+  physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
+  inherit (config.networking.vxlan) tenants;
+in
 {
+  systemd.network.config.networkConfig = {
+    #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
+    ManageForeignNextHops = false;
+    ManageForeignRoutes = false;
+    ManageForeignRoutingPolicyRules = false;
+  };
   # FRR (Free Range Routing) を有効にする
   # systemd.services.frr.wantedBy = lib.mkForce [ ];
   services.frr = {
@@ -40,7 +56,9 @@
         neighbor BORDER timers 1 3
         neighbor BORDER timers connect 5
         neighbor BORDER capability extended-nexthop
-        neighbor enp0s3 interface peer-group BORDER
+        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group SPINE") (
+          attrValues physicalNetworks
+        )}
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external

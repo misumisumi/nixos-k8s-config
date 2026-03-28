@@ -98,12 +98,6 @@ in
       };
     in
     {
-      config.networkConfig = {
-        #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
-        ManageForeignNextHops = false;
-        ManageForeignRoutes = false;
-        ManageForeignRoutingPolicyRules = false;
-      };
       netdevs = {
         lo0 = {
           netdevConfig = {
@@ -111,7 +105,7 @@ in
             Kind = "dummy";
           };
         };
-      } # ;
+      }
       // networkConf4WAN.netdevs;
       networks = {
         "5-lo0" = {
@@ -120,7 +114,7 @@ in
             "10.1.254.254/32"
           ];
         };
-        "10-enp0s3" = {
+        "15-enp0s3" = {
           name = "enp0s3";
           networkConfig = {
             Description = "Point to Point link";
@@ -139,7 +133,7 @@ in
             Description = "WAN Interface";
           };
         };
-      } # ;
+      }
       // networkConf4WAN.networks;
 
     };

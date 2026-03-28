@@ -1,11 +1,27 @@
 {
   lib,
+  config,
+  static,
   ...
 }:
 let
-  inherit (lib) concatMapStringsSep range;
+  inherit (builtins) attrValues;
+  inherit (lib)
+    concatMapStringsSep
+    filterAttrs
+    hasPrefix
+    ;
+  physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
 in
 {
+  systemd.network = {
+    config.networkConfig = {
+      #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
+      ManageForeignNextHops = false;
+      ManageForeignRoutes = false;
+      ManageForeignRoutingPolicyRules = false;
+    };
+  };
   # FRR (Free Range Routing) を有効にする
   services.frr = {
     bgpd.enable = true;
@@ -20,8 +36,8 @@ in
         match interface lo0
       exit
 
-      router bgp 65001
-        bgp router-id 10.1.254.1
+      router bgp 6500${static.bgpId}
+        bgp router-id 10.1.254.${static.bgpId}
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -32,10 +48,9 @@ in
         neighbor LEAF timers 1 3
         neighbor LEAF timers connect 5
         neighbor LEAF capability extended-nexthop
-        ${concatMapStringsSep "\n  " (x: "neighbor enp${toString x}s0 interface peer-group LEAF") (
-          range 5 8
+        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group SPINE") (
+          attrValues physicalNetworks
         )}
-        neighbor br_leaf2host interface peer-group LEAF
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
