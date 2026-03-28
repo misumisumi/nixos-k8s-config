@@ -24,7 +24,7 @@ bgpId = "5"
 [compute.mao]
 system = "x86_64-linux"
 user = "renako"
-hostname = "renako"
+hostname = "mao"
 vlanId = "20"           # separate manage network
 bgpId = "6"
 [compute.satsuki]

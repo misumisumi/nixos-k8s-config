@@ -10,13 +10,13 @@ in
 {
   imports = [
     self.nixosModules.ipxe
-    ../../../share/apps/bash
+    ../../../share/apps/bash.nix
     ../../../share/modules/static.nix
-    ../../../share/settings/console
-    ../../../share/settings/locale
-    ../../../share/settings/nix
-    ../../../share/settings/security
-    ../../../share/settings/user
+    ../../../share/settings/console.nix
+    ../../../share/settings/locale.nix
+    ../../../share/settings/system.nix
+    ../../../share/settings/security.nix
+    ../../../share/settings/user.nix
     ./network.nix
     ./second-stage-boot.nix
     ./ssh.nix

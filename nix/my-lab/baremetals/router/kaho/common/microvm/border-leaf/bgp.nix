@@ -3,6 +3,16 @@
   config,
   ...
 }:
+let
+  inherit (builtins) attrValues;
+  inherit (lib)
+    concatMapStringsSep
+    filterAttrs
+    hasPrefix
+    ;
+  physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
+  inherit (config.networking.vxlan) tenants;
+in
 {
   # FRR (Free Range Routing) を有効にする
   # systemd.services.frr.wantedBy = lib.mkForce [ ];
@@ -27,8 +37,8 @@
         set extcommunity bandwidth cumulative
       exit
 
-      vrf vrf10001
-        vni 10001
+      vrf ${tenants.tn1.vrf}
+        vni ${toString tenants.tn1.L3VNI.vni}
       exit-vrf
 
       vrf vrf91001
@@ -48,8 +58,9 @@
         neighbor SPINE timers 1 3
         neighbor SPINE timers connect 5
         neighbor SPINE capability extended-nexthop
-        neighbor enp0s3 interface peer-group SPINE
-        neighbor enp0s4 interface peer-group SPINE
+        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group SPINE") (
+          attrValues physicalNetworks
+        )}
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external

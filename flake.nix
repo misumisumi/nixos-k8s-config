@@ -123,6 +123,7 @@
               gawk
 
               mkimg-lxc
+              mkimg-incus-vm
               mkimg-kexec
               mkimg-ipxe
             ];

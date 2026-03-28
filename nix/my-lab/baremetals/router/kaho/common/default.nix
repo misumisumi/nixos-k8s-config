@@ -12,15 +12,15 @@ in
 {
   imports = [
     inputs.microvm.nixosModules.host
-    ../../../share/apps/bash
-    ../../../share/apps/pkgs
-    ../../../share/settings/console
-    ../../../share/settings/locale
-    ../../../share/settings/nix
-    ../../../share/settings/security
-    ../../../share/settings/ssh
-    ./microvm.nix
-    ./network.nix
+    ../../../share/apps/bash.nix
+    ../../../share/apps/pkgs.nix
+    ../../../share/settings/console.nix
+    ../../../share/settings/locale.nix
+    ../../../share/settings/network.nix
+    ../../../share/settings/security.nix
+    ../../../share/settings/ssh.nix
+    ../../../share/settings/system.nix
+    ./microvm
   ];
   environment.systemPackages = with pkgs; [
     dig
@@ -30,7 +30,7 @@ in
   ];
   image.modules = mkForce {
     inherit (self.nixosModules) kexec;
-    lxc = modulesPath + "/virtualisation/lxc-container.nix";
+    incus-vm = self + "/modules/incus-virtual-machine.nix";
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

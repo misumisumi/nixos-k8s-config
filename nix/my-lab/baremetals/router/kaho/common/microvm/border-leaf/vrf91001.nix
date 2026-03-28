@@ -13,7 +13,6 @@
           Name = "vxlan91001";
           Kind = "vxlan";
           Description = "VXLAN VNI 91001";
-          # MACAddress = "${vxlan_macaddr}";
         };
         vxlanConfig = {
           VNI = 91001;

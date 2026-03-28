@@ -9,15 +9,15 @@ let
 in
 {
   imports = [
-    ../../../share/apps/bash
-    ../../../share/apps/pkgs
-    ../../../share/apps/wireshark
-    ../../../share/settings/console
-    ../../../share/settings/locale
-    ../../../share/settings/nix
-    ../../../share/settings/security
-    ../../../share/settings/ssh
-    ../../../share/settings/user
+    ../../../share/apps/bash.nix
+    ../../../share/apps/pkgs.nix
+    ../../../share/apps/wireshark.nix
+    ../../../share/settings/console.nix
+    ../../../share/settings/locale.nix
+    ../../../share/settings/system.nix
+    ../../../share/settings/security.nix
+    ../../../share/settings/ssh.nix
+    ../../../share/settings/user.nix
     ../../share/ssh.nix
     ./network.nix
   ];

@@ -28,7 +28,7 @@ in
         {
           vni = 11010;
           vlan = 10;
-          address = "192.168.10.1/24";
+          address = "192.168.10.${static.bgpId}/24";
           anycastGateway = {
             hwAddr = "03:03:aa:aa:${hwAddrPart 10}";
             address = "192.168.10.254/24";
@@ -37,7 +37,7 @@ in
         {
           vni = 11020;
           vlan = 20;
-          address = "192.168.20.1/24";
+          address = "192.168.20.${static.bgpId}/24";
           anycastGateway = {
             hwAddr = "03:03:aa:aa:${hwAddrPart 20}";
             address = "192.168.20.254/24";

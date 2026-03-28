@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ self, ... }:
 {
   systemd.network = {
     netdevs = {
@@ -87,7 +87,10 @@
             }
           ];
         };
-        imports = [ ./border-leaf ];
+        imports = [
+          self.nixosModules.vlan-aware-vxlan
+          ./border-leaf
+        ];
       };
     };
     router = {

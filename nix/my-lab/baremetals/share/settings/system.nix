@@ -47,7 +47,7 @@
       [
         inputs.nur.overlays.default
         inputs.flakes.overlays.default
-        (import ../../../../patches { inherit nixpkgs-unstable; })
+        (import ../../../patches { inherit nixpkgs-unstable; })
       ];
     config = {
       allowUnfree = true;

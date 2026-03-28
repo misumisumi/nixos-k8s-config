@@ -1,10 +1,10 @@
 {
   imports = [
-    ./console
-    ./locale
-    ./network
-    ./nix
-    ./security
-    ./ssh
+    ./console.nix
+    ./locale.nix
+    ./network.nix
+    ./system.nix
+    ./security.nix
+    ./ssh.nix
   ];
 }
