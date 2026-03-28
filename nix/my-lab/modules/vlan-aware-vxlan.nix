@@ -274,6 +274,7 @@ in
           })
         ]) v.vniVlanPairs')
       ) cfg;
+
       genNetwork = mapAttrsToList (
         n: v:
         [
@@ -281,6 +282,7 @@ in
             name = "${v.vrf}";
           })
           (nameValuePair "50-${v.L3VNI.brIF}" {
+            name = "${v.L3VNI.brIF}";
             networkConfig = {
               IPv6LinkLocalAddressGenerationMode = "none";
             };

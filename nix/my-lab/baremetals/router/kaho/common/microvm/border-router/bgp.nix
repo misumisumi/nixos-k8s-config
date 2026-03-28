@@ -56,7 +56,7 @@ in
         neighbor BORDER timers 1 3
         neighbor BORDER timers connect 5
         neighbor BORDER capability extended-nexthop
-        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group SPINE") (
+        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group BORDER") (
           attrValues physicalNetworks
         )}
 

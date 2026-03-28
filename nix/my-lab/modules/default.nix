@@ -26,4 +26,7 @@
   vlan-aware-vxlan = {
     imports = [ ./vlan-aware-vxlan.nix ];
   };
+  incus-virtual-machine = {
+    imports = [ ./incus-virtual-machine.nix ];
+  };
 }

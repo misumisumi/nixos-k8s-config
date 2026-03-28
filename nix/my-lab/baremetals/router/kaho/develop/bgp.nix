@@ -48,7 +48,7 @@ in
         neighbor LEAF timers 1 3
         neighbor LEAF timers connect 5
         neighbor LEAF capability extended-nexthop
-        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group SPINE") (
+        ${concatMapStringsSep "\n  " (v: "neighbor ${v.name} interface peer-group LEAF") (
           attrValues physicalNetworks
         )}
 

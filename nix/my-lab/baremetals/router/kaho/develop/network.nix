@@ -36,13 +36,13 @@
       "10-enp5s0" = {
         name = "enp5s0";
         networkConfig = {
-          Description = "Management network";
+          Description = "WAN";
         };
       };
       "10-enp6s0" = {
         name = "enp6s0";
         networkConfig = {
-          Description = "WAN";
+          Description = "Management network";
         };
       };
       "10-enp7s0" = {
