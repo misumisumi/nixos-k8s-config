@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
+    ../share
     ./bgp.nix
     ./network.nix
   ];
@@ -17,7 +18,6 @@
   };
   users.users.root = {
     password = "nixos";
-    initialPassword = "nixos";
     # openssh.authorizedKeys = [ ];
   };
   environment.systemPackages = with pkgs; [

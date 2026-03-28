@@ -18,12 +18,6 @@
     firewall.enable = false;
   };
   systemd.network = {
-    config.networkConfig = {
-      #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
-      ManageForeignNextHops = false;
-      ManageForeignRoutes = false;
-      ManageForeignRoutingPolicyRules = false;
-    };
     netdevs = {
       lo0 = {
         netdevConfig = {
@@ -39,6 +33,24 @@
           "10.1.254.1/32"
         ];
       };
+      "10-enp5s0" = {
+        name = "enp5s0";
+        networkConfig = {
+          Description = "Management network";
+        };
+      };
+      "10-enp6s0" = {
+        name = "enp6s0";
+        networkConfig = {
+          Description = "WAN";
+        };
+      };
+      "10-enp7s0" = {
+        name = "enp7s0";
+        networkConfig = {
+          Description = "10G network";
+        };
+      };
     }
     // (
       let
@@ -52,10 +64,13 @@
           let
             x' = toString x;
           in
-          nameValuePair "10-enp${x'}s0" {
+          nameValuePair "15-enp${x'}s0" {
             name = "enp${x'}s0";
+            networkConfig = {
+              Description = "IB switch interface";
+            };
           }
-        ) (range 5 10);
+        ) (range 8 11);
       in
       listToAttrs interfaces
     );
