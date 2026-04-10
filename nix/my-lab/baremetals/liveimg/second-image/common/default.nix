@@ -23,7 +23,7 @@ in
   ];
   image.modules = mkForce {
     inherit (self.nixosModules) kexec;
-    lxc = modulesPath + "/virtualisation/lxc-container.nix";
+    lxc = self.nixosModules.lxc-container;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

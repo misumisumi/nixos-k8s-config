@@ -108,8 +108,8 @@ let
                 };
               };
             }
-
           );
+          default = [ ];
           description = ''
             List of VNI and VLAN ID pairs of tenant
             VNI must be unique across the tenants.

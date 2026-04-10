@@ -68,6 +68,11 @@
           interfaces = [
             {
               type = "tap";
+              id = "vm_borderLeaf";
+              mac = "20:00:00:00:00:aa";
+            }
+            {
+              type = "tap";
               id = "vm_40g";
               mac = "20:00:00:00:00:01";
             }
@@ -80,11 +85,6 @@
                 mode = "passthru";
               };
             }
-            {
-              type = "tap";
-              id = "vm_borderLeaf";
-              mac = "20:00:00:00:00:aa";
-            }
           ];
         };
         imports = [
@@ -93,7 +93,7 @@
         ];
       };
     };
-    router = {
+    borderRouter = {
       config = {
         # It is highly recommended to share the host's nix-store
         # with the VMs to prevent building huge images.
@@ -130,7 +130,9 @@
             }
           ];
         };
-        imports = [ ./border-router ];
+        imports = [
+          ./border-router
+        ];
       };
     };
   };

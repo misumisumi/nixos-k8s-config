@@ -38,6 +38,8 @@ let
       modules = [
         inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
+        inputs.nixos-linstor.nixosModules.linstor
+        inputs.nixos-linstor.nixosModules.linkage
         self.nixosModules.default
         ./share/modules/static.nix
         ./${group}/${tag}/common

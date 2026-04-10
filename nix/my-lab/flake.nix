@@ -16,7 +16,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
-    nixos-linstor.url = "github:misumisumi/nixos-pcsd/feat/linstor";
+    nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-linstor";
 
     disko = {
       url = "github:nix-community/disko";
@@ -37,7 +37,7 @@
       };
     };
     microvm = {
-      url = "github:elsbrock/microvm.nix/feature/machined-registration";
+      url = "github:microvm-nix/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
