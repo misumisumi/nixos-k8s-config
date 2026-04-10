@@ -1,5 +1,6 @@
 {
   imports = [
     ../../share
+    ./linstor.nix
   ];
 }

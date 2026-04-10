@@ -1,9 +1,13 @@
 {
+  lib,
+  modulesPath,
   self,
   specificSecretPatch,
-  user,
   ...
 }:
+let
+  inherit (lib) mkForce;
+in
 {
   imports = [
     ./dnsmasq.nix
@@ -42,4 +46,8 @@
       target = "/etc/ssh/ssh_host_ed25519_key.pub";
     }
   ];
+  image.modules = mkForce {
+    lxc = self.nixosModules.lxc-container;
+    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+  };
 }

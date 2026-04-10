@@ -11,7 +11,6 @@ let
     hasPrefix
     ;
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
-  inherit (config.networking.vxlan) tenants;
 in
 {
   systemd.network.config.networkConfig = {

@@ -1,6 +1,5 @@
 {
   lib,
-  static,
   ...
 }:
 let
@@ -32,6 +31,16 @@ in
     firewall.enable = false;
   };
   networking.vxlan.tenants = {
+    "wan" = {
+      name = "wan";
+      L3VNI = {
+        hwAddr = "77:c8:78:94:69:5e";
+        vni = 30001;
+        vlan = 3001;
+        local = "10.1.254.253";
+        destinationPort = 4780;
+      };
+    };
     "tn1" = {
       name = "tn1";
       L3VNI = {
@@ -68,6 +77,12 @@ in
           Kind = "dummy";
         };
       };
+      lo30001 = {
+        netdevConfig = {
+          Name = "lo30001";
+          Kind = "dummy";
+        };
+      };
     };
     networks = {
       "5-lo0" = {
@@ -76,14 +91,28 @@ in
           "10.1.254.253/32"
         ];
       };
+      "5-lo30001" = {
+        name = "lo30001";
+        vrf = [ "wan-vrf30001" ];
+        address = [
+          "10.1.254.253/32"
+        ];
+      };
       "10-enp0s3" = {
         name = "enp0s3";
+        vrf = [ "" ];
+        networkConfig = {
+          Description = "WAN Interface";
+        };
+      };
+      "15-enp0s4" = {
+        name = "enp0s4";
         networkConfig = {
           Description = "40G Interface";
         };
       };
-      "10-enp0s4" = {
-        name = "enp0s4";
+      "15-enp0s5" = {
+        name = "enp0s5";
         networkConfig = {
           Description = "10G Interface";
         };

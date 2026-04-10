@@ -41,12 +41,12 @@ in
         vni ${toString tenants.tn1.L3VNI.vni}
       exit-vrf
 
-      vrf vrf91001
-        vni 91001
+      vrf ${tenants.wan.vrf}
+        vni ${toString tenants.wan.L3VNI.vni}
       exit-vrf
 
       router bgp 65101
-        bgp router-id 10.1.254.253
+        bgp router-id ${tenants.tn1.L3VNI.local}
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -83,7 +83,7 @@ in
           advertise-svi-ip
         exit-address-family
 
-      router bgp 65101 vrf vrf10001
+      router bgp 65101 vrf ${tenants.tn1.vrf}
         address-family ipv4 unicast
           redistribute connected
         exit-address-family
@@ -92,8 +92,8 @@ in
           advertise ipv4 unicast
         exit-address-family
 
-      router bgp 65101 vrf vrf91001
-        bgp router-id 10.1.254.253
+      router bgp 65101 vrf ${tenants.wan.vrf}
+        bgp router-id ${tenants.wan.L3VNI.local}
         no bgp default ipv4-unicast
 
         neighbor ROUTER peer-group
@@ -103,7 +103,7 @@ in
         neighbor ROUTER timers 1 3
         neighbor ROUTER timers connect 5
         neighbor ROUTER capability extended-nexthop
-        neighbor enp0s5 interface peer-group ROUTER
+        neighbor enp0s3 interface peer-group ROUTER
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external

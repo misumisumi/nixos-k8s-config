@@ -13,14 +13,22 @@ in
   mkimg-lxc = writeShellScriptBin "mkimg.lxc" ''
     flake=$1
     image=''${flake//_//}
-    ${getExe incus} image delete $image
-    ${getExe incus} image import "$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant lxc-metadata --no-link)" "$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant lxc --no-link)" --alias $image
+
+    img_path="$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant lxc --no-link)"
+    if [ ! -z "$img_path" ]; then
+      ${getExe incus} image delete $image
+      ${getExe incus} image import "$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant lxc-metadata --no-link)" "$img_path" --alias $image
+    fi
   '';
   mkimg-incus-vm = writeShellScriptBin "mkimg.incus-vm" ''
     flake=$1
     image=''${flake//_//}
-    ${getExe incus} image delete $image
-    ${getExe incus} image import "$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant lxc-metadata --no-link)" "$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant incus-vm --no-link)" --alias $image
+
+    img_path="$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant incus-vm --no-link)"
+    if [ ! -z "$img_path" ]; then
+      ${getExe incus} image delete $image
+      ${getExe incus} image import "$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant lxc-metadata --no-link)" "$img_path" --alias $image
+    fi
   '';
   mkimg-kexec = writeShellScriptBin "mkimg.kexec" ''
     flake=$1

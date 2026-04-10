@@ -31,14 +31,11 @@
         disko.follows = "disko";
       };
     };
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # local modules
     # homelab-ansible.url = "path:./ansible";
     homelab-mylab.url = "path:./nix/my-lab";
     homelab-terraform.url = "path:./terraform";
+    nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-linstor";
   };
   outputs =
     inputs@{ self, flake-parts, ... }:
@@ -77,6 +74,7 @@
                 # inputs.homelab-ansible.overlays.default
                 inputs.homelab-mylab.overlays.default
                 inputs.homelab-terraform.overlays.default
+                inputs.nixos-linstor.overlays.default
               ];
             config.allowUnfree = true;
           };
@@ -94,13 +92,6 @@
                 name = "nixos-anywhere";
                 command = ''
                   ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
-                '';
-              }
-              {
-                help = "nixos-generate";
-                name = "nixos-generate";
-                command = ''
-                  ${inputs.nixos-generators.packages.${system}.nixos-generate}/bin/nixos-generate ''${@}
                 '';
               }
             ];
@@ -126,6 +117,8 @@
               mkimg-incus-vm
               mkimg-kexec
               mkimg-ipxe
+
+              linkage
             ];
           };
         };
