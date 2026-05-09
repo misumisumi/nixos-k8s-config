@@ -45,8 +45,8 @@
         neighbor SPINE bfd
         neighbor SPINE remote-as external
         neighbor SPINE advertisement-interval 0
-        neighbor SPINE timers 1 3
-        neighbor SPINE timers connect 5
+        neighbor SPINE timers 3 9
+        neighbor SPINE timers connect 10
         neighbor SPINE capability extended-nexthop
         neighbor enp0s3 interface peer-group SPINE
         neighbor enp0s4 interface peer-group SPINE
@@ -54,8 +54,8 @@
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
         neighbor OVERLAY advertisement-interval 0
-        neighbor OVERLAY timers 1 3
-        neighbor OVERLAY timers connect 5
+        neighbor OVERLAY timers 3 9
+        neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
         neighbor 10.1.254.1 peer-group OVERLAY
@@ -89,16 +89,16 @@
         neighbor ROUTER bfd
         neighbor ROUTER remote-as external
         neighbor ROUTER advertisement-interval 0
-        neighbor ROUTER timers 1 3
-        neighbor ROUTER timers connect 5
+        neighbor ROUTER timers 3 9
+        neighbor ROUTER timers connect 10
         neighbor ROUTER capability extended-nexthop
         neighbor enp0s5 interface peer-group ROUTER
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
         neighbor OVERLAY advertisement-interval 0
-        neighbor OVERLAY timers 1 3
-        neighbor OVERLAY timers connect 5
+        neighbor OVERLAY timers 3 9
+        neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo91001
         neighbor OVERLAY ebgp-multihop
         neighbor 10.1.254.254 peer-group OVERLAY

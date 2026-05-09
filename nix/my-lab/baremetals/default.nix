@@ -4,12 +4,13 @@
   lib,
 }:
 let
-  inherit (builtins) listToAttrs;
+  inherit (builtins) listToAttrs isAttrs;
   inherit (lib)
+    filterAttrs
     flatten
-    nameValuePair
-    mapAttrsToList
     importTOML
+    mapAttrsToList
+    nameValuePair
     optional
     ;
   systemSetting =
@@ -74,7 +75,7 @@ let
           inherit (value) system hostname user;
           inherit (v) isDev isNixOSTest;
         })
-      ) hosts)
+      ) (filterAttrs (_: v: isAttrs v && !(v.notShow or false)) hosts))
     ) group_and_hosts;
 
 in

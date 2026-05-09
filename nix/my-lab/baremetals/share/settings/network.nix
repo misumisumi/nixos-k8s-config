@@ -14,6 +14,10 @@ in
     };
   };
   networking = {
+    nftables.enable = true;
+    firewall = {
+      enable = false;
+    };
     useNetworkd = true;
     useHostResolvConf = false;
     hostName = hostname;

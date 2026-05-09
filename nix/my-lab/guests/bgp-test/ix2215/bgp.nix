@@ -19,8 +19,8 @@
         neighbor LEAF peer-group
         neighbor LEAF bfd
         neighbor LEAF advertisement-interval 0
-        neighbor LEAF timers 1 3
-        neighbor LEAF timers connect 5
+        neighbor LEAF timers 3 9
+        neighbor LEAF timers connect 10
         neighbor LEAF capability extended-nexthop
         neighbor LEAF remote-as external
         bgp listen range 192.168.0.0/16 peer-group LEAF

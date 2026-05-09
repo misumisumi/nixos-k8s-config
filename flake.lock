@@ -900,14 +900,18 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1775533931,
-        "narHash": "sha256-ujank/6nomXT9Y4EHM856Dt8p+W4ldEOE0RLJeE4514=",
-        "path": "/home/sumi/Workspace/nix/server/nixos-linstor",
-        "type": "path"
+        "lastModified": 1778380007,
+        "narHash": "sha256-ZaRI+FQ/PwcWVQTwQxE/H8LK/WhsNQ+BKk1fMfCJ5Sw=",
+        "ref": "main",
+        "rev": "0a89c193c6bc2527f83a3a065a3b7fb149949d4d",
+        "revCount": 17,
+        "type": "git",
+        "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       },
       "original": {
-        "path": "/home/sumi/Workspace/nix/server/nixos-linstor",
-        "type": "path"
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       }
     },
     "nixos-linstor_2": {
@@ -917,14 +921,18 @@
         "nixpkgs": "nixpkgs_10"
       },
       "locked": {
-        "lastModified": 1775534491,
-        "narHash": "sha256-WKEA7ylfXzvhNZZ26yQIA2AvyVuYL3bCvfYcKRZZS4c=",
-        "path": "/home/sumi/Workspace/nix/server/nixos-linstor",
-        "type": "path"
+        "lastModified": 1778380007,
+        "narHash": "sha256-ZaRI+FQ/PwcWVQTwQxE/H8LK/WhsNQ+BKk1fMfCJ5Sw=",
+        "ref": "main",
+        "rev": "0a89c193c6bc2527f83a3a065a3b7fb149949d4d",
+        "revCount": 17,
+        "type": "git",
+        "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       },
       "original": {
-        "path": "/home/sumi/Workspace/nix/server/nixos-linstor",
-        "type": "path"
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       }
     },
     "nixpkgs": {

@@ -4,7 +4,8 @@
   lib,
   hostname,
   group,
-  isTest,
+  user,
+  isDev,
   ...
 }:
 {
@@ -13,8 +14,9 @@
       inherit (lib) importTOML;
     in
     rec {
-      secretPath = ../../../secrets + "${if isTest then "/test" else "/production"}";
-      specificSecretPatch = secretPath + "/guests/${group}/${hostname}";
-      static = (importTOML ../../static.toml).${group}.${hostname} or { };
+      secretPath = ../../../secrets + "${if isDev then "/develop" else "/production"}";
+      hostSecretPath = secretPath + "/guests/${group}/${hostname}";
+      userSecretPath = secretPath + "/user/${user}";
+      static = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
     };
 }

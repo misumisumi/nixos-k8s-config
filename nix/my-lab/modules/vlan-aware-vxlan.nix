@@ -13,7 +13,8 @@ let
     mapAttrsToList
     mkOption
     nameValuePair
-    optionalAttrs
+    optional
+    toInt
     types
     ;
   cfg = config.networking.vxlan.tenants;
@@ -39,10 +40,12 @@ let
               };
               vni = mkOption {
                 type = types.int;
+                apply = toString;
                 description = "VXLAN Network Identifier (VNI).";
               };
               vlan = mkOption {
                 type = types.int;
+                apply = toString;
                 description = "VLAN ID.";
               };
               local = mkOption {
@@ -82,10 +85,12 @@ let
               options = {
                 vni = mkOption {
                   type = types.int;
+                  apply = toString;
                   description = "VXLAN Network Identifier (VNI).";
                 };
                 vlan = mkOption {
                   type = types.int;
+                  apply = toString;
                   description = "VLAN ID.";
                 };
                 address = mkOption {
@@ -121,11 +126,11 @@ let
             types.submodule {
               options = {
                 vni = mkOption {
-                  type = types.int;
+                  type = types.str;
                   description = "VXLAN Network Identifier (VNI).";
                 };
                 vlan = mkOption {
-                  type = types.int;
+                  type = types.str;
                   description = "VLAN ID.";
                 };
                 address = mkOption {
@@ -160,16 +165,16 @@ let
         };
       };
       config = {
-        vrf = config.name + "-vrf${toString config.L3VNI.vni}";
+        vrf = config.name + "-vrf${config.L3VNI.vni}";
         L3VNI = {
-          vniIF = config.name + "-vni${toString config.L3VNI.vni}";
+          vniIF = config.name + "-vni${config.L3VNI.vni}";
           brIF = config.name + "-br";
           vxlanIF = config.name + "-vxlan";
         };
         vniVlanPairs' = map (
           x:
           let
-            IFName = config.name + "-vlan${toString x.vlan}";
+            IFName = config.name + "-vlan${x.vlan}";
           in
           {
             inherit (x) vni vlan address;
@@ -235,18 +240,18 @@ in
               Description = "VRF for ${v.name} tenant";
             };
             vrfConfig = {
-              Table = v.L3VNI.vni;
+              Table = toInt v.L3VNI.vni;
             };
           })
           (nameValuePair "${v.L3VNI.vniIF}" {
             netdevConfig = {
               Name = "${v.L3VNI.vniIF}";
               Kind = "vlan";
-              Description = "VLAN ${toString v.L3VNI.vlan} for ${v.name} tenant";
+              Description = "VLAN ${v.L3VNI.vlan} for ${v.name} tenant";
               MACAddress = v.L3VNI.hwAddr;
             };
             vlanConfig = {
-              Id = v.L3VNI.vlan;
+              Id = toInt v.L3VNI.vlan;
             };
           })
         ]
@@ -255,17 +260,17 @@ in
             netdevConfig = {
               Name = "${x.vlanIF}";
               Kind = "vlan";
-              Description = "VLAN ${toString x.vlan} for ${v.name} tenant";
+              Description = "VLAN ${x.vlan} for ${v.name} tenant";
             };
             vlanConfig = {
-              Id = x.vlan;
+              Id = toInt x.vlan;
             };
           })
           (nameValuePair "${x.anycastGateway.IF}" {
             netdevConfig = {
               Name = "${x.anycastGateway.IF}";
               Kind = "macvlan";
-              Description = "Anycast Gateway VLAN ${toString x.vlan} for ${v.name} tenant";
+              Description = "Anycast Gateway VLAN ${x.vlan} for ${v.name} tenant";
               MACAddress = x.anycastGateway.hwAddr;
             };
             macvlanConfig = {
@@ -290,7 +295,10 @@ in
               "${v.L3VNI.vniIF}"
             ]
             ++ (map (x: "${x.vlanIF}") v.vniVlanPairs');
-            bridgeVLANs = [ { VLAN = v.L3VNI.vlan; } ] ++ (map (x: { VLAN = x.vlan; }) v.vniVlanPairs');
+            bridgeVLANs = [
+              { VLAN = toInt v.L3VNI.vlan; }
+            ]
+            ++ (map (x: { VLAN = toInt x.vlan; }) v.vniVlanPairs');
             bridgeFDBs = [
               { MACAddress = v.L3VNI.hwAddr; }
             ]
@@ -320,16 +328,12 @@ in
           })
         ]
         ++ map (x: [
-          (
-            nameValuePair "60-${x.vlanIF}" {
-              name = "${x.vlanIF}";
-              vrf = [ "${v.vrf}" ];
-              macvlan = [ "${x.anycastGateway.IF}" ];
-            }
-            // optionalAttrs (x.address != "") {
-              address = [ x.address ];
-            }
-          )
+          (nameValuePair "60-${x.vlanIF}" {
+            name = "${x.vlanIF}";
+            vrf = [ "${v.vrf}" ];
+            macvlan = [ "${x.anycastGateway.IF}" ];
+            address = optional (x.address != "") x.address;
+          })
           (nameValuePair "60-${x.anycastGateway.IF}" {
             name = "${x.anycastGateway.IF}";
             vrf = [ "${v.vrf}" ];
@@ -364,8 +368,8 @@ in
               in
               ''
                 echo "Configuring VNI VLAN tunneling for ${v.name} tenant ..."
-                ${perPair L3VNI (toString v.L3VNI.vni) (toString v.L3VNI.vlan)}
-                ${concatStringsSep "\n" (map (x: perPair L3VNI (toString x.vni) (toString x.vlan)) v.vniVlanPairs')}
+                ${perPair L3VNI v.L3VNI.vni v.L3VNI.vlan}
+                ${concatStringsSep "\n" (map (x: perPair L3VNI x.vni x.vlan) v.vniVlanPairs')}
               '';
           in
           {

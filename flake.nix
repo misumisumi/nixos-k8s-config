@@ -35,7 +35,8 @@
     # homelab-ansible.url = "path:./ansible";
     homelab-mylab.url = "path:./nix/my-lab";
     homelab-terraform.url = "path:./terraform";
-    nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-linstor";
+    # nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-linstor";
+    nixos-linstor.url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
   };
   outputs =
     inputs@{ self, flake-parts, ... }:
@@ -119,6 +120,7 @@
               mkimg-ipxe
 
               linkage
+              linkage-gateway
             ];
           };
         };
