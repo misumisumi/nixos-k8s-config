@@ -37,16 +37,16 @@
         neighbor BORDER peer-group
         neighbor BORDER remote-as external
         neighbor BORDER advertisement-interval 0
-        neighbor BORDER timers 1 3
-        neighbor BORDER timers connect 5
+        neighbor BORDER timers 3 9
+        neighbor BORDER timers connect 10
         neighbor BORDER capability extended-nexthop
         neighbor enp0s3 interface peer-group BORDER
 
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
         neighbor OVERLAY advertisement-interval 0
-        neighbor OVERLAY timers 1 3
-        neighbor OVERLAY timers connect 5
+        neighbor OVERLAY timers 3 9
+        neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
         neighbor 10.1.254.253 peer-group OVERLAY

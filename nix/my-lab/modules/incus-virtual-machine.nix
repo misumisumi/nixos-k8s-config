@@ -24,6 +24,8 @@ in
     system.build.qemuImage = import (modulesPath + "/../lib/make-disk-image.nix") {
       inherit pkgs lib config;
 
+      contents = config.system.build.extraContents;
+
       partitionTableType = "efi";
       format = "qcow2-compressed";
       copyChannel = config.system.installer.channel.enable;

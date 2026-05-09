@@ -16,7 +16,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
-    nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-linstor";
+    nixos-linstor.url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
 
     disko = {
       url = "github:nix-community/disko";

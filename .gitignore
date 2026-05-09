@@ -1,17 +1,15 @@
 mnt
-result
-pool4devnode
-.useSecrets
+result*
 .kube
 .keystore
 .ssh
 **/*.txt
 **/images/**
+!index.txt
 
 terraform/**/*.output.json
 terraform/**/*.show.json
 terraform/**/*.png
-
 
 ### Created by https://www.gitignore.io
 ### Terraform ###

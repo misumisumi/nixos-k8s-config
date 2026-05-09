@@ -17,7 +17,7 @@ in
     ../../../share/settings/system.nix
     ../../../share/settings/security.nix
     ../../../share/settings/ssh.nix
-    ../../../share/settings/user.nix
+    ../../../share/settings/users.nix
     ../../share/ssh.nix
     ./network.nix
   ];

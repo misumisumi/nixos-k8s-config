@@ -1,6 +1,0 @@
-{
-  imports = [
-    ../../share
-    ./linstor.nix
-  ];
-}

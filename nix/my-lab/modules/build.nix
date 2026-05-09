@@ -1,13 +1,10 @@
 {
   lib,
-  pkgs,
-  config,
   ...
 }:
 let
-  cfg = config.system.build;
 
-  inherit (lib) mkForce mkOption types;
+  inherit (lib) mkOption types;
 in
 {
   options = {
@@ -17,6 +14,18 @@ in
           options = {
             source = mkOption { type = types.path; };
             target = mkOption { type = types.path; };
+            user = mkOption {
+              type = types.str;
+              default = "root";
+            };
+            group = mkOption {
+              type = types.str;
+              default = "root";
+            };
+            mode = mkOption {
+              type = types.str;
+              default = "0644";
+            };
           };
         }
       );

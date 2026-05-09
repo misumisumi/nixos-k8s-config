@@ -140,7 +140,7 @@ extendedKeyUsage = serverAuth
 subjectAltName = @server_alt_names
 
 [ server_alt_names ]
-IP.1 = 127.0.0.1
+IP.1 = 172.16.10.50
 
 [ client_cert ]
 basicConstraints = CA:FALSE

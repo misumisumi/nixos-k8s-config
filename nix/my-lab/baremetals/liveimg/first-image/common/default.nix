@@ -16,7 +16,7 @@ in
     ../../../share/settings/locale.nix
     ../../../share/settings/system.nix
     ../../../share/settings/security.nix
-    ../../../share/settings/user.nix
+    ../../../share/settings/users.nix
     ./network.nix
     ./second-stage-boot.nix
     ./ssh.nix

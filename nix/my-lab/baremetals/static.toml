@@ -15,28 +15,62 @@ system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-netboot"
 
+[switch.sks8300]
+notShow = true
+system = "x86_64-linux"
+user = "renako"
+hostname = "kaho"
+address = ["172.16.1.11/24"]
+routerId = "10.10.1.11"
+AS = "65011"
+
+[switch.kaho]
+system = "x86_64-linux"
+user = "renako"
+hostname = "kaho"
+address = ["172.16.1.12/24"]
+routerId = "10.10.1.12"
+l2vpnListenRange = "10.10.1.0/24"
+AS = "65012"
+
 [compute.ajisai]
 system = "x86_64-linux"
 user = "renako"
 hostname = "ajisai"
-vlanId = "20"           # separate manage network
-bgpId = "5"
-[compute.mao]
+address = ["172.16.1.50/24"]
+routerId = "10.10.1.50"
+AS = "65050"
+[compute.mai]
 system = "x86_64-linux"
 user = "renako"
-hostname = "mao"
-vlanId = "20"           # separate manage network
-bgpId = "6"
+hostname = "mai"
+address = ["172.16.1.51/24"]
+routerId = "10.10.1.51"
+AS = "65051"
 [compute.satsuki]
 system = "x86_64-linux"
 user = "renako"
 hostname = "satsuki"
-vlanId = "20"           # separate manage network
-bgpId = "7"
+address = ["172.16.1.52/24"]
+routerId = "10.10.1.52"
+AS = "65052"
+# [compute.haruna]
+# system = "x86_64-linux"
+# user = "renako"
+# hostname = "haruna"
+# address = ["172.16.1.53/24"]
+# routerId = "10.10.1.53"
+# AS = "65053"
 
-[router.kaho]
+[microvm.borderLeaf]
 system = "x86_64-linux"
 user = "renako"
-hostname = "kaho"
-vlanId = "20"           # separate manage network
-bgpId = "1"
+hostname = "borderLeaf"
+routerId = "10.10.1.253"
+AS = "65020"
+[microvm.borderRouter]
+system = "x86_64-linux"
+user = "renako"
+hostname = "borderRouter"
+routerId = "10.10.1.254"
+AS = "64512"

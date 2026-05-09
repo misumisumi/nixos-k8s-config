@@ -1,0 +1,1 @@
+../../production/pki/gen_ca.sh

@@ -29,8 +29,8 @@ in
         neighbor LEAF bfd
         neighbor LEAF remote-as external
         neighbor LEAF advertisement-interval 0
-        neighbor LEAF timers 1 3
-        neighbor LEAF timers connect 5
+        neighbor LEAF timers 3 9
+        neighbor LEAF timers connect 10
         neighbor LEAF capability extended-nexthop
         ${concatMapStringsSep "\n  " (x: "neighbor enp${toString x}s0 interface peer-group LEAF") (
           range 5 8
@@ -39,8 +39,8 @@ in
         neighbor OVERLAY peer-group
         neighbor OVERLAY remote-as external
         neighbor OVERLAY advertisement-interval 0
-        neighbor OVERLAY timers 1 3
-        neighbor OVERLAY timers connect 5
+        neighbor OVERLAY timers 3 9
+        neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
         bgp listen range 10.1.254.0/24 peer-group OVERLAY
