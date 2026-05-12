@@ -60,69 +60,66 @@
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays =
-              let
-                nixpkgs-unstable = import inputs.nixpkgs-unstable {
-                  system = "x86_64-linux";
-                  config = {
-                    allowUnfree = true;
-                  };
-                };
-              in
-              [
-                # inputs.flakes.overlays.default
-                # (import ./patches { inherit nixpkgs-unstable; })
-                # inputs.homelab-ansible.overlays.default
-                inputs.homelab-mylab.overlays.default
-                inputs.homelab-terraform.overlays.default
-                inputs.nixos-linstor.overlays.default
-              ];
+            overlays = [
+              inputs.homelab-mylab.overlays.default
+              inputs.homelab-terraform.overlays.default
+              inputs.nixos-linstor.overlays.default
+            ];
             config.allowUnfree = true;
           };
-          devshells.default = {
-            commands = [
-              {
-                help = "disko";
-                name = "disko";
-                command = ''
-                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
+          devshells.default =
+            let
+              nixpkgs-unstable = import inputs.nixpkgs-unstable {
+                system = "x86_64-linux";
+                config = {
+                  allowUnfree = true;
+                };
+              };
+            in
+            {
+              commands = [
+                {
+                  help = "disko";
+                  name = "disko";
+                  command = ''
+                    ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
+                  '';
+                }
+                {
+                  help = "nixos-anywhere";
+                  name = "nixos-anywhere";
+                  command = ''
+                    ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
+                  '';
+                }
+              ];
+              devshell.startup = {
+                compinit.text = "";
+                flakeRoot.text = ''
+                  FLAKE_ROOT="''$(${lib.getExe config.flake-root.package})"
+                  export FLAKE_ROOT
                 '';
-              }
-              {
-                help = "nixos-anywhere";
-                name = "nixos-anywhere";
-                command = ''
-                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
-                '';
-              }
-            ];
-            devshell.startup = {
-              compinit.text = "";
-              flakeRoot.text = ''
-                FLAKE_ROOT="''$(${lib.getExe config.flake-root.package})"
-                export FLAKE_ROOT
-              '';
+              };
+              packages = with pkgs; [
+                bashInteractive
+                ansible
+                ter
+                tofu-w-plugins
+
+                incus
+                openssl
+                python3
+                gawk
+
+                mkimg-lxc
+                mkimg-incus-vm
+                mkimg-kexec
+                mkimg-ipxe
+
+                linkage
+                linkage-gateway
+              ];
             };
-            packages = with pkgs; [
-              bashInteractive
-              ansible
-              ter
-              tofu-w-plugins
-
-              incus
-              openssl
-              python3
-              gawk
-
-              mkimg-lxc
-              mkimg-incus-vm
-              mkimg-kexec
-              mkimg-ipxe
-
-              linkage
-              linkage-gateway
-            ];
-          };
         };
     };
 }

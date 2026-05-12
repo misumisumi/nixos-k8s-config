@@ -16,7 +16,15 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
+
     nixos-linstor.url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
+    pcp = {
+      url = "github:performancecopilot/pcp";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        microvm.follows = "microvm";
+      };
+    };
 
     disko = {
       url = "github:nix-community/disko";
@@ -64,7 +72,6 @@
         overlays.default =
           let
             nixpkgs-unstable = import inputs.nixpkgs-unstable {
-              system = "x86_64-linux";
               config = {
                 allowUnfree = true;
               };

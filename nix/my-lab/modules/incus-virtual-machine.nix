@@ -24,6 +24,8 @@ in
     system.build.qemuImage = import (modulesPath + "/../lib/make-disk-image.nix") {
       inherit pkgs lib config;
 
+      inherit (config.system.build) diskSize;
+
       contents = config.system.build.extraContents;
 
       partitionTableType = "efi";

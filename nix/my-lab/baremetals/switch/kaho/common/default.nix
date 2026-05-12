@@ -4,8 +4,10 @@
   pkgs,
   lib,
   modulesPath,
+  hostname,
   user,
   hostSecretPath,
+  secretPath,
   userSecretPath,
   ...
 }:
@@ -17,6 +19,7 @@ in
     inputs.microvm.nixosModules.host
     ../../../share/apps/bash.nix
     ../../../share/apps/pkgs.nix
+    ../../../share/settings/cockpit.nix
     ../../../share/settings/console.nix
     ../../../share/settings/locale.nix
     ../../../share/settings/network.nix
@@ -41,6 +44,21 @@ in
       chown -R ${user}:users /home/${user}/.ssh
     '';
     build.extraContents = [
+      {
+        source = secretPath + "/pki/ImCA/chain.pem";
+        target = "/var/lib/certs/server/server.ca";
+        mode = "0644";
+      }
+      {
+        source = secretPath + "/pki/server/${hostname}/chain.pem";
+        target = "/var/lib/certs/server/server.crt";
+        mode = "0644";
+      }
+      {
+        source = secretPath + "/pki/server/${hostname}/private/cakey.pem";
+        target = "/var/lib/certs/server/server.key";
+        mode = "0600";
+      }
       {
         source = hostSecretPath + "/ssh/ssh_host_ed25519_key";
         target = "/etc/ssh/ssh_host_ed25519_key";
