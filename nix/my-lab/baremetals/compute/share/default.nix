@@ -16,13 +16,13 @@ in
   imports = [
     ../../share/apps/bash.nix
     ../../share/apps/pkgs.nix
+    ../../share/settings/cockpit.nix
     ../../share/settings/console.nix
     ../../share/settings/locale.nix
     ../../share/settings/network.nix
     ../../share/settings/security.nix
     ../../share/settings/system.nix
     ../../share/settings/users.nix
-    ./cockpit.nix
     ./incus.nix
     ./linstor.nix
     self.nixosModules.vlan-aware-vxlan
@@ -36,9 +36,6 @@ in
     activationScripts.postExtraContents = ''
       chown -R ${user}:users /home/${user}/.config
       chown -R ${user}:users /home/${user}/.ssh
-
-      ln -sf /var/lib/certs/server/server.key /etc/cockpit/ws-certs.d/
-      ln -sf /var/lib/certs/server/server.crt /etc/cockpit/ws-certs.d/
     '';
     build.extraContents = [
       {

@@ -89,7 +89,7 @@ in
           "var-lib-incus.mount"
         ];
         script = ''
-          ln -sf /var/lib/certs/server/* /var/lib/incus/
+          cp /var/lib/certs/server/* /var/lib/incus/
         '';
         serviceConfig = {
           Type = "oneshot";

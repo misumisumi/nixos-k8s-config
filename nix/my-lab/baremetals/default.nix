@@ -41,6 +41,7 @@ let
         inputs.disko.nixosModules.disko
         inputs.nixos-linstor.nixosModules.linstor
         inputs.nixos-linstor.nixosModules.linkage
+        (inputs.pcp + "/build/nix/nixos-module.nix")
         self.nixosModules.default
         ./share/modules/static.nix
         ./${group}/${tag}/common

@@ -15,7 +15,7 @@
     in
     rec {
       secretPath = ../../../secrets + "${if isDev then "/develop" else "/production"}";
-      hostSecretPath = secretPath + "/guests/${group}/${hostname}";
+      hostSecretPath = secretPath + "/baremetals/${group}/${hostname}";
       userSecretPath = secretPath + "/user/${user}";
       static = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
     };

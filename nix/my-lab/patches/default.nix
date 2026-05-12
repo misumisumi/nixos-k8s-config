@@ -49,7 +49,7 @@
 # })
 { nixpkgs-unstable, ... }:
 final: prev: {
-  inherit (nixpkgs-unstable) frr;
+  inherit (nixpkgs-unstable) cockpit cockpit-files cockpit-machines;
 
   rbash = prev.runCommandNoCC "rbash-${prev.bashInteractive.version}" { } ''
     mkdir -p $out/bin
