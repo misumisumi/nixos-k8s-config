@@ -37,13 +37,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    colmena = {
-      url = "github:zhaofengli/colmena/v0.4.0";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        stable.follows = "nixpkgs";
-      };
-    };
     microvm = {
       url = "github:microvm-nix/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -62,16 +55,11 @@
         inputs.devshell.flakeModule
       ];
       flake = {
-        # Cluster settings managing colmena
-        # colmena = import ./nixos/hive.nix {
-        #   inherit (inputs.nixpkgs) lib;
-        #   inherit inputs self;
-        # };
-        # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
         overlay = self.overlays.default;
         overlays.default =
           let
             nixpkgs-unstable = import inputs.nixpkgs-unstable {
+              system = "x86_64-linux";
               config = {
                 allowUnfree = true;
               };
