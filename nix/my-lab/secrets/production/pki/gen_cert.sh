@@ -119,3 +119,5 @@ echo "---------------------------------------"
 openssl verify -CAfile ImCA/chain.pem "$CERT_CRT"
 
 cat "$CERT_CRT" ImCA/cacert.crt >"$CERT_DIR/chain.pem"
+
+cat "$CERT_CRT" ImCA/chain.pem >"$CERT_DIR/full-chain.pem"
