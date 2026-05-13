@@ -67,18 +67,10 @@
           in
           import ./patches { inherit nixpkgs-unstable; };
         nixosModules = import ./modules;
-        nixosConfigurations =
-          (import ./baremetals {
-            inherit (inputs.nixpkgs) lib;
-            inherit inputs self;
-          })
-          // (import ./guests {
-            inherit (inputs.nixpkgs) lib;
-            inherit inputs self;
-          });
-        # diskoConfigurations = import ./donfigs/disk-config.nix {
-        #   inherit (inputs.nixpkgs) lib;
-        # };
+        nixosConfigurations = import ./roles {
+          inherit (inputs.nixpkgs) lib;
+          inherit inputs self;
+        };
       };
     };
 }

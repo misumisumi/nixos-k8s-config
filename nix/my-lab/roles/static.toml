@@ -1,0 +1,92 @@
+[liveimg.first-image]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "first-image"
+[liveimg.second-image]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "second-image"
+[liveimg.livecd]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "nixos-livecd"
+[liveimg.netboot]
+system = "x86_64-linux"
+user = "nixos"
+hostname = "nixos-netboot"
+
+[switch.sks8300]
+notShow = true
+system = "x86_64-linux"
+user = "renako"
+hostname = "kaho"
+manageIP = "172.16.1.31/24"
+AS = "65011"
+routerId = "10.10.1.31"
+
+[switch.kaho]
+system = "x86_64-linux"
+user = "renako"
+hostname = "kaho"
+manageIP = "172.16.1.32/24"
+routerId = "10.10.1.32"
+l2vpnListenRange = "10.10.1.0/24"
+AS = "65012"
+
+[compute.ajisai]
+system = "x86_64-linux"
+user = "renako"
+hostname = "ajisai"
+manageIP = "172.16.1.50/24"
+routerId = "10.10.1.50"
+AS = "65050"
+[compute.mai]
+system = "x86_64-linux"
+user = "renako"
+hostname = "mai"
+manageIP = "172.16.1.51/24"
+routerId = "10.10.1.51"
+AS = "65051"
+[compute.satsuki]
+system = "x86_64-linux"
+user = "renako"
+hostname = "satsuki"
+manageIP = "172.16.1.52/24"
+routerId = "10.10.1.52"
+AS = "65052"
+# [compute.haruna]
+# system = "x86_64-linux"
+# user = "renako"
+# hostname = "haruna"
+# address = ["172.16.1.53/24"]
+# routerId = "10.10.1.53"
+# AS = "65053"
+
+[microvm.borderLeaf]
+system = "x86_64-linux"
+user = "renako"
+hostname = "borderLeaf"
+routerId = "10.10.1.253"
+AS = "65020"
+[microvm.borderRouter]
+system = "x86_64-linux"
+user = "renako"
+hostname = "borderRouter"
+routerId = "10.10.1.254"
+AS = "64512"
+
+[mngr.phikun]
+system = "x86_64-linux"
+user = "amaori"
+hostname = "phikun"
+manageIP = "172.16.1.10/24"
+
+[mngr.image-server]
+system = "x86_64-linux"
+user = "amaori"
+hostname = "fourkun"
+manageIP = "172.16.1.11/24"
+[mngr.image-server.dnsmasq]
+rangeStart = "150"
+port = "53"
+server = []
