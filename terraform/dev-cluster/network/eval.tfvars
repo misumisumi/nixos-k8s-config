@@ -6,11 +6,11 @@ networks = {
       "ipv4.address"  = "172.16.10.1/24"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-10g-0 = {

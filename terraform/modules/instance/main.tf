@@ -104,9 +104,9 @@ resource "incus_instance" "instance" {
       "security.syscalls.intercept.mount"         = true
       "security.syscalls.intercept.mount.allowed" = "ext4"
       "raw.lxc"                                   = <<EOT
-        lxc.apparmor.profile = unconfined
-        lxc.cap.drop = ""
-        lxc.cgroup.devices.allow = a
+        apparmor.profile = unconfined
+        cap.drop = ""
+        cgroup.devices.allow = a
     EOT
       } : {
       "security.secureboot" = false

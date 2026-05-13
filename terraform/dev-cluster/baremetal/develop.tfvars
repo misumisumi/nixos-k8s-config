@@ -5,15 +5,34 @@ compornents = [
       {
         name      = "spine"
         root_pool = "dev-baremetal"
-        root_size = "8GB"
+        root_size = "16GB"
       },
       {
         name      = "leaf"
         root_pool = "dev-baremetal"
         root_size = "16GB"
       },
+      {
+        name = "mngr"
+      },
     ]
     instances = [
+      {
+        name         = "phikun"
+        image        = "dev/mngr/phikun"
+        machine_type = "container"
+        profiles     = ["mngr"]
+        config = {
+          "limits.cpu"    = 2
+          "limits.memory" = "4GB"
+        }
+        networks = [
+          {
+            parent  = "dev-1g-0"
+            nictype = "bridged"
+          },
+        ]
+      },
       {
         name         = "kaho"
         image        = "dev/switch/kaho"
