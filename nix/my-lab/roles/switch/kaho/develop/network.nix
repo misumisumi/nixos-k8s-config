@@ -42,6 +42,7 @@ in
         name = "enp5s0";
         networkConfig = {
           Description = "WAN";
+          IPv6AcceptRA = true;
         };
       };
       "10-enp6s0" = {
