@@ -60,5 +60,6 @@ final: prev: {
     mkimg-kexec
     mkimg-ipxe
     mkimg-incus-vm
+    mkimg-list
     ;
 }

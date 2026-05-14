@@ -19,13 +19,14 @@ hostname = "nixos-netboot"
 notShow = true
 system = "x86_64-linux"
 user = "renako"
-hostname = "kaho"
+hostname = "sks8300"
 manageIP = "172.16.10.31/24"
 AS = "65011"
 routerId = "10.10.10.31"
 color = "green"
 
 [switch.kaho]
+uuid = "501b2357-38e9-43ad-a841-1b620418c959"
 system = "x86_64-linux"
 user = "renako"
 hostname = "kaho"
@@ -48,6 +49,7 @@ address = "172.16.10.102"
 cidr = "24"
 
 [compute.ajisai]
+uuid = "e6ae54f8-c9b9-4bc0-a3a2-70818ed1a0d2"
 system = "x86_64-linux"
 user = "renako"
 hostname = "ajisai"
@@ -56,6 +58,7 @@ routerId = "10.10.10.50"
 AS = "65050"
 color = "blue"
 [compute.mai]
+uuid = "27161944-492d-4225-ae42-73a43467e797"
 system = "x86_64-linux"
 user = "renako"
 hostname = "mai"
@@ -64,6 +67,7 @@ routerId = "10.10.10.51"
 AS = "65051"
 color = "blue"
 [compute.satsuki]
+uuid = "ef44a86f-544b-4e81-8fa3-0e7bbe8609b6"
 system = "x86_64-linux"
 user = "renako"
 hostname = "satsuki"
@@ -100,10 +104,10 @@ manageIP = "172.16.10.10/24"
 [mngr.image-server]
 system = "x86_64-linux"
 user = "amaori"
-hostname = "fourkun"
-manageIP = "172.16.10.11/24"
+hostname = "image-server"
+manageIP = "172.16.10.1/24"
 [mngr.image-server.dnsmasq]
-rangeStart = "150"
+rangeStart = "200" # if set "", dnsmasq's PXE server will be DNS proxy mode.
 port = "53"
 server = []
 [mngr.fake-isp]
