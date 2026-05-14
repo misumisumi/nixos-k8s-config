@@ -1,6 +1,6 @@
 {
   imports = [
-    ../../../share/settings/ssh.dev.nix
+    ../../../share/settings/ssh.nix
     ./bgp.nix
     ./microvm
     ./network.nix

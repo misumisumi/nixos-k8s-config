@@ -115,6 +115,7 @@
                 mkimg-incus-vm
                 mkimg-kexec
                 mkimg-ipxe
+                mkimg-list
 
                 linkage
                 linkage-gateway

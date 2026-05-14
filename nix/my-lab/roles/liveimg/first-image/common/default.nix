@@ -9,7 +9,6 @@ let
 in
 {
   imports = [
-    self.nixosModules.ipxe
     ../../../share/apps/bash.nix
     ../../../share/modules/static.nix
     ../../../share/settings/console.nix
@@ -24,5 +23,10 @@ in
   hardware.cpu = {
     intel.updateMicrocode = true;
     amd.updateMicrocode = true;
+  };
+  image.modules = mkForce {
+    inherit (self.nixosModules) ipxe;
+    lxc = self.nixosModules.lxc-container;
+    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

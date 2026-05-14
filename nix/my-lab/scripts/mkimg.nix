@@ -42,7 +42,7 @@ in
     if [ $isProd -eq 1 ]; then
       output=$PROJECT_ROOT/mnt/production
     fi
-    output="$output/www/kexec/images/$image"
+    output="$output/www/images/kexec/$image"
     build_output=$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant kexec --no-link ''${args[@]})
     if [ ! -z "$build_output" ]; then
       rm -rf "$output"
@@ -60,11 +60,30 @@ in
     if [ $isProd -eq 1 ]; then
       output=$PROJECT_ROOT/mnt/production
     fi
-    output="$output/www/ipxe/images/$image"
+    output="$output/www/images/ipxe/$image"
     build_output=$(${getExe nix} build ".#nixosConfigurations.''${flake}.config.system.build.ipxeImage" --no-link --print-out-paths ''${args[@]})
     if [ ! -z "$build_output" ]; then
       rm -rf "$output"
+      mkdir -p "$output"
       ${getExe rsync} -auhz --copy-links --chmod=ug+w --chown=$USER:users "$build_output/" "$output"
+    fi
+  '';
+  mkimg-list = writeShellScriptBin "mkimg.list" ''
+    isProd="$(echo $1 | grep -c "prod")"
+    PROJECT_ROOT="''${FLAKE_ROOT:-$PWD}"
+    output=$PROJECT_ROOT/mnt/develop
+    STATIC_FILE=$PROJECT_ROOT/nix/my-lab/roles/static_dev.toml
+    if [ $isProd -eq 1 ]; then
+      output=$PROJECT_ROOT/mnt/production
+      STATIC_FILE=$PROJECT_ROOT/nix/my-lab/roles/static.toml
+    fi
+    export STATIC_FILE=$STATIC_FILE
+    output="$output/www/images/kexec-images.json"
+    build_output=$(${getExe nix} build --file ${./mkimg-list.nix} --impure --no-link --print-out-paths ''${args[@]})
+    if [ ! -z "$build_output" ]; then
+      rm -rf "$output"
+      mkdir -p "$(dirname $output)"
+      cp $build_output $output
     fi
   '';
 }
