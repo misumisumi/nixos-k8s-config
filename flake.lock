@@ -859,11 +859,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1778380007,
-        "narHash": "sha256-ZaRI+FQ/PwcWVQTwQxE/H8LK/WhsNQ+BKk1fMfCJ5Sw=",
+        "lastModified": 1778775171,
+        "narHash": "sha256-xo9ocDinLhc/saO443x1E7kg1ki7+7EKwFj0ZE2ECjM=",
         "ref": "main",
-        "rev": "0a89c193c6bc2527f83a3a065a3b7fb149949d4d",
-        "revCount": 17,
+        "rev": "21680461c92b21a7e9bbbfe9fe1464aa546fc9bb",
+        "revCount": 18,
         "type": "git",
         "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       },
@@ -880,11 +880,11 @@
         "nixpkgs": "nixpkgs_10"
       },
       "locked": {
-        "lastModified": 1778380007,
-        "narHash": "sha256-ZaRI+FQ/PwcWVQTwQxE/H8LK/WhsNQ+BKk1fMfCJ5Sw=",
+        "lastModified": 1778775171,
+        "narHash": "sha256-xo9ocDinLhc/saO443x1E7kg1ki7+7EKwFj0ZE2ECjM=",
         "ref": "main",
-        "rev": "0a89c193c6bc2527f83a3a065a3b7fb149949d4d",
-        "revCount": 17,
+        "rev": "21680461c92b21a7e9bbbfe9fe1464aa546fc9bb",
+        "revCount": 18,
         "type": "git",
         "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       },

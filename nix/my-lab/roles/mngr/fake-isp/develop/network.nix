@@ -41,12 +41,6 @@
             oifname "enp5s0" masquerade
           }
         }
-        table ip filter {
-          chain forward {
-            type filter hook forward priority 0;
-            tcp flags syn tcp option maxseg size set 1420
-          }
-        }
       '';
     };
   };

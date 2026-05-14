@@ -16,12 +16,6 @@ in
     "net.ipv6.conf.all.forwarding" = 1;
     "net.ipv6.conf.default.forwarding" = 1;
   };
-  networking = {
-    hostName = hostname;
-    useNetworkd = true;
-    useDHCP = false;
-    firewall.enable = false;
-  };
   systemd.network = {
     netdevs = {
       lo0 = {
