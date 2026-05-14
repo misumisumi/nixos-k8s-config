@@ -52,8 +52,8 @@ in
     network = {
       enable = true;
       networks = {
-        "15-eth0" = {
-          name = "eth0";
+        "15-enp5s0" = {
+          name = "enp5s0";
           address = [ "${manageIP}" ];
         };
       };

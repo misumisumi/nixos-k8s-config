@@ -18,6 +18,26 @@ compornents = [
     ]
     instances = [
       {
+        name         = "fake-isp"
+        image        = "dev/mngr/fake-isp"
+        machine_type = "container"
+        profiles     = ["mngr"]
+        config = {
+          "limits.cpu"    = 2
+          "limits.memory" = "4GB"
+        }
+        networks = [
+          {
+            parent  = "dev-isp"
+            nictype = "bridged"
+          },
+          {
+            parent  = "dev-wan"
+            nictype = "bridged"
+          },
+        ]
+      },
+      {
         name         = "phikun"
         image        = "dev/mngr/phikun"
         machine_type = "container"

@@ -53,7 +53,7 @@ in
   systemd = {
     network =
       let
-        networkConf4WAN = {
+        networkConf4LAN = {
           netdevs = {
             br91001 = {
               netdevConfig = {
@@ -116,7 +116,7 @@ in
             };
           };
         }
-        // networkConf4WAN.netdevs;
+        // networkConf4LAN.netdevs;
         networks = {
           "5-lo0" = {
             name = "lo0";
@@ -130,22 +130,8 @@ in
               Description = "Point to Point link";
             };
           };
-          "10-enp0s4" = {
-            name = "enp0s4";
-            # vrf = [ "vrf91001" ];
-            address = [ "10.150.150.10/24" ];
-            gateway = [ "10.150.150.1" ];
-            dns = [
-              "1.1.1.1"
-              "8.8.8.8"
-            ];
-            networkConfig = {
-              Description = "WAN Interface";
-            };
-          };
         }
-        // networkConf4WAN.networks;
-
+        // networkConf4LAN.networks;
       };
   };
 }

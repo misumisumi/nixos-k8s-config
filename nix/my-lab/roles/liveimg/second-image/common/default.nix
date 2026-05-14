@@ -10,8 +10,8 @@ in
 {
   imports = [
     ../../../share/apps/bash.nix
+    ../../../share/apps/debug.nix
     ../../../share/apps/pkgs.nix
-    ../../../share/apps/wireshark.nix
     ../../../share/settings/console.nix
     ../../../share/settings/locale.nix
     ../../../share/settings/system.nix

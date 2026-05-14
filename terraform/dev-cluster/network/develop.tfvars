@@ -20,11 +20,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-10g-1 = {
@@ -33,11 +33,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-10g-2 = {
@@ -47,11 +47,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-10g-3 = {
@@ -61,11 +61,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-40g-0 = {
@@ -75,11 +75,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-40g-1 = {
@@ -89,11 +89,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-40g-2 = {
@@ -103,11 +103,11 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-40g-3 = {
@@ -117,23 +117,36 @@ networks = {
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
-      "ipv4.firewall" = true
+      "ipv4.firewall" = false
       "ipv6.address"  = "none"
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
-      "ipv6.firewall" = true
+      "ipv6.firewall" = false
     }
   },
   dev-wan = {
     config = {
-      # "ipv4.address"  = "10.150.150.254/24"
+      "bridge.driver" = "openvswitch"
       "ipv4.address"  = "none"
       "ipv4.nat"      = false
       "ipv4.dhcp"     = false
       "ipv4.firewall" = false
-      "ipv6.address"  = "fd42:3a98:dc40:52c6::254/64"
-      "ipv6.nat"      = true
-      "ipv6.dhcp"     = true
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = false
+    }
+  }
+  dev-isp = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "ipv4.address"  = "10.150.150.1/24"
+      "ipv4.nat"      = true
+      "ipv4.dhcp"     = true
+      "ipv4.firewall" = false
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
       "ipv6.firewall" = false
     }
   }
