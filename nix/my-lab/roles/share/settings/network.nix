@@ -8,16 +8,15 @@ in
     network = {
       enable = mkDefault true;
       wait-online = {
-        timeout = 5; # Disable wait online
-        anyInterface = true;
+        enable = true;
+        timeout = 120; # Disable wait online
+        anyInterface = false;
       };
     };
   };
   networking = {
     nftables.enable = true;
-    firewall = {
-      enable = false;
-    };
+    firewall.enable = true;
     useNetworkd = true;
     useHostResolvConf = false;
     hostName = hostname;
