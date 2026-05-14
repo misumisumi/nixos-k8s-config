@@ -3,17 +3,17 @@ compornents = [
     remote = "local"
     profiles = [
       {
-        name      = "spine"
+        name      = "dev.spine"
         root_pool = "dev-baremetal"
         root_size = "16GB"
       },
       {
-        name      = "leaf"
+        name      = "dev.leaf"
         root_pool = "dev-baremetal"
         root_size = "16GB"
       },
       {
-        name = "mngr"
+        name = "dev.mngr"
       },
     ]
     instances = [
@@ -21,7 +21,7 @@ compornents = [
         name         = "fake-isp"
         image        = "dev/mngr/fake-isp"
         machine_type = "container"
-        profiles     = ["mngr"]
+        profiles     = ["dev.mngr"]
         config = {
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
@@ -41,7 +41,7 @@ compornents = [
         name         = "phikun"
         image        = "dev/mngr/phikun"
         machine_type = "container"
-        profiles     = ["mngr"]
+        profiles     = ["dev.mngr"]
         config = {
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
@@ -57,7 +57,7 @@ compornents = [
         name         = "kaho"
         image        = "dev/switch/kaho"
         machine_type = "virtual-machine"
-        profiles     = ["spine"]
+        profiles     = ["dev.spine"]
         config = {
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
@@ -108,7 +108,7 @@ compornents = [
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
         }
-        profiles = ["leaf"]
+        profiles = ["dev.leaf"]
         networks = [
           {
             parent       = "dev-1g-0"
@@ -146,7 +146,7 @@ compornents = [
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
         }
-        profiles = ["leaf"]
+        profiles = ["dev.leaf"]
         networks = [
           {
             parent       = "dev-1g-0"
@@ -184,7 +184,7 @@ compornents = [
           "limits.cpu"    = 2
           "limits.memory" = "4GB"
         }
-        profiles = ["leaf"]
+        profiles = ["dev.leaf"]
         networks = [
           {
             parent       = "dev-1g-0"
