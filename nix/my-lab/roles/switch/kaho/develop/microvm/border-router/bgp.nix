@@ -77,7 +77,6 @@ in
         exit-address-family
 
         address-family l2vpn evpn
-          neighbor OVERLAY default-originate
           neighbor OVERLAY activate
           advertise ipv4 unicast
           redistribute kernel
