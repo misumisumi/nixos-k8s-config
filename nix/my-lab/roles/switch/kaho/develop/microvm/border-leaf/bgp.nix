@@ -7,14 +7,20 @@
 let
   inherit (builtins) attrValues;
   inherit (lib)
+    concatStringsSep
     concatMapStringsSep
     filterAttrs
     hasPrefix
+    splitString
+    sublist
     ;
   inherit (static.microvm.borderLeaf) AS;
   inherit (config.networking.vxlan) tenants;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
+  underlayPrefixes = concatStringsSep "." (
+    (sublist 0 3 (splitString "." tenants.tn1.L3VNI.local)) ++ [ "0/24" ]
+  );
 in
 {
   # FRR (Free Range Routing) を有効にする
@@ -35,10 +41,12 @@ in
         match interface enp0s5
       exit
 
-      route-map UNDERLAY_ANYCAST_IP permit 10
-        match ip address prefix-list UNDERLAY_SUBNET
-        set extcommunity bandwidth cumulative
+      ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixes} ge 32
+      route-map SET-SRC permit 10
+        match ip address prefix-list UNDERLAY_IPV4
+        set src ${tenants.tn1.L3VNI.local}
       exit
+      ip protocol bgp route-map SET-SRC
 
       vrf ${tenants.tn1.vrf}
         vni ${tenants.tn1.L3VNI.vni}

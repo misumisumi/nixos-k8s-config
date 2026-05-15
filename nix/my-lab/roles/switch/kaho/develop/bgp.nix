@@ -19,8 +19,7 @@ let
 
   inherit (static.${group}.${hostname}) AS routerId l2vpnListenRange;
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
-  underlayPrefixList = concatStringsSep "." ((sublist 0 3 (splitString "." routerId)) ++ [ "0/24" ]);
-
+  underlayPrefixes = concatStringsSep "." ((sublist 0 3 (splitString "." routerId)) ++ [ "0/24" ]);
 in
 {
   systemd.network = {
@@ -41,17 +40,15 @@ in
       frr defaults datacenter
       log syslog informational
 
-      ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixList} ge 32
-
-      route-map SET-SRC permit 10
-        match ip address prefix-list UNDERLAY_IPV4
-        set src ${routerId}
-      exit
-
       route-map REDISTRIBUTE_LOOPBACK_INTERFACE permit 10
         match interface lo0
       exit
 
+      ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixes} ge 32
+      route-map SET-SRC permit 10
+        match ip address prefix-list UNDERLAY_IPV4
+        set src ${routerId}
+      exit
       ip protocol bgp route-map SET-SRC
 
       router bgp ${AS}
