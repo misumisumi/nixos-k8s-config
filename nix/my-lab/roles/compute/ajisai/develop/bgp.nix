@@ -22,7 +22,7 @@ let
   inherit (static.${group}) virtualIPs;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
-  underlayPrefixList = concatStringsSep "." (
+  underlayPrefixes = concatStringsSep "." (
     (sublist 0 3 (splitString "." tenants.tn1.L3VNI.local)) ++ [ "0/24" ]
   );
 in
@@ -41,23 +41,20 @@ in
         match interface lo0
       exit
 
-      ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixList} ge 32
+      route-map WCMP-MAP permit 10
+        set extcommunity bandwidth cumulative
+      exit
 
+      ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixes} ge 32
       route-map SET-SRC permit 10
         match ip address prefix-list UNDERLAY_IPV4
         set src ${tenants.tn1.L3VNI.local}
       exit
-
-      route-map UNDERLAY_ANYCAST_IP permit 10
-        match ip address prefix-list UNDERLAY_SUBNET
-        set extcommunity bandwidth cumulative
-      exit
+      ip protocol bgp route-map SET-SRC
 
       vrf ${tenants.tn1.vrf}
         vni ${toString tenants.tn1.L3VNI.vni}
       exit-vrf
-
-      ip protocol bgp route-map SET-SRC
 
       router bgp ${AS}
         bgp router-id ${tenants.tn1.L3VNI.local}
