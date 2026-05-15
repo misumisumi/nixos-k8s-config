@@ -23,8 +23,23 @@ let
   );
 in
 {
-  # FRR (Free Range Routing) を有効にする
-  # systemd.services.frr.wantedBy = lib.mkForce [ ];
+  networking.firewall = {
+    allowedUDPPorts = [
+      # for BFD
+      3784
+      3785
+      4784
+      # for VXLAN
+      4789
+    ];
+    allowedTCPPorts = [
+      # for BGP
+      179
+    ];
+    extraInputRules = ''
+      ip protocol 112 accept comment "VRRP"
+    '';
+  };
   services.frr = {
     bgpd.enable = true;
     bfdd.enable = true;
@@ -47,6 +62,10 @@ in
         set src ${tenants.tn1.L3VNI.local}
       exit
       ip protocol bgp route-map SET-SRC
+
+      route-map WCMP-MAP permit 10
+        set extcommunity bandwidth num-multipaths
+      exit
 
       vrf ${tenants.tn1.vrf}
         vni ${tenants.tn1.L3VNI.vni}
@@ -86,6 +105,7 @@ in
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
           neighbor SPINE activate
+          neighbor SPINE route-map WCMP-MAP out
         exit-address-family
 
         address-family l2vpn evpn

@@ -38,7 +38,6 @@ in
     hostName = "border-leaf";
     useNetworkd = true;
     useDHCP = false;
-    firewall.enable = false;
   };
   networking.vxlan.tenants = {
     "wan" = {
