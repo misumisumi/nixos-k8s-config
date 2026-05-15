@@ -25,6 +25,7 @@ in
     ../../share/settings/users.nix
     ./incus.nix
     ./linstor.nix
+    ./nftables.nix
     self.nixosModules.vlan-aware-vxlan
   ];
   image.modules = mkForce {

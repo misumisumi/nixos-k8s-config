@@ -85,7 +85,10 @@ in
       };
     };
     sockets = {
-      incus.after = [ "multi-user.target" ];
+      incus.after = [
+        "multi-user.target"
+        "frr.service"
+      ];
       incus-user.after = [ "multi-user.target" ];
     };
     mounts = [

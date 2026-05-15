@@ -30,6 +30,23 @@ in
       ManageForeignRoutingPolicyRules = false;
     };
   };
+  networking.firewall = {
+    allowedUDPPorts = [
+      # for BFD
+      3784
+      3785
+      4784
+      # for VXLAN
+      4789
+    ];
+    allowedTCPPorts = [
+      # for BGP
+      179
+    ];
+    extraInputRules = ''
+      ip protocol 112 accept comment "VRRP"
+    '';
+  };
   # FRR (Free Range Routing) を有効にする
   services.frr = {
     bgpd.enable = true;
@@ -50,6 +67,10 @@ in
         set src ${routerId}
       exit
       ip protocol bgp route-map SET-SRC
+
+      route-map WCMP-MAP permit 10
+        set extcommunity bandwidth cumulative
+      exit
 
       router bgp ${AS}
         bgp router-id ${routerId}
@@ -79,6 +100,7 @@ in
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
           neighbor LEAF activate
+          neighbor LEAF route-map WCMP-MAP out
           maximum-paths 64
         exit-address-family
 

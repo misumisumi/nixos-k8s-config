@@ -27,8 +27,24 @@ let
   );
 in
 {
+  networking.firewall = {
+    allowedUDPPorts = [
+      # for BFD
+      3784
+      3785
+      4784
+      # for VXLAN
+      4789
+    ];
+    allowedTCPPorts = [
+      # for BGP
+      179
+    ];
+    extraInputRules = ''
+      ip protocol 112 accept comment "VRRP"
+    '';
+  };
   # FRR (Free Range Routing) を有効にする
-  # systemd.services.frr.wantedBy = lib.mkForce [ ];
   services.frr = {
     bgpd.enable = true;
     bfdd.enable = true;
@@ -42,7 +58,7 @@ in
       exit
 
       route-map WCMP-MAP permit 10
-        set extcommunity bandwidth cumulative
+        set extcommunity bandwidth num-multipaths
       exit
 
       ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixes} ge 32
@@ -88,6 +104,7 @@ in
           network ${virtualIPs.nfs.address}/${virtualIPs.nfs.cidr}
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
           neighbor SPINE activate
+          neighbor SPINE route-map WCMP-MAP out
         exit-address-family
 
         address-family l2vpn evpn
