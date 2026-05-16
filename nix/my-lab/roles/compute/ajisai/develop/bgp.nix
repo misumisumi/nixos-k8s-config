@@ -28,20 +28,11 @@ let
 in
 {
   networking.firewall = {
-    allowedUDPPorts = [
-      # for BFD
-      3784
-      3785
-      4784
-      # for VXLAN
-      4789
-    ];
-    allowedTCPPorts = [
-      # for BGP
-      179
-    ];
     extraInputRules = ''
-      ip protocol 112 accept comment "VRRP"
+      tcp dport bgp accept
+      udp dport { bfd-control, bfd-echo } accept
+      udp dport 4789 accept comment "VXLAN"
+      ip protocol vrrp accept
     '';
   };
   # FRR (Free Range Routing) を有効にする
