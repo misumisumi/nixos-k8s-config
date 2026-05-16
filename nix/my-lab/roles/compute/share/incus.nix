@@ -29,6 +29,8 @@ in
     ];
   };
 
+  networking.firewall.allowedTCPPorts = [ 8443 ]; # Incus API
+
   virtualisation = {
     vswitch.enable = true;
     incus = {

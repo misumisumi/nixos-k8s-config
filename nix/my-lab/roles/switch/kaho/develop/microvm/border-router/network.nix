@@ -15,6 +15,7 @@ in
     "net.ipv6.conf.default.forwarding" = 1;
   };
   networking = {
+    firewall.enable = true;
     hostName = "router";
     useNetworkd = true;
     useDHCP = false;
