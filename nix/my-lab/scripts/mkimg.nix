@@ -86,4 +86,15 @@ in
       cp $build_output $output
     fi
   '';
+
+  mkimg-dev-wrt = writeShellScriptBin "mkimg.dev-wrt" ''
+    flake=$1
+    image=''${flake//_//}
+    args="''${@:2}"
+    img_path="$(${getExe nix} build ".#$flake" --print-out-paths --no-link ''${args[@]})"
+    if [ ! -z "$img_path" ]; then
+      ${getExe incus} image delete $image
+      ${getExe incus} image import "$img_path/$(${getExe nix} eval --raw .#dev_switch_sks8300-8x.passthru.lxc-medadata)" "$img_path/$(${getExe nix} eval --raw .#dev_switch_sks8300-8x.passthru.qcow2)" --alias $image
+    fi
+  '';
 }

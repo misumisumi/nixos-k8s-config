@@ -61,5 +61,6 @@ final: prev: {
     mkimg-ipxe
     mkimg-incus-vm
     mkimg-list
+    mkimg-dev-wrt
     ;
 }

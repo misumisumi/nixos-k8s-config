@@ -67,6 +67,9 @@
             ];
             config.allowUnfree = true;
           };
+          packages = {
+            inherit (inputs.homelab-mylab.packages.${system}) prod_switch_sks8300-8x dev_switch_sks8300-8x;
+          };
           devshells.default =
             let
               nixpkgs-unstable = import inputs.nixpkgs-unstable {
@@ -116,6 +119,7 @@
                 mkimg-kexec
                 mkimg-ipxe
                 mkimg-list
+                mkimg-dev-wrt
 
                 linkage
                 linkage-gateway
