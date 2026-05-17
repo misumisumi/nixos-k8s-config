@@ -1,5 +1,0 @@
----
-- hosts: nfs1
-  gather_facts: true
-  roles:
-    - role: setup-lvm-on-drbd

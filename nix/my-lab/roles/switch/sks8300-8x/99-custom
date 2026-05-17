@@ -1,0 +1,21 @@
+HOSTNAME='sks8300-8x'                     # ルーター名
+DESCRIPTION=$(cat /etc/openwrt_version)   # 説明
+NOTES=$(date +%F\ %H:%M)                  # 備考
+COUNTRY='JP'                              # 国コード
+TIMEZONE='JST-9'                          # タイムゾーン
+ZONENAME='Asia/Tokyo'                     # ゾーン名
+
+# システム基本設定
+uci -q batch << EOF
+set system.@system[0].hostname='${HOSTNAME}'
+set system.@system[0].description='${DESCRIPTION}'
+set system.@system[0].notes='${NOTES}'
+set system.@system[0].timezone='${TIMEZONE}'
+set system.@system[0].zonename='${ZONENAME}'
+set system.@system[0].conloglevel='6'
+set system.@system[0].cronloglevel='9'
+delete system.ntp.server
+set system.ntp.enable_server='0'
+commit system
+EOF
+

@@ -6,17 +6,6 @@ fetch.url = "https://galaxy.ansible.com/download/kubernetes-core-$ver.tar.gz"
 src.github_tag = 'ansible-collections/community.general'
 fetch.url = "https://galaxy.ansible.com/download/community-general-$ver.tar.gz"
 
-[role-ha-cluster-pacemaker]
-src.github_tag = 'OndrejHome/ansible.ha-cluster-pacemaker'
-fetch.github = 'OndrejHome/ansible.ha-cluster-pacemaker'
-passthru = { aname = 'ondrejhome.ha-cluster-pacemaker' }
-
-[role-pcs-module-2]
-src.github_tag = 'OndrejHome/ansible.pcs-modules-2'
-fetch.github = 'OndrejHome/ansible.pcs-modules-2'
-passthru = { aname = 'ondrejhome.pcs-modules-2' }
-
-[role-ansible-role-nfs]
-src.github_tag = 'geerlingguy/ansible-role-nfs'
-fetch.github = 'geerlingguy/ansible-role-nfs'
-passthru = { aname = 'geerlingguy.nfs' }
+[collection-community-openwrt]
+src.github_tag = 'ansible-collections/community.openwrt'
+fetch.url = "https://galaxy.ansible.com/download/community-openwrt$ver.tar.gz"

@@ -17,6 +17,11 @@
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
 
+    openwrt-imagebuilder = {
+      url = "github:astro/nix-openwrt-imagebuilder";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     nixos-linstor.url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
     pcp = {
       url = "github:performancecopilot/pcp";
@@ -48,7 +53,12 @@
   };
 
   outputs =
-    inputs@{ self, flake-parts, ... }:
+    inputs@{
+      self,
+      flake-parts,
+      openwrt-imagebuilder,
+      ...
+    }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
       imports = [
@@ -65,12 +75,39 @@
               };
             };
           in
-          import ./patches { inherit nixpkgs-unstable; };
+          import ./patches {
+            inherit nixpkgs-unstable;
+          };
         nixosModules = import ./modules;
         nixosConfigurations = import ./roles {
           inherit (inputs.nixpkgs) lib;
           inherit inputs self;
         };
       };
+      perSystem =
+        {
+          system,
+          ...
+        }:
+        let
+          nixpkgs-unstable = import inputs.nixpkgs-unstable {
+            inherit system;
+            config = {
+              allowUnfree = true;
+            };
+          };
+        in
+        {
+          packages =
+            let
+              mylab-sks8300-8x = import ./roles/switch/sks8300-8x/image.nix {
+                pkgs = nixpkgs-unstable;
+                inherit openwrt-imagebuilder;
+              };
+            in
+            {
+              inherit (mylab-sks8300-8x) prod_switch_sks8300-8x dev_switch_sks8300-8x;
+            };
+        };
     };
 }
