@@ -1,0 +1,6 @@
+config dropbear main
+    option enable '1'
+    option PasswordAuth 'no'
+    option RootPasswordAuth 'no'
+    option Port         '22'
+    option PermitOpen '172.16.10.31:22'

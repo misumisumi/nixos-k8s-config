@@ -1,0 +1,60 @@
+config defaults
+    option syn_flood        1
+    option input            REJECT
+    option output           ACCEPT
+    option forward          REJECT
+
+config zone
+    option name "manage"
+    list network "manage"
+    option input "REJECT"
+    option output "ACCEPT"
+    option forward "REJECT"
+
+config zone
+    option name 'bgp_zone'
+    list network 'bgp1'
+    list network 'bgp2'
+    list network 'bgp3'
+    list network 'bgp4'
+    option input 'ACCEPT'
+    option output 'ACCEPT'
+    option forward 'ACCEPT'
+
+# manage ゾーンからの SSH (TCPポート 22) を許可
+config rule
+    option name 'Allow-Manage-SSH'
+    option src 'manage'
+    option dest_port '22'
+    option proto 'tcp'
+    option target 'ACCEPT'
+
+# manage ゾーンからの ping (IPv4 ICMP) を許可
+config rule
+    option name 'Allow-Manage-Ping4'
+    option src 'manage'
+    option proto 'icmp'
+    option icmp_type 'echo-request'
+    option target 'ACCEPT'
+
+# manage ゾーンからの ping6 (IPv6 ICMPv6) を許可
+config rule
+    option name 'Allow-Manage-Ping6'
+    option src 'manage'
+    option proto 'ipv6-icmp'
+    list icmp_type 'echo-request'
+
+# manage ゾーンからの Web管理画面（HTTP/HTTPS）へのアクセスを許可
+config rule
+    option name 'Allow-Manage-WebUI'
+    option src 'manage'
+    option dest_port '80 443'
+    option proto 'tcp'
+    option target 'ACCEPT'
+
+config rule
+	option name 'Allow-Local-Loopback'
+	option src '*'
+	option dest '*'
+	option device 'lo'
+	option target 'ACCEPT'
