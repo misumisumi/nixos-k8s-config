@@ -7,10 +7,13 @@ let
     inherit pkgs release;
   };
 
+
   config =
     {
       isDev ? false,
-    }:
+    }:let
+      secretPath = ../../../secrets/${if isDev then "develop" else "production"}/roles/switch/sks8300-8x;
+    in
     {
       disabledServices = [ "dnsmasq" ];
 
@@ -20,15 +23,30 @@ let
       files = pkgs.runCommand "image-files" { } (
         ''
           mkdir -p $out/etc/uci-defaults
+          mkdir -p $out/etc/{config,dropbear,frr}
           cp ${./99-custom} $out/etc/uci-defaults/99-custom
+          cp ${./config/dropbear} $out/etc/config/dropbear
+          cp ${./config/firewall} $out/etc/config/firewall
+          cp ${./config/network} $out/etc/config/network
+          cp ${./frr/daemons} $out/etc/frr/daemons
+          cp ${./frr/frr.conf} $out/etc/frr/frr.conf
+          cp "${secretPath}/ssh/dropbear_ed25519_host_key" $out/etc/dropbear/dropbear_ed25519_host_key
         ''
         + optionalString isDev ''
           cp ${./97-incus-agent} $out/etc/uci-defaults/97-incus-agent
-          cp ${./98-dev-custom} $out/etc/uci-defaults/98-dev-custom
+          cp ${./dropbear/authorized_keys.dev} $out/etc/dropbear/authorized_keys
+        '' + optionalString (!isDev) ''
+          cp ${./dropbear/authorized_keys.prod} $out/etc/dropbear/authorized_keys
         ''
       );
     };
-  packages = [ "frr" ];
+  packages = [
+    "frr"
+    "frr-bfdd"
+    "frr-bgpd"
+    "frr-staticd"
+    "frr-zebra"
+  ];
 in
 {
   # prod_switch_sks8300-8x = profiles.identifyProfile "realtek_rtl930x" // config;

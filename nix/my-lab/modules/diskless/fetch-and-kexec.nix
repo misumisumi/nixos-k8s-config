@@ -21,7 +21,7 @@ writeShellScriptBin "fetch-and-kexec" (
 
     SYSTEM_UUID=$(${dmidecode}/bin/dmidecode -t system-uuid)
 
-    IMAGE_FILE=$(${curl}/bin/curl -s -w "%{http_code}" "$IMAGE_JSON_URL" | jq -r --arg uuid "$SYSTEM_UUID" 'to_entries[] | select(.value.system_uuid == $uuid) | .value.image')
+    IMAGE_FILE=$(${curl}/bin/curl -s -w "%{http_code}" "$IMAGE_JSON_URL" | jq -r --arg uuid "$SYSTEM_UUID" '.[$uuid] | .image')
 
     if [ "$IS_DOWNLOADED" -ne 200 ]; then
       echo "Image metadata not found at $IMAGE_JSON_URL."

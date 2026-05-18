@@ -60,7 +60,7 @@ in
       ip protocol bgp route-map SET-SRC
 
       route-map WCMP-MAP permit 10
-        set extcommunity bandwidth cumulative
+        set extcommunity bandwidth 40
       exit
 
       router bgp ${AS}

@@ -18,4 +18,3 @@ delete system.ntp.server
 set system.ntp.enable_server='0'
 commit system
 EOF
-
