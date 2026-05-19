@@ -23,6 +23,7 @@ in
     ../../share/settings/security.nix
     ../../share/settings/system.nix
     ../../share/settings/users.nix
+    ./diskless.nix
     ./incus.nix
     ./linstor.nix
     ./nftables.nix
