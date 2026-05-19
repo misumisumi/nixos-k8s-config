@@ -5,7 +5,7 @@
   dmidecode,
   curl,
   serverURL,
-  fallBackImage ? "nixos-kexec.tar.gz",
+  fallBackImage ? "nixos-kexec.tar.xz",
   imageMetaJSON ? "",
   useUUID ? false,
 }:
@@ -31,8 +31,13 @@ writeShellScriptBin "fetch-and-kexec" (
   + ''
     if [ -z "$IMAGE_FILE" ]; then
       echo "No matching image metadata found."
-      echo "Failback IMAGE_FILE=$FALLBACK_IMAGE_FILE to fetch image"
-      IMAGE_FILE="$FALLBACK_IMAGE_FILE"
+      if [ -z "$FALLBACK_IMAGE_FILE" ];then
+        echo "No fallback image specified. Exiting."
+        exit 1
+      else
+        echo "Failback IMAGE_FILE=$FALLBACK_IMAGE_FILE to fetch image"
+        IMAGE_FILE="$FALLBACK_IMAGE_FILE"
+      fi
     fi
     IMAGE_URL="${serverURL}/images/$IMAGE_FILE"
 
