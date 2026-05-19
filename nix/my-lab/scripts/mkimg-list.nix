@@ -21,7 +21,7 @@ let
         hostname = "${n'}";
         image = "kexec/${
           if (hasSuffix "dev.toml" (getEnv "STATIC_FILE")) then "develop" else "production"
-        }/${n'}";
+        }/${n'}/nixos-kexec.tar.xz";
       };
     }) (filterAttrs (n'': v'': hasAttr "uuid" v'') v)
   ) static;

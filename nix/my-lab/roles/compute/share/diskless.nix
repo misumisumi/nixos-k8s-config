@@ -13,6 +13,6 @@ in
   services.diskless.kexec = {
     enable = true;
     serverURL = "http://${removePrefix "/24" manageIP}/kexec";
-    fallBackImage = "second-image/nixos-kexec.tar.xz";
+    useUUID = true;
   };
 }

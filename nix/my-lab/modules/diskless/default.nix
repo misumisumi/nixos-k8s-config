@@ -29,13 +29,13 @@ in
       };
       fallBackImage = mkOption {
         type = types.str;
-        default = "nixos-kexec.tar.xz";
+        default = "";
         description = "Name of the fallback boot image to fetch for this system.";
       };
       imageMetaJSON = mkOption {
         type = types.str;
-        default = "meta.json";
-        example = "meta.json";
+        default = "kexec-images.json";
+        example = "kexec-images.json";
         description = "Metadata json file name for the boot image.";
       };
       useUUID = mkEnableOption "Fetch image metadata based on system UUID.";
