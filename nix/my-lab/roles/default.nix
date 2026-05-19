@@ -44,11 +44,11 @@ let
         (inputs.pcp + "/build/nix/nixos-module.nix")
         self.nixosModules.default
         ./share/modules/static.nix
-        ./${group}/${tag}/common
-      ]
-      ++ optional isDev ./${group}/${tag}/develop
-      ++ optional (!isDev) ./${group}/${tag}/production
-      ++ optional isNixOSTest ./${group}/${tag}/develop/nixos-test.nix;
+        ./${group}/${tag}
+      ];
+      # ++ optional isDev ./${group}/${tag}/develop
+      # ++ optional (!isDev) ./${group}/${tag}/production
+      # ++ optional isNixOSTest ./${group}/${tag}/develop/nixos-test.nix;
     };
   group_and_hosts = importTOML ./static.toml;
   group_and_hosts_dev = importTOML ./static_dev.toml;

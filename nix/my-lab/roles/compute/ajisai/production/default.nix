@@ -1,14 +1,3 @@
 {
-  systemd = {
-    network = {
-      enable = true;
-      networks = {
-        #NOTE: manage network assumes ethernet
-        "20-manage" = {
-          name = "en*";
-          DHCP = "yes";
-        };
-      };
-    };
-  };
+  imports = [ ./inifiniband.nix ];
 }

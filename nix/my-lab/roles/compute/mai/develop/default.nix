@@ -1,10 +1,6 @@
 {
   imports = [
-    ../../../share/settings/ssh.nix
-    ./bgp.nix
-    ./incus.nix
+    ../../../share/apps/debug.nix
     ./linkage.nix
-    ./network.nix
-    ./users.nix
   ];
 }

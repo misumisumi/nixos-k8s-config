@@ -98,7 +98,8 @@ in
         type = "nfs";
         after = [ "multi-user.target" ];
         mountConfig = {
-          Options = "noatime,timeo=100,retrans=10";
+          #NOTE: Recommended NFS settings from https://docs.aws.amazon.com/ja_jp/efs/latest/ug/mounting-fs-nfs-mount-settings.html
+          Options = "noatime,hard,timeo=600,retrans=2"; # 10s×5
           DirectoryMode = "711";
         };
         what = "${virtualIPs.nfs.address}:/srv/gateway-exports/${config.linkage.gateway.nfs.name}/${hostname}/incus";

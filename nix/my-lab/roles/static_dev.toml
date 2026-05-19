@@ -6,11 +6,11 @@ hostname = "first-image"
 system = "x86_64-linux"
 user = "nixos"
 hostname = "second-image"
-[liveimg.livecd]
+[liveimg.nixos-livecd]
 system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-livecd"
-[liveimg.netboot]
+[liveimg.nixos-netboot]
 system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-netboot"
@@ -96,14 +96,14 @@ hostname = "borderRouter"
 routerId = "10.10.10.254"
 AS = "64512"
 
-[mngr.phikun]
+[mngr.naokosan]
 system = "x86_64-linux"
-user = "amaori"
-hostname = "phikun"
+user = "misuzu"
+hostname = "naokosan"
 manageIP = "172.16.10.10/24"
 [mngr.image-server]
 system = "x86_64-linux"
-user = "amaori"
+user = "misuzu"
 hostname = "image-server"
 manageIP = "172.16.10.1/24"
 [mngr.image-server.dnsmasq]
@@ -112,6 +112,6 @@ port = "53"
 server = []
 [mngr.fake-isp]
 system = "x86_64-linux"
-user = "amaori"
+user = "misuzu"
 hostname = "fake-isp"
 manageIP = "172.16.10.1/24"
