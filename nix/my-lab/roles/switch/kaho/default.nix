@@ -28,6 +28,7 @@ in
     ../../share/settings/system.nix
     ../../share/settings/users.nix
     ./bgp.nix
+    ./diskless.nix
     ./microvm
     ./network.nix
     ./users.nix
