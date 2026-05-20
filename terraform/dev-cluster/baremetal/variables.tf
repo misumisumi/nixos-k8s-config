@@ -28,9 +28,10 @@ variable "compornents" {
           name         = string
           remote       = optional(string, "local")
           image        = optional(string, null)
+          running      = optional(bool, true)
           machine_type = optional(string, "container")
           config       = optional(map(any), {})
-          profiles     = optional(list(any), null)
+          profiles     = optional(list(any), [])
           cloudinit = optional(object({
             template_file = string
             sops_file     = optional(string, "")

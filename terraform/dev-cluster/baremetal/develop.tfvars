@@ -5,12 +5,12 @@ compornents = [
       {
         name      = "dev.spine"
         root_pool = "dev-baremetal"
-        root_size = "16GB"
+        root_size = "24GB"
       },
       {
         name      = "dev.leaf"
         root_pool = "dev-baremetal"
-        root_size = "16GB"
+        root_size = "24GB"
       },
       {
         name      = "dev.sks8300-8x"
@@ -43,8 +43,8 @@ compornents = [
         ]
       },
       {
-        name         = "phikun"
-        image        = "dev/mngr/phikun"
+        name         = "naokosan"
+        image        = "dev/mngr/naokosan"
         machine_type = "container"
         profiles     = ["dev.mngr"]
         config = {
@@ -56,6 +56,32 @@ compornents = [
             parent  = "dev-1g-0"
             nictype = "bridged"
           },
+        ]
+      },
+      {
+        name         = "image-server"
+        image        = "dev/mngr/image-server"
+        machine_type = "container"
+        profiles     = ["dev.mngr"]
+        config = {
+          "limits.cpu"    = 2
+          "limits.memory" = "4GB"
+        }
+        networks = [
+          {
+            parent  = "dev-1g-0"
+            nictype = "bridged"
+          },
+        ]
+        devices = [
+          {
+            name = "images",
+            type = "disk",
+            properties = {
+              source = "/home/sumi/Workspace/nix/server/nixos-k8s-config/mnt/develop/www/images/kexec"
+              path   = "/var/www/images/kexec"
+            }
+          }
         ]
       },
       {
@@ -72,27 +98,27 @@ compornents = [
           {
             parent       = "dev-1g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-1"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-2"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-3"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
         ]
       },
@@ -102,45 +128,45 @@ compornents = [
         machine_type = "virtual-machine"
         profiles     = ["dev.spine"]
         config = {
-          "limits.cpu"    = 2
-          "limits.memory" = "4GB"
+          "limits.cpu"    = 4
+          "limits.memory" = "8GB"
           "raw.qemu"      = "-uuid 501b2357-38e9-43ad-a841-1b620418c959"
         }
         networks = [
           {
             parent       = "dev-wan"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-1g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-3"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-40g-0"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
           {
             parent       = "dev-40g-1"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
           {
             parent       = "dev-40g-2"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
           {
             parent       = "dev-40g-3"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
         ]
       },
@@ -149,8 +175,8 @@ compornents = [
         image        = "dev/compute/ajisai"
         machine_type = "virtual-machine"
         config = {
-          "limits.cpu"    = 2
-          "limits.memory" = "4GB"
+          "limits.cpu"    = 4
+          "limits.memory" = "8GB"
           "raw.qemu"      = "-uuid e6ae54f8-c9b9-4bc0-a3a2-70818ed1a0d2"
         }
         profiles = ["dev.leaf"]
@@ -158,17 +184,17 @@ compornents = [
           {
             parent       = "dev-1g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-40g-0"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
         ]
         devices = [
@@ -188,8 +214,8 @@ compornents = [
         image        = "dev/compute/mai"
         machine_type = "virtual-machine"
         config = {
-          "limits.cpu"    = 2
-          "limits.memory" = "4GB"
+          "limits.cpu"    = 4
+          "limits.memory" = "8GB"
           "raw.qemu"      = "-uuid 27161944-492d-4225-ae42-73a43467e797"
         }
         profiles = ["dev.leaf"]
@@ -197,17 +223,17 @@ compornents = [
           {
             parent       = "dev-1g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-1"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-40g-1"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
         ]
         devices = [
@@ -227,8 +253,8 @@ compornents = [
         image        = "dev/compute/satsuki"
         machine_type = "virtual-machine"
         config = {
-          "limits.cpu"    = 2
-          "limits.memory" = "4GB"
+          "limits.cpu"    = 4
+          "limits.memory" = "8GB"
           "raw.qemu"      = "-uuid ef44a86f-544b-4e81-8fa3-0e7bbe8609b6"
         }
         profiles = ["dev.leaf"]
@@ -236,17 +262,17 @@ compornents = [
           {
             parent       = "dev-1g-0"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-10g-2"
             nictype      = "bridged"
-            "limits.max" = "500Mbit"
+            "limits.max" = "1000Mbit"
           },
           {
             parent       = "dev-40g-2"
             nictype      = "bridged"
-            "limits.max" = "1000Mbit"
+            "limits.max" = "5000Mbit"
           },
         ]
         devices = [

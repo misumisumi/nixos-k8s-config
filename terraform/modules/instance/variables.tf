@@ -35,6 +35,7 @@ variable "instances" {
       name          = string
       image         = optional(string, null)
       source_remote = optional(string, "images")
+      running       = optional(bool, true)
       machine_type  = optional(string, "container")
       cloudinit = optional(object({
         template_file = string

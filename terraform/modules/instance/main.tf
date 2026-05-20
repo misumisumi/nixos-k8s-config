@@ -95,9 +95,10 @@ resource "incus_instance" "instance" {
   name      = each.value.name
   type      = each.value.machine_type
   image     = each.value.image
+  running   = each.value.running
   ephemeral = false
-  running   = each.value.image != null ? true : false
-  profiles  = each.value.profiles != [] ? each.value.profiles : ["${replace(each.value.name, "/[[:digit:]]+/", "")}"]
+  # profiles  = each.value.profiles != [] ? each.value.profiles : ["${replace(each.value.name, "/[[:digit:]]+/", "")}"]
+  profiles = each.value.profiles
 
   config = merge(
     each.value.machine_type == "container" ? {
