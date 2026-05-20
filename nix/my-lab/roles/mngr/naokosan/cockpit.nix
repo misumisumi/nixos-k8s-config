@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    ../../../share/settings/cockpit.nix
+    ../../share/settings/cockpit.nix
   ];
   services.cockpit.settings = {
     WebService = {

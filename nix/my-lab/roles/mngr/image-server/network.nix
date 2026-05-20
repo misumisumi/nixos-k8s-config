@@ -1,15 +1,19 @@
 {
   lib,
-  hostname,
   static,
+  group,
+  hostname,
   ...
 }:
+let
+  inherit (static.${group}.${hostname}) manageIP manageIPPrefix;
+in
 {
   networking = {
     hostName = hostname;
     hosts = {
       "127.0.0.2" = lib.mkForce [ ];
-      "${static.manage.ip}" = [ "${hostname}.home" ];
+      "${manageIP}" = [ "${hostname}.home" ];
     };
     useNetworkd = true;
     firewall = {
@@ -48,9 +52,7 @@
       networks = {
         "20-manage" = {
           name = "enp5s0";
-          address = [
-            "${static.manageIP}"
-          ];
+          address = [ "${manageIP}/${manageIPPrefix}" ];
         };
       };
     };

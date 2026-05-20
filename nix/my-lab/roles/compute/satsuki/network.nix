@@ -21,7 +21,7 @@ let
     in
     substring 0 2 vidToHex + ":" + substring 2 2 vidToHex;
 
-  inherit (static.${group}.${hostname}) manageIP routerId;
+  inherit (static.${group}.${hostname}) manageIP manageIPPrefix routerId;
 
   idSuffix = last (splitString "." routerId);
 in
@@ -84,7 +84,7 @@ in
         networkConfig = {
           Description = "Management network";
         };
-        address = [ manageIP ];
+        address = [ "${manageIP}/${manageIPPrefix}" ];
       };
       "15-enp6s0" = {
         name = "enp6s0";

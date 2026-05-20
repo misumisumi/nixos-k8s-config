@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) manageIP routerId;
+  inherit (static.${group}.${hostname}) manageIP manageIPPrefix routerId;
 in
 {
   boot.kernel.sysctl = {
@@ -48,7 +48,7 @@ in
         networkConfig = {
           Description = "Management network";
         };
-        address = [ manageIP ];
+        address = [ "${manageIP}/${manageIPPrefix}" ];
       };
       "10-enp7s0" = {
         name = "enp7s0";

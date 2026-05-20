@@ -35,8 +35,6 @@
     # homelab-ansible.url = "path:./ansible";
     homelab-mylab.url = "path:./nix/my-lab";
     homelab-terraform.url = "path:./terraform";
-    # nixos-linstor.url = "path:/home/sumi/Workspace/nix/server/nixos-linstor";
-    nixos-linstor.url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
   };
   outputs =
     inputs@{ self, flake-parts, ... }:
@@ -63,7 +61,6 @@
             overlays = [
               inputs.homelab-mylab.overlays.default
               inputs.homelab-terraform.overlays.default
-              inputs.nixos-linstor.overlays.default
             ];
             config.allowUnfree = true;
           };
@@ -103,27 +100,31 @@
                   export FLAKE_ROOT
                 '';
               };
-              packages = with pkgs; [
-                bashInteractive
-                ansible
-                ter
-                tofu-w-plugins
+              packages =
+                with pkgs;
+                [
+                  bashInteractive
+                  ansible
+                  ter
+                  tofu-w-plugins
 
-                incus
-                openssl
-                python3
-                gawk
+                  incus
+                  openssl
+                  python3
+                  gawk
 
-                mkimg-lxc
-                mkimg-incus-vm
-                mkimg-kexec
-                mkimg-ipxe
-                mkimg-list
-                mkimg-dev-wrt
+                  mkimg-lxc
+                  mkimg-incus-vm
+                  mkimg-kexec
+                  mkimg-ipxe
+                  mkimg-list
+                  mkimg-dev-wrt
 
-                linkage
-                linkage-gateway
-              ];
+                ]
+                ++ (with inputs.homelab-mylab.packages.${system}; [
+                  linkage
+                  linkage-gateway
+                ]);
             };
         };
     };

@@ -10,7 +10,7 @@
 }:
 let
   inherit (builtins) filter;
-  inherit (lib) removeSuffix;
+  inherit (lib) hasPrefix;
   inherit (static.${group}.${hostname}) manageIP;
 in
 {
@@ -29,7 +29,7 @@ in
     pcp = {
       enable = true;
       package = inputs.pcp.packages.${pkgs.stdenv.hostPlatform.system}.pcp.overrideAttrs (old: {
-        configureFlags = (filter (x: !lib.hasPrefix "--with-logdir" x) old.configureFlags) ++ [
+        configureFlags = (filter (x: !hasPrefix "--with-logdir" x) old.configureFlags) ++ [
           "--with-logdir=/var/log/pcp"
         ];
         postPatch = old.postPatch or "" + ''
@@ -58,6 +58,10 @@ in
           ++ [
             config.services.cockpit.package.passthru.python3Packages.python
           ];
+        postFixup = old.postFixup or "" + ''
+          rm $out/lib/*.a
+          rm -rf $out/include
+        '';
       });
       preset = "standalone";
       openFirewall = true;
@@ -88,7 +92,7 @@ in
       });
       openFirewall = true;
       allowed-origins = [
-        "https://${removeSuffix "/24" manageIP}:${toString port}"
+        "https://${manageIP}:${toString port}"
         "https://${hostname}:${toString port}"
         "https://${hostname}.home:${toString port}"
       ];

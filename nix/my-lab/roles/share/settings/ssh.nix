@@ -8,7 +8,7 @@
   ...
 }:
 let
-  inherit (lib) hasAttr optionalAttrs removeSuffix;
+  inherit (lib) hasAttr optionalAttrs;
 in
 {
   networking.firewall.allowedTCPPorts = config.services.openssh.ports;
@@ -26,7 +26,7 @@ in
   // optionalAttrs (hasAttr "manageIP" static.${group}.${hostname}) {
     listenAddresses = [
       {
-        addr = removeSuffix "/24" static.${group}.${hostname}.manageIP;
+        addr = static.${group}.${hostname}.manageIP;
         port = 22;
       }
     ];

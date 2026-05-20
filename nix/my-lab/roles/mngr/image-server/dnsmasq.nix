@@ -62,7 +62,7 @@ in
   services.dnsmasq = {
     enable = true;
     multipleSessions = {
-      manage =
+      images =
         let
           interface = "${config.systemd.network.networks."20-manage".name}";
           ipSegment = head (match "([0-9]+.[0-9]+.[0-9]+).[0-9]+" manageIP);
@@ -76,7 +76,7 @@ in
           except-interface = "lo";
           strict-order = true;
           # DNS settings
-          domain = "home";
+          domain = "images.home";
           local = "/${domain}/";
           cache-size = 1000;
           domain-needed = true;
@@ -104,7 +104,7 @@ in
 
           dhcp-option =
             optionals (port != 0) [
-              "6,${static.manageIP}" # DNS server
+              "6,${manageIP}" # DNS server
               "15,${domain}" # published domain name
               # "option6:dns-server,${ipv6}"
             ]
@@ -120,8 +120,8 @@ in
             "::,constructor:${interface},ra-stateless,1h"
           ];
           dhcp-boot = [
-            "tag:iPXE,tag:X86PC,http://${manageIP}/images/boot-menu.php"
-            "tag:iPXE,tag:X86-64_EFI,http://${manageIP}/images/boot-menu.php"
+            "tag:iPXE,tag:X86PC,http://${manageIP}/boot-menu.php"
+            "tag:iPXE,tag:X86-64_EFI,http://${manageIP}/boot-menu.php"
             "tag:!iPXE,tag:X86PC,undionly.kpxe"
             "tag:!iPXE,tag:X86-64_EFI,ipxe.efi"
           ];
@@ -130,8 +130,8 @@ in
           #NOTE: 外部にDHCPがありDHCP PROXYモードでPXEサーバを構成する場合
           dhcp-range = [ "${ipSegment}.0,proxy,255.255.255.0" ]; # DHCPプロキシモード
           pxe-service = [
-            "tag:iPXE,X86PC,'iPXE boot menu',http://${manageIP}/images/boot-menu.php"
-            "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${manageIP}/images/boot-menu.php"
+            "tag:iPXE,X86PC,'iPXE boot menu',http://${manageIP}/boot-menu.php"
+            "tag:iPXE,X86-64_EFI,'iPXE boot menu',http://${manageIP}/boot-menu.php"
             "tag:!iPXE,X86PC,'undionly.kpxe',undionly.kpxe"
             "tag:!iPXE,X86-64_EFI,'ipxe.efi',ipxe.efi"
           ];

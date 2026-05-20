@@ -14,7 +14,7 @@ let
     toLower
     splitString
     ;
-  inherit (static.${group}.${hostname}) manageIP routerId;
+  inherit (static.${group}.${hostname}) manageIP manageIPPrefix routerId;
 
   hwAddrPart =
     vid:
@@ -84,7 +84,7 @@ in
         networkConfig = {
           Description = "Management network";
         };
-        address = [ manageIP ];
+        address = [ "${manageIP}/${manageIPPrefix}" ];
       };
       "15-enp6s0" = {
         name = "enp6s0";

@@ -8,7 +8,7 @@ in
     network = {
       enable = mkDefault true;
       wait-online = {
-        timeout = 5; # Disable wait online
+        timeout = 30;
         anyInterface = true;
       };
     };
@@ -18,6 +18,7 @@ in
     useHostResolvConf = false;
     hostName = hostname;
     useDHCP = mkDefault false; # Setting each network interafces
+    firewall.checkReversePath = "loose";
   };
   # system.nssModules = lib.mkForce [];
 }
