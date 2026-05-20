@@ -5,14 +5,14 @@
   ...
 }:
 let
-  inherit (lib) removePrefix;
   inherit (static.mngr.image-server) manageIP;
 in
 {
   imports = [ self.nixosModules.diskless ];
   services.diskless.kexec = {
     enable = true;
-    serverURL = "http://${removePrefix "/24" manageIP}/kexec";
+    serverURL = "http://${manageIP}/kexec";
+    metaJSON = "kexec-images.json";
     useUUID = true;
   };
 }

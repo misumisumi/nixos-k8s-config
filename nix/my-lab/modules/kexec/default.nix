@@ -13,10 +13,11 @@ in
   imports = [
     ../build.nix
     (modulesPath + "/installer/netboot/netboot.nix")
-    (modulesPath + "/profiles/base.nix")
+    # (modulesPath + "/profiles/base.nix")
+    ./profile.nix
   ];
   hardware.enableAllHardware = true;
-  boot.initrd.compressor = "xz";
+  boot.initrd.compressor = "zstd";
   services.getty.autologinUser = mkForce "${user}";
 
   system.build = {
@@ -72,10 +73,10 @@ in
           fi
           # We will kexec in background so we can cleanly finish the script before the hosts go down.
           # This makes integration with tools like terraform easier.
-          nohup sh -c "sleep 6 && kexec -e" &
+          nohup sh -c "sleep 5 && kexec -e" &
         else
-          echo "waiting 6s before next step..."
-          nohup sh -c "sleep 6" &
+          echo "waiting 5s before next step..."
+          nohup sh -c "sleep 5" &
         fi
       ''
     );
@@ -83,6 +84,9 @@ in
     kexecTarball = mkForce (
       pkgs.callPackage "${toString modulesPath}/../lib/make-system-tarball.nix" {
         fileName = config.image.baseName;
+        compressCommand = "zstd -6";
+        compressionExtension = ".zst";
+        extraInputs = [ pkgs.zstd ];
         contents = [
           {
             source = config.system.build.kexecScript;
@@ -100,4 +104,5 @@ in
       }
     );
   };
+  image.extension = mkForce "tar.zst";
 }

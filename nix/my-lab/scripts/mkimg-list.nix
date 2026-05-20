@@ -1,3 +1,6 @@
+{
+  extension ? "zst",
+}:
 let
   pkgs = import <nixpkgs> { };
   inherit (builtins) getEnv hasAttr;
@@ -9,7 +12,6 @@ let
     mapAttrsToList
     listToAttrs
     flatten
-    hasSuffix
     ;
   jsonFormat = pkgs.formats.json { };
   static = importTOML (getEnv "STATIC_FILE");
@@ -19,9 +21,7 @@ let
       name = v'.uuid;
       value = {
         hostname = "${n'}";
-        image = "kexec/${
-          if (hasSuffix "dev.toml" (getEnv "STATIC_FILE")) then "develop" else "production"
-        }/${n'}/nixos-kexec.tar.xz";
+        image = "${n'}/nixos-kexec.tar.${extension}";
       };
     }) (filterAttrs (n'': v'': hasAttr "uuid" v'') v)
   ) static;

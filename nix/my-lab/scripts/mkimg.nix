@@ -78,7 +78,7 @@ in
       STATIC_FILE=$PROJECT_ROOT/nix/my-lab/roles/static.toml
     fi
     export STATIC_FILE=$STATIC_FILE
-    output="$output/www/images/kexec-images.json"
+    output="$output/www/images/kexec/kexec-images.json"
     build_output=$(${getExe nix} build --file ${./mkimg-list.nix} --impure --no-link --print-out-paths ''${args[@]})
     if [ ! -z "$build_output" ]; then
       rm -rf "$output"

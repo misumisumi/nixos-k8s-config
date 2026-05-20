@@ -22,7 +22,10 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    nixos-linstor.url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
+    nixos-linstor = {
+      url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     pcp = {
       url = "github:performancecopilot/pcp";
       inputs = {
@@ -86,6 +89,7 @@
       };
       perSystem =
         {
+          pkgs,
           system,
           ...
         }:
@@ -98,6 +102,13 @@
           };
         in
         {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              inputs.nixos-linstor.overlays.default
+            ];
+            config.allowUnfree = true;
+          };
           packages =
             let
               mylab-sks8300-8x = import ./roles/switch/sks8300-8x/image.nix {
@@ -107,6 +118,7 @@
             in
             {
               inherit (mylab-sks8300-8x) prod_switch_sks8300-8x dev_switch_sks8300-8x;
+              inherit (pkgs) linkage linkage-gateway;
             };
         };
     };

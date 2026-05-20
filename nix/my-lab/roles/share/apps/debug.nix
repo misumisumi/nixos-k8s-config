@@ -11,7 +11,7 @@
 
   programs.wireshark = {
     enable = true;
-    package = pkgs.wireshark;
+    package = pkgs.tshark;
     dumpcap.enable = true;
     usbmon.enable = true;
   };

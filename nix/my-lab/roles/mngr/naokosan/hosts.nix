@@ -9,13 +9,12 @@ let
     hasAttr
     mapAttrs'
     nameValuePair
-    removeSuffix
     ;
 in
 {
   networking.hosts = mapAttrs' (
     n: v:
-    nameValuePair "${removeSuffix "/24" v.manageIP}" [
+    nameValuePair "${v.manageIP}" [
       "${n}"
       "${n}.home"
     ]

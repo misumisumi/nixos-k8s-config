@@ -12,7 +12,7 @@
     (modulesPath + "/installer/netboot/netboot.nix")
     (modulesPath + "/profiles/minimal.nix")
   ];
-  netboot.squashfsCompression = "zstd -Xcompression-level 19";
+  netboot.squashfsCompression = "zstd -Xcompression-level 6";
   services.getty.autologinUser = lib.mkForce "${user}";
 
   system.build.ipxeImage = pkgs.symlinkJoin {

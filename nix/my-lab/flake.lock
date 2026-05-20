@@ -276,14 +276,16 @@
       "inputs": {
         "devshell": "devshell_3",
         "flake-parts": "flake-parts_3",
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
-        "lastModified": 1778775171,
-        "narHash": "sha256-xo9ocDinLhc/saO443x1E7kg1ki7+7EKwFj0ZE2ECjM=",
+        "lastModified": 1779286972,
+        "narHash": "sha256-rjHz1jePSczV+TCn1b+bGB1Az1bO2h1HTt+R6jwKakk=",
         "ref": "main",
-        "rev": "21680461c92b21a7e9bbbfe9fe1464aa546fc9bb",
-        "revCount": 18,
+        "rev": "d84617ca35256d472f8e7bb13642f42d5222cc61",
+        "revCount": 21,
         "type": "git",
         "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       },
@@ -388,22 +390,6 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1775305101,
-        "narHash": "sha256-/74n1oQPtKG52Yw41cbToxspxHbYz6O3vi+XEw16Qe8=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "36a601196c4ebf49e035270e10b2d103fe39076b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-25.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_4": {
-      "locked": {
         "lastModified": 1778737229,
         "narHash": "sha256-6xWoytx8jFW4PF1GjRm/i/53trbpKGfz6zjzQGBr4cI=",
         "owner": "nixos",
@@ -418,7 +404,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1778443072,
         "narHash": "sha256-zi7/fsqM/kFdNuED//4WOCUtezGtKKqRNORjMvfwjnA=",
@@ -437,7 +423,7 @@
     "nur": {
       "inputs": {
         "flake-parts": "flake-parts_4",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "lastModified": 1778916838,
@@ -527,7 +513,7 @@
         "flakes": "flakes",
         "microvm": "microvm",
         "nixos-linstor": "nixos-linstor",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_3",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur",
         "openwrt-imagebuilder": "openwrt-imagebuilder",

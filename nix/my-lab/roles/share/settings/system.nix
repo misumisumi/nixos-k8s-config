@@ -17,20 +17,14 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
     };
-    gc = {
-      # 1週間ごとに7日前のイメージを削除
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
     package = pkgs.nixVersions.stable; # Enable nixFlakes on system
     registry.nixpkgs.flake = inputs.nixpkgs;
 
-    # flakeの有効化とビルド時の依存関係を維持(オフラインでも再ビルド可能にする)
+    # flakeの有効化とビルド時の依存関係を維持しない
     extraOptions = ''
       experimental-features = nix-command flakes
-      keep-outputs          = true
-      keep-derivations      = true
+      keep-outputs          = false
+      keep-derivations      = false
     '';
   };
 

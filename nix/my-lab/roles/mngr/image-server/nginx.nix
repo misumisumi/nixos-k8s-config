@@ -29,7 +29,8 @@ in
             rel="''${path#${src}/}"
             parent="$(dirname "${dst}/$rel")"
             mkdir -p "$parent"
-            ln -s "$path" "${dst}/$rel"
+            [ -d "${dst}/$rel" ] && rm -rf "${dst}/$rel"
+            cp -r "$path" "${dst}/$rel"
           done< <(find ${src} -type f)
         '';
     };
@@ -45,8 +46,8 @@ in
     config.services.nginx.defaultSSLListenPort
     8080
   ];
-  services.phpfpm.pools.manage = {
-    user = "manage";
+  services.phpfpm.pools.images = {
+    user = "images";
     settings = {
       "listen.owner" = config.services.nginx.user;
       "pm" = "dynamic";
@@ -63,11 +64,11 @@ in
   services.nginx = {
     enable = true;
     virtualHosts = {
-      manage = {
+      images = {
         addSSL = false;
         enableACME = false;
-        root = "/var/www/manage";
-        serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.manage.domain}";
+        root = "/var/www/images";
+        serverName = "${config.networking.hostName}.${head config.services.dnsmasq.multipleSessions.images.domain}";
         listen = [
           {
             addr = "${manageIP}";
@@ -78,7 +79,7 @@ in
           "~ [^/]\.php(/|$)" = {
             extraConfig = ''
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
-              fastcgi_pass unix:${config.services.phpfpm.pools.manage.socket};
+              fastcgi_pass unix:${config.services.phpfpm.pools.images.socket};
               include ${pkgs.nginx}/conf/fastcgi.conf;
             '';
           };
@@ -90,10 +91,10 @@ in
     name: _: "dnsmasq@${name}.service"
   ) config.services.dnsmasq.multipleSessions;
 
-  users.users.manage = {
+  users.users.images = {
     isSystemUser = true;
-    home = "${config.services.nginx.virtualHosts.manage.root}";
-    group = "manage";
+    home = "${config.services.nginx.virtualHosts.images.root}";
+    group = "images";
   };
-  users.groups.manage = { };
+  users.groups.images = { };
 }

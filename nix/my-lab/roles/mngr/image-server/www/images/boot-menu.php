@@ -7,7 +7,7 @@ use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
 // --- 設定 ---
-$image_dir = __DIR__ . '/ipxe/'; // /var/www/images/ipxe を指す
+$image_dir = __DIR__ . '/ipxe'; // /var/www/images/ipxe を指す
 $template_dir = __DIR__ . '/templates'; // Twigテンプレートを置くディレクトリ
 // ---
 

@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) manageIP;
+  inherit (static.${group}.${hostname}) manageIP manageIPPrefix;
 in
 {
   services.resolved.enable = false;
@@ -54,7 +54,7 @@ in
       networks = {
         "15-enp5s0" = {
           name = "enp5s0";
-          address = [ "${manageIP}" ];
+          address = [ "${manageIP}/${manageIPPrefix}" ];
         };
       };
     };
