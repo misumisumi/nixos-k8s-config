@@ -4,6 +4,7 @@
   pkgs,
   lib,
   modulesPath,
+  isDev,
   hostname,
   user,
   hostSecretPath,
@@ -12,7 +13,7 @@
   ...
 }:
 let
-  inherit (lib) mkForce;
+  inherit (lib) mkForce optional;
 in
 {
   imports = [
@@ -32,7 +33,8 @@ in
     ./microvm
     ./network.nix
     ./users.nix
-  ];
+  ]
+  ++ optional isDev ./develop;
   environment.systemPackages = with pkgs; [
     dig
     ethtool

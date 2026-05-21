@@ -15,15 +15,16 @@ system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-netboot"
 
-[switch.sks8300]
+[switch.sks8300-8x]
 notShow = true
 system = "x86_64-linux"
 user = "renako"
-hostname = "sks8300"
+hostname = "sks8300-8x"
 manageIP = "192.168.20.41"
 manageIPPrefix = "24"
 AS = "65011"
 routerId = "10.10.10.41"
+l2vpnListenRange = "10.10.10.0/24"
 color = "green"
 
 [switch.kaho]
@@ -35,7 +36,7 @@ manageIP = "192.168.20.42"
 manageIPPrefix = "24"
 routerId = "10.10.10.42"
 AS = "65012"
-l2vpnListenRange = "10.10.10.0"
+l2vpnListenRange = "10.10.10.0/24"
 color = "green"
 
 [compute.virtualIPs]

@@ -1,18 +1,23 @@
-{ pkgs, openwrt-imagebuilder, ... }:
+{
+  pkgs,
+  openwrt-imagebuilder,
+  ...
+}:
 let
-  inherit (pkgs.lib) optionalString;
+  inherit (pkgs.lib) optionalString importTOML;
 
   release = "25.12.4";
   profiles = openwrt-imagebuilder.lib.profiles {
     inherit pkgs release;
   };
 
-
   config =
     {
       isDev ? false,
-    }:let
+    }:
+    let
       secretPath = ../../../secrets/${if isDev then "develop" else "production"}/roles/switch/sks8300-8x;
+      static = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
     in
     {
       disabledServices = [ "dnsmasq" ];
@@ -25,17 +30,33 @@ let
           mkdir -p $out/etc/uci-defaults
           mkdir -p $out/etc/{config,dropbear,frr}
           cp ${./99-custom} $out/etc/uci-defaults/99-custom
-          cp ${./config/dropbear} $out/etc/config/dropbear
+          cp ${
+            import ./config/dropbear.nix {
+              inherit (pkgs) writeText;
+              inherit static;
+            }
+          } $out/etc/config/dropbear
           cp ${./config/firewall} $out/etc/config/firewall
-          cp ${./config/network} $out/etc/config/network
+          cp ${
+            import ./config/network.nix {
+              inherit (pkgs) writeText;
+              inherit static;
+            }
+          } $out/etc/config/network
           cp ${./frr/daemons} $out/etc/frr/daemons
-          cp ${./frr/frr.conf} $out/etc/frr/frr.conf
+          cp ${
+            import ./frr/frr.conf.nix {
+              inherit (pkgs) lib writeText;
+              inherit static;
+            }
+          } $out/etc/frr/frr.conf
           cp "${secretPath}/ssh/dropbear_ed25519_host_key" $out/etc/dropbear/dropbear_ed25519_host_key
         ''
         + optionalString isDev ''
           cp ${./97-incus-agent} $out/etc/uci-defaults/97-incus-agent
           cp ${./dropbear/authorized_keys.dev} $out/etc/dropbear/authorized_keys
-        '' + optionalString (!isDev) ''
+        ''
+        + optionalString (!isDev) ''
           cp ${./dropbear/authorized_keys.prod} $out/etc/dropbear/authorized_keys
         ''
       );
