@@ -131,7 +131,7 @@ compornents = [
         profiles     = ["dev.empty-vm"]
         config = {
           "limits.cpu"    = 4
-          "limits.memory" = "16GB"
+          "limits.memory" = "12GB"
           "raw.qemu"      = "-uuid 501b2357-38e9-43ad-a841-1b620418c959"
         }
         networks = [
@@ -178,7 +178,7 @@ compornents = [
         machine_type = "virtual-machine"
         config = {
           "limits.cpu"    = 4
-          "limits.memory" = "16GB"
+          "limits.memory" = "12GB"
           "raw.qemu"      = "-uuid e6ae54f8-c9b9-4bc0-a3a2-70818ed1a0d2"
         }
         profiles = ["dev.empty-vm"]
@@ -216,7 +216,7 @@ compornents = [
         machine_type = "virtual-machine"
         config = {
           "limits.cpu"    = 4
-          "limits.memory" = "16GB"
+          "limits.memory" = "12GB"
           "raw.qemu"      = "-uuid 27161944-492d-4225-ae42-73a43467e797"
         }
         profiles = ["dev.empty-vm"]
@@ -254,7 +254,7 @@ compornents = [
         machine_type = "virtual-machine"
         config = {
           "limits.cpu"    = 4
-          "limits.memory" = "16GB"
+          "limits.memory" = "12GB"
           "raw.qemu"      = "-uuid ef44a86f-544b-4e81-8fa3-0e7bbe8609b6"
         }
         profiles = ["dev.empty-vm"]
