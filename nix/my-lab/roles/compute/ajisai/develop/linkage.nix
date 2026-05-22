@@ -14,7 +14,7 @@ in
       virtualIP = {
         # address = "10.10.10.100";
         # cidr = "32";
-        address = "172.16.10.100";
+        address = "192.168.20.100";
         cidr = "24";
       };
       resourceGroup = {

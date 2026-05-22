@@ -15,8 +15,8 @@ let
 in
 {
   system.activationScripts.putCerts4Cockpit = ''
-    ln -sf /var/lib/certs/server/server.key /etc/cockpit/ws-certs.d/server.key
-    ln -sf /var/lib/certs/server/server.crt /etc/cockpit/ws-certs.d/server.cert
+    cp /var/lib/certs/server/server.key /etc/cockpit/ws-certs.d/server.key
+    cp /var/lib/certs/server/server.crt /etc/cockpit/ws-certs.d/server.cert
   '';
 
   #TODO: 26.04がメジャーリリースされた段階でこれを削除
