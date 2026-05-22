@@ -847,11 +847,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779286972,
-        "narHash": "sha256-rjHz1jePSczV+TCn1b+bGB1Az1bO2h1HTt+R6jwKakk=",
+        "lastModified": 1779381169,
+        "narHash": "sha256-0wfr2kFhfWLVUM6lQzLbQB+vr51fE57YbRdCFkQg3KU=",
         "ref": "main",
-        "rev": "d84617ca35256d472f8e7bb13642f42d5222cc61",
-        "revCount": 21,
+        "rev": "3f52d7de9422f564e7861020beffb25329f37648",
+        "revCount": 22,
         "type": "git",
         "url": "ssh://git@github.com/misumisumi/nixos-linstor.git"
       },
@@ -1266,11 +1266,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1779105857,
-        "narHash": "sha256-5aFa8f6ckjBNZknS8regXlqEptIlJhVTsCToSFRu8hw=",
+        "lastModified": 1779275394,
+        "narHash": "sha256-dycuWlVfvUX7Ep/zly1xO1t8P7R1489xercOYAKHVnY=",
         "owner": "astro",
         "repo": "nix-openwrt-imagebuilder",
-        "rev": "8eb5c35b43bcfdd232518d7834940a1864a10a02",
+        "rev": "af7e57677ddee4bec4a9784671752dc3fad6cc61",
         "type": "github"
       },
       "original": {
