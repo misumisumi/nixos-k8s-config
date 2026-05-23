@@ -6,6 +6,7 @@ hostname = "first-image"
 system = "x86_64-linux"
 user = "nixos"
 hostname = "second-image"
+manageSegment = "192.168.20.0/24"
 [liveimg.nixos-livecd]
 system = "x86_64-linux"
 user = "nixos"

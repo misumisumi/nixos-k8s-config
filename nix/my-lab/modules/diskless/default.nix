@@ -45,6 +45,16 @@ in
         default = 10;
         description = "Time in seconds to wait before attempting to fetch the image and kexec. Useful for ensuring network connectivity is established.";
       };
+      webhookURL = mkOption {
+        type = types.str;
+        default = "";
+        description = "Discord webhook URL to send notifications about machine info.";
+      };
+      manageSegment = mkOption {
+        type = types.str;
+        default = "";
+        description = "IP segment to register the machine to when using the webhookURL option.";
+      };
     };
   };
   config = mkIf cfg.enable (

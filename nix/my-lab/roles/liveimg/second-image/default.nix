@@ -21,6 +21,7 @@ in
     ../share/ssh.nix
     ./hardware-configuration.nix
     ./network.nix
+    ./regist-machine.nix
   ];
   image.modules = mkForce {
     inherit (self.nixosModules) kexec;

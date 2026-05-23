@@ -64,7 +64,7 @@ in
       nfs = {
         name = "dev_nfs_varlib";
         virtualIP = "10.10.10.101/32";
-        sizes = [ "32G" ];
+        sizes = [ "64G" ];
         allowedIPs = "10.10.10.0/24";
         filesystem = "ext4";
         resourceGroup = "dev_pool";
