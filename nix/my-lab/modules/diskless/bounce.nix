@@ -2,7 +2,7 @@
   lib,
   writeShellScriptBin,
   gnutar,
-  dmidecode,
+  coreutils,
   curl,
   jq,
   serverURL,
@@ -20,16 +20,19 @@ writeShellScriptBin "bounce" (
   + optionalString useUUID ''
     IMAGE_JSON_URL="${serverURL}/${metaJSON}"
 
-    SYSTEM_UUID=$(${dmidecode}/bin/dmidecode --string system-uuid)
+    PRODUCT_UUID=$(${coreutils}/bin/cat /sys/class/dmi/id/product_uuid)
     TMP_JSON="/tmp/$(basename $IMAGE_JSON_URL)"
     IS_DOWNLOAD=$(${curl}/bin/curl -s -w "%{http_code}" "$IMAGE_JSON_URL" -o "$TMP_JSON")
+
+    IMAGE_FILE=""
     if [ "$IS_DOWNLOAD" -ne 200 ]; then
       echo "Image metadata not found at $IMAGE_JSON_URL."
+    else
+      echo "Successfully downloaded image metadata."
+      IMAGE_FILE=$(${jq}/bin/jq -r --arg uuid "$PRODUCT_UUID" '.[$uuid] | .image' "$TMP_JSON")
     fi
-    echo "Successfully downloaded image metadata."
   ''
   + ''
-    IMAGE_FILE=$(${jq}/bin/jq -r --arg uuid "$SYSTEM_UUID" '.[$uuid] | .image' "$TMP_JSON")
     if [ -z "$IMAGE_FILE" ]; then
       echo "No matching image metadata found."
       if [ -z "$FALLBACK_IMAGE_FILE" ];then
