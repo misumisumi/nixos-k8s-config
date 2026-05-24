@@ -95,8 +95,8 @@ fi
 FQDN="quintet.home"
 C=JP
 ST=Tokyo
-O="Project Quintet"
-OU="Project Quinted $TAG"
+O="Project Queentet"
+OU="Project Queentet $TAG"
 CN="${CA_DIR,,}.${FQDN}"
 
 CA_CNF=ca.cnf
