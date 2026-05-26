@@ -1,10 +1,10 @@
 {
+  inputs,
   hostSecretPath,
   hostname,
   lib,
   modulesPath,
   secretPath,
-  self,
   user,
   userSecretPath,
   ...
@@ -27,11 +27,10 @@ in
     ./incus.nix
     ./linstor.nix
     ./nftables.nix
-    self.nixosModules.vlan-aware-vxlan
+    inputs.homelab-modules.nixosModules.vlan-aware-vxlan
   ];
   image.modules = mkForce {
-    inherit (self.nixosModules) kexec;
-    incus-vm = self + "/modules/incus-virtual-machine.nix";
+    inherit (inputs.homelab-modules.nixosModules) kexec incus-vm;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
   system = {

@@ -63,7 +63,7 @@
           ;
       };
       extraModules = [
-        self.nixosModules.vlan-aware-vxlan
+        inputs.homelab-modules.nixosModules.vlan-aware-vxlan
       ];
       config = {
         # It is highly recommended to share the host's nix-store

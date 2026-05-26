@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   static,
   lib,
   ...
@@ -9,7 +9,7 @@ let
   inherit (static.mngr.image-server) manageIP;
 in
 {
-  imports = [ self.nixosModules.diskless ];
+  imports = [ inputs.homelab-modules.nixosModules.diskless ];
   services.diskless.kexec = {
     enable = true;
     serverURL = "http://${removePrefix "/24" manageIP}/kexec";

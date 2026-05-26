@@ -251,6 +251,17 @@
         "type": "github"
       }
     },
+    "homelab-modules": {
+      "locked": {
+        "path": "../modules",
+        "type": "path"
+      },
+      "original": {
+        "path": "../modules",
+        "type": "path"
+      },
+      "parent": []
+    },
     "microvm": {
       "inputs": {
         "nixpkgs": [
@@ -511,6 +522,7 @@
         "disko": "disko",
         "flake-parts": "flake-parts",
         "flakes": "flakes",
+        "homelab-modules": "homelab-modules",
         "microvm": "microvm",
         "nixos-linstor": "nixos-linstor",
         "nixpkgs": "nixpkgs_3",

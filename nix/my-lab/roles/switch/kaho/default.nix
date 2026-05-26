@@ -42,8 +42,7 @@ in
     traceroute
   ];
   image.modules = mkForce {
-    inherit (self.nixosModules) kexec;
-    incus-vm = self + "/modules/incus-virtual-machine.nix";
+    inherit (inputs.homelab-modules.nixosModules) kexec incus-vm;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
   system = {

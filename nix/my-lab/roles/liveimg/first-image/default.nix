@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   lib,
   modulesPath,
   ...
@@ -20,10 +20,10 @@ in
     ./hardware-configuration.nix
     ./network.nix
     ./second-stage-boot.nix
-    self.nixosModules.ipxe
+    inputs.homelab-modules.nixosModules.ipxe
   ];
   image.modules = mkForce {
-    incus-vm = self + "/modules/incus-virtual-machine.nix";
+    inherit (inputs.homelab-modules.nixosModules) incus-vm;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

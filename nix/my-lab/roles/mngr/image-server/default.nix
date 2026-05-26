@@ -1,7 +1,7 @@
 {
   lib,
+  inputs,
   modulesPath,
-  self,
   ...
 }:
 let
@@ -14,11 +14,11 @@ in
     ./dnsmasq.nix
     ./network.nix
     ./nginx.nix
-    self.nixosModules.build
-    self.nixosModules.multiple-dnsmasq
+    inputs.homelab-modules.nixosModules.build
+    inputs.homelab-modules.nixosModules.multiple-dnsmasq
   ];
   image.modules = mkForce {
-    lxc = self.nixosModules.lxc-container;
-    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
+    lxc-meinputs.homelab-modulesta = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

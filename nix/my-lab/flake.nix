@@ -53,6 +53,8 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    homelab-modules.url = "path:../modules";
   };
 
   outputs =
@@ -81,7 +83,7 @@
           import ./patches {
             inherit nixpkgs-unstable;
           };
-        nixosModules = import ./modules;
+        # nixosModules = import ./modules;
         nixosConfigurations = import ./roles {
           inherit (inputs.nixpkgs) lib;
           inherit inputs self;

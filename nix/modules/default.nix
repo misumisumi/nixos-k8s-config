@@ -17,7 +17,7 @@
   kexec = {
     imports = [ ./kexec ];
   };
-  incus-virtual-machine = {
+  incus-vm = {
     imports = [ ./incus-virtual-machine.nix ];
   };
   ipxe = {

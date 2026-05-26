@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   lib,
   modulesPath,
   ...
@@ -19,10 +19,10 @@ in
     ../../share/settings/users.nix
     ../share/ssh.nix
     ./network.nix
-    self.nixosModules.ipxe
+    inputs.homelab-modules.nixosModules.ipxe
   ];
   image.modules = mkForce {
-    incus-vm = self + "/modules/incus-virtual-machine.nix";
+    incus-vm = "${inputs.homelab-modules.nixosModules}/modules/incus-virtual-machine.nix";
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

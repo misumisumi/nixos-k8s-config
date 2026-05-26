@@ -1,6 +1,6 @@
 {
   lib,
-  self,
+  inputs,
   modulesPath,
   hostSecretPath,
   hostname,
@@ -24,7 +24,7 @@ in
     ./users.nix
   ];
   image.modules = mkForce {
-    lxc = self.nixosModules.lxc-container;
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
   system = {

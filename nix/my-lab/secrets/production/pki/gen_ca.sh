@@ -92,7 +92,7 @@ else
   PASSWD=$(sops decrypt --extract '["rootca"]' ./passwd.yaml)
 fi
 
-FQDN="quintet.home"
+FQDN="home"
 C=JP
 ST=Tokyo
 O="Project Queentet"

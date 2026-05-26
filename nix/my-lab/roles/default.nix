@@ -11,7 +11,6 @@ let
     importTOML
     mapAttrsToList
     nameValuePair
-    optional
     ;
   systemSetting =
     {
@@ -41,14 +40,11 @@ let
         inputs.disko.nixosModules.disko
         inputs.nixos-linstor.nixosModules.linstor
         inputs.nixos-linstor.nixosModules.linkage
+        inputs.homelab-modules.nixosModules.default
         (inputs.pcp + "/build/nix/nixos-module.nix")
-        self.nixosModules.default
         ./share/modules/static.nix
         ./${group}/${tag}
       ];
-      # ++ optional isDev ./${group}/${tag}/develop
-      # ++ optional (!isDev) ./${group}/${tag}/production
-      # ++ optional isNixOSTest ./${group}/${tag}/develop/nixos-test.nix;
     };
   group_and_hosts = importTOML ./static.toml;
   group_and_hosts_dev = importTOML ./static_dev.toml;
