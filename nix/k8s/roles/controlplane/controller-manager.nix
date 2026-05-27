@@ -1,7 +1,11 @@
-{ lib
-, virtualIP
-, ...
+{
+  lib,
+  static,
+  ...
 }:
+let
+  inherit (static.k8s.settings) virtualIP;
+in
 {
   services.kubernetes.controllerManager = {
     enable = true;
@@ -9,11 +13,11 @@
       "--feature-gates=KubeletInUserNamespace=true"
     ];
     kubeconfig = {
-      caFile = "/var/lib/secrets/kubernetes/ca.pem";
-      certFile = "/var/lib/secrets/kubernetes/controller-manager.pem";
-      keyFile = "/var/lib/secrets/kubernetes/controller-manager-key.pem";
+      caFile = "/etc/kubernetes/pki/ca.pem";
+      certFile = "/etc/kubernetes/pki/controller-manager.pem";
+      keyFile = "/etc/kubernetes/pki/controller-manager-key.pem";
       server = "https://${virtualIP}";
     };
-    rootCaFile = "/var/lib/secrets/kubernetes/ca.pem";
+    rootCaFile = "/etc/kubernetes/pki/ca.pem";
   };
 }

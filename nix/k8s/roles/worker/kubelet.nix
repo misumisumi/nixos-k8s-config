@@ -40,14 +40,14 @@ in
       ];
       unschedulable = false;
       kubeconfig = {
-        caFile = "/var/lib/secrets/kubernetes/ca.pem";
+        caFile = "/etc/kubernetes/pki/ca.pem";
         certFile = tlsCertFile;
         keyFile = tlsKeyFile;
         server = "https://${virtualIP}";
       };
-      clientCaFile = "/var/lib/secrets/kubernetes/ca.pem";
-      tlsCertFile = "/var/lib/secrets/kubernetes/kubelet.pem";
-      tlsKeyFile = "/var/lib/secrets/kubernetes/kubelet-key.pem";
+      clientCaFile = "/etc/kubernetes/pki/ca.pem";
+      tlsCertFile = "/etc/kubernetes/pki/kubelet.pem";
+      tlsKeyFile = "/etc/kubernetes/pki/kubelet-key.pem";
     };
   };
 }

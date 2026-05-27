@@ -1,9 +1,12 @@
-{ lib
-, resourcesByRole
-, ...
+{
+  lib,
+  static,
+  ...
 }:
 let
-  etcdServers = map (r: "https://${r.values.name}:2379") (resourcesByRole "etcd" "k8s");
+  inherit (lib) imap1;
+  inherit (static.k8s.settings) serviceClusterIpRange;
+  etcdServers = imap1 (i: "https://etcd${i}:2379") static.etcd.nodeIPs;
 
   corednsPolicies =
     map
@@ -16,19 +19,24 @@ let
           resource = r;
           readonly = true;
         };
-      }) [ "endpoints" "services" "pods" "namespaces" ]
-    ++ lib.singleton
-      {
-        apiVersion = "abac.authorization.kubernetes.io/v1beta1";
-        kind = "Policy";
-        spec = {
-          user = "system:coredns";
-          namespace = "*";
-          resource = "endpointslices";
-          apiGroup = "discovery.k8s.io";
-          readonly = true;
-        };
+      })
+      [
+        "endpoints"
+        "services"
+        "pods"
+        "namespaces"
+      ]
+    ++ lib.singleton {
+      apiVersion = "abac.authorization.kubernetes.io/v1beta1";
+      kind = "Policy";
+      spec = {
+        user = "system:coredns";
+        namespace = "*";
+        resource = "endpointslices";
+        apiGroup = "discovery.k8s.io";
+        readonly = true;
       };
+    };
 in
 {
   networking.firewall.allowedTCPPorts = [ 6443 ];
@@ -36,34 +44,38 @@ in
   services.kubernetes.apiserver = {
     enable = true;
     allowPrivileged = true;
-    serviceClusterIpRange = "10.32.0.0/24";
+    inherit serviceClusterIpRange;
     extraOpts = lib.strings.concatStringsSep " " [
       "--feature-gates=KubeletInUserNamespace=true"
     ];
 
     # Using ABAC for CoreDNS running outside of k8s
     # is more simple in this case than using kube-addon-manager
-    authorizationMode = [ "RBAC" "Node" "ABAC" ];
+    authorizationMode = [
+      "RBAC"
+      "Node"
+      "ABAC"
+    ];
     authorizationPolicy = corednsPolicies;
 
     etcd = {
       servers = etcdServers;
-      caFile = "/var/lib/secrets/kubernetes/apiserver/api-etcd-ca.pem";
-      certFile = "/var/lib/secrets/kubernetes/apiserver/api-etcd-client.pem";
-      keyFile = "/var/lib/secrets/kubernetes/apiserver/api-etcd-client-key.pem";
+      caFile = "/etc/kubernetes/pki/etcd/ca.pem";
+      certFile = "/etc/kubernetes/pki/apiserver-etcd-client.pem";
+      keyFile = "/etc/kubernetes/pki/apiserver-etcd-client-key.pem";
     };
 
-    clientCaFile = "/var/lib/secrets/kubernetes/ca.pem";
+    clientCaFile = "/etc/kubernetes/pki/ca.pem";
 
-    kubeletClientCaFile = "/var/lib/secrets/kubernetes/ca.pem";
-    kubeletClientCertFile = "/var/lib/secrets/kubernetes/apiserver/kubelet-client.pem";
-    kubeletClientKeyFile = "/var/lib/secrets/kubernetes/apiserver/kubelet-client-key.pem";
+    kubeletClientCaFile = "/etc/kubernetes/pki/ca.pem";
+    kubeletClientCertFile = "/etc/kubernetes/pki/apiserver-kubelet-client.pem";
+    kubeletClientKeyFile = "/etc/kubernetes/pki/apiserver-kubelet-client-key.pem";
 
     # TODO: separate from server keys
-    serviceAccountKeyFile = "/var/lib/secrets/kubernetes/apiserver/server.pem";
-    serviceAccountSigningKeyFile = "/var/lib/secrets/kubernetes/apiserver/server-key.pem";
+    serviceAccountKeyFile = "/etc/kubernetes/pki/sa.pem";
+    serviceAccountSigningKeyFile = "/etc/kubernetes/pki/sa.key";
 
-    tlsCertFile = "/var/lib/secrets/kubernetes/apiserver/server.pem";
-    tlsKeyFile = "/var/lib/secrets/kubernetes/apiserver/server-key.pem";
+    tlsCertFile = "/etc/kubernetes/pki/apiserver.pem";
+    tlsKeyFile = "/etc/kubernetes/pki/apiserver-key.pem";
   };
 }

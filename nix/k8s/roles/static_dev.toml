@@ -1,19 +1,19 @@
-[etcd]
+[k8s.settings]
+notShow = true
+serviceClusterIpRange = "10.100.0.0/16"
+clusterCidr = "10.200.0.0/16"
+
+[nodes.etcd]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["10.10.100.30", "10.10.100.31", "10.10.100.32"]
 
-[k8s.settings]
-notShow = true
-serviceClusterIpRange = "10.10.200.0/16"
-clusterCidr = "10.10.200.0/16"
-
-[k8s.controlplane]
+[nodes.controlplane]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["10.10.100.20", "10.10.100.21", "10.10.100.22"]
 
-[k8s.worker]
+[nodes.worker]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["10.10.100.40", "10.10.100.41", "10.10.100.42"]

@@ -1,13 +1,17 @@
-{ virtualIP
-, ...
+{
+  static,
+  ...
 }:
+let
+  inherit (static.k8s.settings) virtualIP;
+in
 {
   services.kubernetes.scheduler = {
     enable = true;
     kubeconfig = {
-      caFile = "/var/lib/secrets/kubernetes/ca.pem";
-      certFile = "/var/lib/secrets/kubernetes/scheduler.pem";
-      keyFile = "/var/lib/secrets/kubernetes/scheduler-key.pem";
+      caFile = "/etc/kubernetes/pki/ca.pem";
+      certFile = "/etc/kubernetes/pki/scheduler.pem";
+      keyFile = "/etc/kubernetes/pki/scheduler-key.pem";
       server = "https://${virtualIP}";
     };
   };

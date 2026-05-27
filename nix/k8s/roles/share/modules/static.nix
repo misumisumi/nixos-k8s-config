@@ -11,7 +11,8 @@
 {
   _module.args =
     let
-      inherit (lib) importTOML;
+      inherit (builtins) listToAttrs;
+      inherit (lib) importTOML imap1 nameValuePair;
     in
     rec {
       secretPath = ../../../secrets + "${if isDev then "/develop" else "/production"}";

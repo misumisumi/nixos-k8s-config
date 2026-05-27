@@ -1,28 +1,23 @@
 {
+  inputs,
+  modulesPath,
   lib,
-  resourcesByRoles,
   ...
 }:
 let
-  nodes = map (r: "${r.values.name} ${r.values.ipv4_address}") (
-    resourcesByRoles [
-      "etcd"
-      "controlplane"
-      "loadbalancer"
-      "worker"
-    ] "k8s"
-  );
+  inherit (lib) mkForce;
 in
 {
   imports = [
-    ../_init/core
-    ../autoresources.nix
-    ./system/apiserver.nix
-    ./system/controller-manager.nix
-    ./system/kubelet.nix
-    # ./scheduler.nix
+    ../share/k8s
+    ./apiserver.nix
+    ./certs.nix
+    ./controller-manager.nix
+    ./kubelet.nix
   ];
-  services.kubernetes.clusterCidr = "10.200.0.0/16";
 
-  networking.extraHosts = lib.concatMapStrings (x: x + "\n") nodes;
+  image.modules = mkForce {
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
+    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+  };
 }

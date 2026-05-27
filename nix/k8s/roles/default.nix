@@ -14,7 +14,6 @@ let
     ;
   systemSetting =
     {
-      group,
       tag,
       system,
       hostname,
@@ -29,7 +28,6 @@ let
           self
           inputs
           hostname
-          group
           user
           isDev
           isNixOSTest
@@ -37,10 +35,9 @@ let
       }; # specialArgs give some args to modules
       modules = [
         inputs.sops-nix.nixosModules.sops
-        inputs.disko.nixosModules.disko
         inputs.homelab-modules.nixosModules.default
         ./share/modules/static.nix
-        ./${group}/${tag}
+        ./${tag}
       ];
     };
   group_and_hosts = importTOML ./static.toml;
@@ -64,16 +61,13 @@ let
   config_per_variant =
     static: n: v:
     mapAttrsToList (
-      group: hosts:
-      (mapAttrsToList (
-        tag: value:
-        nameValuePair "${n}_${group}_${tag}" (systemSetting {
-          inherit group tag;
-          inherit (value) system hostname user;
-          inherit (v) isDev isNixOSTest;
-        })
-      ) (filterAttrs (_: v: isAttrs v && !(v.notShow or false)) hosts))
-    ) static;
+      tag: value:
+      nameValuePair "${n}_k8s_${tag}" (systemSetting {
+        inherit tag;
+        inherit (value) system hostname user;
+        inherit (v) isDev isNixOSTest;
+      })
+    ) (static.nodes);
 
 in
 listToAttrs (flatten (mapAttrsToList (config_per_variant group_and_hosts) variants))
