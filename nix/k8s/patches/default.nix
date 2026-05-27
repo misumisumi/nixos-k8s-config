@@ -49,9 +49,4 @@
 # })
 { nixpkgs-unstable, ... }:
 final: prev: {
-  colmena = prev.colmena.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [
-      ./colmena.patch
-    ];
-  });
 }

@@ -1,8 +1,10 @@
-{ age
-, ssh-to-age
-, writeShellApplication
-, writeShellScriptBin
-}: {
+{
+  age,
+  ssh-to-age,
+  writeShellApplication,
+  writeShellScriptBin,
+}:
+{
   mkage4mgr = writeShellScriptBin "mkage4mgr" ''
     [ ! -d ~/.config/sops/age ] && mkdir -p ~/.config/sops/age && chmod 700 ~/.config/sops/age
     ${ssh-to-age}/bin/ssh-to-age -private-key -i ~/.ssh/id_ed25519 > ~/.config/sops/age/keys.txt
@@ -81,4 +83,3 @@
     '';
   };
 }
-

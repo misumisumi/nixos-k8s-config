@@ -287,6 +287,24 @@ compornents = [
           }
         ]
       },
+
+      {
+        name         = "second-image"
+        image        = "dev/liveimg/second-image"
+        machine_type = "virtual-machine"
+        profiles     = ["dev.spine"]
+        config = {
+          "limits.cpu"    = 2
+          "limits.memory" = "1GB"
+          "raw.qemu"      = "-uuid 90de1099-11f7-44c2-8225-427080668212"
+        }
+        networks = [
+          {
+            parent  = "incusbr0"
+            nictype = "bridged"
+          },
+        ]
+      },
     ]
   }
 ]

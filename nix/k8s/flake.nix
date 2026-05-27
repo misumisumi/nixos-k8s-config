@@ -18,43 +18,16 @@
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur.url = "github:nix-community/NUR";
-
-    nixos-images.url = "github:nix-community/nixos-images";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    flakes.url = "github:misumisumi/flakes";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    colmena = {
-      url = "github:zhaofengli/colmena/v0.4.0";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        stable.follows = "nixpkgs";
-      };
-    };
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-    nixos-anywhere = {
-      url = "github:nix-community/nixos-anywhere";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixos-stable.follows = "nixpkgs";
-        disko.follows = "disko";
-      };
-    };
-
-    flakes.url = "github:misumisumi/flakes";
+    homelab-modules.url = "path:../modules";
   };
 
   outputs =
@@ -81,7 +54,7 @@
         # };
         # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
         nixosConfigurations = (
-          import ./instances {
+          import ./roles {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           }
@@ -116,8 +89,12 @@
             config.allowUnfree = true;
           };
           apps = with myScripts; {
-            mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "eval"; }; };
-            mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
+            # mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "eval"; }; };
+            # mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
+            genca = mkApp { drv = pkgs.callPackage ./secrets/production/pki/genca.nix { }; };
+            gencerts-dev = mkApp {
+              drv = (pkgs.callPackage ./secrets/production/pki/gencerts.nix { }).develop;
+            };
             k = mkApp { drv = k; };
             mkimg4lxc = mkApp { drv = mkimg4lxc; };
             deploy = mkApp { drv = deploy; };
