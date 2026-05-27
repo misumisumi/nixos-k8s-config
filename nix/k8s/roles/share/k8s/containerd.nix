@@ -1,5 +1,5 @@
 # rootless環境でのkubernetesの実行
-# 参照: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns/#caveats
+# INFO: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns
 {
   virtualisation.containerd = {
     settings = {
