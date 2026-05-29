@@ -10,15 +10,18 @@ let
   inherit (lib)
     concatStringsSep
     mkForce
-    removePrefix
-    toInt
     imap1
     ;
 in
 {
   image.modules = mkForce {
     lxc = inputs.homelab-modules.nixosModules.lxc-container;
-    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+    lxc-metadata = {
+      imports = [
+        "${modulesPath}/virtualisation/lxc-image-metadata.nix"
+        ./keepalived.env.tpl.nix
+      ];
+    };
   };
   imports = [ ../share/settings ];
 
@@ -68,17 +71,17 @@ in
         backend controlplanes
           mode tcp
           ${concatStringsSep "\n  " (
-            imap1 (i: ip: "server controlplane${toString i} ${ip}:6443") static.k8s.controlplane.nodeIPs
+            imap1 (i: ip: "server controlplane${toString i} ${ip}:6443") static.nodes.controlplane.nodeIPs
           )}
       '';
     };
 
     keepalived = {
       enable = true;
+      secretFile = "/var/keys/keepalived.env";
       vrrpInstances.k8s = {
         # TODO: at least basic (hardcoded) auth or other protective measures
         interface = "enp5s0";
-        priority = 220 - (20 * (toInt (removePrefix "loadbalancer" tag)));
         virtualRouterId = 42;
         virtualIps = [
           {
@@ -86,6 +89,7 @@ in
           }
         ];
         extraConfig = ''
+          priority ''${K8S_PRIORITY}
           authentication {
               auth_type PASS
               auth_pass k8s-vrrp

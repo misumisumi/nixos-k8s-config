@@ -26,10 +26,10 @@ let
     static:
     let
       nodes = flatten (
-        mapAttrsToList (k: v: [
-          "${k}"
-          "${v.nodeIP}"
-        ]) static.etcd
+        imap1 (i: ip: [
+          "etcd${toString i}"
+          "${ip}"
+        ]) static.nodes.etcd.nodeIPs
       );
     in
     {
@@ -90,7 +90,7 @@ let
             imap1 (i: v: [
               "controlplane${toString i}"
               (splitString "," v)
-            ]) static.k8s.controlplane.nodeIPs
+            ]) static.nodes.controlplane.nodeIPs
           )
           ++ [
             "${static.k8s.settings.apiserverAddress}"
@@ -115,7 +115,7 @@ let
           imap1 (i: v: [
             "controlplane${toString i}"
             (splitString "," v)
-          ]) static.k8s.controlplane.nodeIPs
+          ]) static.nodes.controlplane.nodeIPs
         );
       };
     };
@@ -208,7 +208,7 @@ let
             conf = kubeletCsr "controlplane${toString i}";
           in
           "genCert controlplane${toString i} ${conf.profile} ${conf.csr} kubernetes"
-        ) static.k8s.controlplane.nodeIPs
+        ) static.nodes.controlplane.nodeIPs
       )}
       popd > /dev/null
       NODES_DIR="$OUTDIR/kubernetes/workers"
@@ -221,7 +221,7 @@ let
             conf = kubeletCsr "worker${toString i}";
           in
           "genCert worker${toString i} ${conf.profile} ${conf.csr} kubernetes"
-        ) static.k8s.worker.nodeIPs
+        ) static.nodes.worker.nodeIPs
       )}
       popd > /dev/null
     '';

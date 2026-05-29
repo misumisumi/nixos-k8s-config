@@ -8,17 +8,15 @@ let
   inherit (lib)
     flatten
     imap1
-    mapAttrsToList
     ;
 
-  nodes =
-    flatten (
-      map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.k8s.${role}.nodeIPs) [
-        "controlplane"
-        "worker"
-      ]
-    )
-    ++ (mapAttrsToList (k: v: "${k} ${v.nodeIP}") static.etcd);
+  nodes = flatten (
+    map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.nodes.${role}.nodeIPs) [
+      "controlplane"
+      "etcd"
+      "worker"
+    ]
+  );
 in
 {
   networking = {

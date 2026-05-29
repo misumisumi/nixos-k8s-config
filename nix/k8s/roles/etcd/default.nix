@@ -2,7 +2,6 @@
   lib,
   inputs,
   static,
-  tag,
   modulesPath,
   ...
 }:
@@ -11,20 +10,15 @@ let
     concatStringsSep
     flatten
     imap1
-    mapAttrsToList
     mkForce
     ;
-  inherit (static.etcd.${tag}) nodeIP;
-
-  etcdServers = mapAttrsToList (k: v: "${k}=https://${v.nodeIP}:2380") static.etcd;
-  nodes =
-    flatten (
-      map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.k8s.${role}.nodeIPs) [
-        "controlplane"
-        "worker"
-      ]
-    )
-    ++ (mapAttrsToList (k: v: "${k} ${v.nodeIP}") static.etcd);
+  nodes = flatten (
+    map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.nodes.${role}.nodeIPs) [
+      "etcd"
+      "controlplane"
+      "worker"
+    ]
+  );
 in
 {
   imports = [
@@ -34,11 +28,15 @@ in
 
   image.modules = mkForce {
     lxc = inputs.homelab-modules.nixosModules.lxc-container;
-    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+    lxc-metadata = {
+      imports = [
+        "${modulesPath}/virtualisation/lxc-image-metadata.nix"
+        ./etcd.conf.tpl.nix
+      ];
+    };
   };
 
   networking = {
-    hostName = "${tag}";
     firewall.allowedTCPPorts = [
       2379
       2380
@@ -49,29 +47,32 @@ in
   services.etcd = {
     enable = true;
 
-    advertiseClientUrls = [ "https://${nodeIP}:2379" ];
-    initialAdvertisePeerUrls = [ "https://${nodeIP}:2380" ];
-    initialCluster = mkForce etcdServers;
-    listenClientUrls = [
-      "https://${nodeIP}:2379"
-      "https://127.0.0.1:2379"
-    ];
-    listenPeerUrls = [
-      "https://${nodeIP}:2380"
-      "https://127.0.0.1:2380"
-    ];
+    # advertiseClientUrls = [ "https://${nodeIP}:2379" ];
+    # initialAdvertisePeerUrls = [ "https://${nodeIP}:2380" ];
+    # initialCluster = mkForce etcdServers;
+    # listenClientUrls = [
+    #   "https://${nodeIP}:2379"
+    #   "https://127.0.0.1:2379"
+    # ];
+    # listenPeerUrls = [
+    #   "https://${nodeIP}:2380"
+    #   "https://127.0.0.1:2380"
+    # ];
 
-    clientCertAuth = true;
-    peerClientCertAuth = true;
+    # clientCertAuth = true;
+    # peerClientCertAuth = true;
 
-    certFile = "/etc/kubernetes/pki/etcd/server.pem";
-    keyFile = "/etc/kubernetes/pki/etcd/server-key.pem";
+    # certFile = "/etc/kubernetes/pki/etcd/server.pem";
+    # keyFile = "/etc/kubernetes/pki/etcd/server-key.pem";
 
-    peerCertFile = "/etc/kubernetes/pki/etcd/peer.pem";
-    peerKeyFile = "/etc/kubernetes/pki/etcd/peer-key.pem";
+    # peerCertFile = "/etc/kubernetes/pki/etcd/peer.pem";
+    # peerKeyFile = "/etc/kubernetes/pki/etcd/peer-key.pem";
 
-    peerTrustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
-    trustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
+    # peerTrustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
+    # trustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
+    extraConf = {
+      CONFIG_FILE = "/etc/etcd.conf";
+    };
   };
 
   systemd.services.etcd = {

@@ -1,15 +1,24 @@
 { lib, static, ... }:
 let
-  inherit (lib) concatImapStringsSep mapAttrsToList concatStringsSep;
-  inherit (static) etcd k8s;
-  inherit (k8s.settings) clusterCidr;
+  inherit (lib)
+    flatten
+    imap1
+    concatStringsSep
+    ;
+  inherit (static.k8s.settings) clusterCidr;
+
+  nodes = flatten (
+    map (role: imap1 (i: ip: "${ip} ${role}${toString i}") static.nodes.${role}.nodeIPs) [
+      "etcd"
+      "controlplane"
+      "worker"
+    ]
+  );
 in
 {
   services.kubernetes.clusterCidr = clusterCidr;
   networking.extraHosts = ''
-    ${concatStringsSep "\n" (mapAttrsToList (k: v: "${v.nodeIP} ${k}") etcd)}
-    ${concatImapStringsSep "\n" (i: ip: "${ip} controlplane${toString i}") k8s.controlplane.nodeIPs}
-    ${concatImapStringsSep "\n" (i: ip: "${ip} worker${toString i}") k8s.worker.nodeIPs}
+    ${concatStringsSep "\n" nodes}
   '';
   # rootless環境でのkubernetesの実行
   # INFO: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns

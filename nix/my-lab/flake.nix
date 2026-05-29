@@ -1,5 +1,5 @@
 {
-  description = "Terraform nix environment";
+  description = "Baremetal server configuration";
   nixConfig = {
     extra-substituters = [
       "https://misumisumi.cachix.org"

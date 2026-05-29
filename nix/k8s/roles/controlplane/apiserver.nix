@@ -4,9 +4,9 @@
   ...
 }:
 let
-  inherit (lib) concatStringsSep mapAttrsToList singleton;
+  inherit (lib) concatStringsSep singleton;
   inherit (static.k8s.settings) apiserverAddress serviceClusterIpRange;
-  etcdServers = mapAttrsToList (_: v: "https://${v.nodeIP}:2379") static.etcd;
+  etcdServers = map (ip: "https://${ip}:2379") static.nodes.etcd.nodeIPs;
 
   corednsPolicies =
     map

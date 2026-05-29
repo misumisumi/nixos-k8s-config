@@ -48,20 +48,12 @@
           ];
         };
         # Cluster settings managing colmena
-        # colmena = import ./nixos/hive.nix {
-        #   inherit (inputs.nixpkgs) lib;
-        #   inherit inputs self;
-        # };
-        # colmenaHive = inputs.colmena.lib.makeHive self.colmena;
         nixosConfigurations = (
           import ./roles {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
           }
         );
-        # diskoConfigurations = import ./donfigs/disk-config.nix {
-        #   inherit (inputs.nixpkgs) lib;
-        # };
       };
       perSystem =
         {
