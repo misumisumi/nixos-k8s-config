@@ -22,7 +22,7 @@ in
     inputs.homelab-modules.nixosModules.ipxe
   ];
   image.modules = mkForce {
-    incus-vm = "${inputs.homelab-modules.nixosModules}/modules/incus-virtual-machine.nix";
+    inherit (inputs.homelab-modules.nixosModules) incus-vm;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }
