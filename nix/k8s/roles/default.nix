@@ -11,12 +11,13 @@ let
     importTOML
     mapAttrsToList
     nameValuePair
+    pathExists
     ;
   systemSetting =
     {
+      group,
       tag,
       system,
-      hostname,
       user,
       isDev ? false,
       isNixOSTest ? false,
@@ -27,7 +28,8 @@ let
         inherit
           self
           inputs
-          hostname
+          group
+          tag
           user
           isDev
           isNixOSTest
@@ -37,7 +39,7 @@ let
         inputs.sops-nix.nixosModules.sops
         inputs.homelab-modules.nixosModules.default
         ./share/modules/static.nix
-        ./${tag}
+        (if pathExists ./${tag} then ./${tag} else ./${group})
       ];
     };
   group_and_hosts = importTOML ./static.toml;
@@ -61,13 +63,16 @@ let
   config_per_variant =
     static: n: v:
     mapAttrsToList (
-      tag: value:
-      nameValuePair "${n}_k8s_${tag}" (systemSetting {
-        inherit tag;
-        inherit (value) system hostname user;
-        inherit (v) isDev isNixOSTest;
-      })
-    ) (static.nodes);
+      group: hosts:
+      (mapAttrsToList (
+        tag: value:
+        nameValuePair "${n}_${group}_${tag}" (systemSetting {
+          inherit group tag;
+          inherit (value) system user;
+          inherit (v) isDev isNixOSTest;
+        })
+      ) (filterAttrs (_: v: isAttrs v && !(v.notShow or false)) hosts))
+    ) static;
 
 in
 listToAttrs (flatten (mapAttrsToList (config_per_variant group_and_hosts) variants))

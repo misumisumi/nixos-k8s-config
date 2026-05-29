@@ -1,4 +1,4 @@
-{ lib, hostname, ... }:
+{ lib, ... }:
 let
   inherit (lib) mkDefault;
 in
@@ -14,10 +14,10 @@ in
     };
   };
   networking = {
+    hostName = mkDefault "";
     useNetworkd = true;
     useHostResolvConf = false;
-    hostName = hostname;
-    useDHCP = mkDefault false; # Setting each network interafces
+    useDHCP = mkDefault true; # Setting each network interafces
     firewall.checkReversePath = "loose";
   };
   # system.nssModules = lib.mkForce [];

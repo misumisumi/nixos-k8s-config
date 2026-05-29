@@ -1,10 +1,10 @@
 {
   lib,
-  static,
+  config,
   ...
 }:
 let
-  inherit (static.k8s.settings) virtualIP;
+  inherit (config.services.kubernetes) apiserverAddress;
 in
 {
   services.kubernetes.controllerManager = {
@@ -16,7 +16,7 @@ in
       caFile = "/etc/kubernetes/pki/ca.pem";
       certFile = "/etc/kubernetes/pki/controller-manager.pem";
       keyFile = "/etc/kubernetes/pki/controller-manager-key.pem";
-      server = "https://${virtualIP}";
+      server = "https://${apiserverAddress}";
     };
     rootCaFile = "/etc/kubernetes/pki/ca.pem";
   };

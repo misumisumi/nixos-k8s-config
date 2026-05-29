@@ -1,12 +1,8 @@
 {
   lib,
   config,
-  static,
   ...
 }:
-let
-  inherit (static.k8s.settings) virtualIP;
-in
 {
   networking.firewall.allowedTCPPorts = [
     config.services.kubernetes.kubelet.port
@@ -20,10 +16,10 @@ in
     ];
     unschedulable = true;
     kubeconfig = {
-      caFile = "/etc/kubernetes/pki/ca.pem";
+      caFile = clientCaFile;
       certFile = tlsCertFile;
       keyFile = tlsKeyFile;
-      server = "https://${virtualIP}";
+      server = "https://${config.services.kubernetes.apiserverAddress}";
     };
     clientCaFile = "/etc/kubernetes/pki/ca.pem";
     tlsCertFile = "/etc/kubernetes/pki/kubelet.pem";

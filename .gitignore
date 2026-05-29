@@ -6,6 +6,7 @@ result*
 **/*.txt
 **/images/**
 !index.txt
+**/secrets/test/**
 
 terraform/**/*.output.json
 terraform/**/*.show.json

@@ -1,15 +1,30 @@
 {
-  callPackage,
+  lib,
   kubectl,
   kubernetes-helm,
   writeShellScriptBin,
 }:
-{
-  check-k8s = callPackage ./check-k8s.nix { };
-  k = writeShellScriptBin "k" ''
-    ${kubectl}/bin/kubectl --kubeconfig .kube/admin.kubeconfig $@
-  '';
-  he = writeShellScriptBin "he" ''
-    ${kubernetes-helm}/bin/helm --kubeconfig .kube/admin.kubeconfig $@
-  '';
-}
+let
+  inherit (lib) mapAttrs' nameValuePair;
+  variants = {
+    production = "prod";
+    develop = "dev";
+    test = "test";
+  };
+in
+(mapAttrs' (
+  k: v:
+  nameValuePair "k-${v}" (
+    writeShellScriptBin "k.${v}" ''
+      ${kubectl}/bin/kubectl --kubeconfig ${../secrets/${k}/kubeconfig} $@
+    ''
+  )
+) variants)
+// (mapAttrs' (
+  k: v:
+  nameValuePair "helm-${v}" (
+    writeShellScriptBin "helm.${v}" ''
+      ${kubernetes-helm}/bin/helm --kubeconfig ${../secrets/${k}/kubeconfig} $@
+    ''
+  )
+) variants)

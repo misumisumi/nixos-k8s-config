@@ -1,36 +1,57 @@
 {
   lib,
-  nodeIP,
-  resourcesByRole,
-  resourcesByRoles,
+  inputs,
+  static,
+  tag,
+  modulesPath,
   ...
 }:
 let
-  etcdServers = map (r: "${r.values.name}=https://${r.values.ipv4_address}:2380") (
-    resourcesByRole "etcd" "k8s"
-  );
-  nodes = map (r: "${r.values.name} ${r.values.ipv4_address}") (
-    resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s"
-  );
+  inherit (lib)
+    concatStringsSep
+    flatten
+    imap1
+    mapAttrsToList
+    mkForce
+    ;
+  inherit (static.etcd.${tag}) nodeIP;
+
+  etcdServers = mapAttrsToList (k: v: "${k}=https://${v.nodeIP}:2380") static.etcd;
+  nodes =
+    flatten (
+      map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.k8s.${role}.nodeIPs) [
+        "controlplane"
+        "worker"
+      ]
+    )
+    ++ (mapAttrsToList (k: v: "${k} ${v.nodeIP}") static.etcd);
 in
 {
   imports = [
-    ../_init/core
-    ../autoresources.nix
+    ../share/settings
+    ./certs.nix
   ];
 
-  networking.firewall.allowedTCPPorts = [
-    2379
-    2380
-  ];
-  networking.extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
+  image.modules = mkForce {
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
+    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+  };
+
+  networking = {
+    hostName = "${tag}";
+    firewall.allowedTCPPorts = [
+      2379
+      2380
+    ];
+  };
+  networking.extraHosts = concatStringsSep "\n" nodes;
 
   services.etcd = {
     enable = true;
 
     advertiseClientUrls = [ "https://${nodeIP}:2379" ];
     initialAdvertisePeerUrls = [ "https://${nodeIP}:2380" ];
-    initialCluster = lib.mkForce etcdServers;
+    initialCluster = mkForce etcdServers;
     listenClientUrls = [
       "https://${nodeIP}:2379"
       "https://127.0.0.1:2379"
@@ -43,14 +64,14 @@ in
     clientCertAuth = true;
     peerClientCertAuth = true;
 
-    certFile = "/var/lib/secrets/etcd/server.pem";
-    keyFile = "/var/lib/secrets/etcd/server-key.pem";
+    certFile = "/etc/kubernetes/pki/etcd/server.pem";
+    keyFile = "/etc/kubernetes/pki/etcd/server-key.pem";
 
-    peerCertFile = "/var/lib/secrets/etcd/peer.pem";
-    peerKeyFile = "/var/lib/secrets/etcd/peer-key.pem";
+    peerCertFile = "/etc/kubernetes/pki/etcd/peer.pem";
+    peerKeyFile = "/etc/kubernetes/pki/etcd/peer-key.pem";
 
-    peerTrustedCaFile = "/var/lib/secrets/etcd/ca.pem";
-    trustedCaFile = "/var/lib/secrets/etcd/ca.pem";
+    peerTrustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
+    trustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
   };
 
   systemd.services.etcd = {

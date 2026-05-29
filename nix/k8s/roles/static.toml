@@ -1,19 +1,45 @@
 [k8s.settings]
 notShow = true
 serviceClusterIpRange = "10.100.0.0/16"
+apiserverAddress = "10.10.100.100"      #
 clusterCidr = "10.200.0.0/16"
 
-[nodes.etcd]
+[etcd.etcd1]
+system = "x86_64-linux"
+user = "nixos"
+nodeIP = "10.10.100.20"
+
+[etcd.etcd2]
+system = "x86_64-linux"
+user = "nixos"
+nodeIP = "10.10.100.21"
+
+[etcd.etcd3]
+system = "x86_64-linux"
+user = "nixos"
+nodeIP = "10.10.100.22"
+
+[loadbalancer.loadbalancer1]
+system = "x86_64-linux"
+user = "nixos"
+nodeIP = "10.10.100.10"
+
+[loadbalancer.loadbalancer2]
+system = "x86_64-linux"
+user = "nixos"
+nodeIP = "10.10.100.11"
+
+[loadbalancer.loadbalancer3]
+system = "x86_64-linux"
+user = "nixos"
+nodeIP = "10.10.100.12"
+
+[k8s.controlplane]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["10.10.100.30", "10.10.100.31", "10.10.100.32"]
 
-[nodes.controlplane]
-system = "x86_64-linux"
-user = "nixos"
-nodeIPs = ["10.10.100.20", "10.10.100.21", "10.10.100.22"]
-
-[nodes.worker]
+[k8s.worker]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["10.10.100.40", "10.10.100.41", "10.10.100.42"]

@@ -1,14 +1,24 @@
 {
   lib,
   config,
-  resourcesByRoles,
-  virtualIP,
+  static,
   ...
 }:
 let
-  nodes = map (
-    r: "${r.values.ipv4_address} ${builtins.head (builtins.match "^.*([0-9])" r.values.name)}"
-  ) (resourcesByRoles [ "etcd" "controlplane" "loadbalancer" "worker" ] "k8s");
+  inherit (lib)
+    flatten
+    imap1
+    mapAttrsToList
+    ;
+
+  nodes =
+    flatten (
+      map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.k8s.${role}.nodeIPs) [
+        "controlplane"
+        "worker"
+      ]
+    )
+    ++ (mapAttrsToList (k: v: "${k} ${v.nodeIP}") static.etcd);
 in
 {
   networking = {
@@ -29,25 +39,27 @@ in
   };
 
   services = {
-    kubernetes.clusterCidr = "10.200.0.0/16";
+    kubernetes = {
+      inherit (static.k8s.settings) apiserverAddress clusterCidr;
 
-    kubernetes.kubelet = rec {
-      enable = true;
-      extraOpts = lib.strings.concatStringsSep " " [
-        "--root-dir=/var/lib/kubelet"
-        "--fail-swap-on=false"
-        "--feature-gates=KubeletInUserNamespace=true"
-      ];
-      unschedulable = false;
-      kubeconfig = {
-        caFile = "/etc/kubernetes/pki/ca.pem";
-        certFile = tlsCertFile;
-        keyFile = tlsKeyFile;
-        server = "https://${virtualIP}";
+      kubelet = rec {
+        enable = true;
+        extraOpts = lib.strings.concatStringsSep " " [
+          "--root-dir=/var/lib/kubelet"
+          "--fail-swap-on=false"
+          "--feature-gates=KubeletInUserNamespace=true"
+        ];
+        unschedulable = false;
+        kubeconfig = {
+          caFile = clientCaFile;
+          certFile = tlsCertFile;
+          keyFile = tlsKeyFile;
+          server = "https://${config.services.kubernetes.apiserverAddress}";
+        };
+        clientCaFile = "/etc/kubernetes/pki/ca.pem";
+        tlsCertFile = "/etc/kubernetes/pki/kubelet.pem";
+        tlsKeyFile = "/etc/kubernetes/pki/kubelet-key.pem";
       };
-      clientCaFile = "/etc/kubernetes/pki/ca.pem";
-      tlsCertFile = "/etc/kubernetes/pki/kubelet.pem";
-      tlsKeyFile = "/etc/kubernetes/pki/kubelet-key.pem";
     };
   };
 }

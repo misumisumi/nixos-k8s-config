@@ -1,9 +1,9 @@
 {
-  static,
+  config,
   ...
 }:
 let
-  inherit (static.k8s.settings) virtualIP;
+  inherit (config.services.kubernetes) apiserverAddress;
 in
 {
   services.kubernetes.scheduler = {
@@ -12,7 +12,7 @@ in
       caFile = "/etc/kubernetes/pki/ca.pem";
       certFile = "/etc/kubernetes/pki/scheduler.pem";
       keyFile = "/etc/kubernetes/pki/scheduler-key.pem";
-      server = "https://${virtualIP}";
+      server = "https://${apiserverAddress}";
     };
   };
 }

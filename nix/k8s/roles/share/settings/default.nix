@@ -5,6 +5,5 @@
     ./network.nix
     ./system.nix
     ./security.nix
-    ./ssh.nix
   ];
 }

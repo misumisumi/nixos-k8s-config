@@ -41,7 +41,6 @@
       [
         inputs.nur.overlays.default
         inputs.flakes.overlays.default
-        inputs.nixos-linstor.overlays.default
         (import ../../../patches { inherit nixpkgs-unstable; })
       ];
     config = {

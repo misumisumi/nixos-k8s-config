@@ -1,6 +1,28 @@
-{ secretPath, ... }:
+{ pkgs, secretPath, ... }:
 {
+  systemd.services."copy-kubelet-certs" = {
+    requiredBy = [ "kubelet.service" ];
+    before = [ "kubelet.service" ];
+    script = ''
+      cp /etc/kubernetes/pki/controlplanes/$(${pkgs.hostname}/bin/hostname)-chain.pem /etc/kubernetes/pki/kubelet.pem
+      cp /etc/kubernetes/pki/controlplanes/$(${pkgs.hostname}/bin/hostname)-key.pem /etc/kubernetes/pki/kubelet-key.pem
+    '';
+  };
   system.build.extraContents = [
+    {
+      source = secretPath + "/pki/RootCA/ca.pem";
+      target = "/etc/kubernetes/pki/ca.pem";
+      user = "root";
+      group = "root";
+      mode = "0644";
+    }
+    {
+      source = secretPath + "/pki/kubernetes/controlplanes";
+      target = "/etc/kubernetes/pki/controlplanes";
+      user = "root";
+      group = "root";
+      mode = "0700";
+    }
     {
       source = secretPath + "/pki/kubernetes/apiserver-chain.pem";
       target = "/etc/kubernetes/pki/apiserver.pem";
@@ -30,8 +52,29 @@
       mode = "0600";
     }
     {
+      source = secretPath + "/pki/etcd/apiserver-etcd-client-chain.pem";
+      target = "/etc/kubernetes/pki/apiserver-etcd-client.pem";
+      user = "root";
+      group = "root";
+      mode = "0644";
+    }
+    {
+      source = secretPath + "/pki/etcd/apiserver-etcd-client-key.pem";
+      target = "/etc/kubernetes/pki/apiserver-etcd-client-key.pem";
+      user = "root";
+      group = "root";
+      mode = "0600";
+    }
+    {
+      source = secretPath + "/pki/RootCA/ca.pem";
+      target = "/etc/kubernetes/pki/etcd/ca.pem";
+      user = "root";
+      group = "root";
+      mode = "0644";
+    }
+    {
       source = secretPath + "/pki/kubernetes/controller-manager-chain.pem";
-      target = "/etc/kubernetes/pki/controller-manager-chain.pem";
+      target = "/etc/kubernetes/pki/controller-manager.pem";
       user = "root";
       group = "root";
       mode = "0644";
@@ -53,20 +96,6 @@
     {
       source = secretPath + "/pki/kubernetes/coredns-key.pem";
       target = "/etc/kubernetes/pki/coredns-key.pem";
-      user = "root";
-      group = "root";
-      mode = "0600";
-    }
-    {
-      source = secretPath + "/pki/kubernetes/kubelet-chain.pem";
-      target = "/etc/kubernetes/pki/kubelet.pem";
-      user = "root";
-      group = "root";
-      mode = "0644";
-    }
-    {
-      source = secretPath + "/pki/kubernetes/kubelet-key.pem";
-      target = "/etc/kubernetes/pki/kubelet-key.pem";
       user = "root";
       group = "root";
       mode = "0600";

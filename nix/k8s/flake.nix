@@ -70,8 +70,6 @@
           ...
         }:
         let
-          inherit (import ./lib.nix) mkApp;
-          myScripts = pkgs.callPackage (import ./scripts) { };
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
             config = {
@@ -88,75 +86,87 @@
             ];
             config.allowUnfree = true;
           };
-          apps = with myScripts; {
-            # mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "eval"; }; };
-            # mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
-            genca = mkApp { drv = pkgs.callPackage ./secrets/production/pki/genca.nix { }; };
-            gencerts-dev = mkApp {
-              drv = (pkgs.callPackage ./secrets/production/pki/gencerts.nix { }).develop;
-            };
-            k = mkApp { drv = k; };
-            mkimg4lxc = mkApp { drv = mkimg4lxc; };
-            deploy = mkApp { drv = deploy; };
+          # apps = with myScripts; {
+          #   # mkcerts4dev = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "eval"; }; };
+          #   # mkcerts4prod = mkApp { drv = pkgs.callPackage (import ./scripts/certs) { ws = "production"; }; };
+          #   genca = mkApp { drv = pkgs.callPackage ./secrets/production/pki/genca.nix { }; };
+          #   gencerts-dev = mkApp {
+          #     drv = (pkgs.callPackage ./secrets/production/pki/gencerts.nix { }).develop;
+          #   };
+          #   k = mkApp { drv = k; };
+          #   mkimg4lxc = mkApp { drv = mkimg4lxc; };
+          # };
+          packages = {
+            inherit (pkgs.callPackage ./scripts/gencerts.nix { }) gencerts-dev gencerts-prod gencerts-test;
+            inherit (pkgs.callPackage ./scripts/default.nix { })
+              k-dev
+              k-prod
+              k-test
+              helm-dev
+              helm-prod
+              helm-test
+              ;
+            genca = pkgs.callPackage ./scripts/genca.nix { };
+            genkubeconfig = pkgs.callPackage ./scripts/genkubeconfig.nix { };
           };
-          devshells.default = {
-            commands = [
-              {
-                help = "disko";
-                name = "disko";
-                command = ''
-                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
-                '';
-              }
-              {
-                help = "nixos-anywhere";
-                name = "nixos-anywhere";
-                command = ''
-                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
-                '';
-              }
-            ];
-            packages =
-              with pkgs;
-              with myScripts;
-              [
-                bashInteractive
-                # software for deployment
-                age
-                btrfs-progs
-                colmena
-                dig
-                graphviz
-                hcl2json
-                hdparm
-                inetutils
-                jq
-                libxslt
-                sops
-                squashfsTools
-                tcpdump
-                nixos-generators
+          # devshells.default = {
+          #   commands = [
+          #     {
+          #       help = "disko";
+          #       name = "disko";
+          #       command = ''
+          #         ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
+          #       '';
+          #     }
+          #     {
+          #       help = "nixos-anywhere";
+          #       name = "nixos-anywhere";
+          #       command = ''
+          #         ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
+          #       '';
+          #     }
+          #   ];
+          #   packages =
+          #     with pkgs;
+          #     with myScripts;
+          #     [
+          #       bashInteractive
+          #       # software for deployment
+          #       age
+          #       btrfs-progs
+          #       colmena
+          #       dig
+          #       graphviz
+          #       hcl2json
+          #       hdparm
+          #       inetutils
+          #       jq
+          #       libxslt
+          #       sops
+          #       squashfsTools
+          #       tcpdump
+          #       nixos-generators
 
-                # software for managing cluster
-                argocd
-                etcd
-                kubectl
+          #       # software for managing cluster
+          #       argocd
+          #       etcd
+          #       kubectl
 
-                # scripts
-                # add-remote-incus
-                # check-k8s
-                # check-disk-size
-                # copy-img2incus
-                # deploy
-                # init-incus
-                # init-remote-incus
-                # k
-                # mkage4instance
-                # mkage4mgr
-                # mkimg4incus
-                # mksshhostkeys
-              ];
-          };
+          #       # scripts
+          #       # add-remote-incus
+          #       # check-k8s
+          #       # check-disk-size
+          #       # copy-img2incus
+          #       # deploy
+          #       # init-incus
+          #       # init-remote-incus
+          #       # k
+          #       # mkage4instance
+          #       # mkage4mgr
+          #       # mkimg4incus
+          #       # mksshhostkeys
+          #     ];
+          # };
         };
     };
 }
