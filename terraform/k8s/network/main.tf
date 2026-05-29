@@ -1,9 +1,9 @@
 terraform {
-  required_version = "~> 1.8.5"
+  required_version = "~> 1.10.0"
   required_providers {
     incus = {
       source  = "registry.opentofu.org/lxc/incus"
-      version = "~> 0.1.4"
+      version = "~> 1.0.0"
     }
   }
 }
@@ -16,7 +16,7 @@ provider "incus" {
     content {
       name    = incus_remote.value.name
       address = incus_remote.value.address
-      
+
     }
   }
 }
@@ -33,4 +33,3 @@ resource "incus_network" "incus_network" {
   project  = each.value.project
   config   = each.value.config
 }
-

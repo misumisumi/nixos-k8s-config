@@ -1,8 +1,9 @@
 terraform {
+  required_version = "~> 1.10.0"
   required_providers {
     incus = {
       source  = "registry.opentofu.org/lxc/incus"
-      version = "~> 0.1.4"
+      version = "~> 1.0.0"
     }
   }
 }
@@ -15,7 +16,7 @@ provider "incus" {
     content {
       name    = incus_remote.value.name
       address = incus_remote.value.address
-      
+
     }
   }
 }
@@ -27,7 +28,7 @@ resource "terraform_data" "workspace" {
 
 module "pools" {
   for_each = { for i in var.compornents : i.remote => i }
-  source   = "../modules/pool"
+  source   = "../../modules/pool"
 
   remote  = each.value.remote
   project = each.value.project
@@ -36,7 +37,7 @@ module "pools" {
 
 module "volumes" {
   for_each = { for i in var.compornents : i.remote => i }
-  source   = "../modules/volume"
+  source   = "../../modules/volume"
 
   remote  = each.value.remote
   project = each.value.project

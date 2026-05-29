@@ -13,31 +13,40 @@ variable "compornents" {
     object({
       remote  = optional(string, "local")
       project = optional(string)
-      profiles = set(
+      profiles = optional(set(
         object({
-          tag        = string
+          name       = string
           auto_start = optional(bool, true)
           remote     = optional(string, "local")
           config     = optional(map(any))
           root_pool  = optional(string, "default")
           root_size  = optional(string, "8GiB")
         })
-      )
+      ), [])
       instances = set(
         object({
           name         = string
           remote       = optional(string, "local")
           image        = optional(string, null)
+          running      = optional(bool, true)
           machine_type = optional(string, "container")
           config       = optional(map(any), {})
-          limits = optional(map(any), {
-            cpu    = 2
-            memory = "1GB"
+          profiles     = optional(list(any), [])
+          cloudinit = optional(object({
+            template_file = string
+            sops_file     = optional(string, "")
+            hosts_file    = optional(string, "")
+            vars          = optional(map(any), {})
+            }), {
+            template_file = ""
           })
-          network_config = optional(map(any), {
-            parent = "incusbr0"
-          })
-          devices = optional(set(
+
+          networks = optional(list(map(any)), [{
+            parent  = "incusbr0"
+            nictype = "bridged"
+          }])
+
+          devices = optional(list(
             object({
               name       = string
               type       = string
