@@ -7,10 +7,11 @@
 let
   cfg = config.services.diskless.kexec;
   inherit (lib)
-    types
+    mkEnableOption
+    mkForce
     mkIf
     mkOption
-    mkEnableOption
+    types
     ;
 
 in
@@ -77,9 +78,25 @@ in
           '';
         }
       ];
-      environment.systemPackages = [
-        bounce
-      ];
+      system.tools = {
+        nixos-build-vms.enable = false;
+        nixos-enter.enable = false;
+        nixos-generate-config.enable = false;
+        nixos-install.enable = false;
+        nixos-option.enable = false;
+        nixos-rebuild.enable = false;
+      };
+      programs.nano.enable = false;
+      fonts = {
+        fontconfig.enable = false;
+        enableDefaultPackages = false;
+      };
+      environment = {
+        defaultPackages = mkForce [ ];
+        systemPackages = [
+          bounce
+        ];
+      };
       systemd.services."auto-bounce" = {
         inherit (cfg.service) enable;
         description = "Fetch and kexec for live booting diskless system";
