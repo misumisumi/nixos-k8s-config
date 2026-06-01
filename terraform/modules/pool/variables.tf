@@ -9,11 +9,12 @@ variable "project" {
 }
 
 variable "pools" {
-  type = set(
+  type = list(
     object(
       {
         name   = string
-        config = map(any)
+        driver = optional(string, "btrfs")
+        config = optional(map(any), {})
       }
     )
   )

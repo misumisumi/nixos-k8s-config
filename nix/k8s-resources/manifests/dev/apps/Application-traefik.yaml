@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  destination:
+    namespace: traefik
+    server: https:/10.10.100.100
+  project: default
+  source:
+    path: ./manifests/dev/traefik
+    repoURL: https://github.com/misumisumi/ProjectQueentet-manufests.git
+    targetRevision: develop
+  syncPolicy: {}

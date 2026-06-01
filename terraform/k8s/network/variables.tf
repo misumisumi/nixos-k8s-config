@@ -1,5 +1,5 @@
 variable "remote_hosts" {
-  type = set(
+  type = list(
     object({
       name    = optional(string, null)
       address = optional(string, null)
@@ -11,8 +11,8 @@ variable "remote_hosts" {
 variable "networks" {
   type = map(object({
     project = optional(string, null)
-    remote = optional(string, null)
-    config = map(any)
+    remote  = optional(string, null)
+    config  = map(any)
   }))
   description = "Network configs"
 }

@@ -21,7 +21,7 @@ in
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"
-        ./hostname.tpl.nix
+        ../share/virtual-machine/hostname.tpl.nix
       ];
     };
   };

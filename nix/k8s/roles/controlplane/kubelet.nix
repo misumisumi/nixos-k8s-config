@@ -13,6 +13,7 @@
     extraOpts = lib.strings.concatStringsSep " " [
       "--fail-swap-on=false"
       "--feature-gates=KubeletInUserNamespace=true"
+      "--node-labels=node-role.kubernetes.io/control-plane="
     ];
     unschedulable = true;
     kubeconfig = {

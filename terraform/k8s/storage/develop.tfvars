@@ -6,7 +6,7 @@ compornents = [
       {
         name = "instances"
         config = {
-          size = "32GiB"
+          size = "64GiB"
         }
       },
       {
@@ -16,9 +16,11 @@ compornents = [
         }
       },
       {
-        name = "etcd"
+        name   = "etcd"
+        driver = "dir"
         config = {
-          size = "6GiB"
+          source = "/var/lib/nocow/"
+          # source = "/tmp/incus"
         }
       },
     ]
@@ -26,23 +28,14 @@ compornents = [
       {
         name = "etcd1"
         pool = "etcd"
-        config = {
-          size = "2GiB"
-        }
       },
       {
         name = "etcd2"
         pool = "etcd"
-        config = {
-          size = "2GiB"
-        }
       },
       {
         name = "etcd3"
         pool = "etcd"
-        config = {
-          size = "2GiB"
-        }
       }
     ]
   }

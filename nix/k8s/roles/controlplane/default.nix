@@ -18,7 +18,12 @@ in
     ./scheduler.nix
   ];
   image.modules = mkForce {
-    lxc = inputs.homelab-modules.nixosModules.lxc-container;
-    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+    inherit (inputs.homelab-modules.nixosModules) incus-vm;
+    lxc-metadata = {
+      imports = [
+        "${modulesPath}/virtualisation/lxc-image-metadata.nix"
+        ../share/virtual-machine/hostname.tpl.nix
+      ];
+    };
   };
 }

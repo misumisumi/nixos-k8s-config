@@ -9,7 +9,7 @@ variable "project" {
 }
 
 variable "profiles" {
-  type = set(
+  type = list(
     object({
       name       = string
       auto_start = optional(bool, true)
@@ -30,7 +30,7 @@ variable "profiles" {
 }
 
 variable "instances" {
-  type = set(
+  type = list(
     object({
       name          = string
       image         = optional(string, null)

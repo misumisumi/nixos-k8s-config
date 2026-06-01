@@ -1,5 +1,5 @@
 variable "remote_hosts" {
-  type = set(
+  type = list(
     object({
       name    = optional(string, null)
       address = optional(string, null)
@@ -9,11 +9,11 @@ variable "remote_hosts" {
 }
 
 variable "compornents" {
-  type = set(
+  type = list(
     object({
       remote  = optional(string, "local")
       project = optional(string)
-      profiles = optional(set(
+      profiles = optional(list(
         object({
           name       = string
           auto_start = optional(bool, true)
@@ -23,7 +23,7 @@ variable "compornents" {
           root_size  = optional(string, "8GiB")
         })
       ), [])
-      instances = set(
+      instances = list(
         object({
           name         = string
           remote       = optional(string, "local")

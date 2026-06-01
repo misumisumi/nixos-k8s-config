@@ -12,6 +12,7 @@ let
   etcdServers = imap1 (i: ip: "etcd${toString i}=https://${ip}:2380") static.nodes.etcd.nodeIPs;
 
   conf = {
+    name = "{{ container.name }}";
     advertise-client-urls = "https://{{ devices.eth0['ipv4.address'] }}:2379";
     initial-advertise-peer-urls = "https://{{ devices.eth0['ipv4.address'] }}:2380";
     initial-cluster = concatStringsSep "," etcdServers;

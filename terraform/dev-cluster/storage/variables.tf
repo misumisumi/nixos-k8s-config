@@ -1,5 +1,5 @@
 variable "remote_hosts" {
-  type = set(
+  type = list(
     object({
       name    = optional(string, null)
       address = optional(string, null)
@@ -9,17 +9,17 @@ variable "remote_hosts" {
 }
 
 variable "compornents" {
-  type = set(
+  type = list(
     object(
       {
         remote  = optional(string, "local")
         project = optional(string, null)
-        pools = set(object({
+        pools = list(object({
           name   = string
           driver = optional(string, "btrfs")
           config = map(any)
         }))
-        volumes = set(object({
+        volumes = list(object({
           name         = string
           pool         = string
           content_type = optional(string, null)

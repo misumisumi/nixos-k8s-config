@@ -25,12 +25,17 @@ let
   etcd =
     static:
     let
-      nodes = flatten (
-        imap1 (i: ip: [
-          "etcd${toString i}"
-          "${ip}"
-        ]) static.nodes.etcd.nodeIPs
-      );
+      nodes =
+        roles:
+        flatten (
+          map (
+            role:
+            imap1 (i: ip: [
+              "${role}${toString i}"
+              "${ip}"
+            ]) static.nodes.${role}.nodeIPs
+          ) roles
+        );
     in
     {
       server = {
@@ -42,7 +47,7 @@ let
             "localhost"
             "127.0.0.1"
           ]
-          ++ nodes;
+          ++ (nodes [ "etcd" ]);
         };
       };
       healthcheck-client = {
@@ -68,7 +73,11 @@ let
             "localhost"
             "127.0.0.1"
           ]
-          ++ nodes;
+          ++ nodes [
+            "etcd"
+            # "controlplane"
+            # "worker"
+          ];
         };
       };
     };
@@ -141,11 +150,15 @@ let
       };
     };
   };
-  kubeletCsr = hostname: {
+  kubeletCsr = hostname: nodeIP: {
     profile = "both";
     csr = mkCsr {
       CN = "system:node:${hostname}";
       O = "system:nodes";
+      hosts = [
+        hostname
+        nodeIP
+      ];
     };
   };
   script =
@@ -203,9 +216,9 @@ let
       pushd $NODES_DIR > /dev/null
       ${concatStringsSep "\n" (
         imap1 (
-          i: _:
+          i: nodeIP:
           let
-            conf = kubeletCsr "controlplane${toString i}";
+            conf = kubeletCsr "controlplane${toString i}" nodeIP;
           in
           "genCert controlplane${toString i} ${conf.profile} ${conf.csr} kubernetes"
         ) static.nodes.controlplane.nodeIPs
@@ -216,9 +229,9 @@ let
       pushd $NODES_DIR > /dev/null
       ${concatStringsSep "\n" (
         imap1 (
-          i: _:
+          i: nodeIP:
           let
-            conf = kubeletCsr "worker${toString i}";
+            conf = kubeletCsr "worker${toString i}" nodeIP;
           in
           "genCert worker${toString i} ${conf.profile} ${conf.csr} kubernetes"
         ) static.nodes.worker.nodeIPs

@@ -46,30 +46,6 @@ in
 
   services.etcd = {
     enable = true;
-
-    # advertiseClientUrls = [ "https://${nodeIP}:2379" ];
-    # initialAdvertisePeerUrls = [ "https://${nodeIP}:2380" ];
-    # initialCluster = mkForce etcdServers;
-    # listenClientUrls = [
-    #   "https://${nodeIP}:2379"
-    #   "https://127.0.0.1:2379"
-    # ];
-    # listenPeerUrls = [
-    #   "https://${nodeIP}:2380"
-    #   "https://127.0.0.1:2380"
-    # ];
-
-    # clientCertAuth = true;
-    # peerClientCertAuth = true;
-
-    # certFile = "/etc/kubernetes/pki/etcd/server.pem";
-    # keyFile = "/etc/kubernetes/pki/etcd/server-key.pem";
-
-    # peerCertFile = "/etc/kubernetes/pki/etcd/peer.pem";
-    # peerKeyFile = "/etc/kubernetes/pki/etcd/peer-key.pem";
-
-    # peerTrustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
-    # trustedCaFile = "/etc/kubernetes/pki/etcd/ca.pem";
     extraConf = {
       CONFIG_FILE = "/etc/etcd.conf";
     };

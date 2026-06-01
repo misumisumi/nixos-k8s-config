@@ -11,6 +11,6 @@ resource "incus_storage_pool" "pool" {
   remote   = var.remote
   project  = var.project
   name     = each.value.name
-  driver   = lookup(each.value, "driver", "btrfs")
+  driver   = each.value.driver
   config   = each.value.config
 }

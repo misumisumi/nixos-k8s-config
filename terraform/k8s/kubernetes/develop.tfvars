@@ -5,10 +5,18 @@ compornents = [
       {
         name      = "controlplane"
         root_pool = "instances"
+        config = {
+          "limits.cpu"    = "2"
+          "limits.memory" = "4GB"
+        }
       },
       {
         name      = "etcd"
         root_pool = "instances"
+        config = {
+          "limits.cpu"    = "2"
+          "limits.memory" = "4GB"
+        }
       },
       {
         name      = "loadbalancer"
@@ -17,6 +25,10 @@ compornents = [
       {
         name      = "worker"
         root_pool = "instances"
+        config = {
+          "limits.cpu"    = "4"
+          "limits.memory" = "8GB"
+        }
       },
     ]
     instances = [
@@ -129,9 +141,10 @@ compornents = [
         ]
       },
       {
-        name     = "controlplane1"
-        image    = "dev/nodes/controlplane"
-        profiles = ["controlplane"]
+        name         = "controlplane1"
+        image        = "dev/nodes/controlplane"
+        machine_type = "virtual-machine"
+        profiles     = ["controlplane"]
         networks = [
           {
             parent         = "dev-k8s-net"
@@ -141,9 +154,10 @@ compornents = [
         ]
       },
       {
-        name     = "controlplane2"
-        image    = "dev/nodes/controlplane"
-        profiles = ["controlplane"]
+        name         = "controlplane2"
+        image        = "dev/nodes/controlplane"
+        machine_type = "virtual-machine"
+        profiles     = ["controlplane"]
         networks = [
           {
             parent         = "dev-k8s-net"
@@ -153,9 +167,10 @@ compornents = [
         ]
       },
       {
-        name     = "controlplane3"
-        image    = "dev/nodes/controlplane"
-        profiles = ["controlplane"]
+        name         = "controlplane3"
+        image        = "dev/nodes/controlplane"
+        machine_type = "virtual-machine"
+        profiles     = ["controlplane"]
         networks = [
           {
             parent         = "dev-k8s-net"

@@ -21,7 +21,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixidy = {
-      url = "github:arnarg/nixidy";
+      # url = "github:arnarg/nixidy";
+      url = "path:/home/sumi/Workspace/nix/server/nixidy";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixhelm = {
+      url = "github:farcaller/nixhelm";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -31,6 +36,7 @@
       self,
       flake-parts,
       nixidy,
+      nixhelm,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -60,20 +66,34 @@
           };
 
           # Make nixidy CLI available
-          packages.nixidy = nixidy.packages.${system}.default;
+          packages = {
+            nixidy-dev = pkgs.writeShellScriptBin "nixidy.dev" ''
+              export KUBECONFIG=${./env/dev/kubeconfig}
+              ${nixidy.packages.${system}.default}/bin/nixidy $@
+            '';
+            nixidy-prod = pkgs.writeShellScriptBin "nixidy.prod" ''
+              export KUBECONFIG=${./env/prod/kubeconfig}
+              ${nixidy.packages.${system}.default}/bin/nixidy $@
+            '';
+          };
           legacyPackages = {
             nixidyEnvs.${system} = nixidy.lib.mkEnvs {
               inherit pkgs;
+              charts = nixhelm.chartsDerivations.${system};
 
-              # envs = {
-              #   dev.modules = [ ./env/dev.nix ];
-              # };
+              modules = [ ./modules ];
+              envs = {
+                dev.modules = [ ./env/dev ];
+              };
             };
           };
 
           # Development shell with nixidy
           devshells.default = {
-            packages = [ self.packages.nixidy ];
+            packages = [
+              self.packages.nixidy-dev
+              self.packages.nixidy-prod
+            ];
           };
         };
     };

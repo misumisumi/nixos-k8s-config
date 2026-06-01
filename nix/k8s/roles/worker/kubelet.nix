@@ -46,6 +46,7 @@ in
           "--root-dir=/var/lib/kubelet"
           "--fail-swap-on=false"
           "--feature-gates=KubeletInUserNamespace=true"
+          "--node-labels=node-role.kubernetes.io/worker="
         ];
         unschedulable = false;
         kubeconfig = {

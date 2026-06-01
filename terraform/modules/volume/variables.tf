@@ -9,7 +9,7 @@ variable "project" {
 }
 
 variable "volumes" {
-  type = set(
+  type = list(
     object(
       {
         name         = optional(string, null)
