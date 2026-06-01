@@ -2,10 +2,11 @@
   lib,
   writeShellScriptBin,
   jq,
+  envsubst,
   ...
 }:
 let
-  inherit (builtins) toJSON pathExists;
+  inherit (builtins) getEnv toJSON pathExists;
   inherit (lib)
     concatStringsSep
     importTOML
@@ -19,23 +20,6 @@ let
   };
   kubeconfig =
     variant: serverIP: extraConf:
-    let
-      rootCA =
-        if pathExists ../secrets/${variant}/pki/RootCA/ca.pem then
-          ../secrets/${variant}/pki/RootCA/ca.pem
-        else
-          "";
-      clientCert =
-        if pathExists ../secrets/${variant}/pki/kubernetes/admin-chain.pem then
-          ../secrets/${variant}/pki/kubernetes/admin-chain.pem
-        else
-          "";
-      clientKey =
-        if pathExists ../secrets/${variant}/pki/kubernetes/admin-key.pem then
-          ../secrets/${variant}/pki/kubernetes/admin-key.pem
-        else
-          "";
-    in
     {
       apiVersion = "v1";
       kind = "Config";
@@ -44,7 +28,7 @@ let
         {
           name = variant;
           cluster = {
-            certificate-authority = rootCA;
+            certificate-authority = "$PROJ_ROOT/nix/k8s/secrets/${variant}/pki/RootCA/ca.pem";
             server = "https://${serverIP}";
           };
         }
@@ -62,24 +46,29 @@ let
         {
           name = "user";
           user = {
-            client-certificate = clientCert;
-            client-key = clientKey;
+            client-certificate = "$PROJ_ROOT/nix/k8s/secrets/${variant}/pki/kubernetes/admin-chain.pem";
+            client-key = "$PROJ_ROOT/nix/k8s/secrets/${variant}/pki/kubernetes/admin-key.pem";
           };
         }
       ];
     }
     // extraConf;
 in
+# ${pkgs.envsubst}/bin/envsubst -i "${keepalivedConf}" > ${finalConfigFile}
 writeShellScriptBin "genkubeconfig" ''
-  ROOTDIR=''${FLAKE_ROOT:-$PWD}
+  PROJ_ROOT=''${FLAKE_ROOT:-$PWD}
+  echo "Output kubeconfigs under $PROJ_ROOT"
+
   ${concatStringsSep "\n" (
     mapAttrsToList (k: v: ''
-      OUTFILE="$ROOTDIR/nix/k8s/secrets/${k}/kubeconfig"
+      OUTFILE="$PROJ_ROOT/nix/k8s/secrets/${k}/kubeconfig"
       [ -f "$OUTFILE" ] && rm "$OUTFILE"
       mkdir -p "$(dirname $OUTFILE)"
-      ${jq}/bin/jq <<EOF > "$OUTFILE"
+      tmpFile=$(mktemp)
+      ${jq}/bin/jq <<EOF > "$tmpFile"
       ${toJSON (kubeconfig k v.apiserverAddress (v.extraKubeConfig or { }))}
       EOF
+      ${envsubst}/bin/envsubst -i "$tmpFile" > "$OUTFILE"
     '') variants
   )}
 ''
