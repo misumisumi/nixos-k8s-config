@@ -5,7 +5,7 @@
 }:
 let
   inherit (lib) concatStringsSep singleton;
-  inherit (static.k8s.settings) apiserverAddress serviceClusterIpRange;
+  inherit (static.k8s.settings) serviceClusterIpRange;
   etcdServers = map (ip: "https://${ip}:2379") static.nodes.etcd.nodeIPs;
 
   corednsPolicies =
@@ -41,7 +41,6 @@ in
 {
   networking.firewall.allowedTCPPorts = [ 6443 ];
   services.kubernetes = {
-    inherit apiserverAddress;
     apiserver = {
       enable = true;
       allowPrivileged = true;

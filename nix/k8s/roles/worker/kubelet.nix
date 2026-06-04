@@ -1,26 +1,10 @@
 {
   lib,
   config,
-  static,
   ...
 }:
-let
-  inherit (lib)
-    flatten
-    imap1
-    ;
-
-  nodes = flatten (
-    map (role: imap1 (i: ip: "${role}${toString i} ${ip}") static.nodes.${role}.nodeIPs) [
-      "controlplane"
-      "etcd"
-      "worker"
-    ]
-  );
-in
 {
   networking = {
-    extraHosts = lib.strings.concatMapStrings (x: x + "\n") nodes;
     firewall.allowedTCPPorts = [
       config.services.kubernetes.kubelet.port
       7946 # metallb
@@ -38,15 +22,11 @@ in
 
   services = {
     kubernetes = {
-      inherit (static.k8s.settings) apiserverAddress clusterCidr;
-
       kubelet = rec {
         enable = true;
         extraOpts = lib.strings.concatStringsSep " " [
           "--root-dir=/var/lib/kubelet"
           "--fail-swap-on=false"
-          "--feature-gates=KubeletInUserNamespace=true"
-          "--node-labels=node-role.kubernetes.io/worker="
         ];
         unschedulable = false;
         kubeconfig = {

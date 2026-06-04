@@ -4,8 +4,8 @@
     requiredBy = [ "kubelet.service" ];
     before = [ "kubelet.service" ];
     script = ''
-      rsync --chmod=0644 /etc/kubernetes/pki/controlplanes/$(${pkgs.hostname}/bin/hostname)-chain.pem /etc/kubernetes/pki/kubelet.pem
-      rsync --chmod=0600 /etc/kubernetes/pki/controlplanes/$(${pkgs.hostname}/bin/hostname)-key.pem /etc/kubernetes/pki/kubelet-key.pem
+      ${pkgs.rsync}/bin/rsync --chmod=644 /etc/kubernetes/pki/controlplanes/$(${pkgs.hostname}/bin/hostname)-chain.pem /etc/kubernetes/pki/kubelet.pem
+      ${pkgs.rsync}/bin/rsync --chmod=600 /etc/kubernetes/pki/controlplanes/$(${pkgs.hostname}/bin/hostname)-key.pem /etc/kubernetes/pki/kubelet-key.pem
     '';
   };
   system.build.extraContents = [

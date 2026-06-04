@@ -12,8 +12,8 @@ in
     ../share/k8s
     ../share/settings
     ./ceph.nix
-    ./kubelet.nix
     ./certs.nix
+    ./kubelet.nix
   ];
 
   image.modules = mkForce {

@@ -1,11 +1,15 @@
 { lib, static, ... }:
 let
   inherit (lib)
+    concatStringsSep
     flatten
     imap1
-    concatStringsSep
+    mkDefault
+    splitString
+    take
+    mkForce
     ;
-  inherit (static.k8s.settings) clusterCidr;
+  inherit (static.k8s.settings) serviceClusterIpRange;
 
   nodes = flatten (
     map (role: imap1 (i: ip: "${ip} ${role}${toString i}") static.nodes.${role}.nodeIPs) [
@@ -16,10 +20,44 @@ let
   );
 in
 {
-  services.kubernetes.clusterCidr = clusterCidr;
-  networking.extraHosts = ''
-    ${concatStringsSep "\n" nodes}
-  '';
+  services = {
+    kubernetes = {
+      #NOTE: CoreDNS install using nixidy
+      addons.dns.enable = false;
+      inherit (static.k8s.settings) apiserverAddress clusterCidr;
+      apiserver.serviceClusterIpRange = serviceClusterIpRange;
+      kubelet.clusterDns = mkDefault [
+        "${concatStringsSep "." ((take 3 (splitString "." serviceClusterIpRange)) ++ [ "254" ])}"
+      ];
+    };
+    resolved = {
+      enable = true;
+      settings.Resolve = {
+        DNSStubListener = false;
+        FallbackDNS = [
+          "1.1.1.1"
+          "2606:4700:4700::1111"
+          "8.8.8.8"
+          "2001:4860:4860::8888"
+        ];
+      };
+    };
+  };
+  networking = {
+    firewall = {
+      checkReversePath = "loose";
+      #NOTE: for cilium
+      trustedInterfaces = [
+        "cilium_host"
+        "cilium_net"
+        "cilium_vxlan"
+        "lxc+"
+      ];
+    };
+    extraHosts = ''
+      ${concatStringsSep "\n" nodes}
+    '';
+  };
   # rootless環境でのkubernetesの実行
   # INFO: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns
   virtualisation.containerd = {
@@ -40,8 +78,11 @@ in
       };
     };
   };
-  services.kubernetes.addons.dns = {
-    enable = true;
-    replicas = 3;
-  };
+  # services.kubernetes = {
+  #   addonManager.enable = true;
+  #   addons.dns = {
+  #     enable = true;
+  #     replicas = 2;
+  #   };
+  # };
 }

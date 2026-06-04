@@ -104,7 +104,7 @@ let
           ++ [
             "${static.k8s.settings.apiserverAddress}"
             "${concatStringsSep "." (
-              (take 3 (splitString "." static.k8s.settings.serviceClusterIpRange)) ++ [ ".1" ]
+              (take 3 (splitString "." static.k8s.settings.serviceClusterIpRange)) ++ [ "1" ]
             )}"
             "kubernetes"
             "kubernetes.default"
@@ -114,7 +114,6 @@ let
           ];
       };
     };
-    # kubelet.conf からクライアント証明書を抽出し、CN を確認
     apiserver-kubelet-client = {
       profile = "client";
       csr = mkCsr {
