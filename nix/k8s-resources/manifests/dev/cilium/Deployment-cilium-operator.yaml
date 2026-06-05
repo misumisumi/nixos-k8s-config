@@ -105,6 +105,12 @@ spec:
             - mountPath: /tmp/cilium/config-map
               name: cilium-config-path
               readOnly: true
+            - mountPath: /var/lib/etcd-config
+              name: etcd-config-path
+              readOnly: true
+            - mountPath: /var/lib/etcd-secrets
+              name: etcd-secrets
+              readOnly: true
       hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
@@ -129,3 +135,15 @@ spec:
         - configMap:
             name: cilium-config
           name: cilium-config-path
+        - configMap:
+            defaultMode: 256
+            items:
+              - key: etcd-config
+                path: etcd.config
+            name: cilium-config
+          name: etcd-config-path
+        - name: etcd-secrets
+          secret:
+            defaultMode: 256
+            optional: true
+            secretName: cilium-etcd-secrets

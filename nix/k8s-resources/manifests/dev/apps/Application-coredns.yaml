@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coredns
+  namespace: argocd
+spec:
+  destination:
+    namespace: kube-system
+    server: https:/10.10.100.100
+  project: default
+  source:
+    path: ./manifests/dev/coredns
+    repoURL: https://github.com/misumisumi/ProjectQueentet-manufests.git
+    targetRevision: develop
+  syncPolicy: {}

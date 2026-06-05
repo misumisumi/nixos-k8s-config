@@ -6,18 +6,14 @@
   applications.cilium = {
     namespace = "kube-system";
 
-    helm.releases.traefik = {
+    helm.releases.cilium = {
       chart = charts.cilium.cilium;
 
       values = {
-        kubeProxyReplacement = "true";
+        kubeProxyReplacement = true;
         k8sServiceHost = "10.10.100.100";
         k8sServicePort = 443;
         # bgpControlPlane.enabled = true;
-        ingressController = {
-          enabled = true;
-          loadbalancerMode = "shared";
-        };
         identityAllocationMode = "kvstore";
         etcd = {
           enabled = true;
@@ -27,6 +23,11 @@
             "https://10.10.100.22:2379"
           ];
           ssl = true;
+        };
+        hubble = {
+          enabled = true;
+          relay.enabled = true;
+          ui.enabled = true;
         };
         ciliumEndpointSlice = {
           enabled = true;

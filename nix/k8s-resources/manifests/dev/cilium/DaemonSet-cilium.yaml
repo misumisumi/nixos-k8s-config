@@ -182,6 +182,12 @@ spec:
               name: cilium-netns
             - mountPath: /host/etc/cni/net.d
               name: etc-cni-netd
+            - mountPath: /var/lib/etcd-config
+              name: etcd-config-path
+              readOnly: true
+            - mountPath: /var/lib/etcd-secrets
+              name: etcd-secrets
+              readOnly: true
             - mountPath: /var/lib/cilium/clustermesh
               name: clustermesh-secrets
               readOnly: true
@@ -433,6 +439,18 @@ spec:
             path: /var/run/cilium/envoy/sockets
             type: DirectoryOrCreate
           name: envoy-sockets
+        - configMap:
+            defaultMode: 256
+            items:
+              - key: etcd-config
+                path: etcd.config
+            name: cilium-config
+          name: etcd-config-path
+        - name: etcd-secrets
+          secret:
+            defaultMode: 256
+            optional: true
+            secretName: cilium-etcd-secrets
         - name: clustermesh-secrets
           projected:
             defaultMode: 256

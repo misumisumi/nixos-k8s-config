@@ -10,13 +10,14 @@
       values = {
         replicaCount = 2;
         priorityClassName = "system-cluster-critical";
+        isClusterService = true;
         service = {
           clusterIP = "10.100.0.254";
           name = "kube-dns";
         };
         serviceAccount = {
           create = true;
-          name = "system:coredns";
+          name = "coredns";
         };
         rbac.create = true;
       };

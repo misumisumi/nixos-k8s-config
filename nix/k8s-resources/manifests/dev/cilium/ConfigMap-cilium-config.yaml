@@ -17,6 +17,7 @@ data:
   bpf-policy-map-max: "16384"
   bpf-policy-stats-map-max: "65536"
   bpf-root: /sys/fs/bpf
+  ces-rate-limits: '[{"burst":20,"limit":10,"nodes":0},{"burst":100,"limit":50,"nodes":100}]'
   cgroup-root: /run/cilium/cgroupv2
   cilium-endpoint-gc-interval: 5m0s
   cluster-id: "0"
@@ -40,18 +41,15 @@ data:
   egress-gateway-reconciliation-trigger-interval: 1s
   enable-auto-protect-node-port-range: "true"
   enable-bpf-clock-probe: "false"
+  enable-cilium-endpoint-slice: "true"
   enable-drift-checker: "true"
   enable-dynamic-config: "true"
   enable-endpoint-health-checking: "true"
   enable-endpoint-lockdown-on-policy-overflow: "false"
-  enable-envoy-config: "true"
   enable-health-check-loadbalancer-ip: "false"
   enable-health-check-nodeport: "true"
   enable-health-checking: "true"
   enable-hubble: "true"
-  enable-ingress-controller: "true"
-  enable-ingress-proxy-protocol: "false"
-  enable-ingress-secrets-sync: "true"
   enable-ipv4: "true"
   enable-ipv4-big-tcp: "false"
   enable-ipv4-masquerade: "true"
@@ -76,11 +74,18 @@ data:
   enable-vtep: "false"
   enable-well-known-identities: "false"
   enable-xt-socket-fallback: "true"
-  enforce-ingress-https: "true"
   envoy-access-log-buffer-size: "4096"
   envoy-base-id: "0"
-  envoy-config-retry-interval: 15s
   envoy-keep-cap-netbindservice: "false"
+  etcd-config: |-
+    ---
+    endpoints:
+      - https://10.10.100.20:2379
+      - https://10.10.100.21:2379
+      - https://10.10.100.22:2379
+    trusted-ca-file: '/var/lib/etcd-secrets/etcd-client-ca.crt'
+    key-file: '/var/lib/etcd-secrets/etcd-client.key'
+    cert-file: '/var/lib/etcd-secrets/etcd-client.crt'
   external-envoy-proxy: "true"
   health-check-icmp-failure-threshold: "3"
   http-retry-count: "3"
@@ -92,17 +97,10 @@ data:
   hubble-tls-cert-file: /var/lib/cilium/tls/hubble/server.crt
   hubble-tls-client-ca-files: /var/lib/cilium/tls/hubble/client-ca.crt
   hubble-tls-key-file: /var/lib/cilium/tls/hubble/server.key
-  identity-allocation-mode: crd
+  identity-allocation-mode: kvstore
   identity-gc-interval: 15m0s
   identity-heartbeat-timeout: 30m0s
   identity-management-mode: agent
-  ingress-default-lb-mode: shared
-  ingress-hostnetwork-enabled: "false"
-  ingress-hostnetwork-nodelabelselector: ""
-  ingress-hostnetwork-shared-listener-port: "8080"
-  ingress-lb-annotation-prefixes: lbipam.cilium.io nodeipam.cilium.io service.beta.kubernetes.io service.kubernetes.io cloud.google.com
-  ingress-secrets-namespace: cilium-secrets
-  ingress-shared-lb-service-name: cilium-ingress
   install-no-conntrack-iptables-rules: "false"
   ipam: cluster-pool
   ipam-cilium-node-update-rate: 15s
@@ -111,6 +109,8 @@ data:
   k8s-require-ipv6-pod-cidr: "false"
   kube-proxy-replacement: "true"
   kube-proxy-replacement-healthz-bind-address: ""
+  kvstore: etcd
+  kvstore-opt: '{"etcd.config": "/var/lib/etcd-config/etcd.config"}'
   max-connected-clusters: "255"
   mesh-auth-enabled: "false"
   mesh-auth-gc-interval: 5m0s
