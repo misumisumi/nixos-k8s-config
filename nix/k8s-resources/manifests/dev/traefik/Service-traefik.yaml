@@ -10,6 +10,10 @@ metadata:
   namespace: traefik
 spec:
   ports:
+    - name: traefik
+      port: 8080
+      protocol: TCP
+      targetPort: traefik
     - name: web
       port: 80
       protocol: TCP
