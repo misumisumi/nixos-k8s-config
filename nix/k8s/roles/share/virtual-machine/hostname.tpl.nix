@@ -5,6 +5,9 @@
     enable = config.networking.hostName == "";
     target = "/etc/hostname";
     template = pkgs.writeText "hostname.tpl" "{{ container.name }}";
-    when = [ "create" ];
+    when = [
+      "create"
+      "boot"
+    ];
   };
 }

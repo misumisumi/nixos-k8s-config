@@ -161,8 +161,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1780321363,
-        "narHash": "sha256-+6fIqQAjAdybamw/dfE9V7NacyTZMqCt1W09eln7NMY=",
+        "lastModified": 1780322401,
+        "narHash": "sha256-z4kcviSqumxE8lq7G4p2uwhhaD77cqQ8KzQMKkcgQuU=",
         "path": "/home/sumi/Workspace/nix/server/nixidy",
         "type": "path"
       },

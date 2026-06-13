@@ -7,7 +7,6 @@ let
     mkDefault
     splitString
     take
-    mkForce
     ;
   inherit (static.k8s.settings) serviceClusterIpRange;
 
