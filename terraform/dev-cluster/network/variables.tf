@@ -12,6 +12,7 @@ variable "networks" {
   type = map(object({
     project = optional(string, null)
     remote  = optional(string, null)
+    peers   = optional(list(string), [])
     config  = map(any)
   }))
   description = "Network configs"

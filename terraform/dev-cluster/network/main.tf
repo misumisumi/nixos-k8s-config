@@ -16,7 +16,7 @@ provider "incus" {
     content {
       name    = incus_remote.value.name
       address = incus_remote.value.address
-      
+
     }
   }
 }
@@ -32,4 +32,25 @@ resource "incus_network" "incus_network" {
   remote   = each.value.remote
   project  = each.value.project
   config   = each.value.config
+}
+
+resource "incus_network_peer" "incus_network_peer" {
+  for_each = merge([
+    for net_key, net_value in var.networks : {
+      for peer in net_value.peers :
+      "${net_key}-${peer}" => {
+        network        = net_key
+        peer           = peer
+        remote         = net_value.remote
+        project        = net_value.project
+        target_project = net_value.project
+      }
+    }
+  ]...)
+  name           = each.key
+  remote         = each.value.remote
+  project        = each.value.project
+  network        = each.value.network
+  target_network = each.value.peer
+  target_project = each.value.target_project
 }
