@@ -1,4 +1,1 @@
-output "instance_info" {
-  value = module.instances
-}
-
+../../dev-cluster/baremetal/output.tf
