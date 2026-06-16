@@ -1,25 +1,57 @@
 [k8s.settings]
 notShow = true
 serviceClusterIpRange = "10.100.0.0/16"
-apiserverAddress = "10.10.100.100"      #
+apiserverAddress = "172.16.100.100"     #
 clusterCidr = "10.200.0.0/16"
 
 [nodes.etcd]
 system = "x86_64-linux"
 user = "nixos"
-nodeIPs = ["10.10.100.20", "10.10.100.21", "10.10.100.22"]
+nodeIPs = ["172.16.100.20", "172.16.100.21", "172.16.100.22"]
 
 [nodes.loadbalancer]
 system = "x86_64-linux"
 user = "nixos"
-nodeIPs = ["10.10.100.10", "10.10.100.11", "10.10.100.12"]
+nodeIPs = ["172.16.100.10", "172.16.100.11", "172.16.100.12"]
 
 [nodes.controlplane]
 system = "x86_64-linux"
 user = "nixos"
-nodeIPs = ["10.10.100.30", "10.10.100.31", "10.10.100.32"]
+nodeIPs = ["172.16.100.30", "172.16.100.31", "172.16.100.32"]
 
 [nodes.worker]
 system = "x86_64-linux"
 user = "nixos"
-nodeIPs = ["10.10.100.40", "10.10.100.41", "10.10.100.42"]
+nodeIPs = ["172.16.100.40", "172.16.100.41", "172.16.100.42"]
+
+#################################################
+# shared image
+#################################################
+[shared.dhcp]
+system = "x86_64-linux"
+user = "cocoa"
+hostname = "chino"
+manageIP = "172.16.1.254"
+manageIPPrefix = "24"
+[shared.resolver]
+system = "x86_64-linux"
+user = "cocoa"
+hostname = "chiya"
+manageIP = "172.16.1.1"
+manageIPPrefix = "24"
+acl = [
+    "172.16.100.0/24 allow", # k8s nodes
+    "172.16.1.0/24 allow",   # shared nodes
+]
+[shared.dns]
+system = "x86_64-linux"
+user = "cocoa"
+hostname = "rize"
+manageIP = "172.16.1.2"
+manageIPPrefix = "24"
+[shared.adblock]
+system = "x86_64-linux"
+user = "cocoa"
+hostname = "syaro"
+manageIP = "172.16.1.3"
+manageIPPrefix = "24"
