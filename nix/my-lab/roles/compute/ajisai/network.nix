@@ -1,6 +1,5 @@
 {
   lib,
-  config,
   group,
   hostname,
   static,

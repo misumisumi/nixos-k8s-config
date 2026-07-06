@@ -39,7 +39,7 @@ let
         inputs.sops-nix.nixosModules.sops
         inputs.homelab-modules.nixosModules.default
         ./share/modules/static.nix
-        (if pathExists ./${group}/${tag} then ./${group}/${tag} else ./${group})
+        (if pathExists ./${group}/${tag} then ./${group}/${tag} else ./${tag})
       ];
     };
   group_and_hosts = importTOML ./static.toml;

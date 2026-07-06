@@ -1,6 +1,6 @@
 {
   nixidy = {
-    defaults.destination.server = "https:/10.10.100.100";
+    defaults.destination.server = "https:/172.16.100.100";
     target = {
       repository = "https://github.com/misumisumi/ProjectQueentet-manufests.git";
       branch = "develop";

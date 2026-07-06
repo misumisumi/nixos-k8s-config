@@ -5,6 +5,7 @@ let
     flatten
     imap1
     mkDefault
+    mkForce
     splitString
     take
     ;
@@ -19,6 +20,7 @@ let
   );
 in
 {
+  systemd.services."systemd-hostnamed".environment = mkForce { };
   services = {
     kubernetes = {
       #NOTE: CoreDNS install using nixidy
@@ -44,13 +46,21 @@ in
   };
   networking = {
     firewall = {
+      enable = false;
       checkReversePath = "loose";
       #NOTE: for cilium
       trustedInterfaces = [
-        "cilium_host"
-        "cilium_net"
-        "cilium_vxlan"
+        "cilium+"
         "lxc+"
+      ];
+      # general k8s ports
+      allowedUDPPorts = [
+        6081 # Geneve
+        8472 # VXLAN
+      ];
+      allowedTCPPorts = [
+        4240 # Cilium health endpoint
+        4244 # Cilium Hubble
       ];
     };
     extraHosts = ''

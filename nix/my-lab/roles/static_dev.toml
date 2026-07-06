@@ -1,3 +1,6 @@
+#################################################
+# liveimage image
+#################################################
 [liveimg.first-image]
 system = "x86_64-linux"
 user = "nixos"
@@ -16,6 +19,9 @@ system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-netboot"
 
+#################################################
+# switch image
+#################################################
 [switch.sks8300-8x]
 notShow = true
 system = "x86_64-linux"
@@ -40,6 +46,9 @@ AS = "65012"
 l2vpnListenRange = "10.10.10.0/24"
 color = "green"
 
+#################################################
+# compute image and settings
+#################################################
 [compute.virtualIPs]
 notShom = true
 [compute.virtualIPs.linstor]
@@ -103,6 +112,9 @@ hostname = "borderRouter"
 routerId = "10.10.10.254"
 AS = "64512"
 
+#################################################
+# manage image
+#################################################
 [mngr.naokosan]
 system = "x86_64-linux"
 user = "misuzu"
@@ -125,3 +137,22 @@ user = "misuzu"
 hostname = "fake-isp"
 manageIP = "192.168.20.1"
 manageIPPrefix = "24"
+
+#################################################
+# network settings
+#################################################
+[tenants]
+anycastGatewayHWAddr = "03:03:aa:aa:"
+[tenants.shared]
+name = "shared"
+vni = 11010
+vlan = 10
+ipPrefix = "172.16.1"
+ipSuffix = "24"
+
+[tenants.service]
+name = "service"
+vni = 11020
+vlan = 20
+ipPrefix = "172.16.100"
+ipSuffix = "24"

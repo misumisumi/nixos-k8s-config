@@ -4,11 +4,10 @@
   nixConfig = {
     extra-substituters = [
       "https://misumisumi.cachix.org"
-      "https://cuda-maintainers.cachix.org"
+      "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
       "misumisumi.cachix.org-1:f+5BKpIhAG+00yTSoyG/ihgCibcPuJrfQL3M9qw1REY="
-      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
 
@@ -48,12 +47,15 @@
           ];
         };
         # Cluster settings managing colmena
-        nixosConfigurations = (
-          import ./roles {
+        nixosConfigurations =
+          (import ./roles {
             inherit (inputs.nixpkgs) lib;
             inherit inputs self;
-          }
-        );
+          })
+          // (import ./test {
+            inherit (inputs.nixpkgs) lib;
+            inherit inputs self;
+          });
       };
       perSystem =
         {

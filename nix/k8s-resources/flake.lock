@@ -161,14 +161,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1780322401,
-        "narHash": "sha256-z4kcviSqumxE8lq7G4p2uwhhaD77cqQ8KzQMKkcgQuU=",
-        "path": "/home/sumi/Workspace/nix/server/nixidy",
-        "type": "path"
+        "lastModified": 1782923368,
+        "narHash": "sha256-QpAb3aw0V751V/GUqiKKMgx82+NNk3yhP2lNTFqr8zY=",
+        "owner": "misumisumi",
+        "repo": "nixidy",
+        "rev": "a6d40bd3cfed611f23e33b596398a8b1cbe6dc87",
+        "type": "github"
       },
       "original": {
-        "path": "/home/sumi/Workspace/nix/server/nixidy",
-        "type": "path"
+        "owner": "misumisumi",
+        "ref": "feat/set-config-and-context",
+        "repo": "nixidy",
+        "type": "github"
       }
     },
     "nixpkgs": {

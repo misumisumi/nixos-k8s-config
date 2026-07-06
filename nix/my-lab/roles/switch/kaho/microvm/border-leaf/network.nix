@@ -45,9 +45,7 @@ in
     "wan" = {
       name = "wan";
       L3VNI = {
-        hwAddr = "77:c8:78:94:69:5e";
         vni = 30001;
-        vlan = 3001;
         local = routerId;
         destinationPort = 4780;
       };

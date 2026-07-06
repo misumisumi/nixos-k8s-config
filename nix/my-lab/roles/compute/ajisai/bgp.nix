@@ -113,7 +113,5 @@ in
           advertise ipv4 unicast
         exit-address-family
     '';
-    # network ${virtualIPs.incus.address}/${virtualIPs.incus.cidr}
-    # network ${config.linkage.highAvailable.virtualIP.address}/${config.linkage.highAvailable.virtualIP.cidr}
   };
 }

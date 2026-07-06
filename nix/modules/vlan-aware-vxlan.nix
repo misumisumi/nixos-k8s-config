@@ -7,6 +7,8 @@
 }:
 let
   inherit (lib)
+    assertMsg
+    any
     concatStringsSep
     flatten
     listToAttrs
@@ -14,6 +16,8 @@ let
     mkOption
     nameValuePair
     optional
+    optionalAttrs
+    optionalString
     toInt
     types
     ;
@@ -36,6 +40,7 @@ let
             options = {
               hwAddr = mkOption {
                 type = types.str;
+                default = "none";
                 description = "MAC address for tenant VXLAN interfaces.";
               };
               vni = mkOption {
@@ -46,6 +51,7 @@ let
               vlan = mkOption {
                 type = types.int;
                 apply = toString;
+                default = 1;
                 description = "VLAN ID.";
               };
               local = mkOption {
@@ -98,18 +104,20 @@ let
                   description = "IP address for VLAN interface.";
                 };
                 anycastGateway = mkOption {
-                  type = types.submodule {
-                    options = {
-                      hwAddr = mkOption {
-                        type = types.str;
-                        description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
+                  type =
+                    types.submodule {
+                      options = {
+                        hwAddr = mkOption {
+                          type = types.str;
+                          description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
+                        };
+                        address = mkOption {
+                          type = types.str;
+                          description = "Generate IP address for anycast gateway of each VLAN-VNI.";
+                        };
                       };
-                      address = mkOption {
-                        type = types.str;
-                        description = "Generate IP address for anycast gateway of each VLAN-VNI.";
-                      };
-                    };
-                  };
+                    }
+                    ;
                 };
               };
             }
@@ -141,21 +149,23 @@ let
                   type = types.str;
                 };
                 anycastGateway = mkOption {
-                  type = types.submodule {
-                    options = {
-                      hwAddr = mkOption {
-                        type = types.str;
-                        description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
+                  type =
+                    types.submodule {
+                      options = {
+                        hwAddr = mkOption {
+                          type = types.str;
+                          description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
+                        };
+                        address = mkOption {
+                          type = types.str;
+                          description = "Generate IP address for anycast gateway of each VLAN-VNI.";
+                        };
+                        IF = mkOption {
+                          type = types.str;
+                        };
                       };
-                      address = mkOption {
-                        type = types.str;
-                        description = "Generate IP address for anycast gateway of each VLAN-VNI.";
-                      };
-                      IF = mkOption {
-                        type = types.str;
-                      };
-                    };
-                  };
+                    }
+                    ;
                 };
               };
             }
@@ -179,7 +189,7 @@ let
           {
             inherit (x) vni vlan address;
             vlanIF = IFName;
-            anycastGateway = {
+            anycastGateway = optionalAttrs (x.anycastGateway != { }) {
               inherit (x.anycastGateway) hwAddr address;
               IF = IFName + "agw";
             };
@@ -205,10 +215,10 @@ in
             netdevConfig = {
               Name = "${v.L3VNI.brIF}";
               Kind = "bridge";
-              Description = "Sigle VLAN Aware Bridge for ${v.name} tenant";
+              Description = "Bridge for ${v.name} tenant";
               MACAddress = v.L3VNI.hwAddr;
             };
-            bridgeConfig = {
+            bridgeConfig = optionalAttrs (v.vniVlanPairs' != [ ]) {
               DefaultPVID = "none";
               VLANFiltering = true;
             };
@@ -226,8 +236,10 @@ in
               ReduceARPProxy = true;
               Independent = true;
               Local = v.L3VNI.local;
+            } // optionalString (v.vniVlanPairs' == [ ]) {
+              VNI = toInt v.L3VNI.vni;
             };
-            extraConfig = ''
+            extraConfig = optionalString (v.vniVlanPairs' != [ ]) ''
               [VXLAN]
               VNIFilter=yes
               External=yes
@@ -243,7 +255,9 @@ in
               Table = toInt v.L3VNI.vni;
             };
           })
-          (nameValuePair "${v.L3VNI.vniIF}" {
+        ]
+        ++ optional (v.vniVlanPairs' != [ ]) (
+          nameValuePair "${v.L3VNI.vniIF}" {
             netdevConfig = {
               Name = "${v.L3VNI.vniIF}";
               Kind = "vlan";
@@ -253,8 +267,8 @@ in
             vlanConfig = {
               Id = toInt v.L3VNI.vlan;
             };
-          })
-        ]
+          }
+        )
         ++ (map (x: [
           (nameValuePair "${x.vlanIF}" {
             netdevConfig = {
@@ -286,24 +300,40 @@ in
           (nameValuePair "50-${v.vrf}" {
             name = "${v.vrf}";
           })
-          (nameValuePair "50-${v.L3VNI.brIF}" {
-            name = "${v.L3VNI.brIF}";
-            networkConfig = {
-              IPv6LinkLocalAddressGenerationMode = "none";
-            };
-            vlan = [
-              "${v.L3VNI.vniIF}"
-            ]
-            ++ (map (x: "${x.vlanIF}") v.vniVlanPairs');
-            bridgeVLANs = [
-              { VLAN = toInt v.L3VNI.vlan; }
-            ]
-            ++ (map (x: { VLAN = toInt x.vlan; }) v.vniVlanPairs');
-            bridgeFDBs = [
-              { MACAddress = v.L3VNI.hwAddr; }
-            ]
-            ++ (map (x: { MACAddress = x.anycastGateway.hwAddr; }) v.vniVlanPairs');
-          })
+          (
+            nameValuePair "50-${v.L3VNI.brIF}" {
+              name = "${v.L3VNI.brIF}";
+              vrf = [ "${v.vrf}" ];
+            }
+            // optionalAttrs (v.vniVlanPairs' != [ ]) {
+              networkConfig = {
+                IPv6LinkLocalAddressGenerationMode = "none";
+              };
+              vlan = [
+                "${v.L3VNI.vniIF}"
+              ]
+              ++ (map (x: "${x.vlanIF}") v.vniVlanPairs');
+              bridgeVLANs = [
+                { VLAN = toInt v.L3VNI.vlan; }
+              ]
+              ++ (map (x: { VLAN = toInt x.vlan; }) v.vniVlanPairs');
+              bridgeFDBs =
+                let
+                  macAddresses =
+                    assert assertMsg (
+                      v.L3VNI.hwAddr == "none" && (any (x: x.anycastGateway != { })) v.vniVlanPairs'
+                    ) "Anycast gateway mac address must be specified when anycast gateway is configured.";
+                    if v.L3VNI.hwAddr == "none" then
+                      [ ]
+                    else
+                      [
+                        { MACAddress = v.L3VNI.hwAddr; }
+                      ]
+                      ++ (map (x: { MACAddress = x.anycastGateway.hwAddr; }) v.vniVlanPairs');
+                in
+                macAddresses;
+            }
+          )
           (nameValuePair "55-${v.L3VNI.vxlanIF}" {
             name = "${v.L3VNI.vxlanIF}";
             bridge = [ "${v.L3VNI.brIF}" ];
@@ -314,19 +344,21 @@ in
               NeighborSuppression = false;
               Learning = false;
             };
-            extraConfig = ''
+            extraConfig = optionalString (v.vniVlanPairs' != [ ]) ''
               [Bridge]
               VLANTunnel=yes
             '';
           })
-          (nameValuePair "55-${v.L3VNI.vniIF}" {
+        ]
+        ++ optional (v.vniVlanPairs' != [ ]) (
+          nameValuePair "55-${v.L3VNI.vniIF}" {
             name = "${v.L3VNI.vniIF}";
             vrf = [ "${v.vrf}" ];
             networkConfig = {
               IPv6LinkLocalAddressGenerationMode = "none";
             };
-          })
-        ]
+          }
+        )
         ++ map (x: [
           (nameValuePair "60-${x.vlanIF}" {
             name = "${x.vlanIF}";
@@ -366,7 +398,7 @@ in
               let
                 L3VNI = "${v.name}-vxlan";
               in
-              ''
+              optionalString (v.vniVlanPairs != [ ]) ''
                 echo "Configuring VNI VLAN tunneling for ${v.name} tenant ..."
                 ${perPair L3VNI v.L3VNI.vni v.L3VNI.vlan}
                 ${concatStringsSep "\n" (map (x: perPair L3VNI x.vni x.vlan) v.vniVlanPairs')}

@@ -62,10 +62,6 @@ in
         vni ${tenants.tn1.L3VNI.vni}
       exit-vrf
 
-      vrf ${tenants.wan.vrf}
-        vni ${tenants.wan.L3VNI.vni}
-      exit-vrf
-
       router bgp ${AS}
         bgp router-id ${tenants.tn1.L3VNI.local}
         bgp log-neighbor-changes

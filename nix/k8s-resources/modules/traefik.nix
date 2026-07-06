@@ -13,8 +13,17 @@
 
       # Example values to pass to the Helm Chart.
       values = {
-        ingressClass.enabled = true;
-        ingressRoute.dashboard.enabled = true;
+        ingressClass.enabled = false;
+        ingressRoute.dashboard.enabled = false;
+        experimental.kubernetesGateway.enabled = true;
+        gateway = {
+          enabled = true;
+        };
+        gatewayClass.enabled = true;
+        providers = {
+          kubernetesIngress.enabled = false;
+          kubernetesGateway.enabled = true;
+        };
         ports.traefik.expose.default = true;
       };
     };

@@ -3,7 +3,6 @@
   inputs,
   modulesPath,
   static,
-  tag,
   ...
 }:
 let
@@ -102,7 +101,6 @@ in
   boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
 
   networking = {
-    hostName = "${tag}";
     firewall = {
       allowedTCPPorts = [ 443 ];
       extraCommands = "iptables -A INPUT -p vrrp -j ACCEPT";

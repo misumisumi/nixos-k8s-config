@@ -10,9 +10,8 @@
 
   services.kubernetes.kubelet = rec {
     enable = true;
-    extraOpts = lib.strings.concatStringsSep " " [
+    extraOpts = lib.strings.concatStringsSep "\\n" [
       "--fail-swap-on=false"
-      "--register-with-taints=node-role.kubernetes.io/control-plane=:NoSchedule"
     ];
     unschedulable = true;
     kubeconfig = {
@@ -24,7 +23,7 @@
     clientCaFile = "/etc/kubernetes/pki/ca.pem";
     tlsCertFile = "/etc/kubernetes/pki/kubelet.pem";
     tlsKeyFile = "/etc/kubernetes/pki/kubelet-key.pem";
-    taints."controlplane" = {
+    taints."control-plane" = {
       key = "node-role.kubernetes.io/control-plane";
       value = "true";
       effect = "NoSchedule";

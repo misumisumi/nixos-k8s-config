@@ -3,6 +3,14 @@ compornents = [
     remote = "local"
     profiles = [
       {
+        name      = "test"
+        root_pool = "instances"
+        config = {
+          "limits.cpu"    = "2"
+          "limits.memory" = "4GB"
+        }
+      },
+      {
         name      = "controlplane"
         root_pool = "instances"
         config = {
@@ -33,12 +41,41 @@ compornents = [
     ]
     instances = [
       {
+        name         = "spine"
+        image        = "dev/test/spine"
+        machine_type = "virtual-machine"
+        profiles     = ["test"]
+        networks = [
+          {
+            parent  = "dev-p2p-0"
+            nictype = "bridged"
+          },
+        ]
+      },
+      {
+        name         = "leaf"
+        image        = "dev/test/leaf"
+        machine_type = "virtual-machine"
+        profiles     = ["test"]
+        networks = [
+          {
+            parent  = "dev-p2p-0"
+            nictype = "bridged"
+          },
+          {
+            parent         = "dev-k8s"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.5"
+          },
+        ]
+      },
+      {
         name     = "loadbalancer1"
         image    = "dev/nodes/loadbalancer"
         profiles = ["loadbalancer"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.10"
           },
@@ -50,7 +87,7 @@ compornents = [
         profiles = ["loadbalancer"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.11"
           },
@@ -62,7 +99,7 @@ compornents = [
         profiles = ["loadbalancer"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.12"
           },
@@ -74,7 +111,7 @@ compornents = [
         profiles = ["etcd"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.20"
           },
@@ -98,7 +135,7 @@ compornents = [
         profiles = ["etcd"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.21"
           },
@@ -122,7 +159,7 @@ compornents = [
         profiles = ["etcd"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.22"
           },
@@ -147,7 +184,7 @@ compornents = [
         profiles     = ["controlplane"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.30"
           },
@@ -160,7 +197,7 @@ compornents = [
         profiles     = ["controlplane"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.31"
           },
@@ -173,7 +210,7 @@ compornents = [
         profiles     = ["controlplane"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.32"
           },
@@ -186,7 +223,7 @@ compornents = [
         profiles     = ["worker"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.40"
           },
@@ -209,7 +246,7 @@ compornents = [
         profiles     = ["worker"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.41"
           },
@@ -232,7 +269,7 @@ compornents = [
         profiles     = ["worker"]
         networks = [
           {
-            parent         = "dev-service"
+            parent         = "dev-k8s"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.42"
           },

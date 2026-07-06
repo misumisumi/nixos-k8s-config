@@ -22,7 +22,7 @@
     };
     nixidy = {
       # url = "github:arnarg/nixidy";
-      url = "path:/home/sumi/Workspace/nix/server/nixidy";
+      url = "github:misumisumi/nixidy/feat/set-config-and-context";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixhelm = {
@@ -47,10 +47,13 @@
       perSystem =
         {
           pkgs,
+          lib,
           system,
           ...
         }:
         let
+          inherit (lib) importTOML;
+
           nixpkgs-unstable = import inputs.nixpkgs-unstable {
             inherit system;
             config = {
@@ -67,23 +70,29 @@
 
           # Make nixidy CLI available
           packages = {
-            nixidy-dev = pkgs.writeShellScriptBin "nixidy.dev" ''
-              export KUBECONFIG=${./env/dev/kubeconfig}
-              ${nixidy.packages.${system}.default}/bin/nixidy $@
-            '';
-            nixidy-prod = pkgs.writeShellScriptBin "nixidy.prod" ''
-              export KUBECONFIG=${./env/prod/kubeconfig}
-              ${nixidy.packages.${system}.default}/bin/nixidy $@
-            '';
+            nixidy = nixidy.packages.${system}.default;
+            #   nixidy-dev = pkgs.writeShellScriptBin "nixidy.dev" ''
+            #     export KUBECONFIG=${./env/dev/kubeconfig}
+            #     ${nixidy.packages.${system}.default}/bin/nixidy $@
+            #   '';
+            #   nixidy-prod = pkgs.writeShellScriptBin "nixidy.prod" ''
+            #     export KUBECONFIG=${./env/prod/kubeconfig}
+            #     ${nixidy.packages.${system}.default}/bin/nixidy $@
+            #   '';
           };
           legacyPackages = {
             nixidyEnvs.${system} = nixidy.lib.mkEnvs {
               inherit pkgs;
+              libOverlay = self: super: {
+                importYAML = path: lib.head (self.kube.fromYAML (builtins.readFile path));
+                extraPkgs = pkgs.callPackage ./_sources/generated.nix { };
+              };
               charts = nixhelm.chartsDerivations.${system};
 
               modules = [ ./modules ];
               envs = {
                 dev.modules = [ ./env/dev ];
+                static = importTOML ../../static_dev.toml;
               };
             };
           };
@@ -91,8 +100,8 @@
           # Development shell with nixidy
           devshells.default = {
             packages = [
-              self.packages.nixidy-dev
-              self.packages.nixidy-prod
+              # self.packages.nixidy-dev
+              # self.packages.nixidy-prod
             ];
           };
         };

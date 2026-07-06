@@ -80,6 +80,7 @@ in
         webserver-address=0.0.0.0
         webserver-port=8081
         webserver-allow-from=172.16.0.0/16
+        webserver-password="hogehoge"
       '';
     };
   };

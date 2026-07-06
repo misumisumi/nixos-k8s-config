@@ -3,7 +3,7 @@
   ...
 }:
 {
-  applications.cilium = {
+  applications.argocd = {
     namespace = "kube-system";
 
     helm.releases.traefik = {
