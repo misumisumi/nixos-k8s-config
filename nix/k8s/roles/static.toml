@@ -23,3 +23,8 @@ nodeIPs = ["10.10.100.30", "10.10.100.31", "10.10.100.32"]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["10.10.100.40", "10.10.100.41", "10.10.100.42"]
+
+[nodes.proxy]
+system = "x86_64-linux"
+user = "nixos"
+nodeIPs = ["10.10.100.50"]
