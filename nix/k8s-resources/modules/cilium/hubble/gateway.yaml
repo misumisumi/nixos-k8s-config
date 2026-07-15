@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public-gateway
+  namespace: kube-system
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      hostname: "*.misumi-sumi.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: misumi-sumi-com-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "*.misumi-sumi.com"
+      allowedRoutes:
+        namespaces:
+          from: All

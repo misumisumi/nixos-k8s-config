@@ -85,6 +85,7 @@
               inherit pkgs;
               libOverlay = self: super: {
                 importYAML = path: lib.head (self.kube.fromYAML (builtins.readFile path));
+                nixdyGenerators = nixidy.packages.${system}.generators;
                 extraPkgs = pkgs.callPackage ./_sources/generated.nix { };
               };
               charts = nixhelm.chartsDerivations.${system};

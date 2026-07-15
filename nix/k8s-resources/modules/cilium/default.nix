@@ -49,6 +49,8 @@ in
       ciliumBGPClusterConfigs.cluster = importYAML ./bgp/cluster.yaml;
       ciliumBGPPeerConfigs.peer = importYAML ./bgp/peer.yaml;
       ciliumClusterwideNetworkPolicies.cluster = importYAML ./network-policies/cluster.yaml;
+      gateways.public-gateway = importYAML ./hubble/gateway.yaml;
+      httpRoutes.hubble-ui = importYAML ./hubble/httproute.yaml;
     };
     yamls = map toJSON (
       generators.crdObjects {
