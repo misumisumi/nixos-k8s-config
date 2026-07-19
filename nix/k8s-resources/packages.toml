@@ -1,7 +1,0 @@
-[cilium]
-src.github = 'cilium/cilium'
-fetch.github = 'cilium/cilium'
-
-[gateway-api]
-src.github = 'kubernetes-sigs/gateway-api'
-fetch.github = 'kubernetes-sigs/gateway-api'
