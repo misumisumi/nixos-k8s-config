@@ -1,0 +1,1 @@
+../../dev-cluster/baremetal/variables.tf

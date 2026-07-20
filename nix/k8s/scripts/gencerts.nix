@@ -149,6 +149,28 @@ let
       };
     };
   };
+  vault = static: let
+    nodes = roles: flatten (
+      map (role: imap1 (i: ip: [
+        "${role}${toString i}"
+        "${ip}"
+      ]) static.nodes.${role}.nodeIPs) roles
+    );
+  in {
+    server = {
+      profile = "server";
+      csr = mkCsr {
+        O = "vault";
+        CN = "vault";
+        hosts = [
+          "localhost"
+          "127.0.0.1"
+        ]
+        ++ (nodes [ "vault" ])
+        ++ [ static.nodes.vault.vip ];
+      };
+    };
+  };
   kubeletCsr = hostname: nodeIP: {
     profile = "both";
     csr = mkCsr {
@@ -235,6 +257,12 @@ let
           "genCert worker${toString i} ${conf.profile} ${conf.csr} kubernetes"
         ) static.nodes.worker.nodeIPs
       )}
+      popd > /dev/null
+
+      VAULT_DIR="$OUTDIR/vault"
+      mkdir -p "$VAULT_DIR"
+      pushd $VAULT_DIR > /dev/null
+      ${genCerts (vault static) "vault"}
       popd > /dev/null
     '';
   variants = {

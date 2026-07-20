@@ -54,9 +54,7 @@ let
 in
 {
   ###### interface
-
   options = {
-
     services.dnsmasq = {
       multipleSessions = lib.mkOption {
         type =

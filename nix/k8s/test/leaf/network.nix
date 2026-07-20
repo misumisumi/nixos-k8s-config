@@ -8,6 +8,13 @@ in
   imports = [
     inputs.homelab-modules.nixosModules.vlan-aware-vxlan
   ];
+  boot.kernel.sysctl = {
+    "net.ipv4.conf.all.rp_filter" = 0;
+    "net.ipv4.conf.default.rp_filter" = 0;
+    "net.ipv4.ip_forward" = 1;
+    "net.ipv6.conf.all.forwarding" = 1;
+    "net.ipv6.conf.default.forwarding" = 1;
+  };
   networking = {
     useNetworkd = true;
     firewall.enable = false;
@@ -52,7 +59,15 @@ in
       "20-enp6s0" = {
         name = "enp6s0";
         vrf = [ "${tenants.k8s.vrf}" ];
-        DHCP = "ipv4";
+        DHCP = "no";
+        address = [ "172.16.100.5/24" ];
+        routes = [
+          {
+            Destination = "0.0.0.0/0";
+            Gateway = "172.16.100.1";
+            Metric = 100;
+          }
+        ];
       };
     };
   };

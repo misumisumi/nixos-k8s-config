@@ -23,6 +23,12 @@ compornents = [
           # source = "/tmp/incus"
         }
       },
+      {
+        name = "vault"
+        config = {
+          size = "6GiB"
+        }
+      },
     ]
     volumes = [
       {
@@ -36,7 +42,31 @@ compornents = [
       {
         name = "etcd3"
         pool = "etcd"
-      }
+      },
+      {
+        name         = "vault1"
+        pool         = "vault"
+        content_type = "block"
+        config = {
+          size = "2GiB"
+        }
+      },
+      {
+        name         = "vault2"
+        pool         = "vault"
+        content_type = "block"
+        config = {
+          size = "2GiB"
+        }
+      },
+      {
+        name         = "vault3"
+        pool         = "vault"
+        content_type = "block"
+        config = {
+          size = "2GiB"
+        }
+      },
     ]
   }
 ]

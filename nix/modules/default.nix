@@ -32,4 +32,7 @@
   vlan-aware-vxlan = {
     imports = [ ./vlan-aware-vxlan.nix ];
   };
+  vault-unseal = {
+    imports = [ ./vault-unseal.nix ];
+  };
 }

@@ -25,6 +25,10 @@ let
     CN = "kubernetes-front-proxy-ca";
     O = "Project Queentet Kubernetes Front Proxy CA";
   };
+  vaultCA = mkCsr {
+    CN = "vault-ca";
+    O = "Project Queentet Vault CA";
+  };
   genImCA = target: csr: ''
     OUT=$OUTDIR/${target}
     rm -rf "$OUT"
@@ -55,6 +59,7 @@ writeShellScriptBin "genca" ''
   ${genImCA "etcd" etcdCA}
   ${genImCA "kubernetes" k8sCA}
   ${genImCA "kubernetes-front-proxy" k8sFrontProxyCA}
+  ${genImCA "vault" vaultCA}
   pushd "$OUTDIR/kubernetes"
   ${getExe openssl} genrsa -out sa.key 2048
   ${getExe openssl} rsa -in sa.key -pubout -out sa.pem
