@@ -49,4 +49,22 @@
 # })
 { nixpkgs-unstable, ... }:
 final: prev: {
+  genca = prev.callPackage ../scripts/genca.nix { };
+  genkubeconfig = prev.callPackage ../scripts/genkubeconfig.nix { };
+  inherit (prev.callPackage ../scripts/default.nix { })
+    k-prod
+    k-dev
+    k-test
+    v-prod
+    v-dev
+    v-test
+    helm-prod
+    helm-dev
+    helm-test
+    ;
+  inherit (prev.callPackage ../scripts/gencerts.nix { })
+    gencerts-prod
+    gencerts-dev
+    gencerts-test
+    ;
 }

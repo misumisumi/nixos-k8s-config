@@ -34,6 +34,7 @@
     # local modules
     # homelab-ansible.url = "path:./ansible";
     homelab-mylab.url = "path:./nix/my-lab";
+    homelab-k8s.url = "path:./nix/k8s";
     homelab-terraform.url = "path:./terraform";
   };
   outputs =
@@ -45,7 +46,8 @@
         inputs.flake-root.flakeModule
       ];
       flake = {
-        nixosConfigurations = inputs.homelab-mylab.nixosConfigurations;
+        nixosConfigurations =
+          inputs.homelab-mylab.nixosConfigurations // inputs.homelab-k8s.nixosConfigurations;
       };
       perSystem =
         {
@@ -59,6 +61,7 @@
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
             overlays = [
+              inputs.homelab-k8s.overlays.default
               inputs.homelab-mylab.overlays.default
               inputs.homelab-terraform.overlays.default
             ];
@@ -120,6 +123,14 @@
                   mkimg-list
                   mkimg-dev-wrt
 
+                  genca
+                  gencerts-prod
+                  gencerts-dev
+                  gencerts-test
+                  genkubeconfig
+                  k-dev
+                  v-dev
+                  helm-dev
                 ]
                 ++ (with inputs.homelab-mylab.packages.${system}; [
                   linkage
