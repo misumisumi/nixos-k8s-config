@@ -1,4 +1,0 @@
----
-ansible_connection: lxd
-vm_name: nfs1
-drbd_primary: true

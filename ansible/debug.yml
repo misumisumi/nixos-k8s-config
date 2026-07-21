@@ -1,5 +1,0 @@
----
-- hosts: ha_nfs
-  tasks:
-    - debug: var=inventory_hostname
-    - debug: var=hostvars[inventory_hostname]

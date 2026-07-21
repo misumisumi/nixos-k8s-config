@@ -1,6 +1,0 @@
-[all:vars]
-stage=production
-kubeconfig=.kube/admin.kubeconfig
-
-[init_access:vars]
-metallb_addresses="192.168.1.200-192.168.1.250"
