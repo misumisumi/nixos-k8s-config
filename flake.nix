@@ -48,11 +48,10 @@
         }:
         {
           packages = {
+            nixidy = inputs.homelab-k8s-apps.packages.nixidy;
             inherit (inputs.homelab-baremetals.packages.${system}) prod_switch_sks8300-8x dev_switch_sks8300-8x;
           };
-          legacyPackages = {
-            nixidyEnvs.${system} = inputs.homelab-k8s-apps.legacyPackages.${system}.nixidyEnvs;
-          };
+          legacyPackages = inputs.homelab-k8s-apps.legacyPackages.${system};
           devshells.default = {
             commands = [
               {
