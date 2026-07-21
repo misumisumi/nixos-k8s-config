@@ -46,14 +46,14 @@
   };
 
   outputs =
-    inputs@{ flake-parts, ... }:
+    inputs@{ flake-parts, self, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
       imports = [
         inputs.devshell.flakeModule
       ];
-      flake = rec {
-        overlay = overlays.default;
+      flake = {
+        overlay = self.overlays.default;
         overlays.default =
           final: prev:
           let
@@ -70,9 +70,36 @@
                 carlpett_sops
                 hashicorp_time
                 hashicorp_null
+                hashicorp_vault
               ]
             );
           };
       };
+      perSystem =
+        {
+          pkgs,
+          system,
+          ...
+        }:
+        let
+          nixpkgs-unstable = import inputs.nixpkgs-unstable {
+            inherit system;
+            config = {
+              allowUnfree = true;
+            };
+          };
+        in
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              self.overlays.default
+            ];
+            config.allowUnfree = true;
+          };
+          packages = {
+            inherit (pkgs) ter tofu-w-plugins;
+          };
+        };
     };
 }

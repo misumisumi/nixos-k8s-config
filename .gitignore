@@ -1,13 +1,7 @@
 mnt
 result*
-.kube
-.keystore
-.ssh
 **/*.txt
-**/images/**
-!index.txt
 **/secrets/test/**
-**/manifests/**
 
 terraform/**/*.output.json
 terraform/**/*.show.json

@@ -1,0 +1,22 @@
+{
+    "nixd": {
+        "nixpkgs": {
+            "expr": "import <nixpkgs> { }"
+        },
+        "formatting": {
+            "command": [
+                "nixfmt"
+            ]
+        },
+        "options": {
+            "nixos": {
+                "expr": "(builtins.getFlake (builtins.getEnv \"PWD\")).nixosConfigurations.dev_compute_ajisai.options"
+            }
+        },
+        "diagnostic": {
+            "suppress": [
+                "sema-extra-with"
+            ]
+        }
+    }
+}

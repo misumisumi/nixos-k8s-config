@@ -8,9 +8,8 @@
     ];
   };
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     flake-root.url = "github:srid/flake-root";
     # develop env tools
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -19,22 +18,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # develop tools
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-    nixos-anywhere = {
-      url = "github:nix-community/nixos-anywhere";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixos-stable.follows = "nixpkgs";
-        disko.follows = "disko";
-      };
-    };
+    disko.url = "github:nix-community/disko";
+    nixos-anywhere.url = "github:nix-community/nixos-anywhere";
     # local modules
-    # homelab-ansible.url = "path:./ansible";
-    homelab-mylab.url = "path:./nix/my-lab";
-    homelab-k8s.url = "path:./nix/k8s";
+    homelab-baremetals.url = "path:./baremetals";
+    homelab-instances.url = "path:./instances";
+    homelab-k8s-apps.url = "path:./k8s-apps";
     homelab-terraform.url = "path:./terraform";
   };
   outputs =
@@ -47,7 +36,7 @@
       ];
       flake = {
         nixosConfigurations =
-          inputs.homelab-mylab.nixosConfigurations // inputs.homelab-k8s.nixosConfigurations;
+          inputs.homelab-baremetals.nixosConfigurations // inputs.homelab-instances.nixosConfigurations;
       };
       perSystem =
         {
@@ -58,85 +47,69 @@
           ...
         }:
         {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              inputs.homelab-k8s.overlays.default
-              inputs.homelab-mylab.overlays.default
-              inputs.homelab-terraform.overlays.default
-            ];
-            config.allowUnfree = true;
-          };
           packages = {
-            inherit (inputs.homelab-mylab.packages.${system}) prod_switch_sks8300-8x dev_switch_sks8300-8x;
+            inherit (inputs.homelab-baremetals.packages.${system}) prod_switch_sks8300-8x dev_switch_sks8300-8x;
           };
-          devshells.default =
-            let
-              nixpkgs-unstable = import inputs.nixpkgs-unstable {
-                system = "x86_64-linux";
-                config = {
-                  allowUnfree = true;
-                };
-              };
-            in
-            {
-              commands = [
-                {
-                  help = "disko";
-                  name = "disko";
-                  command = ''
-                    ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
-                  '';
-                }
-                {
-                  help = "nixos-anywhere";
-                  name = "nixos-anywhere";
-                  command = ''
-                    ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
-                  '';
-                }
-              ];
-              devshell.startup = {
-                compinit.text = "";
-                flakeRoot.text = ''
-                  FLAKE_ROOT="''$(${lib.getExe config.flake-root.package})"
-                  export FLAKE_ROOT
+          legacyPackages = {
+            nixidyEnvs.${system} = inputs.homelab-k8s-apps.legacyPackages.${system}.nixidyEnvs;
+          };
+          devshells.default = {
+            commands = [
+              {
+                help = "disko";
+                name = "disko";
+                command = ''
+                  ${inputs.disko.packages.${system}.disko}/bin/disko ''${@}
                 '';
-              };
-              packages =
-                with pkgs;
-                [
-                  bashInteractive
-                  ansible
-                  ter
-                  tofu-w-plugins
-
-                  incus
-                  openssl
-                  python3
-                  gawk
-
-                  mkimg-lxc
-                  mkimg-incus-vm
-                  mkimg-kexec
-                  mkimg-ipxe
-                  mkimg-list
-                  mkimg-dev-wrt
-
-                  genca
-                  gencerts-prod
-                  gencerts-dev
-                  gencerts-test
-                  genkubeconfig
-                  k-dev
-                  v-dev
-                  helm-dev
-                ]
-                ++ (with inputs.homelab-mylab.packages.${system}; [
-                  linkage
-                  linkage-gateway
-                ]);
+              }
+              {
+                help = "nixos-anywhere";
+                name = "nixos-anywhere";
+                command = ''
+                  ${inputs.nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere ''${@}
+                '';
+              }
+            ];
+            devshell.startup = {
+              compinit.text = "";
+              flakeRoot.text = ''
+                FLAKE_ROOT="''$(${lib.getExe config.flake-root.package})"
+                export FLAKE_ROOT
+              '';
             };
+            packages =
+              with pkgs;
+              with inputs.homelab-baremetals.packages.${system};
+              with inputs.homelab-instances.packages.${system};
+              with inputs.homelab-terraform.packages.${system};
+              with inputs.homelab-k8s-apps.packages.${system};
+              [
+                bashInteractive
+
+                ter
+                tofu-w-plugins
+
+                mkimg-lxc
+                mkimg-incus-vm
+                mkimg-kexec
+                mkimg-ipxe
+                mkimg-list
+                mkimg-dev-wrt
+                linkage
+                linkage-gateway
+
+                genca
+                gencerts-prod
+                gencerts-dev
+                gencerts-test
+                genkubeconfig
+                k-dev
+                v-dev
+                helm-dev
+
+                nixidy
+              ];
+          };
         };
     };
 }
