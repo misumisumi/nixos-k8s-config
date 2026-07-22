@@ -13,7 +13,7 @@ terraform {
 }
 
 data "sops_file" "secrets" {
-  source_file = "${path.module}/secrets/${terraform.workspace}.yaml"
+  source_file = "${path.module}/sops/${terraform.workspace}.yaml"
 }
 
 provider "vault" {

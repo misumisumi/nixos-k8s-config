@@ -47,3 +47,5 @@ terraform.rc
 ### direnv ###
 .direnv
 .envrc
+.gitsecret/keys/random_seed
+!*.secret

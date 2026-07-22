@@ -5,7 +5,8 @@ keys:
 creation_rules:
   - path_regex: .*/sops/.*/*
     key_groups:
-      - pgp:
-          - *sumi
       - age:
           - *sumi_age
+        merge:
+          - pgp:
+              - *sumi
