@@ -22,7 +22,7 @@ let
 in
 {
   imports = [
-    ../share/settings
+    ../../share/settings
     ./certs.nix
   ];
 
@@ -31,7 +31,7 @@ in
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"
-        ./etcd.conf.tpl.nix
+        ./templates/etcd.conf.tpl.nix
       ];
     };
   };

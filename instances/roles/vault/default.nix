@@ -20,9 +20,9 @@ in
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"
-        ../share/virtual-machine/hostname.tpl.nix
-        ./vault-config.tpl.nix
-        ./keepalived.tpl.nix
+        ../share/templates/hostname.tpl.nix
+        ./templates/vault-config.tpl.nix
+        ./templates/keepalived.tpl.nix
       ];
     };
   };

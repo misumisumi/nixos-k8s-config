@@ -13,16 +13,17 @@ let
     ;
 in
 {
+  imports = [ ../../share/settings ];
+
   image.modules = mkForce {
     lxc = inputs.homelab-modules.nixosModules.lxc-container;
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"
-        ./keepalived.env.tpl.nix
+        ./templates/keepalived.env.tpl.nix
       ];
     };
   };
-  imports = [ ../share/settings ];
 
   services = {
     # haproxyのログの取り方の参考

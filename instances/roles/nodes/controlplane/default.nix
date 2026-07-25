@@ -9,8 +9,8 @@ let
 in
 {
   imports = [
-    ../share/k8s
-    ../share/settings
+    ../../share/k8s
+    ../../share/settings
     ./apiserver.nix
     ./certs.nix
     ./controller-manager.nix
@@ -22,7 +22,7 @@ in
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"
-        ../share/virtual-machine/hostname.tpl.nix
+        ../../share/templates/hostname.tpl.nix
       ];
     };
   };

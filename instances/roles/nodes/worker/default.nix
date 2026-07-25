@@ -9,11 +9,13 @@ let
 in
 {
   imports = [
+    ../../share/k8s
     ../../share/settings
-    ../../share/settings/users.nix
-    # ./network.nix
-    ./unbound.nix
+    ./ceph.nix
+    ./certs.nix
+    ./kubelet.nix
   ];
+
   image.modules = mkForce {
     inherit (inputs.homelab-modules.nixosModules) incus-vm;
     lxc-metadata = {
