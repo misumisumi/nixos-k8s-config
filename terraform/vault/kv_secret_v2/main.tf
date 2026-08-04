@@ -13,13 +13,17 @@ terraform {
 }
 
 data "sops_file" "secrets" {
-  source_file = "${path.module}/sops/${terraform.workspace}.yaml"
+  source_file = "${path.module}/branch/${terraform.workspace}.yaml"
+}
+
+locals {
+  decrypted = yamldecode(data.sops_file.secrets.raw)
 }
 
 provider "vault" {
   address      = var.vault_address
   ca_cert_file = var.vault_ca_cert_path
-  token        = data.sops_file.secrets.data["vault_root_token"]
+  token        = local.decrypted["vault_root_token"]
 }
 
 resource "terraform_data" "workspace" {
@@ -35,7 +39,11 @@ resource "vault_mount" "kv_v2" {
 locals {
   kv_secrets = {
     for name, mapping in var.kv_secrets : name => {
-      for output_key, sops_key in mapping : output_key => try(data.sops_file.secrets.data[sops_key], "")
+      for output_key, sops_ref in mapping : output_key => try(
+        local.decrypted[split(".", sops_ref)[0]][split(".", sops_ref)[1]],
+        local.decrypted[sops_ref],
+        ""
+      )
     }
   }
 }

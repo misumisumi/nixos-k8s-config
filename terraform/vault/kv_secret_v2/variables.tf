@@ -19,11 +19,15 @@ variable "kv_secrets" {
   type        = map(map(string))
   description = <<-EOT
     Map of Vault KV secret names to their data field mappings.
-    Each entry: secret_name = { output_key = "sops_file_key" }
+    Each entry: secret_name = { output_key = "sops_yaml_path" }
+    The sops_yaml_path uses dot notation for nested keys in the decrypted SOPS YAML.
     Example:
     cloudflare = {
-      api_token = "cloudflare_api_token"
-      email     = "cloudflare_email"
+      api_token = "cloudflare.api_token"
+      email     = "cloudflare.email"
+    }
+    piraeus = {
+      master_passphrase = "piraeus.master_passphrase"
     }
   EOT
   default     = {}

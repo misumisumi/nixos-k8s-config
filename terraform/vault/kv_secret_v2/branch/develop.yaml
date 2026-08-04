@@ -1,6 +1,9 @@
 vault_root_token: ENC[AES256_GCM,data:+jy7Gvl7Q0xP1qkG3y+Rh0n/RW1eOMSnVD/M4A==,iv:ZYGrZn/1OH+lzLOFSEEK8Yi9CxHqoYeRnp7mRJco7lU=,tag:AUn9rg2nfgNFau6I6gVRtQ==,type:str]
-cloudflare_api_token: ENC[AES256_GCM,data:KLuZVr5cn2vEsVGR/VFgh1XWDTR9WbquWlaYQz7WJjrEoe0AH3OOYM/6LfMbG5eUeU429Ag=,iv:icRBOhP345dEaB7bgjeyEmCnFhH2x85yvFAtx1Z4o0s=,tag:GS9we7jV5xYBVskuX6hzdA==,type:str]
-cloudflare_email: ENC[AES256_GCM,data:/KSAjRzdDn0uRkSqOe1sEUWiFv1q8tC82YPG,iv:BnDLnnzMQ7YonxZNpu1GpPbeR4UOlPKawAI8URL41m8=,tag:nD/nw0PKt0rMWfvYweAPqg==,type:str]
+cloudflare:
+    api_token: ENC[AES256_GCM,data:78LCi/sec7khvkyfnJcXM6JgIoDmlSauriECjXjXGc4zyBg7U7vMc2LfvfBCQlAi5PeREdA=,iv:gTFTt+he2JqGzXGv4HLWlk6pqVjYmVmB5UEVfTsJEaY=,tag:s6xZOG41ZDds3utiYRLGZg==,type:str]
+    email: ENC[AES256_GCM,data:Rq71oKBtuYUM7T/wEw5vmdJxProx9StM0Vh5,iv:xhLSjDG4oAExcab5p7lJmle6p6VSiGpPj96mqle8PVA=,tag:boOB2a20xvsETQWuGXoGAg==,type:str]
+piraeus:
+    master_passphrase: ENC[AES256_GCM,data:j19s9v6J4oko3X+Z9k8/,iv:gXrzFbhqpVoQpNxloc21TrxzJMB1a7W0qunhzOiF0Xs=,tag:idD3RQ0Db2hOTaaD4vWs2w==,type:str]
 sops:
     age:
         - enc: |
@@ -12,8 +15,8 @@ sops:
             nFF2yLiZmhJvAYnkE7h2AeyyAcbrXzpvTOmgrFsEikYw5gHsQrQJUA==
             -----END AGE ENCRYPTED FILE-----
           recipient: age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
-    lastmodified: "2026-07-21T13:05:32Z"
-    mac: ENC[AES256_GCM,data:H2gAjl2gH7iItr4O6Fg4h5MhYMZySMdETINmt9WWd9pe/mvwDacO9Zh+Ln4IsNUZ1F9Fj4RgGRpBBLdaGfzHo3HOMG8qI5+pHYibPaMqo90b3olYzGH67jtwlm8q6UaDyuLFsHujbb/qN2436xAGLV0fRjZV5JiJhicpRdVlbN8=,iv:qblzDTPts2m/HloT256k5VUdPYBcz/G5oiwtmk9+n44=,tag:etuW+GYJXwAe1lnBxTJspw==,type:str]
+    lastmodified: "2026-08-04T14:52:15Z"
+    mac: ENC[AES256_GCM,data:m4dbL9enKPEOW+fS/4EmFcCBiDVabKdodj4TgeRhgFHC/AX84St/Jmw32D53a1Re4uJYYTpdmGwzMeFTgks5qwgSVVx8YOm6ri3jtkepF27l0tGRmQpp8VaU4S0G9LyhkZkQMDSaIbJssC5gB7Uq0/rs8GJmu1klxGiRPaPMf/s=,iv:ujW5E/ibzLKFe3TWP1nqB5GIpsvv9ouJDHnzPqmhulk=,tag:1daLzTHn9QRsQJWAIDjdMg==,type:str]
     pgp:
         - created_at: "2026-07-21T13:05:32Z"
           enc: |-
@@ -27,4 +30,4 @@ sops:
             -----END PGP MESSAGE-----
           fp: 2C0E62B7117471A5
     unencrypted_suffix: _unencrypted
-    version: 3.13.2
+    version: 3.13.3

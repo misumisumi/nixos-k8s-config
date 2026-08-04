@@ -13,13 +13,17 @@ terraform {
 }
 
 data "sops_file" "secrets" {
-  source_file = "${path.module}/sops/${terraform.workspace}.yaml"
+  source_file = "${path.module}/branch/${terraform.workspace}.yaml"
+}
+
+locals {
+  decrypted = yamldecode(data.sops_file.secrets.raw)
 }
 
 provider "vault" {
   address      = var.vault_address
   ca_cert_file = var.vault_ca_cert_path
-  token        = data.sops_file.secrets.data["vault_root_token"]
+  token        = local.decrypted["vault_root_token"]
 }
 
 resource "vault_auth_backend" "kubernetes" {
