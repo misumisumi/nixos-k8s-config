@@ -30,6 +30,22 @@ compornents = [
           "limits.memory" = "8GB"
         }
       },
+      {
+        name      = "ceph-worker"
+        root_pool = "instances"
+        config = {
+          "limits.cpu"    = "4"
+          "limits.memory" = "16GB"
+        }
+      },
+      {
+        name      = "piraeus-worker"
+        root_pool = "instances"
+        config = {
+          "limits.cpu"    = "4"
+          "limits.memory" = "8GB"
+        }
+      },
     ]
     instances = [
       {
@@ -180,10 +196,49 @@ compornents = [
         ]
       },
       {
-        name         = "worker1"
+        name         = "app-worker1"
         image        = "dev/nodes/worker"
         machine_type = "virtual-machine"
         profiles     = ["worker"]
+        networks = [
+          {
+            parent         = "dev-overlay"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.60"
+          },
+        ]
+      },
+      {
+        name         = "app-worker2"
+        image        = "dev/nodes/worker"
+        machine_type = "virtual-machine"
+        profiles     = ["worker"]
+        networks = [
+          {
+            parent         = "dev-overlay"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.61"
+          },
+        ]
+      },
+      {
+        name         = "app-worker3"
+        image        = "dev/nodes/worker"
+        machine_type = "virtual-machine"
+        profiles     = ["worker"]
+        networks = [
+          {
+            parent         = "dev-overlay"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.62"
+          },
+        ]
+      },
+      {
+        name         = "ceph-worker1"
+        image        = "dev/nodes/storage-worker"
+        machine_type = "virtual-machine"
+        profiles     = ["ceph-worker"]
         networks = [
           {
             parent         = "dev-overlay"
@@ -193,20 +248,39 @@ compornents = [
         ]
         devices = [
           {
-            name = "ceph"
-            type = "disk"
+            name   = "ceph_disk_01"
+            type   = "disk"
+            create = false
             properties = {
               pool   = "ceph"
-              source = "ceph1"
+              source = "ceph1-disk-01"
+            }
+          },
+          {
+            name   = "ceph_disk_02"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "ceph"
+              source = "ceph1-disk-02"
+            }
+          },
+          {
+            name   = "ceph_meta_disk"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "ceph"
+              source = "ceph1-meta"
             }
           }
         ]
       },
       {
-        name         = "worker2"
-        image        = "dev/nodes/worker"
+        name         = "ceph-worker2"
+        image        = "dev/nodes/storage-worker"
         machine_type = "virtual-machine"
-        profiles     = ["worker"]
+        profiles     = ["ceph-worker"]
         networks = [
           {
             parent         = "dev-overlay"
@@ -216,20 +290,39 @@ compornents = [
         ]
         devices = [
           {
-            name = "ceph"
-            type = "disk"
+            name   = "ceph_disk_01"
+            type   = "disk"
+            create = false
             properties = {
               pool   = "ceph"
-              source = "ceph2"
+              source = "ceph2-disk-01"
+            }
+          },
+          {
+            name   = "ceph_disk_02"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "ceph"
+              source = "ceph2-disk-02"
+            }
+          },
+          {
+            name   = "ceph_meta_disk"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "ceph"
+              source = "ceph2-meta"
             }
           }
         ]
       },
       {
-        name         = "worker3"
-        image        = "dev/nodes/worker"
+        name         = "ceph-worker3"
+        image        = "dev/nodes/storage-worker"
         machine_type = "virtual-machine"
-        profiles     = ["worker"]
+        profiles     = ["ceph-worker"]
         networks = [
           {
             parent         = "dev-overlay"
@@ -239,13 +332,93 @@ compornents = [
         ]
         devices = [
           {
-            name = "ceph"
-            type = "disk"
+            name   = "ceph_disk_01"
+            type   = "disk"
+            create = false
             properties = {
               pool   = "ceph"
-              source = "ceph3"
+              source = "ceph3-disk-01"
+            }
+          },
+          {
+            name   = "ceph_disk_02"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "ceph"
+              source = "ceph3-disk-02"
+            }
+          },
+          {
+            name   = "ceph_meta_disk"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "ceph"
+              source = "ceph3-meta"
             }
           }
+        ]
+      },
+      {
+        name         = "piraeus-worker1"
+        image        = "dev/nodes/storage-worker"
+        machine_type = "virtual-machine"
+        profiles     = ["piraeus-worker"]
+        networks = [
+          {
+            parent         = "dev-overlay"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.50"
+          },
+        ]
+        devices = [
+          {
+            name   = "piraeus_disk"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "piraeus"
+              source = "piraeus-worker1-disk"
+            }
+          }
+        ]
+      },
+      {
+        name         = "piraeus-worker2"
+        image        = "dev/nodes/storage-worker"
+        machine_type = "virtual-machine"
+        profiles     = ["piraeus-worker"]
+        networks = [
+          {
+            parent         = "dev-overlay"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.51"
+          },
+        ]
+        devices = [
+          {
+            name   = "piraeus_disk"
+            type   = "disk"
+            create = false
+            properties = {
+              pool   = "piraeus"
+              source = "piraeus-worker2-disk"
+            }
+          }
+        ]
+      },
+      {
+        name         = "piraeus-worker3"
+        image        = "dev/nodes/storage-worker"
+        machine_type = "virtual-machine"
+        profiles     = ["piraeus-worker"]
+        networks = [
+          {
+            parent         = "dev-overlay"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.100.52"
+          },
         ]
       }
     ]

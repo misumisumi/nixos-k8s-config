@@ -25,6 +25,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    nixos-linstor = {
+      url = "git+ssh://git@github.com/misumisumi/nixos-linstor.git?ref=main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     homelab-modules.url = "path:../modules";
   };

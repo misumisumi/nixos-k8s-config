@@ -22,7 +22,21 @@ nodeIPs = ["172.16.100.30", "172.16.100.31", "172.16.100.32"]
 [nodes.worker]
 system = "x86_64-linux"
 user = "nixos"
-nodeIPs = ["172.16.100.40", "172.16.100.41", "172.16.100.42"]
+nodeIPs = ["172.16.100.60", "172.16.100.61", "172.16.100.62"]
+
+[nodes.storage-worker]
+system = "x86_64-linux"
+user = "nixos"
+nodeIPs = [
+    # for ceph
+    "172.16.100.40",
+    "172.16.100.41",
+    "172.16.100.42",
+    # for piraeus-operator
+    "172.16.100.50",
+    "172.16.100.51",
+    "172.16.100.52",
+]
 
 [nodes.vault]
 system = "x86_64-linux"

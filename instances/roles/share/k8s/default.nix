@@ -2,6 +2,7 @@
 let
   inherit (lib)
     concatStringsSep
+    filter
     flatten
     imap1
     mkDefault
@@ -12,11 +13,16 @@ let
   inherit (static.k8s.settings) serviceClusterIpRange;
 
   nodes = flatten (
-    map (role: imap1 (i: ip: "${ip} ${role}${toString i}") static.nodes.${role}.nodeIPs) [
-      "etcd"
-      "controlplane"
-      "worker"
-    ]
+    map (role: imap1 (i: ip: "${ip} ${role}${toString i}") static.nodes.${role}.nodeIPs) (
+      filter (role: static.nodes ? ${role}) [
+        "etcd"
+        "controlplane"
+        "worker"
+        "app-worker"
+        "ceph-worker"
+        "piraeus-worker"
+      ]
+    )
   );
 in
 {

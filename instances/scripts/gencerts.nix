@@ -8,6 +8,7 @@
 let
   inherit (lib)
     concatStringsSep
+    filter
     flatten
     getExe
     getExe'
@@ -149,28 +150,36 @@ let
       };
     };
   };
-  vault = static: let
-    nodes = roles: flatten (
-      map (role: imap1 (i: ip: [
-        "${role}${toString i}"
-        "${ip}"
-      ]) static.nodes.${role}.nodeIPs) roles
-    );
-  in {
-    server = {
-      profile = "server";
-      csr = mkCsr {
-        O = "vault";
-        CN = "vault";
-        hosts = [
-          "localhost"
-          "127.0.0.1"
-        ]
-        ++ (nodes [ "vault" ])
-        ++ [ static.nodes.vault.vip ];
+  vault =
+    static:
+    let
+      nodes =
+        roles:
+        flatten (
+          map (
+            role:
+            imap1 (i: ip: [
+              "${role}${toString i}"
+              "${ip}"
+            ]) static.nodes.${role}.nodeIPs
+          ) roles
+        );
+    in
+    {
+      server = {
+        profile = "server";
+        csr = mkCsr {
+          O = "vault";
+          CN = "vault";
+          hosts = [
+            "localhost"
+            "127.0.0.1"
+          ]
+          ++ (nodes [ "vault" ])
+          ++ [ static.nodes.vault.vip ];
+        };
       };
     };
-  };
   kubeletCsr = hostname: nodeIP: {
     profile = "both";
     csr = mkCsr {
@@ -249,13 +258,25 @@ let
       mkdir -p "$NODES_DIR"
       pushd $NODES_DIR > /dev/null
       ${concatStringsSep "\n" (
-        imap1 (
-          i: nodeIP:
-          let
-            conf = kubeletCsr "worker${toString i}" nodeIP;
-          in
-          "genCert worker${toString i} ${conf.profile} ${conf.csr} kubernetes"
-        ) static.nodes.worker.nodeIPs
+        flatten (
+          map
+            (
+              role:
+              imap1 (
+                i: nodeIP:
+                let
+                  conf = kubeletCsr "${role}${toString i}" nodeIP;
+                in
+                "genCert ${role}${toString i} ${conf.profile} ${conf.csr} kubernetes"
+              ) static.nodes.${role}.nodeIPs
+            )
+            (
+              filter (role: static.nodes ? ${role}) [
+                "worker"
+                "storage-worker"
+              ]
+            )
+        )
       )}
       popd > /dev/null
 
