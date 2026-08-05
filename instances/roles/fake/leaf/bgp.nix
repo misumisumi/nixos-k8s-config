@@ -2,9 +2,11 @@
 let
   inherit (builtins) attrValues;
   inherit (lib)
+    concatStringsSep
     concatMapStringsSep
     filterAttrs
     hasPrefix
+    mapAttrsToList
     ;
   inherit (config.networking.vxlan) tenants;
 
@@ -17,7 +19,6 @@ in
 {
   systemd.network = {
     config.networkConfig = {
-      #NOTE: https://scottstuff.net/posts/2025/02/25/frr-vs-systemd-networkd/
       ManageForeignNextHops = false;
       ManageForeignRoutes = false;
       ManageForeignRoutingPolicyRules = false;
@@ -31,12 +32,9 @@ in
       ip protocol vrrp accept
     '';
   };
-  # FRR (Free Range Routing) を有効にする
   services.frr = {
     bgpd.enable = true;
     bfdd.enable = true;
-    # FRRの設定はconfigオプションで直接記述
-    #NOTE: IBはL2スイッチなので、アンダーレイにはスタティックルートを使う
     config = ''
       frr defaults datacenter
       log syslog informational
@@ -111,10 +109,42 @@ in
         address-family ipv4 unicast
           redistribute connected
           neighbor K8S activate
+          import vrf ${tenants.vault.vrf}
+          import vrf ${tenants.proxy.vrf}
+          import vrf ${tenants.shared.vrf}
         exit-address-family
 
         address-family l2vpn evpn
           advertise ipv4 unicast
+        exit-address-family
+
+      router bgp 65200 vrf ${tenants.vault.vrf}
+        bgp router-id ${routerId}
+        no bgp default ipv4-unicast
+
+        address-family ipv4 unicast
+          redistribute connected
+          import vrf ${tenants.k8s.vrf}
+        exit-address-family
+
+      router bgp 65200 vrf ${tenants.proxy.vrf}
+        bgp router-id ${routerId}
+        no bgp default ipv4-unicast
+
+        address-family ipv4 unicast
+          redistribute connected
+          import vrf ${tenants.k8s.vrf}
+          import vrf ${tenants.shared.vrf}
+        exit-address-family
+
+      router bgp 65200 vrf ${tenants.shared.vrf}
+        bgp router-id ${routerId}
+        no bgp default ipv4-unicast
+
+        address-family ipv4 unicast
+          redistribute connected
+          import vrf ${tenants.k8s.vrf}
+          import vrf ${tenants.proxy.vrf}
         exit-address-family
     '';
   };

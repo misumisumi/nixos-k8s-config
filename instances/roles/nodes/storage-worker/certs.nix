@@ -4,8 +4,8 @@
     requiredBy = [ "kubelet.service" ];
     before = [ "kubelet.service" ];
     script = ''
-      ${pkgs.rsync}/bin/rsync --chmod=644 /etc/kubernetes/pki/workers/$(${pkgs.hostname}/bin/hostname)-chain.pem /etc/kubernetes/pki/kubelet.pem
-      ${pkgs.rsync}/bin/rsync --chmod=600 /etc/kubernetes/pki/workers/$(${pkgs.hostname}/bin/hostname)-key.pem /etc/kubernetes/pki/kubelet-key.pem
+      ${pkgs.rsync}/bin/rsync --chmod=644 /etc/kubernetes/pki/storage-workers/$(${pkgs.hostname}/bin/hostname)-chain.pem /etc/kubernetes/pki/kubelet.pem
+      ${pkgs.rsync}/bin/rsync --chmod=600 /etc/kubernetes/pki/storage-workers/$(${pkgs.hostname}/bin/hostname)-key.pem /etc/kubernetes/pki/kubelet-key.pem
     '';
   };
   system.build.extraContents = [
@@ -17,8 +17,8 @@
       mode = "0644";
     }
     {
-      source = secretPath + "/pki/kubernetes/workers";
-      target = "/etc/kubernetes/pki/workers";
+      source = secretPath + "/pki/kubernetes/storage-workers";
+      target = "/etc/kubernetes/pki/storage-workers";
       user = "root";
       group = "root";
       mode = "0700";

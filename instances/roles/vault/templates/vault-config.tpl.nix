@@ -11,7 +11,7 @@ let
       retry_join {
         leader_api_addr = "https://${ip}:8200"
       }
-    '') static.nodes.vault.nodeIPs
+    '') static.vault.vault.nodeIPs
   );
 in
 {

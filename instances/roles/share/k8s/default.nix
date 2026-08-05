@@ -29,7 +29,6 @@ in
   systemd.services."systemd-hostnamed".environment = mkForce { };
   services = {
     kubernetes = {
-      #NOTE: CoreDNS install using nixidy
       addons.dns.enable = false;
       inherit (static.k8s.settings) apiserverAddress clusterCidr;
       apiserver.serviceClusterIpRange = serviceClusterIpRange;
@@ -54,27 +53,23 @@ in
     firewall = {
       enable = false;
       checkReversePath = "loose";
-      #NOTE: for cilium
       trustedInterfaces = [
         "cilium+"
         "lxc+"
       ];
-      # general k8s ports
       allowedUDPPorts = [
-        6081 # Geneve
-        8472 # VXLAN
+        6081
+        8472
       ];
       allowedTCPPorts = [
-        4240 # Cilium health endpoint
-        4244 # Cilium Hubble
+        4240
+        4244
       ];
     };
     extraHosts = ''
       ${concatStringsSep "\n" nodes}
     '';
   };
-  # rootless環境でのkubernetesの実行
-  # INFO: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-in-userns
   virtualisation.containerd = {
     settings = {
       version = 2;
@@ -93,11 +88,4 @@ in
       };
     };
   };
-  # services.kubernetes = {
-  #   addonManager.enable = true;
-  #   addons.dns = {
-  #     enable = true;
-  #     replicas = 2;
-  #   };
-  # };
 }

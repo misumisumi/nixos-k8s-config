@@ -98,9 +98,9 @@
                 linkage-gateway
 
                 genca
-                gencerts-prod
+                # gencerts-prod
                 gencerts-dev
-                gencerts-test
+                # gencerts-test
                 genkubeconfig
                 k-dev
                 v-dev

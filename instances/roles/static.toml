@@ -24,12 +24,33 @@ system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["172.16.100.40", "172.16.100.41", "172.16.100.42"]
 
-[nodes.proxy]
+[nodes.storage-worker]
+system = "x86_64-linux"
+user = "nixos"
+
+[nodes.ceph-worker]
+notShow = true
+nodeIPs = [
+    # for ceph
+    "172.16.100.40",
+    "172.16.100.41",
+    "172.16.100.42",
+]
+[nodes.piraeus-worker]
+notShow = true
+nodeIPs = [
+    # for piraeus-operator
+    "172.16.100.50",
+    "172.16.100.51",
+    "172.16.100.52",
+]
+
+[proxy.proxy]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["172.16.100.50"]
 
-[nodes.vault]
+[vault.vault]
 system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["172.16.11.10", "172.16.11.11", "172.16.11.12"]

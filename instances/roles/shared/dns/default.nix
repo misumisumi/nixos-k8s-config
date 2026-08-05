@@ -11,7 +11,7 @@ in
   imports = [
     ../../share/settings
     ../../share/settings/users.nix
-    # ./network.nix
+    ./network.nix
     ./powerdns.nix
   ];
   image.modules = mkForce {

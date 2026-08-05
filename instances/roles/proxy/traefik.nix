@@ -4,9 +4,7 @@
   ...
 }:
 let
-  inherit (lib)
-    mkForce
-    ;
+  inherit (lib) mkForce;
 in
 {
   services.traefik = {
@@ -38,7 +36,7 @@ in
         services.k8s-ingress = {
           loadBalancer.servers = [
             {
-              address = "ingress.home.:443";
+              address = "${static.k8s.settings.apiserverAddress}:443";
             }
           ];
         };

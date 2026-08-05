@@ -38,7 +38,7 @@ in
   k: v:
   nameValuePair "v-${v}" (
     writeShellScriptBin "v-${v}" ''
-      export VAULT_ADDR=https://${static.${k}.nodes.vault.vip}:8200
+      export VAULT_ADDR=https://${static.${k}.vault.vault.vip}:8200
       export VAULT_CACERT="$FLAKE_ROOT/instances/secrets/${k}/pki/RootCA/ca.pem"
       ${vault}/bin/vault $@
     ''

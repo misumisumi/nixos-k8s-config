@@ -16,6 +16,9 @@ in
           Description = "Management network";
         };
         address = [ "${manageIP}/${manageIPPrefix}" ];
+        routes = [
+          { Destination = "0.0.0.0/0"; Gateway = "172.16.1.253"; }
+        ];
       };
     };
   };

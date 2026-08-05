@@ -26,7 +26,7 @@ in
       environment = if isDev then "dev" else "prod";
       check_interval = "15s";
       max_check_interval = "30m";
-      vault_nodes = map (ip: "https://${ip}:8200") static.nodes.vault.nodeIPs;
+      vault_nodes = map (ip: "https://${ip}:8200") static.vault.vault.nodeIPs;
       unseal_tokens = [
         "@unseal_token1@"
         "@unseal_token2@"

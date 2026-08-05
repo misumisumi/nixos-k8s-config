@@ -161,7 +161,7 @@ let
             imap1 (i: ip: [
               "${role}${toString i}"
               "${ip}"
-            ]) static.nodes.${role}.nodeIPs
+            ]) static.vault.${role}.nodeIPs
           ) roles
         );
     in
@@ -176,7 +176,7 @@ let
             "127.0.0.1"
           ]
           ++ (nodes [ "vault" ])
-          ++ [ static.nodes.vault.vip ];
+          ++ [ static.vault.vault.vip ];
         };
       };
     };
@@ -273,7 +273,32 @@ let
             (
               filter (role: static.nodes ? ${role}) [
                 "worker"
-                "storage-worker"
+              ]
+            )
+        )
+      )}
+      popd > /dev/null
+
+      NODES_DIR="$OUTDIR/kubernetes/storage-workers"
+      mkdir -p "$NODES_DIR"
+      pushd $NODES_DIR > /dev/null
+      ${concatStringsSep "\n" (
+        flatten (
+          map
+            (
+              role:
+              imap1 (
+                i: nodeIP:
+                let
+                  conf = kubeletCsr "${role}${toString i}" nodeIP;
+                in
+                "genCert ${role}${toString i} ${conf.profile} ${conf.csr} kubernetes"
+              ) static.nodes.${role}.nodeIPs
+            )
+            (
+              filter (role: static.nodes ? ${role}) [
+                "ceph-worker"
+                "piraeus-worker"
               ]
             )
         )
@@ -287,18 +312,18 @@ let
       popd > /dev/null
     '';
   variants = {
-    production = {
-      abbr = "prod";
-      static = importTOML ../roles/static.toml;
-    };
+    # production = {
+    #   abbr = "prod";
+    #   static = importTOML ../roles/static.toml;
+    # };
     develop = {
       abbr = "dev";
       static = importTOML ../roles/static_dev.toml;
     };
-    test = {
-      abbr = "test";
-      static = importTOML ../roles/static_dev.toml;
-    };
+    # test = {
+    #   abbr = "test";
+    #   static = importTOML ../roles/static_dev.toml;
+    # };
   };
 in
 mapAttrs' (k: v: nameValuePair "gencerts-${v.abbr}" (script k v.abbr v.static)) variants

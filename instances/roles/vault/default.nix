@@ -38,8 +38,9 @@ in
       8200
       8201
     ];
-    extraCommands = "iptables -A INPUT -p vrrp -j ACCEPT";
-    extraStopCommands = "iptables -D INPUT -p vrrp -j ACCEPT || true";
+    extraInputRules = ''
+      ip protocol vrrp accept
+    '';
   };
 
   services.keepalived = {
@@ -50,7 +51,7 @@ in
       virtualRouterId = 43;
       virtualIps = [
         {
-          addr = static.nodes.vault.vip;
+          addr = static.vault.vault.vip;
         }
       ];
       extraConfig = ''

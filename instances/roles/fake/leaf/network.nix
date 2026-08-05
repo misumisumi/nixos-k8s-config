@@ -29,6 +29,36 @@ in
           destinationPort = 4789;
         };
       };
+      vault = {
+        name = "vault";
+        L3VNI = {
+          hwAddr = "46:9f:a8:f5:8c:6d";
+          vni = 11002;
+          vlan = 1102;
+          local = "${routerId}";
+          destinationPort = 4789;
+        };
+      };
+      proxy = {
+        name = "proxy";
+        L3VNI = {
+          hwAddr = "46:9f:a8:f5:8c:6e";
+          vni = 11003;
+          vlan = 1103;
+          local = "${routerId}";
+          destinationPort = 4789;
+        };
+      };
+      shared = {
+        name = "shared";
+        L3VNI = {
+          hwAddr = "46:9f:a8:f5:8c:6f";
+          vni = 11004;
+          vlan = 1104;
+          local = "${routerId}";
+          destinationPort = 4789;
+        };
+      };
     };
   };
   systemd.network = {
@@ -65,6 +95,45 @@ in
           {
             Destination = "0.0.0.0/0";
             Gateway = "172.16.100.1";
+            Metric = 100;
+          }
+        ];
+      };
+      "20-enp7s0" = {
+        name = "enp7s0";
+        vrf = [ "${tenants.vault.vrf}" ];
+        DHCP = "no";
+        address = [ "172.16.11.254/24" ];
+        routes = [
+          {
+            Destination = "0.0.0.0/0";
+            Gateway = "172.16.11.100";
+            Metric = 100;
+          }
+        ];
+      };
+      "20-enp8s0" = {
+        name = "enp8s0";
+        vrf = [ "${tenants.proxy.vrf}" ];
+        DHCP = "no";
+        address = [ "172.16.10.254/24" ];
+        routes = [
+          {
+            Destination = "0.0.0.0/0";
+            Gateway = "172.16.10.100";
+            Metric = 100;
+          }
+        ];
+      };
+      "20-enp9s0" = {
+        name = "enp9s0";
+        vrf = [ "${tenants.shared.vrf}" ];
+        DHCP = "no";
+        address = [ "172.16.1.253/24" ];
+        routes = [
+          {
+            Destination = "0.0.0.0/0";
+            Gateway = "172.16.1.100";
             Metric = 100;
           }
         ];
