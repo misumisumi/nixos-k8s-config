@@ -54,7 +54,7 @@ compornents = [
         profiles = ["loadbalancer"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.10"
           },
@@ -66,7 +66,7 @@ compornents = [
         profiles = ["loadbalancer"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.11"
           },
@@ -78,7 +78,7 @@ compornents = [
         profiles = ["loadbalancer"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.12"
           },
@@ -90,7 +90,7 @@ compornents = [
         profiles = ["etcd"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.20"
           },
@@ -114,7 +114,7 @@ compornents = [
         profiles = ["etcd"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.21"
           },
@@ -138,7 +138,7 @@ compornents = [
         profiles = ["etcd"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.22"
           },
@@ -163,7 +163,7 @@ compornents = [
         profiles     = ["controlplane"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.30"
           },
@@ -176,7 +176,7 @@ compornents = [
         profiles     = ["controlplane"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.31"
           },
@@ -189,46 +189,46 @@ compornents = [
         profiles     = ["controlplane"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.32"
           },
         ]
       },
       {
-        name         = "app-worker1"
+        name         = "worker1"
         image        = "dev/nodes/worker"
         machine_type = "virtual-machine"
         profiles     = ["worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.60"
           },
         ]
       },
       {
-        name         = "app-worker2"
+        name         = "worker2"
         image        = "dev/nodes/worker"
         machine_type = "virtual-machine"
         profiles     = ["worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.61"
           },
         ]
       },
       {
-        name         = "app-worker3"
+        name         = "worker3"
         image        = "dev/nodes/worker"
         machine_type = "virtual-machine"
         profiles     = ["worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.62"
           },
@@ -241,7 +241,7 @@ compornents = [
         profiles     = ["ceph-worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.40"
           },
@@ -283,7 +283,7 @@ compornents = [
         profiles     = ["ceph-worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.41"
           },
@@ -325,7 +325,7 @@ compornents = [
         profiles     = ["ceph-worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.42"
           },
@@ -367,7 +367,7 @@ compornents = [
         profiles     = ["piraeus-worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.50"
           },
@@ -391,7 +391,7 @@ compornents = [
         profiles     = ["piraeus-worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.51"
           },
@@ -415,7 +415,7 @@ compornents = [
         profiles     = ["piraeus-worker"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.52"
           },

@@ -19,7 +19,7 @@ compornents = [
         profiles     = ["vault"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-vault"
             nictype        = "bridged"
             "ipv4.address" = "172.16.11.10"
           },
@@ -43,7 +43,7 @@ compornents = [
         profiles     = ["vault"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-vault"
             nictype        = "bridged"
             "ipv4.address" = "172.16.11.11"
           },
@@ -67,7 +67,7 @@ compornents = [
         profiles     = ["vault"]
         networks = [
           {
-            parent         = "dev-overlay"
+            parent         = "dev-vault"
             nictype        = "bridged"
             "ipv4.address" = "172.16.11.12"
           },

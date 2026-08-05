@@ -6,7 +6,7 @@ compornents = [
       {
         name = "instances"
         config = {
-          size = "64GiB"
+          size = "128GiB"
         }
       },
       {

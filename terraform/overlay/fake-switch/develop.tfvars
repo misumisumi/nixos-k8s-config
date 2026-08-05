@@ -35,9 +35,24 @@ compornents = [
             nictype = "bridged"
           },
           {
-            parent         = "dev-overlay"
+            parent         = "dev-nodes"
             nictype        = "bridged"
             "ipv4.address" = "172.16.100.5"
+          },
+          {
+            parent         = "dev-vault"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.11.254"
+          },
+          {
+            parent         = "dev-proxy"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.10.254"
+          },
+          {
+            parent         = "dev-shared"
+            nictype        = "bridged"
+            "ipv4.address" = "172.16.1.253"
           },
         ]
       },
