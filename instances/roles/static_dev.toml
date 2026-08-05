@@ -81,3 +81,13 @@ acl = [
 # hostname = "syaro"
 # manageIP = "172.16.1.3"
 # manageIPPrefix = "24"
+
+#################################################
+# VMs for development
+#################################################
+[fake.spine]
+system = "x86_64-linux"
+user = "nixos"
+[fake.leaf]
+system = "x86_64-linux"
+user = "nixos"

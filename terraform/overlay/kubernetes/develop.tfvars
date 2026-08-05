@@ -7,7 +7,7 @@ compornents = [
         root_pool = "instances"
         config = {
           "limits.cpu"    = "2"
-          "limits.memory" = "4GB"
+          "limits.memory" = "2GB"
         }
       },
       {
@@ -35,7 +35,7 @@ compornents = [
         root_pool = "instances"
         config = {
           "limits.cpu"    = "4"
-          "limits.memory" = "16GB"
+          "limits.memory" = "8GB"
         }
       },
       {
@@ -43,7 +43,7 @@ compornents = [
         root_pool = "instances"
         config = {
           "limits.cpu"    = "4"
-          "limits.memory" = "8GB"
+          "limits.memory" = "4GB"
         }
       },
     ]

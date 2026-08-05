@@ -64,15 +64,10 @@
             inherit nixpkgs-unstable;
           };
         # Cluster settings managing colmena
-        nixosConfigurations =
-          (import ./roles {
-            inherit (inputs.nixpkgs) lib;
-            inherit inputs self;
-          })
-          // (import ./test {
-            inherit (inputs.nixpkgs) lib;
-            inherit inputs self;
-          });
+        nixosConfigurations = import ./roles {
+          inherit (inputs.nixpkgs) lib;
+          inherit inputs self;
+        };
       };
       perSystem =
         {

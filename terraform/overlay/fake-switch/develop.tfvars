@@ -3,7 +3,7 @@ compornents = [
     remote = "local"
     profiles = [
       {
-        name      = "test"
+        name      = "fake"
         root_pool = "instances"
         config = {
           "limits.cpu"    = "2"
@@ -14,9 +14,9 @@ compornents = [
     instances = [
       {
         name         = "spine"
-        image        = "dev/test/spine"
+        image        = "dev/fake/spine"
         machine_type = "virtual-machine"
-        profiles     = ["test"]
+        profiles     = ["fake"]
         networks = [
           {
             parent  = "dev-p2p-0"
@@ -26,9 +26,9 @@ compornents = [
       },
       {
         name         = "leaf"
-        image        = "dev/test/leaf"
+        image        = "dev/fake/leaf"
         machine_type = "virtual-machine"
-        profiles     = ["test"]
+        profiles     = ["fake"]
         networks = [
           {
             parent  = "dev-p2p-0"
