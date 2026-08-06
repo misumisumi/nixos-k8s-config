@@ -1,5 +1,5 @@
 vault_address           = "https://172.16.11.1:8200"
 vault_ca_cert_path      = "../../../instances/secrets/develop/pki/RootCA/ca.pem"
-kubernetes_host         = "https://172.16.100.100:6443"
+kubernetes_host         = "https://172.16.100.100"
 kubernetes_ca_cert_path = "../../../instances/secrets/develop/pki/kubernetes/ca.pem"
 kubernetes_auth_path    = "kubernetes"

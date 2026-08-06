@@ -1,7 +1,9 @@
 vault_root_token: ENC[AES256_GCM,data:+jy7Gvl7Q0xP1qkG3y+Rh0n/RW1eOMSnVD/M4A==,iv:ZYGrZn/1OH+lzLOFSEEK8Yi9CxHqoYeRnp7mRJco7lU=,tag:AUn9rg2nfgNFau6I6gVRtQ==,type:str]
+#ENC[AES256_GCM,data:ubPVQTMBdL1DpE73cpXwL6NwKURgKnGRtqc62YsBUIM2HaDIHwj3DOeE3EwTimjuywN9IHgyO2s+5uImcd5RKGKXSqCQMFU6UFPT/JaT9EAgwqOeplVq+7p+uVt2CZqhXNB58NfZ6ACsB+Ym,iv:Qqbux17doYy+O2MERKcpuE45Lq02Em1mUOtZle49jaA=,tag:zWoxb4eMGZXV66BBAew3iA==,type:comment]
+token_reviewer_jwt: ENC[AES256_GCM,data:AZwwcbwv673q5yCWHt1TFeIuD+BzjDiwQnoGfIa1bo4Gy8GgfGR8eMLyd/QyZS/wnPXhFGGEefUUYpk9eqA8HHkk6nVhJ3YPs9p+ouZhvi3MBJjDpijeNgA8VqB8GsJ4gjXGQPWaEeb8lK6RxD6KvEWCp8FJbDPpDmibzk+PmYX1RvGmUiGZauP1ny5mQjSsmXd5TwBFdKQUX0D9JFSojdy0pvKjVRyhX5x4mZOqFKC3JzKp8YI1WL0BqJadUJkQbyGs44fxoaZnN1PIQ7U6n3DLx/tREECS37r9Xm/honu1iC9KgoqxS7oMIqkmrH2pvfoxaKhYD5QGdgFf80jUoCM1G27nsVvQ5ifyH/9T71mpQ2b36qMNMrOhgb3Xrut4Ki0lRO0ZcD180adud464nE9BSAPRkYKZOjponzCXPxRzNJ1IE+9wZzt38hZB0itocs0tyBYyx5PfJsal6ivXVXOUZEPDN/AqLqqtQ/H4GSanCMdT/GsDMExaQQKtXxLpGO09CY2X9p7501JpSxOmuNNEx6GL9ML3USMXUBFilgrM5VVjlYX3eMBs72rCtHIzp6Tr0q18kz+w59+fSFfb8g0gfm6edI49PntBxjYqF97Lq8d5dJon66FvHmkVC33uCS4PSIzHU0G8h+p9dxs5KxckvxNAGr11R+yr3AsYTkKYzIPdpT7YfU7EAdcCMaCGZ+yVHP0pVJMLDxFI1lUUs4udIFtBxPKWQ0p8h78lQjzpCafupuaXnuC4Fuii5ziKuNGNjKlUSzanI6H26YvWCO2bcWG/AOHLCDJgio83qLUNFwMcbCj5D6Jy1OgCXitKpk60s95I6oxAgIR88ZDWK8fNKbsSDJuC+YWAaosgz4nRTnADYuLt3YAHYjYfSIGNceszpMjnojvVnr5cmJz32NQU08UZ3S99qCUBlkzjgtXFWhhrmR6W3OY971Ga3RzQZhlOTljp/N4AOdgsN/4qDpvJy3NMewj62wfdv6IjDYp6ptfcc3mAsOSOWgnevIsIJgQkKRu2EgcMaXk9bgkhC1V7QMOSl4mTxOIvMNePVWHrkD7Rz9fTE/a9n8lNEfId5MegoAzSbc7rrrV0Lhsdxl+wTcv8xxmH5RIhSZSD07r7GHdFNaNiWNyEprql6WsTxAtoKDT+qvk1hZ7R2m1W0LWwFxXHo62XvPHtwWRThVeMy96uHrLDYK/XmBJwFfx+sDGGpkF77C+EMTSX7OaGuMM4fzafBQGMgzgsROY0zYaatQ==,iv:sgPzPSMKhVopS946/Ha76LPNOEj0zmfOcbIAqyXzgxc=,tag:fP3Y5hezWKO2Bxfbr+V9Rw==,type:str]
 cloudflare:
-    api_token: ENC[AES256_GCM,data:78LCi/sec7khvkyfnJcXM6JgIoDmlSauriECjXjXGc4zyBg7U7vMc2LfvfBCQlAi5PeREdA=,iv:gTFTt+he2JqGzXGv4HLWlk6pqVjYmVmB5UEVfTsJEaY=,tag:s6xZOG41ZDds3utiYRLGZg==,type:str]
-    email: ENC[AES256_GCM,data:Rq71oKBtuYUM7T/wEw5vmdJxProx9StM0Vh5,iv:xhLSjDG4oAExcab5p7lJmle6p6VSiGpPj96mqle8PVA=,tag:boOB2a20xvsETQWuGXoGAg==,type:str]
+    api_token: ENC[AES256_GCM,data:/vEM5GAKek0KAe43tNwXgvNAmSJqEHUaA9jXYeMcvcMZgzSW50odHO76/QtGX0PzjFTvjok=,iv:zsjfSA6+d/UDPZmPfA2t1+Q5qTEZ9WSWb/omfZ70Jys=,tag:6nDYCmWQFYWweSboqDKT9Q==,type:str]
+    email: ENC[AES256_GCM,data:lLdBRVTDkJOMR3qe4zUc9cg/FnjMQo6PXFkB,iv:m5SLRC/H2K4lKHz++VYQbv0B0NH2fpvt3+XGkvSQmgA=,tag:uQAr5+dInwk7RjiR66Q+fg==,type:str]
 piraeus:
     master_passphrase: ENC[AES256_GCM,data:j19s9v6J4oko3X+Z9k8/,iv:gXrzFbhqpVoQpNxloc21TrxzJMB1a7W0qunhzOiF0Xs=,tag:idD3RQ0Db2hOTaaD4vWs2w==,type:str]
 sops:
@@ -15,8 +17,8 @@ sops:
             nFF2yLiZmhJvAYnkE7h2AeyyAcbrXzpvTOmgrFsEikYw5gHsQrQJUA==
             -----END AGE ENCRYPTED FILE-----
           recipient: age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
-    lastmodified: "2026-08-05T16:00:20Z"
-    mac: ENC[AES256_GCM,data:9/vamEH0dd/xkJfrwp9Fmc0vOI8vDSe3lkItd06mu2uYF2T9A6UKCwJIoGrpFdxSZlbTg7+wBxTxZDnLhzNARlRtaeLJm7k0zQp3qxi1wEdxAmd1hTNwVOCxV6T8c/c3ZgGwb43PWVG+JeTFez1C8Bxv7c87VoC4begux2hjF+0=,iv:MMiVYdPh9Cwb45rbb6HeT6ME5TMgujRpxBfGe7qDpZE=,tag:sKamz6yOs2kQ+GGSuQ7w7A==,type:str]
+    lastmodified: "2026-08-06T08:42:11Z"
+    mac: ENC[AES256_GCM,data:0HOizDPUqIGmbQCUqij31pjVfItA3E36FzedA4waPc5VRdVkL0QuuG/IpBDqKX3Y1eC3qRyWZqg67s8b15gV6rCjZvRA1VIo4PPKG1lkOq35B++oCVYZWAMPHgNfkfRBEDIbR9x3Yp1STApX9TokJC1NcV84PncOT3pvbuS2ql8=,iv:ZriwfIzbDKoVaXsD7NrEacmJvATDOyxTPwbR5O0VcN8=,tag:GldcYbo+xrfZVoa3qMtpkw==,type:str]
     pgp:
         - created_at: "2026-07-21T13:05:32Z"
           enc: |-

@@ -24,3 +24,9 @@ variable "kubernetes_auth_path" {
   description = "Mount path for the Kubernetes auth backend"
   default     = "kubernetes"
 }
+
+variable "kubernetes_issuer" {
+  type        = string
+  description = "Issuer URL for the Kubernetes ServiceAccount JWTs"
+  default     = "https://kubernetes.default.svc"
+}
