@@ -38,18 +38,6 @@ let
       ; nodes for k8s cluster
       ${concatStringsSep "\n" nodeNameIPPairs}
     '';
-
-  misumiZone = pkgs.writeText "misumi-sumi.com.zone" ''
-    $ORIGIN misumi-sumi.com.
-    @ IN SOA ns.home. admin.home. (
-        2026080601 ; Serial
-        3600       ; Refresh
-        1800       ; Retry
-        604800     ; Expire
-        86400      ; Minimum TTL
-    )
-    @ IN NS ns.home.
-  '';
 in
 {
   environment.systemPackages = with pkgs; [ pdns ];
@@ -118,8 +106,18 @@ in
       };
       script = ''
         ${pkgs.pdns}/bin/pdnsutil zone load home ${homeZone}
-        ${pkgs.pdns}/bin/pdnsutil zone load misumi-sumi.com ${misumiZone}
+
+        # misumi-sumi.com は存在しない場合のみ作成（external-dns が動的レコードを管理）
+        if ! ${pkgs.pdns}/bin/pdnsutil list-zone misumi-sumi.com > /dev/null 2>&1; then
+          ${pkgs.pdns}/bin/pdnsutil create-zone misumi-sumi.com ns.home.
+        fi
       '';
     };
+  };
+
+  fileSystems."/var/lib/powerdns" = {
+    device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_pdns";
+    fsType = "ext4";
+    autoFormat = true;
   };
 }
