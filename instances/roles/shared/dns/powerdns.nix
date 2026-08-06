@@ -38,6 +38,18 @@ let
       ; nodes for k8s cluster
       ${concatStringsSep "\n" nodeNameIPPairs}
     '';
+
+  misumiZone = pkgs.writeText "misumi-sumi.com.zone" ''
+    $ORIGIN misumi-sumi.com.
+    @ IN SOA ns.home. admin.home. (
+        2026080601 ; Serial
+        3600       ; Refresh
+        1800       ; Retry
+        604800     ; Expire
+        86400      ; Minimum TTL
+    )
+    @ IN NS ns.home.
+  '';
 in
 {
   environment.systemPackages = with pkgs; [ pdns ];
@@ -103,8 +115,11 @@ in
       after = [ "pdns.service" ];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${pkgs.pdns}/bin/pdnsutil zone load home ${homeZone}";
       };
+      script = ''
+        ${pkgs.pdns}/bin/pdnsutil zone load home ${homeZone}
+        ${pkgs.pdns}/bin/pdnsutil zone load misumi-sumi.com ${misumiZone}
+      '';
     };
   };
 }
