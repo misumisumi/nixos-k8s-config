@@ -11,7 +11,7 @@ in
   imports = [
     ../../share/k8s
     ../../share/settings
-    ./storage-backend.nix
+    ./ceph.nix
     ./certs.nix
     ./kubelet.nix
   ];

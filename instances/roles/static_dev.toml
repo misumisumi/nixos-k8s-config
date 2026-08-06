@@ -30,12 +30,9 @@ system = "x86_64-linux"
 user = "nixos"
 nodeIPs = ["172.16.100.60", "172.16.100.61", "172.16.100.62"]
 
-[nodes.storage-worker]
+[nodes.ceph-worker]
 system = "x86_64-linux"
 user = "nixos"
-
-[nodes.ceph-worker]
-notShow = true
 nodeIPs = [
     # for ceph
     "172.16.100.40",
@@ -43,7 +40,8 @@ nodeIPs = [
     "172.16.100.42",
 ]
 [nodes.piraeus-worker]
-notShow = true
+system = "x86_64-linux"
+user = "nixos"
 nodeIPs = [
     # for piraeus-operator
     "172.16.100.50",

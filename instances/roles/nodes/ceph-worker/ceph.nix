@@ -1,15 +1,12 @@
 {
   lib,
-  pkgs,
   ...
 }:
 {
   boot = {
-    extraModulePackages = [ pkgs.drbd9-dkms ];
     kernelModules = [
       "ceph"
       "rbd"
-      "drbd"
     ];
   };
   # https://github.com/rook/rook/issues/10110#issuecomment-1464898937

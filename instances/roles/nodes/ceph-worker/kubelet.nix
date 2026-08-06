@@ -17,6 +17,7 @@
         extraOpts = lib.strings.concatStringsSep " " [
           "--root-dir=/var/lib/kubelet"
           "--fail-swap-on=false"
+          "--node-labels=role.storage=ceph"
         ];
         unschedulable = false;
         kubeconfig = {
