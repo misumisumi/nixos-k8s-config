@@ -1,11 +1,11 @@
 {
   static,
   group,
-  hostname,
+  tag,
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) manageIP manageIPPrefix;
+  inherit (static.${group}.${tag}) manageIP manageIPPrefix;
 in
 {
   systemd.network = {
@@ -17,7 +17,10 @@ in
         };
         address = [ "${manageIP}/${manageIPPrefix}" ];
         routes = [
-          { Destination = "0.0.0.0/0"; Gateway = "172.16.1.253"; }
+          {
+            Destination = "0.0.0.0/0";
+            Gateway = "172.16.1.253";
+          }
         ];
       };
     };

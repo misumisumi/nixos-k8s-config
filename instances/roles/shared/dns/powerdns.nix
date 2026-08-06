@@ -13,16 +13,14 @@ let
     importTOML
     mapAttrsToList
     ;
-  k8sStatic =
-    if isDev then
-      importTOML ../../../../k8s/roles/static_dev.toml
-    else
-      importTOML ../../../../k8s/roles/static.toml;
+  k8sStatic = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
 
   homeZone =
     let
       nodeNameIPPairs = flatten (
-        mapAttrsToList (n: v: imap1 (i: ip: "${n}${toString i} IN A ${ip}") v.nodeIPs) k8sStatic.nodes
+        mapAttrsToList (
+          n: v: imap1 (i: ip: "${n}${toString i} IN A ${ip}") (v.nodeIPs or [ ])
+        ) k8sStatic.nodes
       );
     in
     pkgs.writeText "home.zone" ''
