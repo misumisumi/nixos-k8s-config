@@ -25,6 +25,7 @@ networks = {
       "ipv6.nat"      = false
       "ipv6.dhcp"     = false
       "ipv6.firewall" = false
+      "raw.dnsmasq"   = "dhcp-option=3,172.16.100.5"
     }
   }
   dev-vault = {
