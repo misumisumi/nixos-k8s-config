@@ -107,6 +107,8 @@
                 helm-dev
 
                 nixidy
+
+                setup-dev-env
               ];
           };
         };

@@ -1,4 +1,11 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  static,
+  group,
+  tag,
+  ...
+}:
 let
   inherit (builtins) attrValues;
   inherit (lib)
@@ -6,13 +13,14 @@ let
     concatMapStringsSep
     filterAttrs
     hasPrefix
-    mapAttrsToList
+    splitString
+    sublist
     ;
   inherit (config.networking.vxlan) tenants;
+  inherit (static.${group}.${tag}) k8sSegmentIP routerId;
 
-  routerId = "10.10.10.50";
-  underlayPrefixes = "10.10.10.0/24";
-  k8sNodeIpRange = "172.16.100.0/24";
+  underlayPrefixes = concatStringsSep "." ((sublist 0 3 (splitString "." routerId)) ++ [ "0/24" ]);
+  k8sNodeIpRange = concatStringsSep "." ((sublist 0 3 (splitString "." k8sSegmentIP)) ++ [ "0/24" ]);
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
 in

@@ -95,6 +95,7 @@
           packages = {
             genca = pkgs.callPackage ./scripts/genca.nix { };
             genkubeconfig = pkgs.callPackage ./scripts/genkubeconfig.nix { };
+            setup-dev-env = pkgs.callPackage ./scripts/setup-dev-env.nix { };
           }
           // (pkgs.callPackages ./scripts/default.nix { })
           // (pkgs.callPackages ./scripts/gencerts.nix { });

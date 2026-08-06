@@ -1,3 +1,9 @@
+[dev.env]
+notShow = true
+domain = "dev.misumi-sumi.com"
+nic = "dev_shared"
+cilium_lb = "172.16.100.200"
+
 [k8s.settings]
 notShow = true
 serviceClusterIpRange = "10.100.0.0/16"
@@ -94,6 +100,9 @@ acl = [
 [fake.spine]
 system = "x86_64-linux"
 user = "nixos"
+routerId = "10.10.10.10"
 [fake.leaf]
 system = "x86_64-linux"
 user = "nixos"
+routerId = "10.10.10.50"
+k8sSegmentIP = "172.16.100.5"

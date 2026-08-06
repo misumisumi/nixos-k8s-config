@@ -1,6 +1,12 @@
-{ inputs, ... }:
+{
+  inputs,
+  static,
+  group,
+  tag,
+  ...
+}:
 let
-  routerId = "10.10.10.10";
+  inherit (static.${group}.${tag}) routerId;
 in
 {
   imports = [

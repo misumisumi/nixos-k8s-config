@@ -1,8 +1,14 @@
-{ inputs, config, ... }:
+{
+  inputs,
+  config,
+  static,
+  group,
+  tag,
+  ...
+}:
 let
   inherit (config.networking.vxlan) tenants;
-
-  routerId = "10.10.10.50";
+  inherit (static.${group}.${tag}) k8sSegmentIP routerId;
 in
 {
   imports = [
@@ -90,7 +96,7 @@ in
         name = "enp6s0";
         vrf = [ "${tenants.k8s.vrf}" ];
         DHCP = "no";
-        address = [ "172.16.100.5/24" ];
+        address = [ "${k8sSegmentIP}/24" ];
         routes = [
           {
             Destination = "0.0.0.0/0";
