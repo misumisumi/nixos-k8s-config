@@ -9,4 +9,8 @@ kv_secrets = {
   piraeus = {
     master_passphrase = "piraeus.master_passphrase"
   }
+  argocd = {
+    github_client_id     = "argocd.github_client_id"
+    github_client_secret = "argocd.github_client_secret"
+  }
 }
