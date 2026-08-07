@@ -7,7 +7,7 @@ compornents = [
         root_pool = "instances"
         config = {
           "limits.cpu"    = "2"
-          "limits.memory" = "2GB"
+          "limits.memory" = "4GB"
         }
       },
       {
@@ -25,22 +25,25 @@ compornents = [
       {
         name      = "worker"
         root_pool = "instances"
+        root_size = "16GiB"
         config = {
           "limits.cpu"    = "4"
-          "limits.memory" = "8GB"
+          "limits.memory" = "4GB"
         }
       },
       {
         name      = "ceph-worker"
         root_pool = "instances"
+        root_size = "16GiB"
         config = {
           "limits.cpu"    = "4"
-          "limits.memory" = "8GB"
+          "limits.memory" = "4GB"
         }
       },
       {
         name      = "piraeus-worker"
         root_pool = "instances"
+        root_size = "16GiB"
         config = {
           "limits.cpu"    = "4"
           "limits.memory" = "4GB"
@@ -236,7 +239,7 @@ compornents = [
       },
       {
         name         = "ceph-worker1"
-        image        = "dev/nodes/storage-worker"
+        image        = "dev/nodes/ceph-worker"
         machine_type = "virtual-machine"
         profiles     = ["ceph-worker"]
         networks = [
@@ -264,21 +267,12 @@ compornents = [
               pool   = "ceph"
               source = "ceph1-disk-02"
             }
-          },
-          {
-            name   = "ceph_meta_disk"
-            type   = "disk"
-            create = false
-            properties = {
-              pool   = "ceph"
-              source = "ceph1-meta"
-            }
           }
         ]
       },
       {
         name         = "ceph-worker2"
-        image        = "dev/nodes/storage-worker"
+        image        = "dev/nodes/ceph-worker"
         machine_type = "virtual-machine"
         profiles     = ["ceph-worker"]
         networks = [
@@ -306,21 +300,12 @@ compornents = [
               pool   = "ceph"
               source = "ceph2-disk-02"
             }
-          },
-          {
-            name   = "ceph_meta_disk"
-            type   = "disk"
-            create = false
-            properties = {
-              pool   = "ceph"
-              source = "ceph2-meta"
-            }
           }
         ]
       },
       {
         name         = "ceph-worker3"
-        image        = "dev/nodes/storage-worker"
+        image        = "dev/nodes/ceph-worker"
         machine_type = "virtual-machine"
         profiles     = ["ceph-worker"]
         networks = [
@@ -348,21 +333,12 @@ compornents = [
               pool   = "ceph"
               source = "ceph3-disk-02"
             }
-          },
-          {
-            name   = "ceph_meta_disk"
-            type   = "disk"
-            create = false
-            properties = {
-              pool   = "ceph"
-              source = "ceph3-meta"
-            }
           }
         ]
       },
       {
         name         = "piraeus-worker1"
-        image        = "dev/nodes/storage-worker"
+        image        = "dev/nodes/piraeus-worker"
         machine_type = "virtual-machine"
         profiles     = ["piraeus-worker"]
         networks = [
@@ -386,7 +362,7 @@ compornents = [
       },
       {
         name         = "piraeus-worker2"
-        image        = "dev/nodes/storage-worker"
+        image        = "dev/nodes/piraeus-worker"
         machine_type = "virtual-machine"
         profiles     = ["piraeus-worker"]
         networks = [
@@ -410,7 +386,7 @@ compornents = [
       },
       {
         name         = "piraeus-worker3"
-        image        = "dev/nodes/storage-worker"
+        image        = "dev/nodes/piraeus-worker"
         machine_type = "virtual-machine"
         profiles     = ["piraeus-worker"]
         networks = [
