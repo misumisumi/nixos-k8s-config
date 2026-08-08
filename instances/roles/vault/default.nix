@@ -16,11 +16,10 @@ in
   ];
 
   image.modules = mkForce {
-    inherit (inputs.homelab-modules.nixosModules) incus-vm;
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"
-        ../share/templates/hostname.tpl.nix
         ./templates/vault-config.tpl.nix
         ./templates/keepalived.tpl.nix
       ];
@@ -33,14 +32,17 @@ in
 
   boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
 
-  networking.firewall = {
-    allowedTCPPorts = [
-      8200
-      8201
-    ];
-    extraInputRules = ''
-      ip protocol vrrp accept
-    '';
+  networking = {
+    nftables.enable = true;
+    firewall = {
+      allowedTCPPorts = [
+        8200
+        8201
+      ];
+      extraInputRules = ''
+        ip protocol vrrp accept
+      '';
+    };
   };
 
   services.keepalived = {

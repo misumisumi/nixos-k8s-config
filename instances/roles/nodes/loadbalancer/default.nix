@@ -102,10 +102,12 @@ in
   boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
 
   networking = {
+    nftables.enable = true;
     firewall = {
       allowedTCPPorts = [ 443 ];
-      extraCommands = "iptables -A INPUT -p vrrp -j ACCEPT";
-      extraStopCommands = "iptables -D INPUT -p vrrp -j ACCEPT || true";
+      extraInputRules = ''
+        ip protocol vrrp accept
+      '';
     };
   };
 }

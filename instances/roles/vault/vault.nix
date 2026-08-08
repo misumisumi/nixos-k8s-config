@@ -47,16 +47,16 @@ in
       requiredBy = [ "vault-unseal.service" ];
       before = [ "vault-unseal.service" ];
       script = ''
-        ${pkgs.coreutils}/bin/ln -sf "/var/secrets/$(${pkgs.coreutils}/bin/cat /etc/hostname)" /var/secrets/vault-unseal
+        ${pkgs.coreutils}/bin/ln -sf "/var/secrets/$(${pkgs.hostname}/bin/hostname)" /var/secrets/vault-unseal
       '';
     };
   };
 
-  fileSystems."/var/lib/vault" = {
-    device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_vault";
-    fsType = "ext4";
-    autoFormat = true;
-  };
+  # fileSystems."/var/lib/vault" = {
+  #   device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_vault";
+  #   fsType = "ext4";
+  #   autoFormat = true;
+  # };
 
   system.build.extraContents = [
     {
