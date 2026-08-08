@@ -23,7 +23,6 @@
     # local modules
     homelab-baremetals.url = "path:./baremetals";
     homelab-instances.url = "path:./instances";
-    homelab-k8s-apps.url = "path:./k8s-apps";
     homelab-terraform.url = "path:./terraform";
   };
   outputs =
@@ -48,10 +47,8 @@
         }:
         {
           packages = {
-            nixidy = inputs.homelab-k8s-apps.packages.${system}.nixidy;
             inherit (inputs.homelab-baremetals.packages.${system}) prod_switch_sks8300-8x dev_switch_sks8300-8x;
           };
-          legacyPackages = inputs.homelab-k8s-apps.legacyPackages.${system};
           devshells.default = {
             commands = [
               {
@@ -81,7 +78,6 @@
               with inputs.homelab-baremetals.packages.${system};
               with inputs.homelab-instances.packages.${system};
               with inputs.homelab-terraform.packages.${system};
-              with inputs.homelab-k8s-apps.packages.${system};
               [
                 bashInteractive
 
@@ -105,8 +101,6 @@
                 k-dev
                 v-dev
                 helm-dev
-
-                nixidy
 
                 setup-dev-env
               ];
