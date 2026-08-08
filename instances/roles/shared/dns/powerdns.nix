@@ -115,9 +115,9 @@ in
     };
   };
 
-  fileSystems."/var/lib/powerdns" = {
-    device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_pdns";
-    fsType = "ext4";
-    autoFormat = true;
-  };
+  # fileSystems."/var/lib/powerdns" = {
+  #   device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_pdns";
+  #   fsType = "ext4";
+  #   autoFormat = true;
+  # };
 }

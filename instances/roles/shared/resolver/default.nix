@@ -15,7 +15,7 @@ in
     ./unbound.nix
   ];
   image.modules = mkForce {
-    inherit (inputs.homelab-modules.nixosModules) incus-vm;
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
     lxc-metadata = {
       imports = [
         "${modulesPath}/virtualisation/lxc-image-metadata.nix"

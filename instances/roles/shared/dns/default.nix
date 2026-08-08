@@ -15,7 +15,7 @@ in
     ./powerdns.nix
   ];
   image.modules = mkForce {
-    inherit (inputs.homelab-modules.nixosModules) incus-vm;
+    lxc = inputs.homelab-modules.nixosModules.lxc-container;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }
