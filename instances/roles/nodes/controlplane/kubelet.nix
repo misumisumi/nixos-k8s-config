@@ -10,7 +10,8 @@
 
   services.kubernetes.kubelet = rec {
     enable = true;
-    extraOpts = lib.strings.concatStringsSep "\\n" [
+    extraOpts = lib.strings.concatStringsSep " " [
+      "--root-dir=/var/lib/kubelet"
       "--fail-swap-on=false"
     ];
     unschedulable = true;

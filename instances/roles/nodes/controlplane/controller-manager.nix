@@ -9,9 +9,6 @@ in
 {
   services.kubernetes.controllerManager = {
     enable = true;
-    extraOpts = lib.strings.concatStringsSep " " [
-      "--feature-gates=KubeletInUserNamespace=true"
-    ];
     kubeconfig = {
       caFile = "/etc/kubernetes/pki/ca.pem";
       certFile = "/etc/kubernetes/pki/controller-manager.pem";
