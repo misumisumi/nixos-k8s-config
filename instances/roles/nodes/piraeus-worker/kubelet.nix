@@ -17,7 +17,7 @@
         extraOpts = lib.strings.concatStringsSep " " [
           "--root-dir=/var/lib/kubelet"
           "--fail-swap-on=false"
-          "--node-labels=role.storage=piraeus"
+          "--node-labels=role.worker=piraeus"
         ];
         unschedulable = false;
         kubeconfig = {
