@@ -1,5 +1,4 @@
 {
-  lib,
   pkgs,
   ...
 }:
@@ -8,6 +7,7 @@
     extraModulePackages = [ pkgs.drbd9-dkms ];
     kernelModules = [
       "drbd"
+      "rbd"
     ];
   };
 
