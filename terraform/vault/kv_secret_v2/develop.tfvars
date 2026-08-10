@@ -13,4 +13,17 @@ kv_secrets = {
     github_client_id     = "argocd.github_client_id"
     github_client_secret = "argocd.github_client_secret"
   }
+  grafana = {
+    admin_user           = "grafana.admin_user"
+    admin_password       = "grafana.admin_password"
+    github_client_id     = "grafana.github_client_id"
+    github_client_secret = "grafana.github_client_secret"
+  }
+  alertmanager = {
+    discord_webhook_url = "alertmanager.discord_webhook_url"
+  }
+  owncloud = {
+    admin_user_id  = "owncloud.admin_user_id"
+    admin_password = "owncloud.admin_password"
+  }
 }

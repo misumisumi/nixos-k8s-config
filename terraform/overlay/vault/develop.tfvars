@@ -6,16 +6,16 @@ compornents = [
         name      = "vault"
         root_pool = "instances"
         config = {
-          "limits.cpu"    = "2"
-          "limits.memory" = "4GB"
+          "limits.cpu"    = "1"
+          "limits.memory" = "2GB"
         }
       },
     ]
     instances = [
       {
         name         = "vault1"
-        image        = "dev/nodes/vault"
-        machine_type = "virtual-machine"
+        image        = "dev/vault/vault"
+        machine_type = "container"
         profiles     = ["vault"]
         networks = [
           {
@@ -32,14 +32,15 @@ compornents = [
             properties = {
               source = "vault1"
               pool   = "vault"
+              path   = "/var/lib/vault"
             }
           },
         ]
       },
       {
         name         = "vault2"
-        image        = "dev/nodes/vault"
-        machine_type = "virtual-machine"
+        image        = "dev/vault/vault"
+        machine_type = "container"
         profiles     = ["vault"]
         networks = [
           {
@@ -56,14 +57,15 @@ compornents = [
             properties = {
               source = "vault2"
               pool   = "vault"
+              path   = "/var/lib/vault"
             }
           },
         ]
       },
       {
         name         = "vault3"
-        image        = "dev/nodes/vault"
-        machine_type = "virtual-machine"
+        image        = "dev/vault/vault"
+        machine_type = "container"
         profiles     = ["vault"]
         networks = [
           {
@@ -80,6 +82,7 @@ compornents = [
             properties = {
               source = "vault3"
               pool   = "vault"
+              path   = "/var/lib/vault"
             }
           },
         ]

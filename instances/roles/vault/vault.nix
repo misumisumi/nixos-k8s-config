@@ -52,12 +52,6 @@ in
     };
   };
 
-  # fileSystems."/var/lib/vault" = {
-  #   device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_vault";
-  #   fsType = "ext4";
-  #   autoFormat = true;
-  # };
-
   system.build.extraContents = [
     {
       source = secretPath + "/roles/vault/vault1";
