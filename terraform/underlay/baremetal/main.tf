@@ -38,6 +38,6 @@ module "instances" {
   source   = "../../modules/instance"
 
   remote    = each.value.remote
-  instances = each.value.instances
+  instances = [for i in each.value.instances : merge(i, { running = i.running && var.instances_running })]
   profiles  = each.value.profiles
 }

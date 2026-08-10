@@ -8,6 +8,12 @@ variable "remote_hosts" {
   default = []
 }
 
+variable "instances_running" {
+  type        = bool
+  default     = true
+  description = "Set to false to stop all instances in this workspace"
+}
+
 variable "compornents" {
   type = list(
     object({

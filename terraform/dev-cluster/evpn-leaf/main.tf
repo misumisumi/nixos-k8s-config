@@ -1,1 +1,0 @@
-../baremetal/main.tf
