@@ -9,10 +9,8 @@ let
 in
 {
   imports = [
-    ../../share/k8s
+    ../../share/kubelet
     ../../share/settings
-    ./ceph.nix
-    ./certs.nix
     ./kubelet.nix
   ];
 

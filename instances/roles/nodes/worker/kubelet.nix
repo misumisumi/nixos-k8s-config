@@ -1,35 +1,18 @@
 {
   lib,
-  config,
   ...
 }:
 {
-  networking = {
-    firewall.allowedTCPPorts = [
-      config.services.kubernetes.kubelet.port
-    ];
-  };
 
-  services = {
-    kubernetes = {
-      kubelet = rec {
-        enable = true;
-        extraOpts = lib.strings.concatStringsSep " " [
-          "--root-dir=/var/lib/kubelet"
-          "--fail-swap-on=false"
-          "--node-labels=role.worker=app"
-        ];
-        unschedulable = false;
-        kubeconfig = {
-          caFile = clientCaFile;
-          certFile = tlsCertFile;
-          keyFile = tlsKeyFile;
-          server = "https://${config.services.kubernetes.apiserverAddress}";
-        };
-        clientCaFile = "/etc/kubernetes/pki/ca.pem";
-        tlsCertFile = "/etc/kubernetes/pki/kubelet.pem";
-        tlsKeyFile = "/etc/kubernetes/pki/kubelet-key.pem";
-      };
-    };
+  services.kubernetes.kubelet.extraOpts = lib.strings.concatStringsSep " " [
+    "--root-dir=/var/lib/kubelet"
+    "--fail-swap-on=false"
+    "--node-labels=role.worker=app"
+  ];
+
+  fileSystems."/var/lib" = {
+    device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_incus_var_lib";
+    fsType = "ext4";
+    autoFormat = true;
   };
 }

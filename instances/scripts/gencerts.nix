@@ -199,6 +199,25 @@ let
         "${concatStringsSep "\n" (
           mapAttrsToList (k: v: "genCert ${k} ${v.profile} ${v.csr} ${parentCA}") target
         )}";
+
+      genEachNodeCerts =
+        tags:
+        concatStringsSep "\n" (
+          map (tag: ''
+            NODES_DIR="$OUTDIR/kubernetes/${tag}"
+            mkdir -p "$NODES_DIR"
+            pushd $NODES_DIR > /dev/null
+            ${concatStringsSep "\n" (
+              imap1 (
+                i: nodeIP:
+                let
+                  conf = kubeletCsr "${tag}${toString i}" nodeIP;
+                in
+                "genCert ${tag}${toString i} ${conf.profile} ${conf.csr} kubernetes"
+              ) static.nodes.${tag}.nodeIPs
+            )}
+          '') tags
+        );
     in
     writeShellScriptBin "gencerts.${abbr}" ''
       ROOTDIR=''${FLAKE_ROOT:-$PWD}
@@ -241,69 +260,12 @@ let
       ${genCerts (k8s static) "kubernetes"}
       popd > /dev/null
 
-      NODES_DIR="$OUTDIR/kubernetes/controlplanes"
-      mkdir -p "$NODES_DIR"
-      pushd $NODES_DIR > /dev/null
-      ${concatStringsSep "\n" (
-        imap1 (
-          i: nodeIP:
-          let
-            conf = kubeletCsr "controlplane${toString i}" nodeIP;
-          in
-          "genCert controlplane${toString i} ${conf.profile} ${conf.csr} kubernetes"
-        ) static.nodes.controlplane.nodeIPs
-      )}
-      popd > /dev/null
-      NODES_DIR="$OUTDIR/kubernetes/workers"
-      mkdir -p "$NODES_DIR"
-      pushd $NODES_DIR > /dev/null
-      ${concatStringsSep "\n" (
-        flatten (
-          map
-            (
-              role:
-              imap1 (
-                i: nodeIP:
-                let
-                  conf = kubeletCsr "${role}${toString i}" nodeIP;
-                in
-                "genCert ${role}${toString i} ${conf.profile} ${conf.csr} kubernetes"
-              ) static.nodes.${role}.nodeIPs
-            )
-            (
-              filter (role: static.nodes ? ${role}) [
-                "worker"
-              ]
-            )
-        )
-      )}
-      popd > /dev/null
-
-      NODES_DIR="$OUTDIR/kubernetes/storage-workers"
-      mkdir -p "$NODES_DIR"
-      pushd $NODES_DIR > /dev/null
-      ${concatStringsSep "\n" (
-        flatten (
-          map
-            (
-              role:
-              imap1 (
-                i: nodeIP:
-                let
-                  conf = kubeletCsr "${role}${toString i}" nodeIP;
-                in
-                "genCert ${role}${toString i} ${conf.profile} ${conf.csr} kubernetes"
-              ) static.nodes.${role}.nodeIPs
-            )
-            (
-              filter (role: static.nodes ? ${role}) [
-                "ceph-worker"
-                "piraeus-worker"
-              ]
-            )
-        )
-      )}
-      popd > /dev/null
+      ${genEachNodeCerts [
+        "controlplane"
+        "worker"
+        "ceph-worker"
+        "piraeus-worker"
+      ]}
 
       VAULT_DIR="$OUTDIR/vault"
       mkdir -p "$VAULT_DIR"

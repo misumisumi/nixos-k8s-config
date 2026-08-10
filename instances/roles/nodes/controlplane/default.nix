@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    ../../share/k8s
+    ../../share/kubelet
     ../../share/settings
     ./apiserver.nix
     ./certs.nix
