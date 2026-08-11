@@ -1,0 +1,1 @@
+../../../template/group/instances/output.tf

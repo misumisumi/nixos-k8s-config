@@ -1,0 +1,1 @@
+../../../template/group/storage/variables.tf

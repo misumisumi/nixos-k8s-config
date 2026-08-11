@@ -5,7 +5,7 @@ variable "remote" {
 
 variable "project" {
   type    = string
-  default = null
+  default = "default"
 }
 
 variable "profiles" {

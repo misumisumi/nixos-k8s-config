@@ -1,1 +1,0 @@
-../../dev-cluster/storage/output.tf

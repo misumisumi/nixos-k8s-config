@@ -1,0 +1,5 @@
+networks = {
+  prod-mngr = {
+    config = {}
+  }
+}

@@ -3,36 +3,36 @@ projects = [
     name        = "homelab-dev"
     description = "Development project for homelab"
     config = {
-      "features.images"          = false
-      "features.networks"        = false
-      "features.networks.zones"  = false
-      "features.profiles"        = false
-      "features.storage.volumes" = false
-      "features.storage.buckets" = false
+      "features.images"          = true
+      "features.networks"        = true
+      "features.networks.zones"  = true
+      "features.profiles"        = true
+      "features.storage.volumes" = true
+      "features.storage.buckets" = true
     }
   },
   {
     name        = "homelab-test"
     description = "Test project for homelab"
     config = {
-      "features.images"          = false
-      "features.networks"        = false
-      "features.networks.zones"  = false
-      "features.profiles"        = false
-      "features.storage.volumes" = false
-      "features.storage.buckets" = false
+      "features.images"          = true
+      "features.networks"        = true
+      "features.networks.zones"  = true
+      "features.profiles"        = true
+      "features.storage.volumes" = true
+      "features.storage.buckets" = true
     }
   },
   {
     name        = "homelab-prod"
     description = "Production project for homelab"
     config = {
-      "features.images"          = false
-      "features.networks"        = false
-      "features.networks.zones"  = false
-      "features.profiles"        = false
-      "features.storage.volumes" = false
-      "features.storage.buckets" = false
+      "features.images"          = true
+      "features.networks"        = true
+      "features.networks.zones"  = true
+      "features.profiles"        = true
+      "features.storage.volumes" = true
+      "features.storage.buckets" = true
     }
   }
 ]

@@ -1,0 +1,44 @@
+terraform {
+  required_version = "~> 1.10.0"
+  required_providers {
+    incus = {
+      source  = "registry.opentofu.org/lxc/incus"
+      version = "~> 1.0.0"
+    }
+    random = {
+      source  = "registry.opentofu.org/hashicorp/random"
+      version = "~> 3.7.2"
+    }
+    sops = {
+      source  = "carlpett/sops"
+      version = "~> 1.3.0"
+    }
+  }
+}
+
+provider "incus" {
+  generate_client_certificates = true
+  accept_remote_certificate    = true
+  dynamic "remote" {
+    for_each = var.remote_hosts
+    content {
+      name    = incus_remote.value.name
+      address = incus_remote.value.address
+    }
+  }
+}
+
+# Only use making env label for outputting show.json to use from colmena
+resource "terraform_data" "workspace" {
+  input = terraform.workspace
+}
+
+module "instances" {
+  for_each = { for i in var.compornents : i.remote => i }
+  source   = "../../../modules/instance"
+
+  remote    = each.value.remote
+  project   = each.value.project
+  instances = [for i in each.value.instances : merge(i, { running = i.running && var.instances_running })]
+  profiles  = each.value.profiles
+}
