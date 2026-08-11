@@ -104,20 +104,18 @@ let
                   description = "IP address for VLAN interface.";
                 };
                 anycastGateway = mkOption {
-                  type =
-                    types.submodule {
-                      options = {
-                        hwAddr = mkOption {
-                          type = types.str;
-                          description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
-                        };
-                        address = mkOption {
-                          type = types.str;
-                          description = "Generate IP address for anycast gateway of each VLAN-VNI.";
-                        };
+                  type = types.submodule {
+                    options = {
+                      hwAddr = mkOption {
+                        type = types.str;
+                        description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
                       };
-                    }
-                    ;
+                      address = mkOption {
+                        type = types.str;
+                        description = "Generate IP address for anycast gateway of each VLAN-VNI.";
+                      };
+                    };
+                  };
                 };
               };
             }
@@ -149,23 +147,21 @@ let
                   type = types.str;
                 };
                 anycastGateway = mkOption {
-                  type =
-                    types.submodule {
-                      options = {
-                        hwAddr = mkOption {
-                          type = types.str;
-                          description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
-                        };
-                        address = mkOption {
-                          type = types.str;
-                          description = "Generate IP address for anycast gateway of each VLAN-VNI.";
-                        };
-                        IF = mkOption {
-                          type = types.str;
-                        };
+                  type = types.submodule {
+                    options = {
+                      hwAddr = mkOption {
+                        type = types.str;
+                        description = "Generate MAC address for anycast gateway of each VLAN-VNI.";
                       };
-                    }
-                    ;
+                      address = mkOption {
+                        type = types.str;
+                        description = "Generate IP address for anycast gateway of each VLAN-VNI.";
+                      };
+                      IF = mkOption {
+                        type = types.str;
+                      };
+                    };
+                  };
                 };
               };
             }
@@ -236,14 +232,14 @@ in
               ReduceARPProxy = true;
               Independent = true;
               Local = v.L3VNI.local;
-            } // optionalString (v.vniVlanPairs' == [ ]) {
+            }
+            // optionalAttrs (v.vniVlanPairs' == [ ]) {
               VNI = toInt v.L3VNI.vni;
+            }
+            // optionalAttrs (v.vniVlanPairs' != [ ]) {
+              VNIFilter = true;
+              External = true;
             };
-            extraConfig = optionalString (v.vniVlanPairs' != [ ]) ''
-              [VXLAN]
-              VNIFilter=yes
-              External=yes
-            '';
           })
           (nameValuePair "${v.vrf}" {
             netdevConfig = {

@@ -37,23 +37,31 @@ in
         ];
       };
       "10-enp5s0" = {
-        name = "enp5s0";
+        matchConfig.Name = [
+          "enp5s0"
+          "enp4s0f0"
+        ];
         networkConfig = {
           Description = "WAN";
-          IPv6AcceptRA = true;
         };
       };
       "10-enp6s0" = {
-        name = "enp6s0";
+        matchConfig.Name = [
+          "enp6s0"
+          "eno1"
+        ];
         networkConfig = {
           Description = "Management network";
         };
         address = [ "${manageIP}/${manageIPPrefix}" ];
       };
       "10-enp7s0" = {
-        name = "enp7s0";
+        matchConfig.Name = [
+          "enp7s0"
+          "enp4s0f1"
+        ];
         networkConfig = {
-          Description = "10G network";
+          Description = "Internal 10G network";
         };
       };
     }

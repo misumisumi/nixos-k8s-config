@@ -32,12 +32,20 @@ in
         startGid = 300000;
       }
     ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCGcY4v0aRzAO+hLnGhEaU7JArt/Wrn8FuIgFcovlad sumi@mother-2021-03-12"
+    ];
   }
   // optionalAttrs (hasAttr "password" (config.sops.userHashedPassword or { })) {
     hashedPasswordFile = config.sops.secrets.userHashedPassword.path;
   };
 
-  users.users.root = optionalAttrs (hasAttr "password" (config.sops.rootHashedPassword or { })) {
+  users.users.root = {
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCGcY4v0aRzAO+hLnGhEaU7JArt/Wrn8FuIgFcovlad sumi@mother-2021-03-12"
+    ];
+  }
+  // (optionalAttrs (hasAttr "password" (config.sops.rootHashedPassword or { })) {
     hashedPasswordFile = config.sops.secrets.rootHashedPassword.path;
-  };
+  });
 }

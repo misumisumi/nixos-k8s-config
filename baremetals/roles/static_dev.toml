@@ -111,6 +111,11 @@ user = "renako"
 hostname = "borderRouter"
 routerId = "10.10.10.254"
 AS = "64512"
+# v6plus connection settings
+BR = "fd42:3a98:dc40:52c6::254"
+CE = "fd42:3a98:dc40:52c6::100"
+IPIP6_IPv4 = "203.0.113.1"
+PSID = 0
 
 #################################################
 # manage image

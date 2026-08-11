@@ -11,7 +11,7 @@ let
 
   script = ''
     uuid=$(cat /sys/class/dmi/id/product_uuid)
-    manageIP=$(ip route show to ${manageSegment} | grep -E "enp|eth" | grep -oP 'src \K[0-9.]+')
+    manageIP=$(ip route show to ${manageSegment} | grep -E "eno|enp|eth" | grep -oP 'src \K[0-9.]+')
 
     output=""
     while read -r line; do
@@ -83,8 +83,17 @@ in
     environment = {
       TZ = "${config.time.timeZone}";
     };
+    unitConfig = {
+      # 5回失敗したら諦める (初回 + リトライ4回)
+      StartLimitBurst = 5;
+      StartLimitIntervalSec = 3600;
+    };
     serviceConfig = {
       Type = "oneshot";
+      # 失敗時に自動リトライ。間隔は10s→20s→40s→80s→160sと指数関数的に増加
+      Restart = "on-failure";
+      RestartSec = "10s";
+      RestartSteps = 5;
     };
   };
 }

@@ -15,7 +15,7 @@
     rec {
       secretPath = ../../../secrets + "${if isDev then "/develop" else "/production"}";
       groupSecretPath = secretPath + "/roles/${group}";
-      userSecretPath = secretPath + "/user/${user}";
+      userSecretPath = secretPath + "/users/${user}";
       static = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
     };
 }

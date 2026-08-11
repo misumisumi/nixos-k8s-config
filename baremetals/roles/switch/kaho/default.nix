@@ -1,5 +1,4 @@
 {
-  self,
   inputs,
   pkgs,
   lib,
@@ -20,6 +19,7 @@ in
     inputs.microvm.nixosModules.host
     ../../share/apps/bash.nix
     ../../share/apps/pkgs.nix
+    ../../share/apps/debug.nix
     ../../share/settings/cockpit.nix
     ../../share/settings/console.nix
     ../../share/settings/locale.nix
@@ -30,16 +30,14 @@ in
     ../../share/settings/users.nix
     ./bgp.nix
     ./diskless.nix
+    ./fancontrol
     ./microvm
     ./network.nix
     ./users.nix
-  ]
-  ++ optional isDev ./develop;
+  ];
   environment.systemPackages = with pkgs; [
-    dig
-    ethtool
-    socat
-    traceroute
+    dhcpcd
+    ndisc6
   ];
   image.modules = mkForce {
     inherit (inputs.homelab-modules.nixosModules) kexec incus-vm;

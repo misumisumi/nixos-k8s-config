@@ -29,7 +29,7 @@ writeShellScriptBin "bounce" (
       echo "Image metadata not found at $IMAGE_JSON_URL."
     else
       echo "Successfully downloaded image metadata."
-      IMAGE_FILE=$(${jq}/bin/jq -r --arg uuid "$PRODUCT_UUID" '.[$uuid] | .image' "$TMP_JSON")
+      IMAGE_FILE=$(${jq}/bin/jq -r --arg uuid "$PRODUCT_UUID" '.[$uuid] | .image // ""' "$TMP_JSON")
     fi
   ''
   + ''

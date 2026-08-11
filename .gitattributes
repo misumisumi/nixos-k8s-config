@@ -1,3 +1,4 @@
 **/secrets/** filter=git-crypt diff=git-crypt
+**/static.toml filter=git-crypt diff=git-crypt
+**/production/** filter=git-crypt diff=git-crypt
 **/secrets/**/*.sh -filter -diff
-

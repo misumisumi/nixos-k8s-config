@@ -7,7 +7,37 @@
   ...
 }:
 let
-  inherit (lib) mkForce;
+  inherit (lib)
+    mkForce
+    concatStringsSep
+    concatMapStrings
+    optionals
+    ;
+  inherit (config.system.build) extraContents;
+
+  extraContentsDir = pkgs.runCommand "kexec-extra-contents" { } (
+    concatMapStrings (entry: ''
+      target="$out${entry.target}"
+      mkdir -p "$(dirname "$target")"
+      cp -L --remove-destination "${entry.source}" "$target"
+      chmod ${entry.mode} "$target"
+    '') extraContents
+  );
+
+  extraContentsCpio = optionals (extraContents != [ ]) [
+    (pkgs.runCommand "kexec-extra-contents.cpio"
+      {
+        nativeBuildInputs = with pkgs; [
+          cpio
+          zstd
+        ];
+      }
+      ''
+        cd "${extraContentsDir}"
+        find . -mindepth 1 -print0 | cpio -o -0 -H newc | zstd -T0 > "$out"
+      ''
+    )
+  ];
 in
 {
   imports = [
@@ -17,22 +47,42 @@ in
     ./profile.nix
   ];
   hardware.enableAllHardware = true;
-  boot.initrd.compressor = "zstd";
+  boot.initrd = {
+    compressor = "zstd";
+    systemd.services.copy-extra-contents = {
+      description = "Copy Extra Contents to sysroot";
+      wantedBy = [ "initrd-switch-root.target" ];
+      before = [ "initrd-switch-root.target" ];
+      after = [ "sysroot.mount" ];
+      unitConfig.DefaultDependencies = false;
+      serviceConfig.Type = "oneshot";
+      script = concatStringsSep "\n" (
+        map (entry: ''
+          if [ -e "${entry.target}" ]; then
+            mkdir -p "$(dirname "/sysroot${entry.target}")"
+            cp -a "${entry.target}" "/sysroot${entry.target}"
+            chown ${entry.user}:${entry.group} "/sysroot${entry.target}"
+            chmod ${entry.mode} "/sysroot${entry.target}"
+          fi
+        '') extraContents
+      );
+    };
+  };
+
   services.getty.autologinUser = mkForce "${user}";
 
   system.build = {
     netbootRamdisk = mkForce (
       pkgs.makeInitrdNG {
         inherit (config.boot.initrd) compressor compressorArgs;
-        prepend = [ "${config.system.build.initialRamdisk}/initrd" ];
+        prepend = [ "${config.system.build.initialRamdisk}/initrd" ] ++ extraContentsCpio;
 
         contents = [
           {
             source = config.system.build.squashfsStore;
             target = "/nix-store.squashfs";
           }
-        ]
-        ++ config.system.build.extraContents;
+        ];
       }
     );
 
