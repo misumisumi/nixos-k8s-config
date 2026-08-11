@@ -57,6 +57,10 @@ in
       546 # DHCPv6
       547 # DHCPv6
       69 # TFTP
+    ]
+    ++ optionals (dnsmasq.rangeStart == "") [
+      #NOTE: https://ipxe.org/appnote/proxydhcp
+      4011 # DHCPv4 PROXY
     ];
   };
   services.dnsmasq = {

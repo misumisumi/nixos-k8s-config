@@ -1,3 +1,6 @@
+#################################################
+# liveimage image
+#################################################
 [liveimg.first-image]
 system = "x86_64-linux"
 user = "nixos"
@@ -6,6 +9,7 @@ hostname = "first-image"
 system = "x86_64-linux"
 user = "nixos"
 hostname = "second-image"
+manageSegment = "192.168.2.0/24"
 [liveimg.nixos-livecd]
 system = "x86_64-linux"
 user = "nixos"
@@ -15,78 +19,135 @@ system = "x86_64-linux"
 user = "nixos"
 hostname = "nixos-netboot"
 
-[switch.sks8300]
+#################################################
+# switch image
+#################################################
+[switch.sks8300-8x]
 notShow = true
 system = "x86_64-linux"
 user = "renako"
-hostname = "kaho"
-manageIP = "172.16.1.31/24"
+hostname = "sks8300-8x"
+manageIP = "192.168.2.41"
+manageIPPrefix = "24"
 AS = "65011"
-routerId = "10.10.1.31"
+routerId = "10.10.10.41"
+l2vpnListenRange = "10.10.10.0/24"
+color = "green"
 
 [switch.kaho]
+uuid = "501b2357-38e9-43ad-a841-1b620418c959"
 system = "x86_64-linux"
 user = "renako"
 hostname = "kaho"
-manageIP = "172.16.1.32/24"
-routerId = "10.10.1.32"
-l2vpnListenRange = "10.10.1.0/24"
+manageIP = "192.168.2.42"
+manageIPPrefix = "24"
+routerId = "10.10.10.42"
 AS = "65012"
+l2vpnListenRange = "10.10.10.0/24"
+color = "green"
+
+#################################################
+# compute image and settings
+#################################################
+[compute.virtualIPs]
+notShom = true
+[compute.virtualIPs.linstor]
+address = "10.10.10.100"
+cidr = "32"
+[compute.virtualIPs.nfs]
+address = "10.10.10.101"
+cidr = "32"
+[compute.virtualIPs.incus]
+address = "192.168.2.102"
+cidr = "24"
 
 [compute.ajisai]
+uuid = "e6ae54f8-c9b9-4bc0-a3a2-70818ed1a0d2"
 system = "x86_64-linux"
 user = "renako"
 hostname = "ajisai"
-manageIP = "172.16.1.50/24"
-routerId = "10.10.1.50"
+manageIP = "192.168.2.50"
+manageIPPrefix = "24"
+routerId = "10.10.10.50"
 AS = "65050"
+color = "blue"
 [compute.mai]
+uuid = "27161944-492d-4225-ae42-73a43467e797"
 system = "x86_64-linux"
 user = "renako"
 hostname = "mai"
-manageIP = "172.16.1.51/24"
-routerId = "10.10.1.51"
+manageIP = "192.168.2.51"
+manageIPPrefix = "24"
+routerId = "10.10.10.51"
 AS = "65051"
+color = "blue"
 [compute.satsuki]
+uuid = "ef44a86f-544b-4e81-8fa3-0e7bbe8609b6"
 system = "x86_64-linux"
 user = "renako"
 hostname = "satsuki"
-manageIP = "172.16.1.52/24"
-routerId = "10.10.1.52"
+manageIP = "192.168.2.52"
+manageIPPrefix = "24"
+routerId = "10.10.10.52"
 AS = "65052"
+color = "blue"
 # [compute.haruna]
 # system = "x86_64-linux"
 # user = "renako"
 # hostname = "haruna"
-# address = ["172.16.1.53/24"]
-# routerId = "10.10.1.53"
+# address = ["192.168.2.53"]
+# routerId = "10.10.10.53"
 # AS = "65053"
 
 [microvm.borderLeaf]
 system = "x86_64-linux"
 user = "renako"
 hostname = "borderLeaf"
-routerId = "10.10.1.253"
+routerId = "10.10.10.253"
 AS = "65020"
 [microvm.borderRouter]
 system = "x86_64-linux"
 user = "renako"
 hostname = "borderRouter"
-routerId = "10.10.1.254"
+routerId = "10.10.10.254"
 AS = "64512"
 
+#################################################
+# manage image
+#################################################
 [mngr.naokosan]
 system = "x86_64-linux"
 user = "misuzu"
 hostname = "naokosan"
-manageIP = "172.16.1.10/24"
-
+manageIP = "192.168.2.30"
+manageIPPrefix = "24"
 [mngr.image-server]
 system = "x86_64-linux"
 user = "misuzu"
-hostname = "fourkun"
-manageIP = "172.16.1.11/24"
+hostname = "image-server"
+manageIP = "192.168.2.36"
+manageIPPrefix = "24"
 [mngr.image-server.dnsmasq]
-rangeStart = "150"
+rangeStart = "" # if set "", dnsmasq's PXE server will be DHCP proxy mode.
 port = "53"
 server = []
+
+#################################################
+# network settings
+#################################################
+# [tenants]
+# notShow = true
+# anycastGatewayHWAddr = "03:03:aa:aa:"
+[tenants.shared]
+name = "shared"
+vni = 11010
+vlan = 10
+ipPrefix = "172.16.1"
+ipSuffix = "24"
+
+[tenants.service]
+name = "service"
+vni = 11020
+vlan = 20
+ipPrefix = "172.16.100"
+ipSuffix = "24"

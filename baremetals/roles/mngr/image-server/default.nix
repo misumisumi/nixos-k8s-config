@@ -19,6 +19,6 @@ in
   ];
   image.modules = mkForce {
     lxc = inputs.homelab-modules.nixosModules.lxc-container;
-    lxc-meinputs.homelab-modulesta = modulesPath + "/virtualisation/lxc-image-metadata.nix";
+    lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
 }

@@ -72,10 +72,10 @@ in
     isProd="$(echo $1 | grep -c "prod")"
     PROJECT_ROOT="''${FLAKE_ROOT:-$PWD}"
     output=$PROJECT_ROOT/mnt/develop
-    STATIC_FILE=$PROJECT_ROOT/baremetal/roles/static_dev.toml
+    STATIC_FILE=$PROJECT_ROOT/baremetals/roles/static_dev.toml
     if [ $isProd -eq 1 ]; then
       output=$PROJECT_ROOT/mnt/production
-      STATIC_FILE=$PROJECT_ROOT/baremetal/roles/static.toml
+      STATIC_FILE=$PROJECT_ROOT/baremetals/roles/static.toml
     fi
     export STATIC_FILE=$STATIC_FILE
     output="$output/www/images/kexec/kexec-images.json"

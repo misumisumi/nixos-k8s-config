@@ -46,6 +46,15 @@ in
           substituteInPlace src/pmlogger/GNUmakefile \
             --replace-fail '$(INSTALL) -m 775 -o $(PCP_USER) -g $(PCP_GROUP) -d $(PCP_LOG_DIR)/pmlogger' "" \
             --replace-fail '$(INSTALL) -m 775 -o $(PCP_USER) -g $(PCP_GROUP) -d $(PCP_SA_DIR)' ""
+
+          mkdir -p $man
+        '';
+        preConfigure = old.preConfigure or "" + ''
+          mkdir -p $man/share/man/man1 
+          gzip -c /dev/null > $man/share/man/man1/placeholder.1.gz
+        '';
+        postConfigure = old.postConfigure or "" + ''
+          rm -rf $man/share/man/man1/placeholder
         '';
         nativeBuildInputs =
           (filter (x: x != pkgs.python3 && x != pkgs.python3.pkgs.setuptools) old.nativeBuildInputs)

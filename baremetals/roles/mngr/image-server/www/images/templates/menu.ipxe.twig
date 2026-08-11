@@ -13,7 +13,7 @@ item --gap --           -------------------------- node type -------------------
 {% for item in boot_items %}
 item {{ item.name }} Launch {{ item.name }}
 {% endfor %}
-item Official-NixOS-installer(25.11)     Launch NixOS-25.11 installer
+item Official-NixOS-installer(26.05)     Launch NixOS-26.05 installer
 item Official-NixOS-installer(unstable)  Launch NixOS-unstable installer
 item --gap --           -------------------------- Advanced Option --------------------
 item --key c config     Configure settings
@@ -28,9 +28,9 @@ echo Booting from {{ item.name }}...
 chain -ar ipxe/{{ item.name }}/netboot.ipxe
 {% endfor %}
 
-:Official-NixOS-installer(25.11)
-kernel https://github.com/nix-community/nixos-images/releases/download/nixos-25.11/bzImage-x86_64-linux initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
-initrd https://github.com/nix-community/nixos-images/releases/download/nixos-25.11/initrd-x86_64-linux
+:Official-NixOS-installer(26.05)
+kernel https://github.com/nix-community/nixos-images/releases/download/nixos-26.05/bzImage-x86_64-linux initrd=initrd-x86_64-linux nohibernate loglevel=4 ''${cmdline}
+initrd https://github.com/nix-community/nixos-images/releases/download/nixos-26.05/initrd-x86_64-linux
 boot
 
 :Official-NixOS-installer(unstable)

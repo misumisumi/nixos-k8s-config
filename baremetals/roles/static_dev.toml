@@ -141,8 +141,9 @@ manageIPPrefix = "24"
 #################################################
 # network settings
 #################################################
-[tenants]
-anycastGatewayHWAddr = "03:03:aa:aa:"
+# [tenants]
+# notShow = true
+# anycastGatewayHWAddr = "03:03:aa:aa:"
 [tenants.shared]
 name = "shared"
 vni = 11010
