@@ -1,5 +1,6 @@
 {
   self,
+  lib,
   inputs,
   isDev,
   isNixOSTest,
@@ -55,6 +56,7 @@
     borderLeaf = import ./border-leaf {
       inherit
         self
+        lib
         inputs
         isDev
         isNixOSTest
@@ -64,6 +66,7 @@
     borderRouter = import ./border-router {
       inherit
         self
+        lib
         inputs
         isDev
         isNixOSTest

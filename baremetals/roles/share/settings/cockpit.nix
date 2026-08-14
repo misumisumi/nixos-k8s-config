@@ -11,7 +11,7 @@
 let
   inherit (builtins) filter;
   inherit (lib) hasPrefix;
-  inherit (static.${group}.${hostname}) manageIP;
+  manageIP = lib.removeNetmask static.${group}.${hostname}.networks.manage.address;
 in
 {
   system.activationScripts.putCerts4Cockpit = ''

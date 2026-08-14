@@ -8,9 +8,10 @@ let
   inherit (lib)
     filterAttrs
     flatten
-    importTOML
     mapAttrsToList
+    mergeStatic
     nameValuePair
+    nixosSystem
     ;
   systemSetting =
     {
@@ -22,12 +23,13 @@ let
       isDev ? false,
       isNixOSTest ? false,
     }:
-    lib.nixosSystem {
+    nixosSystem {
       inherit system;
       specialArgs = {
         inherit
           self
           inputs
+          lib
           hostname
           group
           user
@@ -46,8 +48,8 @@ let
         ./${group}/${tag}
       ];
     };
-  group_and_hosts = importTOML ./static.toml;
-  group_and_hosts_dev = importTOML ./static_dev.toml;
+  group_and_hosts = mergeStatic ./. "static.nix";
+  group_and_hosts_dev = mergeStatic ./. "static_dev.nix";
   variants = {
     prod = {
       isDev = false;
@@ -75,7 +77,7 @@ let
           inherit (value) system hostname user;
           inherit (v) isDev isNixOSTest;
         })
-      ) (filterAttrs (_: v: isAttrs v && !(v.notShow or false)) hosts))
+      ) (filterAttrs (_: v: isAttrs v && !(v.notShow or v.notImage or false)) hosts))
     ) static;
 
 in

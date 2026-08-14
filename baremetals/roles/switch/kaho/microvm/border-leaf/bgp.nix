@@ -14,7 +14,7 @@ let
     splitString
     sublist
     ;
-  inherit (static.microvm.borderLeaf) AS;
+  inherit (static.microvm.borderLeaf.bgp) AS;
   inherit (config.networking.vxlan) tenants;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
@@ -86,8 +86,8 @@ in
         neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
-        neighbor ${static.switch.sks8300-8x.routerId} peer-group OVERLAY
-        neighbor ${static.switch.kaho.routerId} peer-group OVERLAY
+        neighbor ${static.switch.sks8300-8x.bgp.routerId} peer-group OVERLAY
+        neighbor ${static.switch.kaho.bgp.routerId} peer-group OVERLAY
 
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE
@@ -130,7 +130,7 @@ in
         neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo${tenants.wan.L3VNI.vni}
         neighbor OVERLAY ebgp-multihop
-        neighbor ${static.microvm.borderRouter.routerId} peer-group OVERLAY
+        neighbor ${static.microvm.borderRouter.bgp.routerId} peer-group OVERLAY
 
         address-family ipv4 unicast
           redistribute connected

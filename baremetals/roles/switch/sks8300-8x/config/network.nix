@@ -1,12 +1,13 @@
 {
+  lib,
   writeText,
   static,
 }:
 let
-  inherit (static.switch.sks8300-8x)
-    routerId
-    manageIP
-    ;
+  inherit (static.switch.sks8300-8x.bgp) routerId;
+  inherit (static.switch.sks8300-8x.networks.manage) IF address;
+  manageIP = lib.removeNetmask address;
+  netmask = lib.getNetmask address;
 in
 writeText "network" ''
   config interface 'loopback'
@@ -22,10 +23,10 @@ writeText "network" ''
       option netmask '255.255.255.255'
 
   config interface 'manage'
-      option device 'eth0'
+      option device '${IF}'
       option proto 'static'
       option ipaddr '${manageIP}'
-      option netmask '255.255.255.0'
+      option netmask '${netmask}'
 
   config interface 'bgp1'
       option device 'eth1'

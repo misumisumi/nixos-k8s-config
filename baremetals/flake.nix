@@ -64,6 +64,10 @@
       openwrt-imagebuilder,
       ...
     }:
+    let
+      # lib extended by ./patches/lib.nix (also loaded by ./patches/default.nix)
+      lib = inputs.nixpkgs.lib.extend (import ./patches/lib.nix);
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
       imports = [
@@ -83,10 +87,8 @@
           import ./patches {
             inherit nixpkgs-unstable;
           };
-        # nixosModules = import ./modules;
         nixosConfigurations = import ./roles {
-          inherit (inputs.nixpkgs) lib;
-          inherit inputs self;
+          inherit lib inputs self;
         };
       };
       perSystem =
@@ -116,7 +118,7 @@
             let
               mylab-sks8300-8x = import ./roles/switch/sks8300-8x/image.nix {
                 pkgs = nixpkgs-unstable;
-                inherit openwrt-imagebuilder;
+                inherit openwrt-imagebuilder lib;
               };
             in
             {

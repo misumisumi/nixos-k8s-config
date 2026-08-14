@@ -19,6 +19,7 @@
         matchConfig = {
           Name = [
             "en*"
+            "eno*"
             "eth*"
           ];
         };

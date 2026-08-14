@@ -1,10 +1,11 @@
 {
   pkgs,
   openwrt-imagebuilder,
+  lib,
   ...
 }:
 let
-  inherit (pkgs.lib) optionalString importTOML;
+  inherit (pkgs.lib) optionalString;
 
   release = "25.12.5";
   profiles = openwrt-imagebuilder.lib.profiles {
@@ -17,7 +18,7 @@ let
     }:
     let
       secretPath = ../../../secrets/${if isDev then "develop" else "production"}/roles/switch/sks8300-8x;
-      static = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
+      static = import (if isDev then ../static_dev.nix else ../static.nix);
     in
     {
       disabledServices = [ "dnsmasq" ];
@@ -33,21 +34,21 @@ let
           cp ${
             import ./config/dropbear.nix {
               inherit (pkgs) writeText;
-              inherit static;
+              inherit lib static;
             }
           } $out/etc/config/dropbear
           cp ${./config/firewall} $out/etc/config/firewall
           cp ${
             import ./config/network.nix {
               inherit (pkgs) writeText;
-              inherit static;
+              inherit lib static;
             }
           } $out/etc/config/network
           cp ${./frr/daemons} $out/etc/frr/daemons
           cp ${
             import ./frr/frr.conf.nix {
-              inherit (pkgs) lib writeText;
-              inherit static;
+              inherit (pkgs) writeText;
+              inherit lib static;
             }
           } $out/etc/frr/frr.conf
           cp "${secretPath}/ssh/dropbear_ed25519_host_key" $out/etc/dropbear/dropbear_ed25519_host_key

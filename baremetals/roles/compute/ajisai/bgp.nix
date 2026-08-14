@@ -18,7 +18,7 @@ let
     ;
 
   inherit (config.networking.vxlan) tenants;
-  inherit (static.${group}.${hostname}) AS;
+  inherit (static.${group}.${hostname}.bgp) AS;
   inherit (static.${group}) virtualIPs;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
@@ -87,8 +87,8 @@ in
         neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
-        neighbor ${static.switch.sks8300-8x.routerId} peer-group OVERLAY
-        neighbor ${static.switch.kaho.routerId} peer-group OVERLAY
+        neighbor ${static.switch.sks8300-8x.bgp.routerId} peer-group OVERLAY
+        neighbor ${static.switch.kaho.bgp.routerId} peer-group OVERLAY
 
         address-family ipv4 unicast
           network ${virtualIPs.linstor.address}/${virtualIPs.linstor.cidr}

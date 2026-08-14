@@ -10,7 +10,7 @@
 }:
 let
   inherit (lib) mkForce;
-  inherit (static.${group}.${hostname}) routerId;
+  inherit (static.${group}.${hostname}.bgp) routerId;
   inherit (static.${group}) virtualIPs;
 in
 {

@@ -1,5 +1,6 @@
 {
   self,
+  lib,
   inputs,
   isDev,
   isNixOSTest,
@@ -9,6 +10,7 @@
   specialArgs = {
     inherit
       self
+      lib
       inputs
       user
       isDev

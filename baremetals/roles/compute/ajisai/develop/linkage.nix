@@ -1,8 +1,4 @@
-{ lib, ... }:
-let
-  inherit (lib) importTOML;
-  static = importTOML ../../../static_dev.toml;
-in
+{ static, ... }:
 {
   linkage = {
     checkNodes = {
@@ -25,7 +21,7 @@ in
     nodes = {
       ajisai = {
         isPrimary = true;
-        address = static.compute.ajisai.routerId;
+        address = static.compute.ajisai.bgp.routerId;
         type = "combined";
         storagePools = {
           dev_pool = {
@@ -40,7 +36,7 @@ in
         };
       };
       mai = {
-        address = static.compute.mai.routerId;
+        address = static.compute.mai.bgp.routerId;
         type = "combined";
         storagePools = {
           dev_pool = {
@@ -55,7 +51,7 @@ in
         };
       };
       satsuki = {
-        address = static.compute.satsuki.routerId;
+        address = static.compute.satsuki.bgp.routerId;
         type = "combined";
       };
     };

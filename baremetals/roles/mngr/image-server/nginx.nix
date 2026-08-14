@@ -10,7 +10,7 @@
 let
   inherit (builtins) head;
   inherit (lib) mapAttrsToList;
-  inherit (static.${group}.${hostname}) manageIP;
+  manageIP = lib.removeNetmask static.${group}.${hostname}.networks.manage.address;
 in
 {
   systemd = {

@@ -6,6 +6,7 @@
 }:
 let
   inherit (static.${group}) virtualIPs;
+  inherit (static.${group}.${hostname}) networks;
 in
 {
   virtualisation.incus.preseed = {
@@ -20,7 +21,7 @@ in
   services.frr = {
     vrrpd.enable = true;
     config = ''
-      interface enp5s0
+      interface ${networks.manage.IF}
        vrrp 5 version 3
        vrrp 5 priority 200
        vrrp 5 advertisement-interval 1500
@@ -41,7 +42,7 @@ in
       };
     };
     networks = {
-      "10-enp5s0".macvlan = [ "vrrp4-incus" ];
+      "10-manage".macvlan = [ "vrrp4-incus" ];
       "20-vrrp4-incus" = {
         name = "vrrp4-incus";
         networkConfig = {

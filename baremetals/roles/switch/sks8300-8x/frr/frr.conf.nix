@@ -9,8 +9,8 @@ let
     splitString
     sublist
     ;
-  inherit (static.switch.sks8300-8x)
-    hostname
+  inherit (static.switch.sks8300-8x) hostname;
+  inherit (static.switch.sks8300-8x.bgp)
     routerId
     AS
     l2vpnListenRange

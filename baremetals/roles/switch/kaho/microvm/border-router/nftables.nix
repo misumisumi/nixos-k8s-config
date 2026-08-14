@@ -1,19 +1,6 @@
-{ isDev, static, ... }:
+{ static, ... }:
 let
   inherit (static.microvm.borderRouter) PSID IPIP6_IPv4;
-
-  fakeRule = {
-    "nat" = {
-      enable = true;
-      family = "inet";
-      content = ''
-        chain postrouting {
-          type nat hook postrouting priority 100; policy accept;
-          oifname "enp0s4" masquerade
-        }
-      '';
-    };
-  };
 
   mapeRule = {
     "map-e-nat" = {
@@ -70,6 +57,6 @@ in
 {
   networking.nftables = {
     enable = true;
-    tables = if isDev then fakeRule else mapeRule;
+    tables = mapeRule;
   };
 }

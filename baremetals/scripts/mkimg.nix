@@ -72,12 +72,11 @@ in
     isProd="$(echo $1 | grep -c "prod")"
     PROJECT_ROOT="''${FLAKE_ROOT:-$PWD}"
     output=$PROJECT_ROOT/mnt/develop
-    STATIC_FILE=$PROJECT_ROOT/baremetals/roles/static_dev.toml
+    export STATIC_DIR=$PROJECT_ROOT/baremetals/roles
+    export STATIC_PROD=$isProd
     if [ $isProd -eq 1 ]; then
       output=$PROJECT_ROOT/mnt/production
-      STATIC_FILE=$PROJECT_ROOT/baremetals/roles/static.toml
     fi
-    export STATIC_FILE=$STATIC_FILE
     output="$output/www/images/kexec/kexec-images.json"
     build_output=$(${getExe nix} build --file ${./mkimg-list.nix} --impure --no-link --print-out-paths ''${args[@]})
     if [ ! -z "$build_output" ]; then

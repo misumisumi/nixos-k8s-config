@@ -10,7 +10,8 @@
 let
   inherit (builtins) match head;
   inherit (lib) optionals optionalAttrs;
-  inherit (static.${group}.${hostname}) manageIP dnsmasq;
+  inherit (static.${group}.${hostname}) networks dnsmasq;
+  manageIP = lib.removeNetmask networks.manage.address;
 in
 {
   environment = {

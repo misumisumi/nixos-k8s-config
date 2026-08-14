@@ -6,7 +6,8 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) manageIP manageIPPrefix;
+  inherit (static.${group}.${hostname}) networks;
+  manageIP = lib.removeNetmask networks.manage.address;
 in
 {
   networking = {
@@ -51,8 +52,8 @@ in
       enable = true;
       networks = {
         "20-manage" = {
-          name = "enp5s0";
-          address = [ "${manageIP}/${manageIPPrefix}" ];
+          name = networks.manage.IF;
+          address = [ networks.manage.address ];
         };
       };
     };

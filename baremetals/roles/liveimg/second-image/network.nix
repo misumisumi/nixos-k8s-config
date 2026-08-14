@@ -24,6 +24,7 @@ in
         matchConfig = {
           Name = [
             "en*"
+            "eno*"
             "eth*"
           ];
         };

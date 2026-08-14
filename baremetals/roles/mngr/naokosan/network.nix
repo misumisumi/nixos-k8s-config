@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) manageIP manageIPPrefix;
+  inherit (static.${group}.${hostname}) networks;
 in
 {
   services.resolved.enable = false;
@@ -32,18 +32,6 @@ in
             }
 
           '';
-          # chain rpfilter {
-          #   type filter hook prerouting priority filter - 20;
-
-          #   iifname "enp6s0" oifname "enp6s0.${static.manage.vlanId}" drop
-          #   iifname "enp6s0.${static.manage.vlanId}" oifname "enp6s0" drop
-
-          #   udp dport 69 ct helper set "tftp"
-          # }
-          # chain forward {
-          #   # Don't access manage segment to the outside
-          #   iifname "enp6s0" oifname "enp6s0" drop
-          # }
         };
       };
     };
@@ -52,9 +40,9 @@ in
     network = {
       enable = true;
       networks = {
-        "15-enp5s0" = {
-          name = "enp5s0";
-          address = [ "${manageIP}/${manageIPPrefix}" ];
+        "15-manage" = {
+          name = networks.manage.IF;
+          address = [ networks.manage.address ];
         };
       };
     };

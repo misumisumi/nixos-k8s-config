@@ -6,12 +6,12 @@
   ...
 }:
 let
-  inherit (static.liveimg.second-image) manageSegment;
+  inherit (static.liveimg.second-image.networks.manage) subnet;
   inherit (import "${hostSecretPath}/secrets.nix") webhookURL;
 
   script = ''
     uuid=$(cat /sys/class/dmi/id/product_uuid)
-    manageIP=$(ip route show to ${manageSegment} | grep -E "eno|enp|eth" | grep -oP 'src \K[0-9.]+')
+    manageIP=$(ip route show to ${subnet} | grep -E "eno|enp|eth" | grep -oP 'src \K[0-9.]+')
 
     output=""
     while read -r line; do

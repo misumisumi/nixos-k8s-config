@@ -14,8 +14,6 @@ let
     toLower
     splitString
     ;
-  inherit (static.${group}.${hostname}) manageIP manageIPPrefix routerId;
-
   hwAddrPart =
     vid:
     let
@@ -23,6 +21,8 @@ let
     in
     substring 0 2 vidToHex + ":" + substring 2 2 vidToHex;
 
+  inherit (static.${group}.${hostname}) networks;
+  inherit (static.${group}.${hostname}.bgp) routerId;
   idSuffix = last (splitString "." routerId);
 in
 {
@@ -79,21 +79,21 @@ in
           }
         ];
       };
-      "10-enp5s0" = {
-        name = "enp5s0";
+      "10-manage" = {
+        name = networks.manage.IF;
         networkConfig = {
           Description = "Management network";
         };
-        address = [ "${manageIP}/${manageIPPrefix}" ];
+        address = [ networks.manage.address ];
       };
-      "15-enp6s0" = {
-        name = "enp6s0";
+      "15-intra10G" = {
+        name = networks.intra10G.IF;
         networkConfig = {
           Description = "10G network";
         };
       };
-      "15-enp7s0" = {
-        name = "enp7s0";
+      "15-intra40G" = {
+        name = networks.intra40G.IF;
         networkConfig = {
           Description = "40G network";
         };

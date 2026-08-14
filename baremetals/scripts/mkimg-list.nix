@@ -3,9 +3,9 @@
 }:
 let
   pkgs = import <nixpkgs> { };
+  lib = pkgs.lib.extend (import ../patches/lib.nix);
   inherit (builtins) getEnv hasAttr;
-  inherit (pkgs.lib)
-    importTOML
+  inherit (lib)
     filterAttrs
     mapAttrs
     attrValues
@@ -14,7 +14,9 @@ let
     flatten
     ;
   jsonFormat = pkgs.formats.json { };
-  static = importTOML (getEnv "STATIC_FILE");
+  static = lib.mergeStatic (getEnv "STATIC_DIR") (
+    if getEnv "STATIC_PROD" == "1" then "static.nix" else "static_dev.nix"
+  );
   formated = mapAttrs (
     n: v:
     mapAttrsToList (n': v': {

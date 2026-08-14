@@ -6,7 +6,14 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) manageIP manageIPPrefix routerId;
+  inherit (lib)
+    listToAttrs
+    nameValuePair
+    range
+    ;
+  ifaces = static.${group}.${hostname}.networks;
+  bgp = static.${group}.${hostname}.bgp;
+  inherit (bgp) routerId;
 in
 {
   boot.kernel.sysctl = {
@@ -36,56 +43,36 @@ in
           "${routerId}/32"
         ];
       };
-      "10-enp5s0" = {
-        matchConfig.Name = [
-          "enp5s0"
-          "enp4s0f0"
-        ];
+      "10-wan" = {
+        name = ifaces.wan.IF;
         networkConfig = {
           Description = "WAN";
         };
       };
-      "10-enp6s0" = {
-        matchConfig.Name = [
-          "enp6s0"
-          "eno1"
-        ];
+      "10-manage" = {
+        name = ifaces.manage.IF;
         networkConfig = {
           Description = "Management network";
         };
-        address = [ "${manageIP}/${manageIPPrefix}" ];
+        address = [ ifaces.manage.address ];
       };
-      "10-enp7s0" = {
-        matchConfig.Name = [
-          "enp7s0"
-          "enp4s0f1"
-        ];
+      "10-intra10G" = {
+        name = ifaces.intra10G.IF;
         networkConfig = {
           Description = "Internal 10G network";
         };
       };
     }
-    // (
-      let
-        inherit (lib)
-          range
-          listToAttrs
-          nameValuePair
-          ;
-        interfaces = map (
-          x:
-          let
-            x' = toString x;
-          in
-          nameValuePair "15-enp${x'}s0" {
-            name = "enp${x'}s0";
-            networkConfig = {
-              Description = "IB switch interface";
-            };
-          }
-        ) (range 8 11);
-      in
-      listToAttrs interfaces
+    // listToAttrs (
+      map (
+        n:
+        nameValuePair "15-intra40G_${toString n}" {
+          name = ifaces."intra40G_${toString n}".IF;
+          networkConfig = {
+            Description = "IB switch interface";
+          };
+        }
+      ) (range 1 4)
     );
   };
 }

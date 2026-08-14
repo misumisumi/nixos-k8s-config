@@ -11,7 +11,7 @@ let
     filterAttrs
     hasPrefix
     ;
-  inherit (static.microvm.borderRouter) AS routerId;
+  inherit (static.microvm.borderRouter.bgp) AS routerId;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
 in
@@ -69,7 +69,7 @@ in
         neighbor OVERLAY timers connect 10
         neighbor OVERLAY update-source lo0
         neighbor OVERLAY ebgp-multihop
-        neighbor ${static.microvm.borderLeaf.routerId} peer-group OVERLAY
+        neighbor ${static.microvm.borderLeaf.bgp.routerId} peer-group OVERLAY
 
         address-family ipv4 unicast
           redistribute connected route-map REDISTRIBUTE_LOOPBACK_INTERFACE

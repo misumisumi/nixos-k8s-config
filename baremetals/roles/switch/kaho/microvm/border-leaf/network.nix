@@ -14,7 +14,7 @@ let
     toLower
     ;
   inherit (config.networking.vxlan) tenants;
-  inherit (static.microvm.borderLeaf) routerId;
+  inherit (static.microvm.borderLeaf.bgp) routerId;
 
   idSuffix = last (splitString "." routerId);
 

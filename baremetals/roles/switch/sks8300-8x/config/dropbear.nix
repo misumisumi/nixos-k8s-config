@@ -1,11 +1,10 @@
 {
+  lib,
   writeText,
   static,
 }:
 let
-  inherit (static.switch.sks8300-8x)
-    manageIP
-    ;
+  manageIP = lib.removeNetmask static.switch.sks8300-8x.networks.manage.address;
 in
 writeText "dropbear" ''
   config dropbear main

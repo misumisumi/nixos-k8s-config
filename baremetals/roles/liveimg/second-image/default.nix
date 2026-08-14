@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkForce;
-  inherit (static.mngr.image-server) manageIP;
+  manageIP = lib.removeNetmask static.mngr.image-server.networks.manage.address;
 in
 {
   imports = [

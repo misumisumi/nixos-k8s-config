@@ -4,7 +4,7 @@
   ...
 }:
 let
-  inherit (static.microvm.borderRouter) routerId;
+  inherit (static.microvm.borderRouter.bgp) routerId;
 in
 {
   boot.kernel.sysctl = {

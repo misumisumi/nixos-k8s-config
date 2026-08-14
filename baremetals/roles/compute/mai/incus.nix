@@ -7,14 +7,15 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) routerId;
+  inherit (static.${group}.${hostname}.bgp) routerId;
   inherit (static.${group}) virtualIPs;
+  inherit (static.${group}.${hostname}) networks;
 in
 {
   services.frr = {
     vrrpd.enable = true;
     config = ''
-      interface enp5s0
+      interface ${networks.manage.IF}
        vrrp 5 version 3
        vrrp 5 priority 100
        vrrp 5 advertisement-interval 1500
@@ -34,13 +35,13 @@ in
       ];
       script = ''
         if [ ! -f /var/lib/incus/cluster.crt ]; then
-          ${pkgs.incus}/bin/incus remote add ajisai ${static.${group}.ajisai.routerId} --accept-certificate
+          ${pkgs.incus}/bin/incus remote add ajisai ${static.${group}.ajisai.bgp.routerId} --accept-certificate
           printf '%s\n' "${routerId}" "${hostname}" yes | ${pkgs.incus}/bin/incus cluster join ajisai:
         fi
       '';
       serviceConfig = {
         ExecStartPre = "${pkgs.curl}/bin/curl -sS --fail --connect-timeout 5 --max-time 10 -o /dev/null http://${
-          static.${group}.ajisai.routerId
+          static.${group}.ajisai.bgp.routerId
         }:8443";
         Restart = "on-failure";
         RestartSec = "10s";
@@ -65,7 +66,7 @@ in
         };
       };
       networks = {
-        "10-enp5s0".macvlan = [ "vrrp4-incus" ];
+        "10-manage".macvlan = [ "vrrp4-incus" ];
         "20-vrrp4-incus" = {
           name = "vrrp4-incus";
           networkConfig = {

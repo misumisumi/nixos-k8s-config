@@ -17,7 +17,7 @@ let
     sublist
     ;
 
-  inherit (static.${group}.${hostname}) AS routerId l2vpnListenRange;
+  inherit (static.${group}.${hostname}.bgp) AS routerId l2vpnListenRange;
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
   underlayPrefixes = concatStringsSep "." ((sublist 0 3 (splitString "." routerId)) ++ [ "0/24" ]);
 in

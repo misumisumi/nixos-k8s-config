@@ -1,10 +1,11 @@
 {
   inputs,
+  lib,
   static,
   ...
 }:
 let
-  inherit (static.mngr.image-server) manageIP;
+  manageIP = lib.removeNetmask static.mngr.image-server.networks.manage.address;
 in
 {
   imports = [ inputs.homelab-modules.nixosModules.diskless ];

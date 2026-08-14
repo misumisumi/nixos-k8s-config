@@ -11,12 +11,13 @@
 {
   _module.args =
     let
-      inherit (lib) importTOML;
+      staticFile = if isDev then "static_dev.nix" else "static.nix";
+      static = lib.mergeStatic ../.. staticFile;
     in
     rec {
       secretPath = ../../../secrets + "${if isDev then "/develop" else "/production"}";
       hostSecretPath = secretPath + "/roles/${group}/${hostname}";
       userSecretPath = secretPath + "/users/${user}";
-      static = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
+      inherit static;
     };
 }
