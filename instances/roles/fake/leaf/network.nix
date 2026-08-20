@@ -8,7 +8,7 @@
 }:
 let
   inherit (config.networking.vxlan) tenants;
-  inherit (static.${group}.${tag}) k8sSegmentIP routerId;
+  inherit (static.${group}.${tag}.bgp) k8sSegmentIP routerId;
 in
 {
   imports = [

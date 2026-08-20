@@ -6,16 +6,16 @@
   writeShellScriptBin,
 }:
 let
-  inherit (lib) mapAttrs' nameValuePair importTOML;
+  inherit (lib) mapAttrs' nameValuePair;
   variants = {
     production = "prod";
     develop = "dev";
     test = "test";
   };
   static = {
-    production = importTOML ../roles/static.toml;
-    develop = importTOML ../roles/static_dev.toml;
-    test = importTOML ../roles/static_dev.toml;
+    production = import ../roles/static.nix;
+    develop = import ../roles/static_dev.nix;
+    test = import ../roles/static_dev.nix;
   };
 in
 (mapAttrs' (

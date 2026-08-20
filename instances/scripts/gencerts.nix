@@ -13,7 +13,6 @@ let
     getExe
     getExe'
     imap1
-    importTOML
     mapAttrs'
     nameValuePair
     mapAttrsToList
@@ -276,15 +275,15 @@ let
   variants = {
     # production = {
     #   abbr = "prod";
-    #   static = importTOML ../roles/static.toml;
+    #   static = import ../roles/static.nix;
     # };
     develop = {
       abbr = "dev";
-      static = importTOML ../roles/static_dev.toml;
+      static = import ../roles/static_dev.nix;
     };
     # test = {
     #   abbr = "test";
-    #   static = importTOML ../roles/static_dev.toml;
+    #   static = import ../roles/static_dev.nix;
     # };
   };
 in

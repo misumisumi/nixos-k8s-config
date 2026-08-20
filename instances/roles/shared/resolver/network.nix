@@ -5,13 +5,13 @@
   ...
 }:
 let
-  inherit (static.${group}.${tag}) manageIP manageIPPrefix;
+  inherit (static.${group}.${tag}.networks.manage) IF address;
 in
 {
   systemd.network.networks."10-enp5s0" = {
-    name = "enp5s0";
+    name = IF;
     networkConfig.Description = "Management network";
-    address = [ "${manageIP}/${manageIPPrefix}" ];
+    address = [ address ];
     routes = [
       {
         Destination = "0.0.0.0/0";

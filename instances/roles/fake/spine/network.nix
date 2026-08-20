@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (static.${group}.${tag}) routerId;
+  inherit (static.${group}.${tag}.bgp) routerId;
 in
 {
   imports = [

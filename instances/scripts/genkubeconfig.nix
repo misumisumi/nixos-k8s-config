@@ -9,14 +9,13 @@ let
   inherit (builtins) getEnv toJSON pathExists;
   inherit (lib)
     concatStringsSep
-    importTOML
     mapAttrsToList
     ;
 
   variants = {
-    production = (importTOML ../roles/static.toml).k8s.settings;
-    develop = (importTOML ../roles/static_dev.toml).k8s.settings;
-    test = (importTOML ../roles/static_dev.toml).k8s.settings;
+    production = (import ../roles/static.nix).k8s.settings;
+    develop = (import ../roles/static_dev.nix).k8s.settings;
+    test = (import ../roles/static_dev.nix).k8s.settings;
   };
   kubeconfig =
     variant: serverIP: extraConf:

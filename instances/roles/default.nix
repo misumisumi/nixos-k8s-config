@@ -8,7 +8,6 @@ let
   inherit (lib)
     filterAttrs
     flatten
-    importTOML
     mapAttrsToList
     nameValuePair
     pathExists
@@ -42,8 +41,8 @@ let
         (if pathExists ./${group}/${tag} then ./${group}/${tag} else ./${tag})
       ];
     };
-  group_and_hosts = importTOML ./static.toml;
-  group_and_hosts_dev = importTOML ./static_dev.toml;
+  group_and_hosts = import ./static.nix;
+  group_and_hosts_dev = import ./static_dev.nix;
   variants = {
     prod = {
       isDev = false;

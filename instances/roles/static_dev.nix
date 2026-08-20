@@ -1,0 +1,152 @@
+{
+  dev.env = {
+    notShow = true;
+    domain = "dev.misumi-sumi.com";
+    nic = "dev_shared";
+    cilium_lb = "172.16.100.200";
+  };
+
+  k8s.settings = {
+    notShow = true;
+    serviceClusterIpRange = "10.100.0.0/16";
+    apiserverAddress = "172.16.100.100";
+    clusterCidr = "10.200.0.0/16";
+  };
+
+  nodes.etcd = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      "172.16.100.20"
+      "172.16.100.21"
+      "172.16.100.22"
+    ];
+  };
+
+  nodes.loadbalancer = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      "172.16.100.10"
+      "172.16.100.11"
+      "172.16.100.12"
+    ];
+  };
+
+  nodes.controlplane = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      "172.16.100.30"
+      "172.16.100.31"
+      "172.16.100.32"
+    ];
+  };
+
+  nodes.worker = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      "172.16.100.60"
+      "172.16.100.61"
+      "172.16.100.62"
+    ];
+  };
+
+  nodes.ceph-worker = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      # for ceph
+      "172.16.100.40"
+      "172.16.100.41"
+      "172.16.100.42"
+    ];
+  };
+  nodes.piraeus-worker = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      # for piraeus-operator
+      "172.16.100.50"
+      "172.16.100.51"
+      "172.16.100.52"
+    ];
+  };
+
+  vault.vault = {
+    system = "x86_64-linux";
+    user = "nixos";
+    nodeIPs = [
+      "172.16.11.10"
+      "172.16.11.11"
+      "172.16.11.12"
+    ];
+    vip = "172.16.11.1";
+  };
+
+  #################################################
+  # shared image
+  #################################################
+  shared.dhcp = {
+    system = "x86_64-linux";
+    user = "chino";
+    hostname = "cocoa";
+    networks.manage = {
+      IF = "enp5s0";
+      address = "172.16.1.254/24";
+    };
+  };
+  shared.dns = {
+    system = "x86_64-linux";
+    user = "chino";
+    hostname = "rize";
+    networks.manage = {
+      IF = "enp5s0";
+      address = "172.16.1.2/24";
+    };
+  };
+  proxy.proxy = {
+    system = "x86_64-linux";
+    user = "nixos";
+  };
+  shared.resolver = {
+    system = "x86_64-linux";
+    user = "chino";
+    hostname = "chiya";
+    networks.manage = {
+      IF = "enp5s0";
+      address = "172.16.1.1/24";
+    };
+    acl = [
+      "172.16.100.0/24 allow" # k8s nodes
+      "172.16.11.0/24 allow" # vault
+      "172.16.10.0/24 allow" # proxy
+      "172.16.1.0/24 allow" # shared nodes
+    ];
+  };
+  # shared.adblock = {
+  #   system = "x86_64-linux";
+  #   user = "cocoa";
+  #   hostname = "syaro";
+  #   networks.manage = {
+  #     IF = "enp5s0";
+  #     address = "172.16.1.3/24";
+  #   };
+  # };
+
+  #################################################
+  # VMs for development
+  #################################################
+  fake.spine = {
+    system = "x86_64-linux";
+    user = "nixos";
+    bgp.routerId = "10.10.10.10";
+  };
+  fake.leaf = {
+    system = "x86_64-linux";
+    user = "nixos";
+    bgp.routerId = "10.10.10.50";
+    bgp.k8sSegmentIP = "172.16.100.5";
+  };
+}

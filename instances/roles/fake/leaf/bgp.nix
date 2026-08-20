@@ -17,7 +17,7 @@ let
     sublist
     ;
   inherit (config.networking.vxlan) tenants;
-  inherit (static.${group}.${tag}) k8sSegmentIP routerId;
+  inherit (static.${group}.${tag}.bgp) k8sSegmentIP routerId;
 
   underlayPrefixes = concatStringsSep "." ((sublist 0 3 (splitString "." routerId)) ++ [ "0/24" ]);
   k8sNodeIpRange = concatStringsSep "." ((sublist 0 3 (splitString "." k8sSegmentIP)) ++ [ "0/24" ]);

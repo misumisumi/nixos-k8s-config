@@ -9,11 +9,13 @@ let
   inherit (lib)
     concatStringsSep
     flatten
+    head
     imap1
-    importTOML
     mapAttrsToList
+    splitString
     ;
-  k8sStatic = if isDev then importTOML ../../static_dev.toml else importTOML ../../static.toml;
+  k8sStatic = if isDev then import ../../static_dev.nix else import ../../static.nix;
+  manageIP = head (splitString "/" static.shared.dns.networks.manage.address);
 
   homeZone =
     let
@@ -33,7 +35,7 @@ let
           86400      ; Minimum TTL
       )
       @ IN NS ns.home.
-      ns IN A ${static.shared.dns.manageIP}
+      ns IN A ${manageIP}
 
       ; nodes for k8s cluster
       ${concatStringsSep "\n" nodeNameIPPairs}
@@ -64,7 +66,7 @@ in
       # allow-dnsupdate-from=127.0.0.0/8,::1,172.16.0.0/16
 
       extraConfig = ''
-        local-address=127.0.0.1, ::1, ${static.shared.dns.manageIP}
+        local-address=127.0.0.1, ::1, ${manageIP}
         local-port=53
 
         # backend

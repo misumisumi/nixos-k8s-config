@@ -1,4 +1,4 @@
-{ static, ... }:
+{ lib, static, ... }:
 {
   networking = {
     nameservers = [
@@ -40,7 +40,7 @@
         };
         stub-zone = {
           name = "home";
-          stub-addr = "${static.shared.dns.manageIP}";
+          stub-addr = "${lib.head (lib.splitString "/" static.shared.dns.networks.manage.address)}";
         };
       };
     };

@@ -5,18 +5,21 @@
   lib,
 }:
 let
-  inherit (lib) importTOML replaceStrings;
-  static = importTOML ../roles/static_dev.toml;
+  inherit (lib) replaceStrings head splitString;
+  static = import ../roles/static_dev.nix;
 
-  dnsIP = static.shared.dns.manageIP;
+  dnsIP = head (splitString "/" static.shared.dns.networks.manage.address);
   domain = static.dev.env.domain;
   nic = replaceStrings [ "_" ] [ "-" ] static.dev.env.nic;
   vip = static.dev.env.cilium_lb;
-  leafGW = static.fake.leaf.k8sSegmentIP;
+  leafGW = static.fake.leaf.bgp.k8sSegmentIP;
 in
 writeShellApplication {
   name = "setup-dev-env";
-  runtimeInputs = [ iproute2 systemd ];
+  runtimeInputs = [
+    iproute2
+    systemd
+  ];
   text = ''
     set -e
 
