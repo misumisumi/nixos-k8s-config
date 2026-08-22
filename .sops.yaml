@@ -2,11 +2,30 @@ keys:
   - &users:
     - &sumi 2C0E62B7117471A5
     - &sumi_age age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
+  - &instances:
+    - &instance_production_oci age1j3cwwxum9d7hv620lqd4le62p9nalqk3ywxrh6e47mnlkgqk0fvq23g0xz
+    - &instance_development_oci age1y359gk3l7xjzg3tsg5fcmtgzqmqd8pltz5l2wv7nt2f5n5qqgcrqvdtem0
 creation_rules:
   - path_regex: .*/branch/.*/*
     key_groups:
       - age:
           - *sumi_age
+        merge:
+          - pgp:
+              - *sumi
+  - path_regex: .*/secrets/production/roles/cloud/.*
+    key_groups:
+      - age:
+          - *sumi_age
+          - *instance_production_oci
+        merge:
+          - pgp:
+              - *sumi
+  - path_regex: .*/secrets/develop/roles/cloud/.*
+    key_groups:
+      - age:
+          - *sumi_age
+          - *instance_development_oci
         merge:
           - pgp:
               - *sumi

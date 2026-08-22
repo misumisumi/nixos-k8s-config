@@ -16,6 +16,8 @@
       isNixOSTest
       user
       ;
+    group = "microvm";
+    hostname = "borderRouter";
   };
   config = {
     # It is highly recommended to share the host's nix-store
@@ -61,6 +63,7 @@
       ./network.nix
       ./nftables.nix
       ./v6plus.nix
+      ./wireguard.nix
     ];
   };
 }

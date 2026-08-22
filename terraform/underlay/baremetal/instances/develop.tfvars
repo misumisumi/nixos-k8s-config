@@ -20,6 +20,12 @@ compornents = [
       {
         name = "dev.mngr"
       },
+      {
+        name         = "dev.oci"
+        root_pool    = "dev-baremetal"
+        root_size    = "16GB"
+        machine_type = "virtual-machine"
+      },
     ]
     instances = [
       {
@@ -38,6 +44,24 @@ compornents = [
           },
           {
             parent  = "dev-wan"
+            nictype = "bridged"
+          },
+        ]
+      },
+      {
+        # dev OCI（検証用 VM）: fake-isp の先（疑似インターネット = dev-isp 網）に配置。
+        # ゲスト側は static_dev.nix で 10.150.150.10/24 (gw 10.150.150.1) を設定。
+        name         = "oci"
+        image        = "dev/cloud/oci"
+        machine_type = "virtual-machine"
+        profiles     = ["dev.oci"]
+        config = {
+          "limits.cpu"    = 2
+          "limits.memory" = "2GB"
+        }
+        networks = [
+          {
+            parent  = "dev-isp"
             nictype = "bridged"
           },
         ]
