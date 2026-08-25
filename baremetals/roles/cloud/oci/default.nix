@@ -1,7 +1,7 @@
 {
   lib,
-  hostSecretPath,
   isDev,
+  hostSecretPath,
   ...
 }:
 let
@@ -9,18 +9,28 @@ let
 in
 {
   imports = [
-    ../share
+    ../../share/apps/bash.nix
+    ../../share/apps/pkgs.nix
+    ../../share/settings/locale.nix
+    ../../share/settings/network.nix
+    ../../share/settings/system.nix
+    ../../share/settings/users.nix
+    ../../share/settings/ssh.nix
     ./network.nix
+    ./pihole.nix
     ./sslh.nix
     ./wireguard.nix
-    ./pihole.nix
   ]
   ++ optional (!isDev) ./production
   ++ optional isDev ./develop;
 
-  # sops-nix: ssh ホスト鍵から age 鍵（keys.txt）を生成して秘密を復号。
-  # - dev: 事前生成した ssh ホスト鍵をビルド時にイメージへ焼き込み（develop/default.nix）
-  # - prod: nixos-anywhere のシークレット転送で ssh ホスト鍵を配置
+  services = {
+    # nixos-rebuild (nixos-anywhere terraform モジュール) が root で SSH するため、
+    # 共有 ssh.nix の prod 設定(no) を prohibit-password に上書きする
+    # （root の authorized_keys = sumi@mother は共有 users.nix で設定済み）。
+    openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
+  };
+
   sops = {
     defaultSopsFile = hostSecretPath + "/secrets.yaml";
     age = {

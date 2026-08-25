@@ -126,12 +126,14 @@
               inherit (pkgs)
                 linkage
                 linkage-gateway
-                mkimg-lxc
-                mkimg-kexec
-                mkimg-ipxe
-                mkimg-incus-vm
-                mkimg-list
                 mkimg-dev-wrt
+                mkimg-incus-vm
+                mkimg-ipxe
+                mkimg-kexec
+                mkimg-list
+                mkimg-lxc
+                mkimg-oci
+                mkpasswd-pihole
                 ;
               pcp = inputs.pcp.packages.${pkgs.stdenv.hostPlatform.system}.pcp;
             };

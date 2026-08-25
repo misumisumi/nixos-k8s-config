@@ -26,7 +26,7 @@ final: prev: {
         ;
       entries = readDir dir;
       groups = filter (n: entries.${n} == "directory") (attrNames entries);
-      files = map (g: dir + "/${g}/${file}") groups;
+      files = [ (dir + "/${file}") ] ++ map (g: dir + "/${g}/${file}") groups;
     in
     final.foldl (acc: p: if pathExists p then final.recursiveUpdate acc (import p) else acc) { } files;
 }

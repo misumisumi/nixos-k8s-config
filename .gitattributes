@@ -1,5 +1,7 @@
 **/secrets/** filter=git-crypt diff=git-crypt
 **/static.nix filter=git-crypt diff=git-crypt
-**/share/modules/static.nix -filter -diff
 **/production/** filter=git-crypt diff=git-crypt
+**/production/** filter=git-crypt diff=git-crypt
+terraform/oci/production.tfvars filter=git-crypt diff=git-crypt
+**/share/modules/static.nix -filter -diff
 **/secrets/**/*.sh -filter -diff

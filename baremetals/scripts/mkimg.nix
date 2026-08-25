@@ -86,6 +86,20 @@ in
     fi
   '';
 
+  mkimg-oci = writeShellScriptBin "mkimg.oci" ''
+    flake=$1
+    args="''${@:2}"
+    PROJECT_ROOT="''${FLAKE_ROOT:-$PWD}"
+    isProd="$(echo $flake | grep -c "prod")"
+    image="$(echo $flake | awk -F_ '{print $3}')"
+    output=$PROJECT_ROOT/mnt/oci
+    build_output="$(${getExe nixos-rebuild-ng} build-image --flake ".#$flake" --image-variant oci --no-link ''${args[@]})"
+    if [ ! -z "$build_output" ]; then
+      rm -rf "$output"
+      mkdir -p "$output"
+      ${getExe rsync} -auhz --copy-links --chmod=ug+w --chown=$USER:users "$build_output/" "$output"
+    fi
+  '';
   mkimg-dev-wrt = writeShellScriptBin "mkimg.dev-wrt" ''
     flake=$1
     image=''${flake//_//}

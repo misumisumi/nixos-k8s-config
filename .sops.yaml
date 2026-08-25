@@ -3,8 +3,8 @@ keys:
     - &sumi 2C0E62B7117471A5
     - &sumi_age age1w4dld6acqnhctzq32nhnajw0ewgkq7295k3ue3cgg0pwpt0re3asg4ajs3
   - &instances:
-    - &instance_production_oci age1j3cwwxum9d7hv620lqd4le62p9nalqk3ywxrh6e47mnlkgqk0fvq23g0xz
-    - &instance_development_oci age1y359gk3l7xjzg3tsg5fcmtgzqmqd8pltz5l2wv7nt2f5n5qqgcrqvdtem0
+    - &oci_dev age1zu9hmg6wkm9sc8tl8q7h5hfy2zuzxcua4ukn9v20apd9f6yu09hqse0lad
+    - &oci_prod age1j3cwwxum9d7hv620lqd4le62p9nalqk3ywxrh6e47mnlkgqk0fvq23g0xz
 creation_rules:
   - path_regex: .*/branch/.*/*
     key_groups:
@@ -13,19 +13,19 @@ creation_rules:
         merge:
           - pgp:
               - *sumi
-  - path_regex: .*/secrets/production/roles/cloud/.*
+  - path_regex: .*/secrets/develop/roles/cloud/oci/secrets.yaml
     key_groups:
       - age:
           - *sumi_age
-          - *instance_production_oci
+          - *oci_dev
         merge:
           - pgp:
               - *sumi
-  - path_regex: .*/secrets/develop/roles/cloud/.*
+  - path_regex: .*/secrets/production/roles/cloud/oci/secrets.yaml
     key_groups:
       - age:
           - *sumi_age
-          - *instance_development_oci
+          - *oci_prod
         merge:
           - pgp:
               - *sumi

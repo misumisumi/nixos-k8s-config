@@ -55,12 +55,18 @@ final: prev: {
     mkdir -p $out/bin
     ln -s ${prev.bashInteractive}/bin/bash $out/bin/rbash
   '';
+  mkpasswd-pihole = prev.writeShellScriptBin "mkpasswd.pihole" ''
+    PASSWD=$1
+    [ -z "$PASSWD" ] && { echo "Usage: mkpasswd.pihole <password>"; exit 1; }
+    printf '%s' "$PASSWD" | sha256sum | cut -d' ' -f1 | tr -d '\n' | sha256sum | cut -d' ' -f1
+  '';
   inherit (prev.callPackage ../scripts/mkimg.nix { })
     mkimg-lxc
     mkimg-kexec
     mkimg-ipxe
     mkimg-incus-vm
     mkimg-list
+    mkimg-oci
     mkimg-dev-wrt
     ;
 }

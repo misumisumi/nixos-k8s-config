@@ -44,14 +44,23 @@ in
     internalInterfaces = [ "wg0" ];
   };
 
-  networking.firewall = {
-    enable = true;
-    # WireGuard control plane: 51820 直接 + 443（sslh 経由）
-    allowedUDPPorts = [ 51820 443 ];
-    # Pi-hole DNS + dashboard are reachable only over the tunnel (wg0).
-    interfaces.wg0 = {
-      allowedUDPPorts = [ 53 ];
-      allowedTCPPorts = [ 8080 ];
+  networking = {
+    nftables.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        443
+      ];
+      # WireGuard control plane: 51820 直接 + 443（sslh 経由）
+      allowedUDPPorts = [
+        51820
+        443
+      ];
+      # Pi-hole DNS + dashboard are reachable only over the tunnel (wg0).
+      interfaces.wg0 = {
+        allowedUDPPorts = [ 53 ];
+        allowedTCPPorts = [ 8080 ];
+      };
     };
   };
 }

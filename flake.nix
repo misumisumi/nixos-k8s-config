@@ -1,5 +1,6 @@
 {
   nixConfig = {
+    extra-platforms = [ "aarch64-linux" ];
     extra-substituters = [
       "https://misumisumi.cachix.org"
     ];
@@ -89,9 +90,11 @@
                 mkimg-kexec
                 mkimg-ipxe
                 mkimg-list
+                mkimg-oci
                 mkimg-dev-wrt
                 linkage
                 linkage-gateway
+                mkpasswd-pihole
 
                 genca
                 # gencerts-prod
