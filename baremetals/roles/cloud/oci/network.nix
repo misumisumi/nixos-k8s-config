@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (lib) optional removeNetmask;
+
   wan = static.${group}.${hostname}.networks.wan;
   wanIF = wan.IF;
   # static.nix に address があれば静的 IP、なければ DHCP（本番=ens3 DHCP / dev=lab 静的 IP）
@@ -18,7 +20,7 @@ let
           IPv4Forwarding = true;
         };
         address = [ wan.address ];
-        routes = lib.optional (wan ? gateway) {
+        routes = optional (wan ? gateway) {
           Destination = "0.0.0.0/0";
           Gateway = wan.gateway;
         };
@@ -45,7 +47,21 @@ in
   };
 
   networking = {
-    nftables.enable = true;
+    nftables = {
+      enable = true;
+      tables."manage-web-ui" = {
+        family = "inet";
+        content = ''
+          chain prerouting {
+            type nat hook prerouting priority dstnat; policy accept;
+            # トンネル発 443 のみ管理UIへ。daddr条件で「公衆網IP宛ssh-over-443(フルtunnel時)」を保護
+            iifname "wg0" ip daddr ${
+              removeNetmask static.${group}.${hostname}.wireguard.serverAddress
+            } tcp dport 443 redirect to :9443
+          }
+        '';
+      };
+    };
     firewall = {
       enable = true;
       allowedTCPPorts = [
@@ -58,8 +74,8 @@ in
       ];
       # Pi-hole DNS + dashboard are reachable only over the tunnel (wg0).
       interfaces.wg0 = {
-        allowedUDPPorts = [ 53 ];
-        allowedTCPPorts = [ 8080 ];
+        allowedUDPPorts = [ 53 ]; # for DNS
+        allowedTCPPorts = [ 9443 ]; # nginx: TLS reverse proxy for managing web-ui
       };
     };
   };

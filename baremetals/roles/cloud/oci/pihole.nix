@@ -1,9 +1,14 @@
 {
+  lib,
   config,
   pkgs,
+  static,
+  group,
+  hostname,
   ...
 }:
 let
+  inherit (lib) removeNetmask;
   # Replicate the module's resolved settings (with the pwhash placeholder)
   # so we can materialise a real, secret-populated /etc/pihole/pihole.toml.
   baseToml =
@@ -16,6 +21,8 @@ in
   };
   # Disable the module's read-only store symlink; we write the file ourselves.
   environment.etc."pihole/pihole.toml".enable = false;
+
+  networking.firewall.extraForwardRules = "";
 
   services = {
     resolved = {
@@ -56,6 +63,12 @@ in
           pwhash = "@PIHOLE_PWHASH@";
           cli_pw = true;
         };
+        # Pi-hole v6 は /etc/dnsmasq.d をデフォルトで読まないため dnsmasq_lines で宣言。
+        # oci.misumi-sumi.com ゾーン全体をトンネル内アドレス(10.250.0.1)に解決。
+        misc.dnsmasq_lines = [
+          "address=/.oci.misumi-sumi.com/${removeNetmask static.${group}.${hostname}.wireguard.serverAddress}"
+          "server=/misumi-sumi.com/${static.${group}.${hostname}.pihole.home.forwardIP}"
+        ];
       };
     };
     # Dashboard served by pihole-web on port 8080 (also sets FTL webserver.port).

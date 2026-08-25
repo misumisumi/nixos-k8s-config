@@ -22,20 +22,14 @@
         {
           name = "ssh";
           service = "ssh";
-          host = "localhost";
+          host = "127.0.0.1";
           port = "22";
           keepalive = true;
           tfo_ok = true;
         }
         {
-          name = "tls";
-          host = "localhost";
-          port = "9443";
-          tfo_ok = true;
-        }
-        {
           name = "wireguard";
-          host = "localhost";
+          host = "127.0.0.1";
           port = "51820";
           is_udp = true;
         }

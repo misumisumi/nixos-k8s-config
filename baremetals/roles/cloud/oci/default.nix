@@ -17,6 +17,7 @@ in
     ../../share/settings/users.nix
     ../../share/settings/ssh.nix
     ./network.nix
+    ./nginx.nix
     ./pihole.nix
     ./sslh.nix
     ./wireguard.nix
