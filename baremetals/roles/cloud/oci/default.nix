@@ -22,6 +22,7 @@ in
     ./sslh.nix
     ./wireguard.nix
   ]
+  ++ optional (!isDev) ./headscale
   ++ optional (!isDev) ./production
   ++ optional isDev ./develop;
 
