@@ -38,14 +38,6 @@ in
 {
   systemd.network.networks."10-wan" = wanNetwork;
 
-  # VPN clients need to reach the internet through the tunnel.
-  boot.kernel.sysctl."net.ipv4.ip_forward" = true;
-  networking.nat = {
-    enable = true;
-    externalInterface = wanIF;
-    internalInterfaces = [ "wg0" ];
-  };
-
   networking = {
     nftables = {
       enable = true;
@@ -55,9 +47,7 @@ in
           chain prerouting {
             type nat hook prerouting priority dstnat; policy accept;
             # トンネル発 443 のみ管理UIへ。daddr条件で「公衆網IP宛ssh-over-443(フルtunnel時)」を保護
-            iifname "wg0" ip daddr ${
-              removeNetmask static.${group}.${hostname}.wireguard.serverAddress
-            } tcp dport 443 redirect to :9443
+            iifname "tailscale0" ip daddr 100.64.0.1 tcp dport 443 redirect to :9443
           }
         '';
       };
@@ -72,10 +62,14 @@ in
         51820
         443
       ];
-      # Pi-hole DNS + dashboard are reachable only over the tunnel (wg0).
+      # Pi-hole DNS + dashboard are reachable only over the tunnel (wg0 + tailscale0).
       interfaces.wg0 = {
         allowedUDPPorts = [ 53 ]; # for DNS
         allowedTCPPorts = [ 9443 ]; # nginx: TLS reverse proxy for managing web-ui
+      };
+      interfaces.tailscale0 = {
+        allowedUDPPorts = [ 53 ]; # for DNS (Tailscale クライアント用)
+        allowedTCPPorts = [ 9443 ]; # Headplane (Tailscale クライアント用)
       };
     };
   };

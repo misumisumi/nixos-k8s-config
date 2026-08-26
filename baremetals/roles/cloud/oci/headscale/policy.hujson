@@ -9,6 +9,8 @@
 
   "autoApprovers": {
     "routes": {
+      "0.0.0.0/0": ["dragon511southern@gmail.com"],
+      "::/0": ["dragon511southern@gmail.com"],
       "192.168.0.0/16": ["dragon511southern@gmail.com"],
       "192.168.8.0/24": ["dragon511southern@gmail.com"],
     },

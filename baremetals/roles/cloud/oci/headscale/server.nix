@@ -1,5 +1,12 @@
 # Headscale コントロールサーバー + 内蔵 DERP リレー。
-{ config, pkgs, static, group, hostname, ... }:
+{
+  config,
+  pkgs,
+  static,
+  group,
+  hostname,
+  ...
+}:
 let
   inherit (static.${group}.${hostname}) tailnet;
   fqdn = tailnet.host; # oci.misumi-sumi.com
@@ -37,12 +44,10 @@ in
       dns = {
         magic_dns = true;
         base_domain = tailnet.dnsBaseDomain;
-        # クライアントの通常 DNS 解決は握らない（MagicDNS のみ提供）。
-        override_local_dns = false;
+        override_local_dns = true;
         nameservers.global = [
-          # Phase 移行後、Pi-hole を tailscale0 バインドに変更したら切替:
-          # （sequential 割当の先頭。OCI の tailscale を最初に登録すればこの IP を得る）
-          # "100.64.0.1"
+          # Pi-hole の tailnet IP（sequential 割当の先頭。OCI を最初に登録すればこの IP を得る）
+          "100.64.0.1"
         ];
       };
 
@@ -77,7 +82,11 @@ in
         issuer = "https://${fqdn}/dex";
         client_id = "headscale";
         client_secret_path = config.sops.secrets."headscale-oidc-client-secret".path;
-        scope = [ "openid" "profile" "email" ];
+        scope = [
+          "openid"
+          "profile"
+          "email"
+        ];
         # GitHub の noreply mail もあり得るためドメイン制限はしない
         allowed_domains = [ ];
         allowed_users = [ ];

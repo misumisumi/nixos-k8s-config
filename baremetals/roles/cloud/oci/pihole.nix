@@ -1,5 +1,4 @@
 {
-  lib,
   config,
   pkgs,
   static,
@@ -8,12 +7,12 @@
   ...
 }:
 let
-  inherit (lib) removeNetmask;
   # Replicate the module's resolved settings (with the pwhash placeholder)
   # so we can materialise a real, secret-populated /etc/pihole/pihole.toml.
   baseToml =
     (pkgs.formats.toml { }).generate "pihole-config-init.toml"
       config.services.pihole-ftl.settings;
+  acme = static.${group}.${hostname}.acme;
 in
 {
   sops.secrets = {
@@ -24,11 +23,44 @@ in
 
   networking.firewall.extraForwardRules = "";
 
+  services.nginx.virtualHosts."pihole.${acme.certName}" = {
+    useACMEHost = acme.certName;
+    forceSSL = true;
+    listen = [
+      {
+        addr = "100.64.0.1";
+        port = 9443;
+        ssl = true;
+      }
+    ];
+    locations = {
+      # Pi-hole dashboard
+      "/" = {
+        proxyPass = "http://127.0.0.1:8080";
+        proxyWebsockets = true;
+      };
+    };
+    extraConfig = ''
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      add_header Strict-Transport-Security "max-age=63072000" always;
+    '';
+  };
+
   services = {
     resolved = {
       enable = true;
       settings.Resolve = {
         DNSStubListener = "no";
+        DNS = "127.0.0.1";
+        FallbackDNS = [
+          "1.1.1.1"
+          "2606:4700:4700::1111"
+          "8.8.8.8"
+          "2001:4860:4860::8888"
+        ];
       };
     };
 
@@ -55,8 +87,8 @@ in
             "8.8.8.8"
             "1.0.0.1"
           ];
-          interface = "wg0"; # DNS reachable only over the tunnel
           port = 53;
+          listeningMode = "ALL";
         };
         webserver.api = {
           # placeholder; replaced at runtime by pre-pihole-ftl.service
@@ -66,7 +98,8 @@ in
         # Pi-hole v6 は /etc/dnsmasq.d をデフォルトで読まないため dnsmasq_lines で宣言。
         # oci.misumi-sumi.com ゾーン全体をトンネル内アドレス(10.250.0.1)に解決。
         misc.dnsmasq_lines = [
-          "address=/.oci.misumi-sumi.com/${removeNetmask static.${group}.${hostname}.wireguard.serverAddress}"
+          # "address=/.oci.misumi-sumi.com/${removeNetmask static.${group}.${hostname}.wireguard.serverAddress}"
+          "address=/.oci.misumi-sumi.com/100.64.0.1"
           "server=/misumi-sumi.com/${static.${group}.${hostname}.pihole.home.forwardIP}"
         ];
       };

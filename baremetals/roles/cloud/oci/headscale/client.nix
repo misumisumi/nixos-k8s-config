@@ -22,13 +22,14 @@ in
 {
   services.tailscale = {
     enable = true;
+    useRoutingFeatures = "server";
     openFirewall = true;
     # NOTE: authKeyFile 未指定のため extraUpFlags は自動適用されない。
     # 上記の手動コマンドを初回に実行する（2 回目以降は tailscaled が状態を保持）。
-    extraUpFlags = [
-      "--login-server=https://${tailnet.host}"
+    extraSetFlags = [
       "--hostname=oci"
-      "--accept-dns=false" # OCI 自身は resolved の管理下。Pi-hole ループ回避
+      "--advertise-exit-node"
+      "--advertise-routes=0.0.0.0/0,::/0"
     ];
   };
 }
