@@ -19,14 +19,6 @@
       ];
       protocols = [
         {
-          name = "ssh";
-          service = "ssh";
-          host = "127.0.0.1";
-          port = "22";
-          keepalive = true;
-          tfo_ok = true;
-        }
-        {
           name = "wireguard";
           host = "127.0.0.1";
           port = "51820";
