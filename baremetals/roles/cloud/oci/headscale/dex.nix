@@ -5,7 +5,6 @@
 #   tailscale up → Headscale → Dex → GitHub ログイン → OIDC token → 登録
 {
   config,
-  lib,
   static,
   group,
   hostname,
@@ -13,7 +12,6 @@
 }:
 let
   inherit (static.${group}.${hostname}) tailnet;
-  fqdn = tailnet.host;
   dexPort = 5556;
 in
 {
@@ -29,7 +27,7 @@ in
 
     settings = {
       # パス prefix 配信（nginx の /dex/ → :5556/）
-      issuer = "https://${fqdn}/dex";
+      issuer = "https://${tailnet.host}/dex";
       web.http = "127.0.0.1:${toString dexPort}";
 
       storage = {
@@ -45,7 +43,7 @@ in
         {
           id = "headscale";
           name = "Headscale";
-          redirectURIs = [ "https://${fqdn}/oidc/callback" ];
+          redirectURIs = [ "https://${tailnet.host}/oidc/callback" ];
           secretEnv = "HEADSCALE_OIDC_CLIENT_SECRET";
         }
       ];
@@ -58,7 +56,7 @@ in
           config = {
             clientID = "$GITHUB_CLIENT_ID";
             clientSecret = "$GITHUB_CLIENT_SECRET";
-            redirectURI = "https://${fqdn}/dex/callback";
+            redirectURI = "https://${tailnet.host}/dex/callback";
             orgs = [ { name = "misumi-homelab"; } ];
           };
         }

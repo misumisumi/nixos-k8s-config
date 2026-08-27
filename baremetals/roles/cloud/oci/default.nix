@@ -1,12 +1,8 @@
 {
   lib,
-  isDev,
   hostSecretPath,
   ...
 }:
-let
-  inherit (lib) optional;
-in
 {
   imports = [
     ../../share/apps/bash.nix
@@ -16,15 +12,14 @@ in
     ../../share/settings/system.nix
     ../../share/settings/users.nix
     ../../share/settings/ssh.nix
+    ./headscale
     ./network.nix
     ./nginx.nix
+    ./oci.nix
     ./pihole.nix
     ./sslh.nix
     ./wireguard.nix
-  ]
-  ++ optional (!isDev) ./headscale
-  ++ optional (!isDev) ./production
-  ++ optional isDev ./develop;
+  ];
 
   services = {
     # nixos-rebuild (nixos-anywhere terraform モジュール) が root で SSH するため、

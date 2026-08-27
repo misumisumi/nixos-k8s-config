@@ -6,13 +6,17 @@
       "dst": ["*:*"],
     },
   ],
+  "tagOwners": {
+    "tag:oci": ["dragon511southern@mail.com"],
+    "tag:homelab": ["dragon511southern@mail.com"],
+  },
 
   "autoApprovers": {
     "routes": {
-      "0.0.0.0/0": ["dragon511southern@gmail.com"],
-      "::/0": ["dragon511southern@gmail.com"],
-      "192.168.0.0/16": ["dragon511southern@gmail.com"],
-      "192.168.8.0/24": ["dragon511southern@gmail.com"],
+      "0.0.0.0/0": [ "tag:oci", "dragon511southern@gmail.com"],
+      "::/0": [ "tag:oci", "dragon511southern@gmail.com"],
+      "192.168.0.0/16": [ "tag:homelab", "dragon511southern@gmail.com"],
+      "192.168.8.0/24": [ "tag:homelab", "dragon511southern@gmail.com"],
     },
   },
 

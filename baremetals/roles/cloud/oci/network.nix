@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (lib) optional removeNetmask;
+  inherit (lib) optional;
 
   wan = static.${group}.${hostname}.networks.wan;
   wanIF = wan.IF;
@@ -39,19 +39,7 @@ in
   systemd.network.networks."10-wan" = wanNetwork;
 
   networking = {
-    nftables = {
-      enable = true;
-      tables."manage-web-ui" = {
-        family = "inet";
-        content = ''
-          chain prerouting {
-            type nat hook prerouting priority dstnat; policy accept;
-            # トンネル発 443 のみ管理UIへ。daddr条件で「公衆網IP宛ssh-over-443(フルtunnel時)」を保護
-            iifname "tailscale0" ip daddr 100.64.0.1 tcp dport 443 redirect to :9443
-          }
-        '';
-      };
-    };
+    nftables.enable = true;
     firewall = {
       enable = true;
       allowedTCPPorts = [
@@ -69,7 +57,6 @@ in
       };
       interfaces.tailscale0 = {
         allowedUDPPorts = [ 53 ]; # for DNS (Tailscale クライアント用)
-        allowedTCPPorts = [ 9443 ]; # Headplane (Tailscale クライアント用)
       };
     };
   };

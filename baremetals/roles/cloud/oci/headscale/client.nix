@@ -1,4 +1,4 @@
-# OCI 自身の Tailscale クライアント。
+# NOTE: OCI 自身の Tailscale クライアント。
 # authKeyFile を使わないため、初回登録は手動で行う:
 #
 #   sudo tailscale up \
@@ -9,16 +9,6 @@
 # 表示された URL をブラウザで開き GitHub 認証するとノードが登録される。
 # allocation=sequential のため「最初に登録したノード」が 100.64.0.1 を得る。
 # Pi-hole の tailscale0 バインド用に、必ず他ノードより先に登録すること。
-{
-  lib,
-  static,
-  group,
-  hostname,
-  ...
-}:
-let
-  inherit (static.${group}.${hostname}) tailnet;
-in
 {
   services.tailscale = {
     enable = true;

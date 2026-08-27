@@ -1,4 +1,5 @@
 {
+  lib,
   config,
   pkgs,
   static,
@@ -7,6 +8,9 @@
   ...
 }:
 let
+  inherit (lib) removeNetmask;
+  wgAddress = removeNetmask static.${group}.${hostname}.wireguard.serverAddress;
+
   # Replicate the module's resolved settings (with the pwhash placeholder)
   # so we can materialise a real, secret-populated /etc/pihole/pihole.toml.
   baseToml =
@@ -28,7 +32,7 @@ in
     forceSSL = true;
     listen = [
       {
-        addr = "100.64.0.1";
+        addr = "${wgAddress}";
         port = 9443;
         ssl = true;
       }
@@ -96,10 +100,9 @@ in
           cli_pw = true;
         };
         # Pi-hole v6 は /etc/dnsmasq.d をデフォルトで読まないため dnsmasq_lines で宣言。
-        # oci.misumi-sumi.com ゾーン全体をトンネル内アドレス(10.250.0.1)に解決。
+        # oci.misumi-sumi.com ゾーン全体をWGトンネル内アドレスに解決。
         misc.dnsmasq_lines = [
-          # "address=/.oci.misumi-sumi.com/${removeNetmask static.${group}.${hostname}.wireguard.serverAddress}"
-          "address=/.oci.misumi-sumi.com/100.64.0.1"
+          "address=/.oci.misumi-sumi.com/${wgAddress}"
           "server=/misumi-sumi.com/${static.${group}.${hostname}.pihole.home.forwardIP}"
         ];
       };
