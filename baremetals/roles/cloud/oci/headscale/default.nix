@@ -3,6 +3,7 @@
   imports = [
     ./client.nix
     ./dex.nix
+    ./headplane.nix
     ./nginx.nix
     ./server.nix
   ];

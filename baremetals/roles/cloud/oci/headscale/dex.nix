@@ -46,6 +46,12 @@ in
           redirectURIs = [ "https://${tailnet.host}/oidc/callback" ];
           secretEnv = "HEADSCALE_OIDC_CLIENT_SECRET";
         }
+        {
+          id = "headplane";
+          name = "Headplane";
+          redirectURIs = [ "https://${tailnet.headplaneURL}/admin/oidc/callback" ];
+          secretEnv = "HEADPLANE_OIDC_CLIENT_SECRET";
+        }
       ];
 
       connectors = [

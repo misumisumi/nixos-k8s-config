@@ -53,6 +53,7 @@ final: prev: {
     cockpit
     cockpit-files
     cockpit-machines
+    headplane
     ;
 
   rbash = prev.runCommandNoCC "rbash-${prev.bashInteractive.version}" { } ''
