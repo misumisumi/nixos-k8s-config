@@ -19,11 +19,11 @@ in
   #   GITHUB_CLIENT_ID=<GitHub OAuth App の Client ID>
   #   GITHUB_CLIENT_SECRET=<GitHub OAuth App の Client Secret>
   #   HEADSCALE_OIDC_CLIENT_SECRET=<openssl rand -hex 32>
-  sops.secrets."dex-env" = { };
+  sops.secrets."dex/env" = { };
 
   services.dex = {
     enable = true;
-    environmentFile = config.sops.secrets."dex-env".path;
+    environmentFile = config.sops.secrets."dex/env".path;
 
     settings = {
       # パス prefix 配信（nginx の /dex/ → :5556/）

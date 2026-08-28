@@ -15,7 +15,7 @@ let
   prefixV4 = "100.64.0.0/10";
 in
 {
-  sops.secrets."headscale-oidc-client-secret" = {
+  sops.secrets."headscale/oidc/client-secret" = {
     # 値は dex.nix の HEADSCALE_OIDC_CLIENT_SECRET と同一にすること
     #（Dex ↔ Headscale 間の confidential client secret）。
     owner = "headscale";
@@ -86,7 +86,7 @@ in
       oidc = {
         issuer = "https://${fqdn}/dex";
         client_id = "headscale";
-        client_secret_path = config.sops.secrets."headscale-oidc-client-secret".path;
+        client_secret_path = config.sops.secrets."headscale/oidc/client-secret".path;
         scope = [
           "openid"
           "profile"

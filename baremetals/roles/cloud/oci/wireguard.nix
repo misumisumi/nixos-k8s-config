@@ -20,12 +20,12 @@ let
   wg = static.${group}.${hostname}.wireguard;
 
   # 各ピアの PSK は sops に格納（キー名: wg-peer-<name>-psk）
-  peerPskSecrets = mapAttrs' (name: _: nameValuePair "wg-peer-${name}-psk" { }) wg.peers;
+  peerPskSecrets = mapAttrs' (name: _: nameValuePair "wireguard/peers/${name}/psk" { }) wg.peers;
 in
 {
   # --- sops secrets (runtime 復号) ---
   sops.secrets = {
-    "wg-server-privateKey" = { };
+    "wireguard/privatekey" = { };
   }
   // peerPskSecrets;
 
@@ -58,11 +58,11 @@ in
       ips = [ wg.serverAddress ];
       mtu = 1280;
       inherit (wg) listenPort;
-      privateKeyFile = config.sops.secrets."wg-server-privateKey".path;
+      privateKeyFile = config.sops.secrets."wireguard/privatekey".path;
 
       peers = mapAttrsToList (name: p: {
         inherit (p) publicKey;
-        presharedKeyFile = config.sops.secrets."wg-peer-${name}-psk".path;
+        presharedKeyFile = config.sops.secrets."wireguard/peers/${name}/psk".path;
         allowedIPs = [ "${p.address}/32" ] ++ p.allowedIPs;
       }) wg.peers;
     };

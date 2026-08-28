@@ -20,7 +20,7 @@ let
 in
 {
   sops.secrets = {
-    "pihole-pwhash" = { };
+    "pihole/pwhash" = { };
   };
   # Disable the module's read-only store symlink; we write the file ourselves.
   environment.etc."pihole/pihole.toml".enable = false;
@@ -134,7 +134,7 @@ in
     script = ''
       tmp=$(mktemp)
       sec=$(mktemp)
-      tr -d '\n' < ${config.sops.secrets."pihole-pwhash".path} > "$sec"
+      tr -d '\n' < ${config.sops.secrets."pihole/pwhash".path} > "$sec"
       cp -f ${baseToml} "$tmp"
       ${pkgs.replace-secret}/bin/replace-secret '@PIHOLE_PWHASH@' "$sec" "$tmp"
       install -o pihole -g pihole -m400 "$tmp" /etc/pihole/pihole.toml

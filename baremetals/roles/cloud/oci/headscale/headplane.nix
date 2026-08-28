@@ -19,15 +19,15 @@ in
   imports = [ "${inputs.nixpkgs-unstable}/nixos/modules/services/networking/headplane.nix" ];
 
   sops.secrets = {
-    "headscale-api-key" = {
+    "headscale/api-key" = {
       owner = "headscale";
       group = "headscale";
     };
-    "headplane-cookie-secret" = {
+    "headplane/cookie-secret" = {
       owner = "headscale";
       group = "headscale";
     };
-    "headplane-oidc-client-secret" = {
+    "headplane/oidc/client-secret" = {
       owner = "headscale";
       group = "headscale";
     };
@@ -40,20 +40,20 @@ in
         url = "http://127.0.0.1:${toString config.services.headscale.port}";
         config_path = "/etc/headscale/config.yaml";
         public_url = "https://${tailnet.host}";
-        api_key_path = config.sops.secrets."headscale-api-key".path; # Since 26.11
+        api_key_path = config.sops.secrets."headscale/api-key".path; # Since 26.11
       };
       server = {
         host = "127.0.0.1"; # 内部のみ。nginx が 9443 でプロキシ
         base_url = "https://${tailnet.headplaneURL}";
         port = 3000;
-        cookie_secret_path = config.sops.secrets."headplane-cookie-secret".path;
+        cookie_secret_path = config.sops.secrets."headplane/cookie-secret".path;
         cookie_secure = true;
       };
       integration.proc.enabled = true;
       oidc = {
         issuer = "https://${tailnet.host}/dex";
         client_id = "headplane";
-        client_secret_path = config.sops.secrets."headplane-oidc-client-secret".path;
+        client_secret_path = config.sops.secrets."headplane/oidc/client-secret".path;
         token_endpoint_auth_method = "client_secret_basic";
       };
     };
