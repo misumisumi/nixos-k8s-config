@@ -134,6 +134,7 @@
                 mkimg-lxc
                 mkimg-oci
                 mkpasswd-pihole
+                wg-peer
                 ;
               pcp = inputs.pcp.packages.${pkgs.stdenv.hostPlatform.system}.pcp;
             };

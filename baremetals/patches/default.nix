@@ -74,4 +74,7 @@ final: prev: {
     mkimg-oci
     mkimg-dev-wrt
     ;
+  inherit (prev.callPackage ../scripts/wg-peer.nix { })
+    wg-peer
+    ;
 }

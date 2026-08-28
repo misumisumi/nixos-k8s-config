@@ -92,6 +92,7 @@
                 mkimg-list
                 mkimg-oci
                 mkimg-dev-wrt
+                wg-peer
                 linkage
                 linkage-gateway
                 mkpasswd-pihole
