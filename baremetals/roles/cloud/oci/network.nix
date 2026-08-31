@@ -53,7 +53,10 @@ in
       # Pi-hole DNS + dashboard are reachable only over the tunnel (wg0 + tailscale0).
       interfaces.wg0 = {
         allowedUDPPorts = [ 53 ]; # for DNS
-        allowedTCPPorts = [ 9443 ]; # nginx: TLS reverse proxy for managing web-ui
+        allowedTCPPorts = [
+          443
+          9443
+        ]; # nginx: TLS reverse proxy for managing web-ui
       };
       interfaces.tailscale0 = {
         allowedUDPPorts = [ 53 ]; # for DNS (Tailscale クライアント用)

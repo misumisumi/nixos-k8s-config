@@ -23,14 +23,6 @@ in
     restartUnits = [ "headscale.service" ];
   };
 
-  # 内蔵 DERP の STUN（NAT 走査）。DERP 本体は nginx 経由の /derp で提供。
-  networking = {
-    extraHosts = ''
-      127.0.0.1 ${tailnet.host}
-    '';
-    firewall.allowedUDPPorts = [ tailnet.derp.stunPort ];
-  };
-
   services.headscale = {
     enable = true;
     address = "127.0.0.1";

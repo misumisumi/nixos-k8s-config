@@ -6,6 +6,15 @@
       "dst": ["*:*"],
     },
   ],
+  "grants": [
+    {
+      "src": ["100.64.0.4"], // Devices that can be accessed through the peer relay
+      "dst": ["tag:oci"], // Devices functioning as peer relays for the src devices
+      "app": {
+        "tailscale.com/cap/relay": [] // The relay capability doesn't require any parameters
+      }
+    }
+  ] ,
   "tagOwners": {
     "tag:oci": ["dragon511southern@mail.com"],
     "tag:homelab": ["dragon511southern@mail.com"],

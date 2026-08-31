@@ -49,7 +49,7 @@ in
         cookie_secret_path = config.sops.secrets."headplane/cookie-secret".path;
         cookie_secure = true;
       };
-      integration.proc.enabled = true;
+      integration.agent.enabled = true;
       oidc = {
         issuer = "https://${tailnet.host}/dex";
         client_id = "headplane";

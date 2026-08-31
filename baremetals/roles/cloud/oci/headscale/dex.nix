@@ -1,5 +1,3 @@
-# Dex: GitHub OAuth2 を OIDC にブリッジする IdP。
-# Headscale は GitHub を直接 OIDC にできない（Discovery 非対応）ため、
 # Dex を挟んで GitHub 認証を実現する。
 #
 #   tailscale up → Headscale → Dex → GitHub ログイン → OIDC token → 登録
@@ -20,6 +18,13 @@ in
   #   GITHUB_CLIENT_SECRET=<GitHub OAuth App の Client Secret>
   #   HEADSCALE_OIDC_CLIENT_SECRET=<openssl rand -hex 32>
   sops.secrets."dex/env" = { };
+
+  # 自サーバー側の OIDC discovery/token 通信を公衆網・wg0 経由ではなく
+  # ループバックで完結させる（443→sslh→nginx:8443→dex）。
+  # Pi-hole v6 は /etc/hosts を読まないため、クライアント向け回答(wgAddress)は汚染されない。
+  networking.extraHosts = ''
+    127.0.0.1 ${tailnet.host}
+  '';
 
   services.dex = {
     enable = true;
