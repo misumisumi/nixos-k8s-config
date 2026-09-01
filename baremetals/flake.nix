@@ -16,6 +16,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nur.url = "github:nix-community/NUR";
     flakes.url = "github:misumisumi/flakes";
+    system-manager = {
+      url = "github:numtide/system-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     openwrt-imagebuilder = {
       url = "github:astro/nix-openwrt-imagebuilder";
@@ -88,6 +92,9 @@
             inherit nixpkgs-unstable;
           };
         nixosConfigurations = import ./roles {
+          inherit lib inputs self;
+        };
+        systemConfigs = import ./roles/system-manager.nix {
           inherit lib inputs self;
         };
       };

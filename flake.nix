@@ -37,6 +37,7 @@
       flake = {
         nixosConfigurations =
           inputs.homelab-baremetals.nixosConfigurations // inputs.homelab-instances.nixosConfigurations;
+        systemConfigs = inputs.homelab-baremetals.systemConfigs;
       };
       perSystem =
         {
