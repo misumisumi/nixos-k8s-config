@@ -1,11 +1,83 @@
 {
-  nixpkgs.hostPlatform = "aarch64-linux";
-  # nixpkgs.hostPlatform = "x86_64-linux";
+  hostname,
+  inputs,
+  self,
+  system,
+  user,
+  ...
+}:
+{
+  imports = [
+    inputs.home-manager.nixosModules.home-manager
+    inputs.homelab-modules.nixosModules.dgx-spark
+    ./cockpit.nix
+    ./container.nix
+    ./network.nix
+    ./pkgs.nix
+    ({ pkgs, ... }: {
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        backupFileExtension = "hm.bak";
+        extraSpecialArgs = {
+          inherit
+            self
+            inputs
+            hostname
+            user
+            system
+            ;
+        };
+        sharedModules = [
+          inputs.flakes.homeManagerModules.default
+          inputs.sops-nix.homeManagerModules.sops
+        ];
+        users."${user}" = {
+          imports = [ ./home ];
+          home.stateVersion = pkgs.lib.trivial.release;
+        };
+      };
+    })
+  ];
+
+  nixpkgs.hostPlatform = system;
+  apt = {
+    enable = true;
+    onActivation.autoUpdate = true;
+  };
+  nix = {
+    enable = true;
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      trusted-users = [
+        "${user}"
+      ];
+    };
+  };
+  environment.etc."hostname".text = hostname;
+  services.userborn.enable = true;
+
   users = {
-    groups.sumi = { };
-    users.sumi = {
+    groups = {
+      ${user} = { };
+      "docker" = { };
+    };
+    users.${user} = {
       isNormalUser = true;
-      group = "sumi";
+      group = "${user}";
+      extraGroups = [
+        "adm"
+        "audio"
+        "dip"
+        "docker"
+        "lpadmin"
+        "plugdev"
+        "sudo"
+        "users"
+      ];
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCGcY4v0aRzAO+hLnGhEaU7JArt/Wrn8FuIgFcovlad sumi@mother-2021-03-12"
       ];
@@ -31,7 +103,7 @@
       KbdInteractiveAuthentication = true;
       PasswordAuthentication = false;
       X11Forwarding = false;
-      PermitRootLogin = "no";
+      PermitRootLogin = "prohibit-password";
     };
   };
 }

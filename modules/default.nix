@@ -35,4 +35,13 @@
   vault-unseal = {
     imports = [ ./vault-unseal.nix ];
   };
+  apt = {
+    imports = [ ./apt.nix ];
+  };
+  dgx-spark = {
+    imports = [ ./dgx-spark ];
+  };
+  systemd-user = {
+    imports = [ ./systemd/user.nix ];
+  };
 }

@@ -1,7 +1,7 @@
 # OCI への NixOS 展開（nixos-anywhere all-in-one モジュール）
 # 値（IP・OCID・SSH 鍵）は branch/production.yaml（平文・git 管理外）から読む。
 locals {
-  # cwd に依存しないよう、收盘 flake を絶対URI化する
+  # cwd に依存しないよう、flake を絶対URI化する
   flake = "git+file://${abspath("${path.module}/../..")}"
 }
 

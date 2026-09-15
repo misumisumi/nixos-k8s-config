@@ -808,12 +808,35 @@
         "type": "github"
       }
     },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "homelab-baremetals",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789267039,
+        "narHash": "sha256-LWiBv9yAYFi2LPbUhDGHPGKYskJQjj2fw12OlyO1uQo=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "ec172013fa62135f58fb58dd17ae9651e8f39727",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "release-26.05",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "homelab-baremetals": {
       "inputs": {
         "devshell": "devshell_2",
         "disko": "disko_2",
         "flake-parts": "flake-parts_2",
         "flakes": "flakes",
+        "home-manager": "home-manager",
         "homelab-modules": "homelab-modules",
         "microvm": "microvm",
         "nixos-linstor": "nixos-linstor",

@@ -20,6 +20,10 @@
       url = "github:numtide/system-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     openwrt-imagebuilder = {
       url = "github:astro/nix-openwrt-imagebuilder";
@@ -118,6 +122,7 @@
             overlays = [
               self.overlays.default
               inputs.nixos-linstor.overlays.default
+              inputs.system-manager.overlays.default
             ];
             config.allowUnfree = true;
           };
@@ -141,6 +146,7 @@
                 mkimg-lxc
                 mkimg-oci
                 mkpasswd-pihole
+                system-manager
                 wg-peer
                 ;
               pcp = inputs.pcp.packages.${pkgs.stdenv.hostPlatform.system}.pcp;

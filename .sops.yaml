@@ -5,6 +5,7 @@ keys:
   - &instances:
     - &oci_dev age1zu9hmg6wkm9sc8tl8q7h5hfy2zuzxcua4ukn9v20apd9f6yu09hqse0lad
     - &oci_prod age1j3cwwxum9d7hv620lqd4le62p9nalqk3ywxrh6e47mnlkgqk0fvq23g0xz
+    - &haruna_prod age1wacncu724hthv952fud0ug64vqhy7gkysz35gygzsmu4606mz9fqg7tesw
 creation_rules:
   - path_regex: .*/branch/.*/*
     key_groups:
@@ -26,6 +27,14 @@ creation_rules:
       - age:
           - *sumi_age
           - *oci_prod
+        merge:
+          - pgp:
+              - *sumi
+  - path_regex: .*/secrets/production/roles/gpu-compute/haruna/secrets.yaml
+    key_groups:
+      - age:
+          - *sumi_age
+          - *haruna_prod
         merge:
           - pgp:
               - *sumi

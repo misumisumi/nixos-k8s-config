@@ -86,17 +86,18 @@
                 ter
                 tofu-w-plugins
 
-                mkimg-lxc
-                mkimg-incus-vm
-                mkimg-kexec
-                mkimg-ipxe
-                mkimg-list
-                mkimg-oci
-                mkimg-dev-wrt
-                wg-peer
                 linkage
                 linkage-gateway
+                mkimg-dev-wrt
+                mkimg-incus-vm
+                mkimg-ipxe
+                mkimg-kexec
+                mkimg-list
+                mkimg-lxc
+                mkimg-oci
                 mkpasswd-pihole
+                system-manager
+                wg-peer
 
                 genca
                 # gencerts-prod
