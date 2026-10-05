@@ -100,6 +100,12 @@
       }
     ];
     settings = {
+      KexAlgorithms = [
+        "sntrup761x25519-sha512@openssh.com"
+        "curve25519-sha256"
+        "curve25519-sha256@libssh.org"
+        "diffie-hellman-group-exchange-sha256"
+      ];
       KbdInteractiveAuthentication = true;
       PasswordAuthentication = false;
       X11Forwarding = false;
