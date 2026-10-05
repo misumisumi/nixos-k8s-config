@@ -12,11 +12,13 @@
     ../../share/settings/system.nix
     ../../share/settings/users.nix
     ../../share/settings/ssh.nix
+    ./cloudflared.nix
     ./headscale
     ./litellm
     ./network.nix
     ./nginx.nix
     ./oci.nix
+    ./paseo-relay.nix
     ./pihole.nix
     ./sslh.nix
     ./wireguard.nix

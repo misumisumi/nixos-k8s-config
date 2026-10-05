@@ -1,18 +1,10 @@
 # LiteLLM 本体（OpenAI 互換ゲートウェイ）。
 # DB・Admin UI は使わない構成のため、認証は Cloudflare Access (Service Token) に一本化する。
-{ ... }:
+{ lib, ... }:
 let
-  models = import ./models.nix;
-
-  modelList = map (m: {
-    model_name = m.name;
-    litellm_params = {
-      model = "openai/${m.name}";
-      api_base = "http://${models.host}:${toString m.port}/v1";
-      # haruna 側は無認証の OpenAI 互換サーバーのためダミー値を渡す
-      api_key = "dummy";
-    };
-  }) models.list;
+  inherit (lib) flatten;
+  providers = import ./providers.nix;
+  modelList = flatten (map (p: p.models) providers);
 in
 {
   services.litellm = {
@@ -23,7 +15,15 @@ in
     environment.DISABLE_ADMIN_UI = "True";
     settings = {
       model_list = modelList;
-      litellm_settings.drop_params = true;
+      litellm_settings = {
+        drop_params = true;
+        # completion の上流(haruna)への httpx read timeout は既定 600s のため、
+        # thinking 中に抵触しないよう引き上げる。
+        request_timeout = 3600;
+        # 1.99.0 以降で有効。TTFT 中に `: ping` を送り nginx/Cloudflare の
+        # idle タイムアウトを防ぐ（1.89.0 では no-op）。
+        sse_keepalive_ping_interval_seconds = 15;
+      };
     };
   };
 

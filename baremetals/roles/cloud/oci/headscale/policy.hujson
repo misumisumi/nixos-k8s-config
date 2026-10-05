@@ -3,7 +3,7 @@
     {
       "action": "accept",
       "src": ["*"],
-      "dst": ["*:*"],
+      "dst": ["*:*"]
     },
   ],
   "grants": [
@@ -16,8 +16,8 @@
     }
   ] ,
   "tagOwners": {
-    "tag:oci": ["dragon511southern@mail.com"],
-    "tag:homelab": ["dragon511southern@mail.com"],
+    "tag:oci": ["dragon511southern@gmail.com"],
+    "tag:homelab": ["dragon511southern@gmail.com"],
   },
 
   "autoApprovers": {

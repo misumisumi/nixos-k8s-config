@@ -45,6 +45,11 @@ in
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
+
+      # 内蔵 DERP は長時間接続。nginx デフォルトの 60s で切られるのを防ぐ
+      proxy_buffering off;
+      proxy_read_timeout 86400s;
+      proxy_send_timeout 86400s;
     '';
   };
 }

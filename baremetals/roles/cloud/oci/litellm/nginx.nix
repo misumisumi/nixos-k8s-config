@@ -1,5 +1,9 @@
 # nginx リバースプロキシ（公開）。
 # Cloudflare Tunnel からのみ到達し、LiteLLM の /v1 (OpenAI 互換 API) 以外は遮断する。
+#
+# NOTE: cloudflared とは loopback (127.0.0.1) で接続するため origin は HTTP とし、
+#       クライアント向け TLS は Cloudflare エッジで終端する。
+#       (origin を HTTPS にすると lego 証明書の要否や検証で詰まりやすい)
 {
   static,
   group,
@@ -7,7 +11,7 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) acme litellm;
+  inherit (static.${group}.${hostname}) litellm;
 in
 {
   services.nginx.appendHttpConfig = ''
@@ -16,13 +20,10 @@ in
 
   services.nginx.virtualHosts."litellm" = {
     serverName = litellm.fqdn;
-    useACMEHost = acme.certName;
-    forceSSL = true;
     listen = [
       {
         addr = "127.0.0.1";
         port = 9444;
-        ssl = true;
       }
     ];
 

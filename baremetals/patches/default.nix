@@ -55,6 +55,8 @@ final: prev: {
     cockpit-machines
     headplane
     headscale
+    litellm
+    paseo-relay
     ;
 
   rbash = prev.runCommandNoCC "rbash-${prev.bashInteractive.version}" { } ''

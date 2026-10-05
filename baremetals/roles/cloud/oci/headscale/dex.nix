@@ -9,7 +9,7 @@
   ...
 }:
 let
-  inherit (static.${group}.${hostname}) tailnet;
+  inherit (static.${group}.${hostname}) publicIP tailnet;
   dexPort = 5556;
 in
 {
@@ -19,9 +19,11 @@ in
   #   HEADSCALE_OIDC_CLIENT_SECRET=<openssl rand -hex 32>
   sops.secrets."dex/env" = { };
 
-  # 自サーバー側の OIDC discovery/token 通信を公衆網・wg0 経由ではなく
-  # ループバックで完結させる（443→sslh→nginx:8443→dex）。
-  # Pi-hole v6 は /etc/hosts を読まないため、クライアント向け回答(wgAddress)は汚染されない。
+  # 自サーバー側の OIDC discovery/token 通信を公開 IP で完結させる。
+  # hairpin（instance → OCI fabric → 自身:443）が通ることは実測済み。
+  # NOTE: ここを 127.0.0.1 に固定すると /etc/hosts が全プロセスに効くため
+  #       tailscaled の DERP/STUN 解決まで loopback になり、netcheck が自身の
+  #       公開 endpoint を 127.0.0.1 と誤認して P2P が全滅する。
   networking.extraHosts = ''
     127.0.0.1 ${tailnet.host}
   '';

@@ -37,8 +37,8 @@ in
 
     build_conf() {
       local key="$1" peer_priv="$2" server_pub="$3" psk="$4"
-      printf '[Interface]\nName = %s\nPrivateKey = %s\nAddress = %s\nDNS = %s\nMTU = %s\n\n[Peer]\nPublicKey = %s\nPresharedKey = %s\nAllowedIPs = %s\nEndpoint = %s\nPersistentKeepalive = %s\n' \
-        "$NAME" "$peer_priv" "$ADDRESS" "$DNS" "$MTU" \
+      printf '[Interface]\nPrivateKey = %s\nAddress = %s\nDNS = %s\nMTU = %s\n\n[Peer]\nPublicKey = %s\nPresharedKey = %s\nAllowedIPs = %s\nEndpoint = %s\nPersistentKeepalive = %s\n' \
+        "$peer_priv" "$ADDRESS" "$DNS" "$MTU" \
         "$server_pub" "$psk" "$ALLOWED_IPS" "$ENDPOINT" "$KEEPALIVE"
     }
 

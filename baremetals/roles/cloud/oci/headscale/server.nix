@@ -23,6 +23,11 @@ in
     restartUnits = [ "headscale.service" ];
   };
 
+  # 内蔵 DERP の STUN (UDP 3478)。全クライアントが NAT 走査のためここへ
+  # Binding Request を送る。閉じているとどの端末も自身の公開 endpoint を
+  # 広告できず、tailnet が常に DERP relay 経由になる（= P2P 不成立）。
+  networking.firewall.allowedUDPPorts = [ tailnet.derp.stunPort ];
+
   services.headscale = {
     enable = true;
     address = "127.0.0.1";

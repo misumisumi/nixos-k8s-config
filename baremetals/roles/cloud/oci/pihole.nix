@@ -102,7 +102,9 @@ in
         # Pi-hole v6 は /etc/dnsmasq.d をデフォルトで読まないため dnsmasq_lines で宣言。
         # oci.misumi-sumi.com ゾーン全体をWGトンネル内アドレスに解決。
         misc.dnsmasq_lines = [
-          "address=/.oci.misumi-sumi.com/${wgAddress}"
+          "server=/llm.misumi-sumi.com/1.1.1.1"
+          "server=/relay.misumi-sumi.com/1.1.1.1"
+          "address=/wg.oci.misumi-sumi.com/${wgAddress}"
           "server=/misumi-sumi.com/${static.${group}.${hostname}.pihole.home.forwardIP}"
         ];
       };
