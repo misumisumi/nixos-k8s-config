@@ -71,6 +71,7 @@
                 hashicorp_time
                 hashicorp_null
                 hashicorp_vault
+                cloudflare_cloudflare
               ]
             );
           };

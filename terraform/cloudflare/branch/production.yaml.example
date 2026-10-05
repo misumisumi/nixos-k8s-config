@@ -1,0 +1,15 @@
+# `sops branch/production.yaml` でこの構造を暗号化して作成する。
+# consumers は既定（sumi, github-actions）。
+cloudflare:
+  api_token: <Cloudflare API Token>
+  account_id: <Account ID>
+  zone_id: <Zone ID (misumi-sumi.com)>
+cloudflared:
+  # credentials JSON の AccountTag（= Account ID）
+  account_tag: <Account ID>
+  tunnels:
+    # entry キー（production.tfvars の entries のキー）ごとに secret を用意
+    llm:
+      secret: <openssl rand -base64 32>
+    relay:
+      secret: <openssl rand -base64 32>
