@@ -30,11 +30,11 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCGcY4v0aRzAO+hLnGhEaU7JArt/Wrn8FuIgFcovlad sumi@mother-2021-03-12"
     ];
-    hashedPassword = static.users.${user}.hashedPassword or "nixos";
+    password = static.users.${user}.password or "nixos";
   };
 
   users.users.root = {
-    hashedPassword = static.users.root.hashedPassword or "nixos";
+    password = static.users.root.password or "nixos";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCGcY4v0aRzAO+hLnGhEaU7JArt/Wrn8FuIgFcovlad sumi@mother-2021-03-12"
     ];
