@@ -14,7 +14,7 @@ let
     toLower
     ;
   inherit (config.networking.vxlan) tenants;
-  inherit (static.microvm.borderLeaf.bgp) routerId;
+  inherit (static.microvm.homeLeaf.bgp) routerId;
 
   idSuffix = last (splitString "." routerId);
 
@@ -37,23 +37,15 @@ in
   networking = {
     firewall.enable = true;
     nftables.enable = true;
-    hostName = "border-leaf";
+    hostName = "home-leaf";
     useNetworkd = true;
     useDHCP = false;
   };
   networking.vxlan.tenants = {
-    "wan" = {
-      name = "wan";
+    "home" = {
+      name = "home";
       L3VNI = {
-        vni = 30001;
-        local = routerId;
-        destinationPort = 4780;
-      };
-    };
-    "tn1" = {
-      name = "tn1";
-      L3VNI = {
-        hwAddr = "3F:E9:45:18:AD:4B";
+        hwAddr = "3F:E9:45:18:AD:4E";
         vni = 11001;
         vlan = 1101;
         local = routerId;
@@ -67,6 +59,48 @@ in
           anycastGateway = {
             hwAddr = "03:03:aa:aa:${hwAddrPart 10}";
             address = "192.168.10.254/24";
+          };
+        }
+      ];
+    };
+    "iot" = {
+      name = "iot";
+      L3VNI = {
+        hwAddr = "3F:E9:45:18:AD:4F";
+        vni = 11002;
+        vlan = 1102;
+        local = routerId;
+        destinationPort = 4789;
+      };
+      vniVlanPairs = [
+        {
+          vni = 11020;
+          vlan = 20;
+          address = "192.168.20.${idSuffix}/24";
+          anycastGateway = {
+            hwAddr = "03:03:aa:aa:${hwAddrPart 20}";
+            address = "192.168.20.254/24";
+          };
+        }
+      ];
+    };
+    "gst" = {
+      name = "gst";
+      L3VNI = {
+        hwAddr = "3F:E9:45:18:AD:50";
+        vni = 11003;
+        vlan = 1103;
+        local = routerId;
+        destinationPort = 4789;
+      };
+      vniVlanPairs = [
+        {
+          vni = 11100;
+          vlan = 100;
+          address = "192.168.100.${idSuffix}/24";
+          anycastGateway = {
+            hwAddr = "03:03:aa:aa:${hwAddrPart 100}";
+            address = "192.168.100.254/24";
           };
         }
       ];
@@ -86,44 +120,26 @@ in
           Kind = "dummy";
         };
       };
-      "lo${tenants.wan.L3VNI.vni}" = {
-        netdevConfig = {
-          Name = "lo${tenants.wan.L3VNI.vni}";
-          Kind = "dummy";
-        };
-      };
     };
     networks = {
       "5-lo0" = {
         name = "lo0";
         address = [
-          "${tenants.tn1.L3VNI.local}/32"
+          "${routerId}/32"
+        ];
+        routes = [
+          {
+            Destination = "10.10.10.0/24";
+          }
         ];
       };
-      "5-lo${tenants.wan.L3VNI.vni}" = {
-        name = "lo${tenants.wan.L3VNI.vni}";
-        vrf = [ "${tenants.wan.vrf}" ];
-        address = [
-          "${tenants.tn1.L3VNI.local}/32"
-        ];
-      };
-      "10-enp0s3" = {
+      # BGP unnumbered の underlay リンク (ホスト側 br_home2host)
+      "15-enp0s3" = {
         name = "enp0s3";
-        vrf = [ "${tenants.wan.vrf}" ];
         networkConfig = {
-          Description = "To Router Interface";
-        };
-      };
-      "15-enp0s4" = {
-        name = "enp0s4";
-        networkConfig = {
-          Description = "40G Interface";
-        };
-      };
-      "15-enp0s5" = {
-        name = "enp0s5";
-        networkConfig = {
-          Description = "10G Interface";
+          Description = "To host interface";
+          # fabric 側の RA を無視する
+          IPv6AcceptRA = false;
         };
       };
     };

@@ -5,6 +5,7 @@
   isDev,
   isNixOSTest,
   user,
+  static,
 }:
 {
   specialArgs = {
@@ -28,36 +29,22 @@
       vcpu = 2;
       mem = 1024 * 3; # in MB
       vsock = {
-        cid = 1337;
+        cid = 1339;
         ssh.enable = true;
       };
       shares = [
         {
           source = "/nix/store";
           mountPoint = "/nix/.ro-store";
-          tag = "border-leaf-ro-store";
+          tag = "home-leaf-ro-store";
           proto = "virtiofs";
         }
       ];
       interfaces = [
         {
           type = "tap";
-          id = "vm_borderLeaf";
-          mac = "20:00:00:00:00:aa";
-        }
-        {
-          type = "tap";
-          id = "vm_40g";
-          mac = "20:00:00:00:00:01";
-        }
-        {
-          type = "macvtap";
-          id = "vm_10g";
-          mac = "20:00:00:00:00:02";
-          macvtap = {
-            link = if isDev then "enp7s0" else "enp4s0f1";
-            mode = "passthru";
-          };
+          id = "vm_home2host";
+          mac = "20:20:00:00:00:aa";
         }
       ];
     };
@@ -67,6 +54,8 @@
       ../share
       ./bgp.nix
       ./network.nix
+      ./kea.nix
+      ./unbound.nix
     ];
   };
 }

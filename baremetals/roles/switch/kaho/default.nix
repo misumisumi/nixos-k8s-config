@@ -3,16 +3,16 @@
   pkgs,
   lib,
   modulesPath,
-  isDev,
   hostname,
   user,
+  isDev,
   hostSecretPath,
   secretPath,
   userSecretPath,
   ...
 }:
 let
-  inherit (lib) mkForce optional;
+  inherit (lib) mkForce optionals;
 in
 {
   imports = [
@@ -30,10 +30,9 @@ in
     ../../share/settings/users.nix
     ./bgp.nix
     ./diskless.nix
-    ./fancontrol
+    # ./fancontrol
     ./microvm
     ./network.nix
-    ./users.nix
   ];
   environment.systemPackages = with pkgs; [
     dhcpcd
@@ -44,10 +43,13 @@ in
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
   };
   system = {
-    activationScripts.chown = ''
-      chown -R ${user}:users /home/${user}/.config
-      chown -R ${user}:users /home/${user}/.ssh
-    '';
+    activationScripts.chown = {
+      deps = [ "users" ];
+      text = ''
+        chown -R ${user}:users /home/${user}/.config
+        chown -R ${user}:users /home/${user}/.ssh
+      '';
+    };
     build.extraContents = [
       {
         source = secretPath + "/pki/ImCA/chain.pem";
@@ -75,6 +77,27 @@ in
         mode = "0644";
       }
       {
+        source = hostSecretPath + "/user_ssh/config";
+        target = "/home/${user}/.ssh/config";
+        inherit user;
+        group = "users";
+        mode = "0644";
+      }
+      {
+        source = hostSecretPath + "/user_ssh/id_ed25519.border";
+        target = "/home/${user}/.ssh/id_ed25519.border";
+        inherit user;
+        group = "users";
+        mode = "0600";
+      }
+      {
+        source = hostSecretPath + "/user_ssh/id_ed25519.border.pub";
+        target = "/home/${user}/.ssh/id_ed25519.border.pub";
+        inherit user;
+        group = "users";
+        mode = "0644";
+      }
+      {
         source = userSecretPath + "/ssh/id_ed25519.pub";
         target = "/home/${user}/.ssh/id_ed25519.pub";
         inherit user;
@@ -86,6 +109,18 @@ in
         target = "/home/${user}/.ssh/id_ed25519";
         inherit user;
         group = "users";
+        mode = "0600";
+      }
+    ]
+    ++ optionals (!isDev) [
+      {
+        source = hostSecretPath + "/wireguard/peer/oci/psk";
+        target = "/var/lib/secrets/wireguard/peer/oci/psk";
+        mode = "0600";
+      }
+      {
+        source = hostSecretPath + "/wireguard/privatekey";
+        target = "/var/lib/secrets/wireguard/privatekey";
         mode = "0600";
       }
     ];

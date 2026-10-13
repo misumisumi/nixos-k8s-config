@@ -12,8 +12,17 @@ let
     concatStringsSep
     concatMapStrings
     optionals
+    optionalString
     ;
   inherit (config.system.build) extraContents;
+
+  # The stage-1 initrd only chowns root-owned entries; resolve the root uid and
+  # the group id numerically because the initrd has its own minimal user/group
+  # database where name-based chown fails. Non-root owners are applied in
+  # stage-2 (see system.activationScripts.copy-extra-contents) where the full
+  # user/group database exists.
+  rootOwnerOf =
+    entry: "${toString config.users.users.root.uid}:${toString config.users.groups.${entry.group}.gid}";
 
   extraContentsDir = pkgs.runCommand "kexec-extra-contents" { } (
     concatMapStrings (entry: ''
@@ -61,12 +70,25 @@ in
           if [ -e "${entry.target}" ]; then
             mkdir -p "$(dirname "/sysroot${entry.target}")"
             cp -a "${entry.target}" "/sysroot${entry.target}"
-            chown ${entry.user}:${entry.group} "/sysroot${entry.target}"
+            ${optionalString (entry.user == "root") "chown ${rootOwnerOf entry} \"/sysroot${entry.target}\""}
             chmod ${entry.mode} "/sysroot${entry.target}"
           fi
         '') extraContents
       );
     };
+  };
+
+  # Non-root owners cannot be resolved in the stage-1 initrd. Apply them in
+  # stage-2, after users/groups have been created but before systemd starts.
+  system.activationScripts.copy-extra-contents = {
+    deps = [ "users" ];
+    text = concatStringsSep "\n" (
+      map (entry: ''
+        if [ -e "${entry.target}" ]; then
+          chown ${entry.user}:${entry.group} "${entry.target}"
+        fi
+      '') (builtins.filter (entry: entry.user != "root") extraContents)
+    );
   };
 
   services.getty.autologinUser = mkForce "${user}";

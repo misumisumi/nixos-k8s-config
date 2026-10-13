@@ -14,13 +14,37 @@ let
     splitString
     sublist
     ;
-  inherit (static.microvm.borderLeaf.bgp) AS;
+  inherit (static.microvm.homeLeaf.bgp) AS;
   inherit (config.networking.vxlan) tenants;
+
+  # ゾーン = DHCP/DNS を提供するテナント (wan を除く)
+  zones = filterAttrs (n: _: n != "wan") tenants;
+  zoneList = attrValues zones;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
   underlayPrefixes = concatStringsSep "." (
-    (sublist 0 3 (splitString "." tenants.tn1.L3VNI.local)) ++ [ "0/24" ]
+    (sublist 0 3 (splitString "." tenants.home.L3VNI.local)) ++ [ "0/24" ]
   );
+
+  # ゾーンごとの VRF 宣言
+  vrfDecls = concatMapStringsSep "\n" (z: ''
+    vrf ${z.vrf}
+      vni ${toString z.L3VNI.vni}
+    exit-vrf
+  '') zoneList;
+
+  # ゾーンごとの VRF BGP インスタンス (ゾーン間 leak はしない)
+  # WAN egress の default は border-leaf の EVPN type-5 から学習する
+  zoneRouterBlocks = concatMapStringsSep "\n" (z: ''
+    router bgp ${AS} vrf ${z.vrf}
+      address-family ipv4 unicast
+        redistribute connected
+      exit-address-family
+
+      address-family l2vpn evpn
+        advertise ipv4 unicast
+      exit-address-family
+  '') zoneList;
 in
 {
   networking.firewall = {
@@ -43,14 +67,10 @@ in
         match interface lo0
       exit
 
-      route-map REDISTRIBUTE_WAN_INTERFACE permit 10
-        match interface enp0s5
-      exit
-
       ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixes} ge 32
       route-map SET-SRC permit 10
         match ip address prefix-list UNDERLAY_IPV4
-        set src ${tenants.tn1.L3VNI.local}
+        set src ${tenants.home.L3VNI.local}
       exit
       ip protocol bgp route-map SET-SRC
 
@@ -58,12 +78,10 @@ in
         set extcommunity bandwidth num-multipaths
       exit
 
-      vrf ${tenants.tn1.vrf}
-        vni ${tenants.tn1.L3VNI.vni}
-      exit-vrf
+      ${vrfDecls}
 
       router bgp ${AS}
-        bgp router-id ${tenants.tn1.L3VNI.local}
+        bgp router-id ${tenants.home.L3VNI.local}
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -101,46 +119,7 @@ in
           advertise-svi-ip
         exit-address-family
 
-      router bgp ${AS} vrf ${tenants.tn1.vrf}
-        address-family ipv4 unicast
-          redistribute connected
-        exit-address-family
-
-        address-family l2vpn evpn
-          advertise ipv4 unicast
-        exit-address-family
-
-      router bgp ${AS} vrf ${tenants.wan.vrf}
-        bgp router-id ${tenants.wan.L3VNI.local}
-        no bgp default ipv4-unicast
-
-        neighbor ROUTER peer-group
-        neighbor ROUTER bfd
-        neighbor ROUTER remote-as external
-        neighbor ROUTER advertisement-interval 0
-        neighbor ROUTER timers 3 9
-        neighbor ROUTER timers connect 10
-        neighbor ROUTER capability extended-nexthop
-        neighbor enp0s3 interface peer-group ROUTER
-
-        neighbor OVERLAY peer-group
-        neighbor OVERLAY remote-as external
-        neighbor OVERLAY advertisement-interval 0
-        neighbor OVERLAY timers 3 9
-        neighbor OVERLAY timers connect 10
-        neighbor OVERLAY update-source lo${tenants.wan.L3VNI.vni}
-        neighbor OVERLAY ebgp-multihop
-        neighbor ${static.microvm.borderRouter.bgp.routerId} peer-group OVERLAY
-
-        address-family ipv4 unicast
-          redistribute connected
-          neighbor ROUTER activate
-        exit-address-family
-
-        address-family l2vpn evpn
-          advertise ipv4 unicast
-          neighbor OVERLAY activate
-        exit-address-family
+      ${zoneRouterBlocks}
     '';
   };
 }

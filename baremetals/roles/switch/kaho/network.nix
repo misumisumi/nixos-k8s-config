@@ -7,9 +7,12 @@
 }:
 let
   inherit (lib)
+    concatStringsSep
     listToAttrs
     nameValuePair
     range
+    splitString
+    sublist
     ;
   ifaces = static.${group}.${hostname}.networks;
   bgp = static.${group}.${hostname}.bgp;
@@ -55,6 +58,7 @@ in
           Description = "Management network";
         };
         address = [ ifaces.manage.address ];
+        routes = ifaces.manage.routes or [ ];
       };
       "10-intra10G" = {
         name = ifaces.intra10G.IF;

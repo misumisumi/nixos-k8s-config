@@ -1,6 +1,11 @@
-{ static, ... }:
+{
+  static,
+  config,
+  ...
+}:
 let
   inherit (static.microvm.borderRouter) BR CE IPIP6_IPv4;
+  inherit (config.networking.vxlan.tenants.wan) vrf;
 in
 {
   boot = {
@@ -8,36 +13,31 @@ in
       "net.ipv6.conf.all.accept_ra" = 1;
       "net.ipv6.conf.enp0s4.accept_ra" = 2;
     };
-    kernelModules = [
-      "ip6_tunnel"
-    ];
+    kernelModules = [ "ip6_tunnel" ];
   };
-  networking.firewall = {
-    extraInputRules = ''
-      meta l4proto ipv6-icmp accept
-      iifname "enp0s4" meta l4proto 4 accept
-      iifname "enp0s4" udp dport 546 udp sport 547 accept
-    '';
-  };
+  networking.firewall.extraInputRules = ''
+    meta l4proto ipv6-icmp accept
+    iifname "enp0s4" meta l4proto 4 accept
+    iifname "enp0s4" udp dport 546 udp sport 547 accept
+  '';
   systemd.network = {
-    netdevs = {
-      v6plus-tnl = {
-        netdevConfig = {
-          Name = "v6plus-tnl";
-          Kind = "ip6tnl";
-        };
-        tunnelConfig = {
-          Mode = "ipip6";
-          Local = "${CE}";
-          Remote = "${BR}";
-          DiscoverPathMTU = true;
-          EncapsulationLimit = "none";
-        };
+    netdevs.v6plus-tnl = {
+      netdevConfig = {
+        Name = "v6plus-tnl";
+        Kind = "ip6tnl";
+      };
+      tunnelConfig = {
+        Mode = "ipip6";
+        Local = "${CE}";
+        Remote = "${BR}";
+        DiscoverPathMTU = true;
+        EncapsulationLimit = "none";
       };
     };
     networks = {
       "10-enp0s4" = {
         name = "enp0s4";
+        vrf = [ vrf ];
         networkConfig = {
           Description = "WAN Interface";
           IPv6AcceptRA = true;
@@ -55,9 +55,9 @@ in
           SendHostname = false;
         };
       };
-
       "11-v6plus-tnl" = {
         name = "v6plus-tnl";
+        vrf = [ vrf ];
         networkConfig = {
           Description = "IPv6+ Tunnel Interface";
           IPv4Forwarding = true;

@@ -297,11 +297,12 @@ in
             name = "${v.vrf}";
           })
           (
-            nameValuePair "50-${v.L3VNI.brIF}" {
-              name = "${v.L3VNI.brIF}";
-              vrf = [ "${v.vrf}" ];
-            }
-            // optionalAttrs (v.vniVlanPairs' != [ ]) {
+            nameValuePair "50-${v.L3VNI.brIF}" (
+              {
+                name = "${v.L3VNI.brIF}";
+                vrf = [ "${v.vrf}" ];
+              }
+              // optionalAttrs (v.vniVlanPairs' != [ ]) {
               networkConfig = {
                 IPv6LinkLocalAddressGenerationMode = "none";
               };
@@ -317,7 +318,7 @@ in
                 let
                   macAddresses =
                     assert assertMsg (
-                      v.L3VNI.hwAddr == "none" && (any (x: x.anycastGateway != { })) v.vniVlanPairs'
+                      !(v.L3VNI.hwAddr == "none" && (any (x: x.anycastGateway != { })) v.vniVlanPairs')
                     ) "Anycast gateway mac address must be specified when anycast gateway is configured.";
                     if v.L3VNI.hwAddr == "none" then
                       [ ]
@@ -328,7 +329,8 @@ in
                       ++ (map (x: { MACAddress = x.anycastGateway.hwAddr; }) v.vniVlanPairs');
                 in
                 macAddresses;
-            }
+              }
+            )
           )
           (nameValuePair "55-${v.L3VNI.vxlanIF}" {
             name = "${v.L3VNI.vxlanIF}";
@@ -408,6 +410,15 @@ in
             wantedBy = [ "multi-user.target" ];
             wants = [ "network-online.target" ];
             after = [ "network-online.target" ];
+            serviceConfig = {
+              Restart = "on-failure";
+              RestartSec = "5";
+            };
+            unitConfig = {
+              # 5回失敗したら諦める (初回 + リトライ4回)
+              StartLimitBurst = 5;
+              StartLimitIntervalSec = 3600;
+            };
             script = ''
               echo "Configuring VXLAN VLAN tunneling ..."
               ${concatStringsSep "\n" (mapAttrsToList perTenant cfg)}

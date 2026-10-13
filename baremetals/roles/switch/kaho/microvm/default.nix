@@ -5,55 +5,51 @@
   isDev,
   isNixOSTest,
   user,
+  static,
   ...
 }:
 {
   systemd.network = {
     netdevs = {
-      br_leaf2router = {
+      br_router2host = {
         netdevConfig = {
-          Name = "br_leaf2router";
+          Name = "br_router2host";
           Kind = "bridge";
-          Description = "Bridge for border leaf VM to border router VM";
+          Description = "Bridge for border router VM to host";
         };
       };
-      br_leaf2host = {
+      br_home2host = {
         netdevConfig = {
-          Name = "br_leaf2host";
+          Name = "br_home2host";
           Kind = "bridge";
-          Description = "Bridge for border leaf VM to host";
+          Description = "Bridge for home leaf VM to host";
         };
       };
     };
     networks = {
-      "15-br_leaf2host" = {
-        name = "br_leaf2host";
+      # BGP unnumbered の underlay リンク (15- 接頭辞は bgp.nix が自動で LEAF ピア化)
+      "15-br_router2host" = {
+        name = "br_router2host";
       };
-      "16-border2host-network" = {
-        bridge = [ "br_leaf2host" ];
+      "15-br_home2host" = {
+        name = "br_home2host";
+      };
+      "16-router2host-network" = {
+        bridge = [ "br_router2host" ];
         matchConfig = {
-          Name = [ "vm_40g" ];
+          Name = [ "vm_router2host" ];
         };
       };
-      "20-br_leaf2router" = {
-        name = "br_leaf2router";
-        networkConfig = {
-          IPv6LinkLocalAddressGenerationMode = "none";
-        };
-      };
-      "21-leaf2router-network" = {
-        bridge = [ "br_leaf2router" ];
+      "16-home2host-network" = {
+        bridge = [ "br_home2host" ];
         matchConfig = {
-          Name = [
-            "vm_borderLeaf"
-            "vm_borderRouter"
-          ];
+          Name = [ "vm_home2host" ];
         };
       };
     };
   };
   microvm.vms = {
-    borderLeaf = import ./border-leaf {
+    border-router = import ./border-router {
       inherit
         self
         lib
@@ -61,9 +57,10 @@
         isDev
         isNixOSTest
         user
+        static
         ;
     };
-    borderRouter = import ./border-router {
+    home-leaf = import ./home-leaf {
       inherit
         self
         lib
@@ -71,6 +68,7 @@
         isDev
         isNixOSTest
         user
+        static
         ;
     };
   };

@@ -57,7 +57,9 @@
     };
   };
   microvm = {
+    # kaho の microvm.vms としてビルドされるため単体の nixosConfiguration は生成しない
     borderLeaf = {
+      notShow = true;
       system = "x86_64-linux";
       user = "renako";
       hostname = "borderLeaf";
@@ -68,6 +70,7 @@
       };
     };
     borderRouter = {
+      notShow = true;
       system = "x86_64-linux";
       user = "renako";
       hostname = "borderRouter";

@@ -5,7 +5,12 @@
   isDev,
   isNixOSTest,
   user,
+  static,
 }:
+let
+  inherit (lib) optional;
+  hostIFaces = static.switch.kaho.networks;
+in
 {
   specialArgs = {
     inherit
@@ -19,6 +24,9 @@
     group = "microvm";
     hostname = "borderRouter";
   };
+  extraModules = [
+    inputs.homelab-modules.nixosModules.vlan-aware-vxlan
+  ];
   config = {
     # It is highly recommended to share the host's nix-store
     # cith the VMs to prevent building huge images.
@@ -37,21 +45,27 @@
           tag = "router-ro-store";
           proto = "virtiofs";
         }
+        {
+          source = "/var/lib/secrets/wireguard";
+          mountPoint = "/var/lib/secrets/wireguard";
+          tag = "router-wireguard-secrets";
+          proto = "virtiofs";
+        }
       ];
       interfaces = [
         {
-          type = "tap";
-          id = "vm_borderRouter";
-          mac = "20:10:00:00:00:aa";
-        }
-        {
           type = "macvtap";
-          id = "vm_wan";
+          id = "vm_router2wan";
           mac = "20:10:00:00:00:01";
           macvtap = {
-            link = if isDev then "enp5s0" else "enp4s0f0";
+            link = if isDev then "enp5s0" else hostIFaces.wan.IF;
             mode = "bridge";
           };
+        }
+        {
+          type = "tap";
+          id = "vm_router2host";
+          mac = "20:10:00:00:00:aa";
         }
       ];
     };
@@ -63,7 +77,7 @@
       ./network.nix
       ./nftables.nix
       ./v6plus.nix
-      ./wireguard.nix
-    ];
+    ]
+    ++ optional (!isDev) ./wireguard.nix;
   };
 }
