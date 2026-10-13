@@ -2,6 +2,7 @@
   inputs,
   lib,
   modulesPath,
+  pkgs,
   ...
 }:
 let
@@ -15,13 +16,14 @@ in
     ../../share/settings/locale.nix
     ../../share/settings/security.nix
     ../../share/settings/system.nix
-    ../../share/settings/users.nix
     ../share/ssh.nix
+    ../share/users.nix
     ./hardware-configuration.nix
     ./network.nix
     ./second-stage-boot.nix
     inputs.homelab-modules.nixosModules.ipxe
   ];
+
   image.modules = mkForce {
     inherit (inputs.homelab-modules.nixosModules) incus-vm;
     lxc-metadata = modulesPath + "/virtualisation/lxc-image-metadata.nix";
