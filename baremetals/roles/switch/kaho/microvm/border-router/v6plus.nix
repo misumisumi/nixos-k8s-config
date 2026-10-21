@@ -38,6 +38,9 @@ in
       "10-enp0s4" = {
         name = "enp0s4";
         vrf = [ vrf ];
+        linkConfig = {
+          MTUBytes = static.switch.kaho.networks.wan.mtu;
+        };
         networkConfig = {
           Description = "WAN Interface";
           IPv6AcceptRA = true;

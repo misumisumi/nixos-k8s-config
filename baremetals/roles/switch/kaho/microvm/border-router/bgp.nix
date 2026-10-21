@@ -18,9 +18,12 @@ let
   inherit (config.networking.vxlan) tenants;
   inherit (static.microvm.borderRouter.bgp) AS;
 
-  # ゾーン = テナント (wan を除く)
-  zones = filterAttrs (n: _: n != "wan") tenants;
+  # ゾーン = EVPN type-5 で広報するテナント (wan と svc を除く)
+  zones = filterAttrs (n: _: n != "wan" && n != "svc") tenants;
   zoneList = attrValues zones;
+
+  # VRF 宣言と wan への leak 対象となる全テナント (svc を含む)
+  tenantVrfs = attrValues (filterAttrs (n: _: n != "wan") tenants);
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
   underlayPrefixes = concatStringsSep "." (
@@ -32,7 +35,7 @@ let
     vrf ${z.vrf}
       vni ${toString z.L3VNI.vni}
     exit-vrf
-  '') zoneList;
+  '') tenantVrfs;
 
   # ゾーンごとの VRF BGP インスタンス。
   # WAN (wan-vrf30001) の default を import し、EVPN type-5 で各 VTEP へ広報する。
@@ -47,6 +50,22 @@ let
         advertise ipv4 unicast
       exit-address-family
   '') zoneList;
+
+  # svc VRF の BGP インスタンス (border-router 側)。
+  # WAN default を import し、EVPN type-5 で広報して svc-leaf に再帰経路 (デフォルト) を
+  # 提供する。ゾーン (home 等) のサブネットは svc-leaf が route-target import で直接
+  # 学習するため、border 側では import しない (テナント間を border 経由させない)。
+  svcRouterBlock = ''
+    router bgp ${AS} vrf ${tenants.svc.vrf}
+      address-family ipv4 unicast
+        redistribute connected
+        import vrf ${tenants.wan.vrf}
+      exit-address-family
+
+      address-family l2vpn evpn
+        advertise ipv4 unicast
+      exit-address-family
+  '';
 in
 {
   networking.firewall = {
@@ -78,6 +97,17 @@ in
 
       route-map WCMP-MAP permit 10
         set extcommunity bandwidth num-multipaths
+      exit
+
+      # import vrf で wan VRF へ leak する際、/32 host route (advertise-svi-ip / ARP 由来の
+      # EVPN type-2) を除外する。leak された /32 は nexthop が他 VRF のデバイス
+      # (dev <tenant>-vniXXXX) となり forward 不可で、/24 aggregate (dev <tenant>-vrfXXXX,
+      # forward 可) を LPM で shadow してしまうため、集約 (/0..31) のみ通す。
+      ip prefix-list LEAK_NO_HOST32 deny 0.0.0.0/0 ge 32
+      ip prefix-list LEAK_NO_HOST32 permit 0.0.0.0/0 le 31
+
+      route-map FILTER_HOST32 permit 10
+        match ip address prefix-list LEAK_NO_HOST32
       exit
 
       ${vrfDecls}
@@ -123,13 +153,17 @@ in
 
       ${zoneRouterBlocks}
 
+      ${svcRouterBlock}
+
       router bgp ${AS} vrf ${tenants.wan.vrf}
         bgp router-id ${tenants.wan.L3VNI.local}
         address-family ipv4 unicast
           redistribute kernel
           redistribute connected
-          # NAT の戻り (DNAT 後の応答) を wan VRF から tenant VRF へ配送するため leak する
-          ${concatMapStringsSep "\n          " (z: "import vrf ${z.vrf}") zoneList}
+          # NAT の戻り (DNAT 後の応答) を wan VRF から tenant VRF へ配送するため leak する。
+          # FILTER_HOST32 で /32 host route を除外し /24 aggregate のみ取り込む。
+          import vrf route-map FILTER_HOST32
+          ${concatMapStringsSep "\n          " (z: "import vrf ${z.vrf}") tenantVrfs}
         exit-address-family
     '';
   };

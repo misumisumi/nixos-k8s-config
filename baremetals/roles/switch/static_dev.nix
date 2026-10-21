@@ -9,25 +9,32 @@
       networks = {
         wan = {
           IF = "enp5s0";
+          mtu = 9000;
         };
         manage = {
           IF = "enp6s0";
           address = "192.168.20.42/24";
+          mtu = 1500;
         };
-        intra10G = {
+        intra10G_1 = {
           IF = "enp7s0";
+          mtu = 9000;
         };
         intra40G_1 = {
           IF = "enp8s0";
+          mtu = 9000;
         };
         intra40G_2 = {
           IF = "enp9s0";
+          mtu = 9000;
         };
         intra40G_3 = {
           IF = "enp10s0";
+          mtu = 9000;
         };
         intra40G_4 = {
           IF = "enp11s0";
+          mtu = 9000;
         };
       };
 
@@ -47,6 +54,7 @@
         manage = {
           IF = "eth0";
           address = "192.168.20.41/24";
+          mtu = 1500;
         };
       };
       bgp = {
@@ -64,6 +72,7 @@
       user = "renako";
       hostname = "borderLeaf";
       networks = { };
+      mtu = 9000;
       bgp = {
         routerId = "10.10.10.253";
         AS = "65020";
@@ -75,6 +84,7 @@
       user = "renako";
       hostname = "borderRouter";
       networks = { };
+      mtu = 9000;
       bgp = {
         routerId = "10.10.10.254";
         AS = "64512";
@@ -83,6 +93,30 @@
       CE = "fd42:3a98:dc40:52c6::100";
       IPIP6_IPv4 = "203.0.113.1";
       PSID = 0;
+    };
+    homeLeaf = {
+      notShow = true;
+      system = "x86_64-linux";
+      user = "renako";
+      hostname = "homeLeaf";
+      networks = { };
+      mtu = 9000;
+      bgp = {
+        routerId = "10.10.10.250";
+        AS = "65030";
+      };
+    };
+    svcLeaf = {
+      notShow = true;
+      system = "x86_64-linux";
+      user = "renako";
+      hostname = "svcLeaf";
+      networks = { };
+      mtu = 9000;
+      bgp = {
+        routerId = "10.10.10.240";
+        AS = "65040";
+      };
     };
   };
 }

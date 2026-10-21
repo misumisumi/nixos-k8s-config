@@ -7,6 +7,9 @@
   user,
   static,
 }:
+let
+  hostIFaces = static.switch.kaho.networks;
+in
 {
   specialArgs = {
     inherit
@@ -27,7 +30,7 @@
     microvm = {
       registerWithMachined = true;
       vcpu = 2;
-      mem = 1024 * 3; # in MB
+      mem = 1024 * 4; # in MB
       vsock = {
         cid = 1339;
         ssh.enable = true;
@@ -45,6 +48,25 @@
           type = "tap";
           id = "vm_home2host";
           mac = "20:20:00:00:00:aa";
+          tap.vhost = true;
+        }
+        {
+          type = "macvtap";
+          id = "vm_leaf2ap";
+          mac = "20:20:00:00:00:ab";
+          macvtap = {
+            link = hostIFaces.intra10G_1.IF;
+            mode = "passthru";
+          };
+        }
+        {
+          type = "macvtap";
+          id = "vm_leaf2home40g";
+          mac = "20:20:00:00:00:ac";
+          macvtap = {
+            link = hostIFaces.intra40G_4.IF;
+            mode = "passthru";
+          };
         }
       ];
     };
@@ -54,8 +76,7 @@
       ../share
       ./bgp.nix
       ./network.nix
-      ./kea.nix
-      ./unbound.nix
+      ./containers/kea.nix
     ];
   };
 }

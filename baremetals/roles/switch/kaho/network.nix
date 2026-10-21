@@ -48,12 +48,18 @@ in
       };
       "10-wan" = {
         name = ifaces.wan.IF;
+        linkConfig = {
+          MTUBytes = ifaces.wan.mtu;
+        };
         networkConfig = {
           Description = "WAN";
         };
       };
       "10-manage" = {
         name = ifaces.manage.IF;
+        linkConfig = {
+          MTUBytes = ifaces.manage.mtu;
+        };
         networkConfig = {
           Description = "Management network";
         };
@@ -61,9 +67,20 @@ in
         routes = ifaces.manage.routes or [ ];
       };
       "10-intra10G" = {
-        name = ifaces.intra10G.IF;
+        name = ifaces.intra10G_1.IF;
+        linkConfig = {
+          MTUBytes = ifaces.intra10G_1.mtu;
+        };
         networkConfig = {
           Description = "Internal 10G network";
+        };
+      };
+      # 40G access ポート (home-leaf の macvtap passthru の下位デバイス)。
+      # BGP unnumbered のピアではないため 15- ではなく 10- を使う。
+      "10-intra40G_4" = {
+        name = ifaces.intra40G_4.IF;
+        linkConfig = {
+          MTUBytes = ifaces.intra40G_4.mtu;
         };
       };
     }
@@ -72,11 +89,14 @@ in
         n:
         nameValuePair "15-intra40G_${toString n}" {
           name = ifaces."intra40G_${toString n}".IF;
+          linkConfig = {
+            MTUBytes = ifaces."intra40G_${toString n}".mtu;
+          };
           networkConfig = {
             Description = "IB switch interface";
           };
         }
-      ) (range 1 4)
+      ) (range 1 3)
     );
   };
 }

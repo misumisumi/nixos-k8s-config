@@ -33,7 +33,7 @@ in
     microvm = {
       registerWithMachined = true;
       vcpu = 2;
-      mem = 1024 * 3; # in MB
+      mem = 1024 * 4; # in MB
       vsock = {
         cid = 1338;
         ssh.enable = true;
@@ -58,7 +58,7 @@ in
           id = "vm_router2wan";
           mac = "20:10:00:00:00:01";
           macvtap = {
-            link = if isDev then "enp5s0" else hostIFaces.wan.IF;
+            link = hostIFaces.wan.IF;
             mode = "bridge";
           };
         }
@@ -66,6 +66,7 @@ in
           type = "tap";
           id = "vm_router2host";
           mac = "20:10:00:00:00:aa";
+          tap.vhost = true;
         }
       ];
     };
@@ -77,7 +78,7 @@ in
       ./network.nix
       ./nftables.nix
       ./v6plus.nix
-    ]
-    ++ optional (!isDev) ./wireguard.nix;
+    ];
+    # ++ optional (!isDev) ./wireguard.nix;
   };
 }

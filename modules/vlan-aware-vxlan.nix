@@ -10,7 +10,9 @@ let
     assertMsg
     any
     concatStringsSep
+    filter
     flatten
+    head
     listToAttrs
     mapAttrsToList
     mkOption
@@ -18,6 +20,7 @@ let
     optional
     optionalAttrs
     optionalString
+    splitString
     toInt
     types
     ;
@@ -63,6 +66,25 @@ let
                 default = 4789;
                 description = "Destination port for tenant VXLAN interfaces.";
               };
+              mode = mkOption {
+                type = types.enum [
+                  "vlan-aware"
+                  "l3-only"
+                  "single-vni"
+                ];
+                default = "vlan-aware";
+                description = ''
+                  Bridge and VXLAN mode for this tenant.
+
+                  - `vlan-aware`: VLAN-aware single VXLAN device with the
+                    configured `vniVlanPairs` (default).
+                  - `l3-only`: only the L3VNI (no L2VNI/VLAN pairs). Use this on
+                    a border/PE that terminates the tenant VRF but has no local
+                    L2 access ports.
+                  - `single-vni`: legacy single-VNI VXLAN device without VLAN
+                    filtering (no L3VNI SVI is created).
+                '';
+              };
               vniIF = mkOption {
                 type = types.str;
                 visible = false;
@@ -77,6 +99,31 @@ let
                 type = types.str;
                 visible = false;
                 readOnly = true;
+              };
+              transitVnis = mkOption {
+                type = types.listOf (
+                  types.submodule {
+                    options = {
+                      vni = mkOption {
+                        type = types.int;
+                        apply = toString;
+                        description = "VXLAN Network Identifier (VNI).";
+                      };
+                      remoteVteps = mkOption {
+                        type = types.listOf types.str;
+                        default = [ ];
+                        description = "Underlay IP addresses of remote VTEPs advertising the transit VNI.";
+                      };
+                    };
+                  }
+                );
+                default = [ ];
+                description = ''
+                  Additional L3VNIs owned by other tenants that this VTEP must be able
+                  to encapsulate towards (direct leaf-to-leaf inter-tenant routing).
+                  Each VNI is registered on the tenant VXLAN interface and a static FDB
+                  entry is added for every remote VTEP.
+                '';
               };
             };
           };
@@ -126,6 +173,47 @@ let
             VNI must be unique across the tenants.
             VLAN ID is not unique across the tenants.
           '';
+        };
+        isolation = mkOption {
+          default = { };
+          description = "Inter-VLAN isolation policy for this tenant.";
+          type = types.submodule {
+            options = {
+              allowed = mkOption {
+                type = types.listOf (
+                  types.submodule {
+                    options = {
+                      from = mkOption {
+                        type = types.int;
+                        description = "Source VLAN ID.";
+                      };
+                      to = mkOption {
+                        type = types.listOf types.int;
+                        default = [ ];
+                        description = "Destination VLAN IDs allowed from the source VLAN.";
+                      };
+                    };
+                  }
+                );
+                default = [ ];
+                description = ''
+                  Directional inter-VLAN allowances.
+                  All other inter-VLAN traffic within this tenant is dropped.
+                '';
+              };
+              extraRule = mkOption {
+                type = types.lines;
+                default = "";
+                description = ''
+                  Additional nftables rules for this tenant.
+
+                  The rules are inserted into the tenant-isolation forward chain before
+                  the generated drop rules, so they can be used for explicit exceptions.
+                '';
+                example = ''iifname "home-vlan100" ip daddr 192.168.20.10 accept'';
+              };
+            };
+          };
         };
         vniVlanPairs' = mkOption {
           type = types.listOf (
@@ -196,6 +284,7 @@ let
   );
 in
 {
+  imports = [ ./tenant-isolation.nix ];
   options = {
     networking.vxlan.tenants = mkOption {
       type = types.attrsOf configPerTenant;
@@ -204,6 +293,11 @@ in
   };
   config =
     let
+      # vlan-aware / l3-only はどちらも VLAN aware な single VXLAN デバイスを使う。
+      # l3-only は L2VNI/VLAN pair を持たない点だけが異なる。
+      isVlanAware = v: v.L3VNI.mode != "single-vni";
+      hasPairs = v: v.L3VNI.mode == "vlan-aware";
+
       genNetdevs = mapAttrsToList (
         n: v:
         [
@@ -214,7 +308,7 @@ in
               Description = "Bridge for ${v.name} tenant";
               MACAddress = v.L3VNI.hwAddr;
             };
-            bridgeConfig = optionalAttrs (v.vniVlanPairs' != [ ]) {
+            bridgeConfig = optionalAttrs (isVlanAware v) {
               DefaultPVID = "none";
               VLANFiltering = true;
             };
@@ -233,10 +327,10 @@ in
               Independent = true;
               Local = v.L3VNI.local;
             }
-            // optionalAttrs (v.vniVlanPairs' == [ ]) {
+            // optionalAttrs (!(isVlanAware v)) {
               VNI = toInt v.L3VNI.vni;
             }
-            // optionalAttrs (v.vniVlanPairs' != [ ]) {
+            // optionalAttrs (isVlanAware v) {
               VNIFilter = true;
               External = true;
             };
@@ -252,7 +346,7 @@ in
             };
           })
         ]
-        ++ optional (v.vniVlanPairs' != [ ]) (
+        ++ optional (isVlanAware v) (
           nameValuePair "${v.L3VNI.vniIF}" {
             netdevConfig = {
               Name = "${v.L3VNI.vniIF}";
@@ -296,13 +390,12 @@ in
           (nameValuePair "50-${v.vrf}" {
             name = "${v.vrf}";
           })
-          (
-            nameValuePair "50-${v.L3VNI.brIF}" (
-              {
-                name = "${v.L3VNI.brIF}";
-                vrf = [ "${v.vrf}" ];
-              }
-              // optionalAttrs (v.vniVlanPairs' != [ ]) {
+          (nameValuePair "50-${v.L3VNI.brIF}" (
+            {
+              name = "${v.L3VNI.brIF}";
+              vrf = [ "${v.vrf}" ];
+            }
+            // optionalAttrs (isVlanAware v) {
               networkConfig = {
                 IPv6LinkLocalAddressGenerationMode = "none";
               };
@@ -329,9 +422,8 @@ in
                       ++ (map (x: { MACAddress = x.anycastGateway.hwAddr; }) v.vniVlanPairs');
                 in
                 macAddresses;
-              }
-            )
-          )
+            }
+          ))
           (nameValuePair "55-${v.L3VNI.vxlanIF}" {
             name = "${v.L3VNI.vxlanIF}";
             bridge = [ "${v.L3VNI.brIF}" ];
@@ -342,13 +434,13 @@ in
               NeighborSuppression = false;
               Learning = false;
             };
-            extraConfig = optionalString (v.vniVlanPairs' != [ ]) ''
+            extraConfig = optionalString (isVlanAware v) ''
               [Bridge]
               VLANTunnel=yes
             '';
           })
         ]
-        ++ optional (v.vniVlanPairs' != [ ]) (
+        ++ optional (isVlanAware v) (
           nameValuePair "55-${v.L3VNI.vniIF}" {
             name = "${v.L3VNI.vniIF}";
             vrf = [ "${v.vrf}" ];
@@ -391,15 +483,24 @@ in
               bridge vni add dev ${L3VNI} vni ${vni}
               bridge vlan add dev ${L3VNI} vid ${vid} tunnel_info id ${vni}
             '';
+            perTransit = L3VNI: t: ''
+              bridge vni add dev ${L3VNI} vni ${t.vni}
+              ${concatStringsSep "\n" (
+                map (
+                  ip: "bridge fdb append 00:00:00:00:00:00 dev ${L3VNI} dst ${ip} vni ${t.vni} self"
+                ) t.remoteVteps
+              )}
+            '';
             perTenant =
               n: v:
               let
                 L3VNI = "${v.name}-vxlan";
               in
-              optionalString (v.vniVlanPairs != [ ]) ''
+              optionalString (isVlanAware v) ''
                 echo "Configuring VNI VLAN tunneling for ${v.name} tenant ..."
                 ${perPair L3VNI v.L3VNI.vni v.L3VNI.vlan}
                 ${concatStringsSep "\n" (map (x: perPair L3VNI x.vni x.vlan) v.vniVlanPairs')}
+                ${concatStringsSep "\n" (map (t: perTransit L3VNI t) v.L3VNI.transitVnis)}
               '';
           in
           {
@@ -423,6 +524,52 @@ in
               echo "Configuring VXLAN VLAN tunneling ..."
               ${concatStringsSep "\n" (mapAttrsToList perTenant cfg)}
               echo "Configured VNI VLAN tunneling."
+            '';
+          };
+        # ゾーン用 VLAN インターフェースの SVI アドレスは systemd-networkd が
+        # 非同期に付与する。このサービスは全テナントの SVI アドレスが
+        # 現れるまで待つ (DNS/DHCP 等がアドレスへの bind を試みる前に)。
+        # network-online.target は wait-online 無効のため実際には待たない。
+        services.wait-vlan-addresses =
+          let
+            # 各テナントの SVI (interface:address) の一覧 (address 無しは除外)
+            entries = flatten (
+              mapAttrsToList (
+                _: v:
+                map (x: "${x.vlanIF}:${head (splitString "/" x.address)}") (
+                  filter (x: x.address != "") v.vniVlanPairs'
+                )
+              ) cfg
+            );
+          in
+          {
+            description = "Wait for tenant VLAN SVI addresses to be assigned";
+            wants = [ "systemd-networkd.service" ];
+            after = [ "systemd-networkd.service" ];
+            path = with pkgs; [
+              coreutils
+              gnugrep
+              iproute2
+            ];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+            };
+            script = ''
+              for entry in ${concatStringsSep " " entries}; do
+                iface=''${entry%%:*}
+                addr=''${entry#*:}
+                for _ in $(seq 1 120); do
+                  if ip -4 addr show dev "$iface" 2>/dev/null | grep -Fq "$addr/"; then
+                    break
+                  fi
+                  sleep 1
+                done
+                if ! ip -4 addr show dev "$iface" 2>/dev/null | grep -Fq "$addr/"; then
+                  echo "wait-vlan-addresses: address $addr on $iface did not appear" >&2
+                  exit 1
+                fi
+              done
             '';
           };
       };

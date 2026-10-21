@@ -5,21 +5,44 @@
   ...
 }:
 let
-  inherit (builtins) attrValues;
+  inherit (builtins)
+    attrValues
+    length
+    ;
   inherit (lib)
     concatStringsSep
     concatMapStringsSep
     filterAttrs
     hasPrefix
+    imap1
     splitString
     sublist
     ;
   inherit (static.microvm.homeLeaf.bgp) AS;
   inherit (config.networking.vxlan) tenants;
 
-  # ゾーン = DHCP/DNS を提供するテナント (wan を除く)
+  # ゾーン = DHCP を提供するテナント (wan を除く)
   zones = filterAttrs (n: _: n != "wan") tenants;
   zoneList = attrValues zones;
+
+  localVnis = map (z: z.L3VNI.vni) zoneList;
+
+  # 自 VNI の default のみ許可し、他 VNI の default は一括で拒否する。
+  # 新しいテナントが増えても foreign VNI の列挙は不要 (fail-closed)。
+  egressFilterPermits = imap1 (i: vni: ''
+    route-map EGRESS_DEFAULT_FILTER permit ${toString (i * 10)}
+      match evpn vni ${toString vni}
+      match evpn default-route
+    exit
+  '') localVnis;
+  egressFilterDenySeq = (length localVnis + 1) * 10;
+  egressFilterDeny = ''
+    route-map EGRESS_DEFAULT_FILTER deny ${toString egressFilterDenySeq}
+      match evpn default-route
+    exit
+    route-map EGRESS_DEFAULT_FILTER permit ${toString (egressFilterDenySeq + 10)}
+    exit
+  '';
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
   underlayPrefixes = concatStringsSep "." (
@@ -35,6 +58,10 @@ let
 
   # ゾーンごとの VRF BGP インスタンス (ゾーン間 leak はしない)
   # WAN egress の default は border-leaf の EVPN type-5 から学習する
+  # svc VRF (L3VNI 10001) のルートを import し、egress で downstream VNI
+  # (VNI 10001) を指定してカプセル化する。
+  # NOTE: route-target import auto はゾーン自身の auto RT を維持するために必要
+  #       (手動 RT のみ設定すると auto RT が外れる)。auto を先に設定すること。
   zoneRouterBlocks = concatMapStringsSep "\n" (z: ''
     router bgp ${AS} vrf ${z.vrf}
       address-family ipv4 unicast
@@ -43,6 +70,8 @@ let
 
       address-family l2vpn evpn
         advertise ipv4 unicast
+        route-target import auto
+        route-target import *:10001
       exit-address-family
   '') zoneList;
 in
@@ -77,6 +106,9 @@ in
       route-map WCMP-MAP permit 10
         set extcommunity bandwidth num-multipaths
       exit
+
+      ${concatStringsSep "\n" egressFilterPermits}
+      ${egressFilterDeny}
 
       ${vrfDecls}
 
@@ -115,6 +147,7 @@ in
 
         address-family l2vpn evpn
           neighbor OVERLAY activate
+          neighbor OVERLAY route-map EGRESS_DEFAULT_FILTER in
           advertise-all-vni
           advertise-svi-ip
         exit-address-family
