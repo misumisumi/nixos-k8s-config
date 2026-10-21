@@ -45,10 +45,14 @@ let
       enable = true;
       family = "ip";
       content = ''
+        chain prerouting {
+          type filter hook prerouting priority mangle; policy accept;
+          iifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set 1400
+        }
+
         chain postrouting {
           type filter hook postrouting priority mangle; policy accept;
-          iifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set rt mtu
-          oifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set rt mtu
+          oifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set 1400
         }
       '';
     };

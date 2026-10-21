@@ -105,17 +105,17 @@
     after = [ "sys-subsystem-net-devices-enp2s0d1.device" ];
   };
   microvm.vms = {
-    border-router = import ./border-router {
-      inherit
-        self
-        lib
-        inputs
-        isDev
-        isNixOSTest
-        user
-        static
-        ;
-    };
+    # border-router = import ./border-router {
+    #   inherit
+    #     self
+    #     lib
+    #     inputs
+    #     isDev
+    #     isNixOSTest
+    #     user
+    #     static
+    #     ;
+    # };
     home-leaf = import ./home-leaf {
       inherit
         self
