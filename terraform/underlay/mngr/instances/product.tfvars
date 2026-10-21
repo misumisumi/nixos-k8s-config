@@ -3,15 +3,12 @@ compornents = [{
   project = "homelab-prod"
   profiles = [
     {
-      name = "prod.mngr"
+      name        = "prod.mngr"
+      "root_pool" = "prod-mngr"
       config = {
         "limits.cpu"    = 1
         "limits.memory" = "2GB"
       }
-    },
-    {
-      name      = "prod.empty-vm"
-      root_size = "1MB"
     },
   ]
   instances = [
@@ -59,21 +56,5 @@ compornents = [{
         }
       ]
     },
-    {
-      name         = "test"
-      machine_type = "virtual-machine"
-      profiles     = ["prod.empty-vm"]
-      config = {
-        "limits.cpu"    = 4
-        "limits.memory" = "8GB"
-      }
-      networks = [
-        {
-          parent  = "br0"
-          nictype = "bridged"
-          vlan    = 10
-        },
-      ]
-    }
   ]
 }]
