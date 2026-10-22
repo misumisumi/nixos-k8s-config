@@ -192,6 +192,11 @@ compornents = [
             nictype      = "bridged"
             "limits.max" = "5000Mbit"
           },
+          {
+            parent       = "dev-10g-4"
+            nictype      = "bridged"
+            "limits.max" = "1000Mbit"
+          },
         ]
       },
       {

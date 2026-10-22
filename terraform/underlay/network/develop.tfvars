@@ -73,6 +73,21 @@ networks = {
       "ipv6.firewall" = false
     }
   },
+  dev-10g-4 = {
+    config = {
+      "bridge.driver" = "openvswitch"
+      "bridge.mtu"    = "9000"
+      "dns.mode"      = "none"
+      "ipv4.address"  = "none"
+      "ipv4.nat"      = false
+      "ipv4.dhcp"     = false
+      "ipv4.firewall" = false
+      "ipv6.address"  = "none"
+      "ipv6.nat"      = false
+      "ipv6.dhcp"     = false
+      "ipv6.firewall" = false
+    }
+  },
   dev-40g-0 = {
     config = {
       "bridge.driver" = "openvswitch"
