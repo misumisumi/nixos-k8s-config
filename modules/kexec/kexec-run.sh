@@ -101,7 +101,7 @@ fi
 
 if [ "$loadOnly" -eq 0 ]; then
   # Disconnect our background kexec from the terminal
-  echo "machine will boot into nixos in 6s..."
+  echo "machine will boot into nixos in 5s..."
   if test -e /dev/kmsg; then
     # this makes logging visible in `dmesg`, or the system console or tools like journald
     exec >/dev/kmsg 2>&1
@@ -110,8 +110,8 @@ if [ "$loadOnly" -eq 0 ]; then
   fi
   # We will kexec in background so we can cleanly finish the script before the hosts go down.
   # This makes integration with tools like terraform easier.
-  nohup sh -c "sleep 6 && '$SCRIPT_DIR/kexec' -e ${kexec_extra_flags}" &
+  nohup sh -c "sleep 5 && '$SCRIPT_DIR/kexec' -e ${kexec_extra_flags}" &
 else
-  echo "waiting 6s before next step..."
-  nohup sh -c "sleep 6" &
+  echo "waiting 5s before next step..."
+  nohup sh -c "sleep 5" &
 fi
