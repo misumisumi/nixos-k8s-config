@@ -96,7 +96,10 @@ in
             --prefix LD_LIBRARY_PATH : "${config.services.pcp.package}/lib"
         '';
         passthru = old.passthru // {
-          cockpitPath = old.passthru.cockpitPath ++ [ config.services.pcp.package ];
+          cockpitPath = old.passthru.cockpitPath ++ [
+            config.services.pcp.package
+            pkgs.kexec-tools
+          ];
         };
       });
       openFirewall = true;
