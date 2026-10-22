@@ -46,15 +46,6 @@ in
           "${routerId}/32"
         ];
       };
-      "10-wan" = {
-        name = ifaces.wan.IF;
-        linkConfig = {
-          MTUBytes = ifaces.wan.mtu;
-        };
-        networkConfig = {
-          Description = "WAN";
-        };
-      };
       "10-manage" = {
         name = ifaces.manage.IF;
         linkConfig = {
@@ -66,23 +57,10 @@ in
         address = [ ifaces.manage.address ];
         routes = ifaces.manage.routes or [ ];
       };
-      "10-intra10G" = {
-        name = ifaces.intra10G_1.IF;
-        linkConfig = {
-          MTUBytes = ifaces.intra10G_1.mtu;
-        };
-        networkConfig = {
-          Description = "Internal 10G network";
-        };
-      };
-      # 40G access ポート (home-leaf の macvtap passthru の下位デバイス)。
-      # BGP unnumbered のピアではないため 15- ではなく 10- を使う。
-      "10-intra40G_4" = {
-        name = ifaces.intra40G_4.IF;
-        linkConfig = {
-          MTUBytes = ifaces.intra40G_4.mtu;
-        };
-      };
+      # 40G アクセス ポート (intra40G_4) は production では VF を PCIe
+      # パススルーし、develop では macvtap の親として使う。
+      # ホスト側では up / MTU 設定のみ行う。
+      # (intra40G_1..3 は PCIe パススルー対象のため vfio-pci がバインドする)
     }
     // listToAttrs (
       map (
@@ -96,7 +74,7 @@ in
             Description = "IB switch interface";
           };
         }
-      ) (range 1 3)
+      ) (range 1 4)
     );
   };
 }

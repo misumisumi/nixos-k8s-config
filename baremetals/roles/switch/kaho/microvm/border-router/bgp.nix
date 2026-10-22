@@ -16,7 +16,11 @@ let
     ;
 
   inherit (config.networking.vxlan) tenants;
-  inherit (static.microvm.borderRouter.bgp) AS;
+  inherit (static.microvm.borderRouter.bgp) AS wanVrfTable;
+
+  # WAN は冗長化せず 1 経路のみのため、EVPN (L3VNI) ではなく VRF-lite の
+  # `import vrf` で tenant VRF に default を leak する。
+  wanVrf = "wan-vrf${toString wanVrfTable}";
 
   # ゾーン = EVPN type-5 で広報するテナント (wan と svc を除く)
   zones = filterAttrs (n: _: n != "wan" && n != "svc") tenants;
@@ -43,7 +47,7 @@ let
     router bgp ${AS} vrf ${z.vrf}
       address-family ipv4 unicast
         redistribute connected
-        import vrf ${tenants.wan.vrf}
+        import vrf ${wanVrf}
       exit-address-family
 
       address-family l2vpn evpn
@@ -59,7 +63,7 @@ let
     router bgp ${AS} vrf ${tenants.svc.vrf}
       address-family ipv4 unicast
         redistribute connected
-        import vrf ${tenants.wan.vrf}
+        import vrf ${wanVrf}
       exit-address-family
 
       address-family l2vpn evpn
@@ -155,8 +159,8 @@ in
 
       ${svcRouterBlock}
 
-      router bgp ${AS} vrf ${tenants.wan.vrf}
-        bgp router-id ${tenants.wan.L3VNI.local}
+      router bgp ${AS} vrf ${wanVrf}
+        bgp router-id ${static.microvm.borderRouter.bgp.routerId}
         address-family ipv4 unicast
           redistribute kernel
           redistribute connected

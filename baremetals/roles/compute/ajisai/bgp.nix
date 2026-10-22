@@ -17,13 +17,12 @@ let
     sublist
     ;
 
-  inherit (config.networking.vxlan) tenants;
-  inherit (static.${group}.${hostname}.bgp) AS;
+  inherit (static.${group}.${hostname}.bgp) AS routerId;
   inherit (static.${group}) virtualIPs;
 
   physicalNetworks = filterAttrs (name: _: hasPrefix "15-" name) config.systemd.network.networks;
   underlayPrefixes = concatStringsSep "." (
-    (sublist 0 3 (splitString "." tenants.tn1.L3VNI.local)) ++ [ "0/24" ]
+    (sublist 0 3 (splitString "." routerId)) ++ [ "0/24" ]
   );
 in
 {
@@ -55,16 +54,12 @@ in
       ip prefix-list UNDERLAY_IPV4 permit ${underlayPrefixes} ge 32
       route-map SET-SRC permit 10
         match ip address prefix-list UNDERLAY_IPV4
-        set src ${tenants.tn1.L3VNI.local}
+        set src ${routerId}
       exit
       ip protocol bgp route-map SET-SRC
 
-      vrf ${tenants.tn1.vrf}
-        vni ${toString tenants.tn1.L3VNI.vni}
-      exit-vrf
-
       router bgp ${AS}
-        bgp router-id ${tenants.tn1.L3VNI.local}
+        bgp router-id ${routerId}
         bgp log-neighbor-changes
         bgp bestpath as-path multipath-relax
         no bgp default ipv4-unicast
@@ -102,15 +97,6 @@ in
           neighbor OVERLAY activate
           advertise-all-vni
           advertise-svi-ip
-        exit-address-family
-
-      router bgp ${AS} vrf ${tenants.tn1.vrf}
-        address-family ipv4 unicast
-          redistribute connected
-        exit-address-family
-
-        address-family l2vpn evpn
-          advertise ipv4 unicast
         exit-address-family
     '';
   };

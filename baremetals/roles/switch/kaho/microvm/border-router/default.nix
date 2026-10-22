@@ -9,7 +9,6 @@
 }:
 let
   inherit (lib) optional;
-  hostIFaces = static.switch.kaho.networks;
 in
 {
   specialArgs = {
@@ -54,15 +53,6 @@ in
       ];
       interfaces = [
         {
-          type = "macvtap";
-          id = "vm_router2wan";
-          mac = "20:10:00:00:00:01";
-          macvtap = {
-            link = hostIFaces.wan.IF;
-            mode = "bridge";
-          };
-        }
-        {
           type = "tap";
           id = "vm_router2host";
           mac = "20:10:00:00:00:aa";
@@ -74,6 +64,7 @@ in
       ../../../../share/modules/static.nix
       ../../../../share/apps/debug.nix
       ../share
+      (if isDev then ./develop else ./production)
       ./bgp.nix
       ./network.nix
       ./nftables.nix

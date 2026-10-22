@@ -14,7 +14,6 @@ in
     ./bgp.nix
     ./incus.nix
     ./network.nix
-    ./users.nix
   ]
   ++ optional (!isDev) ./production
   ++ optional isDev ./develop;

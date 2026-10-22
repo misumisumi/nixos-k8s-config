@@ -27,7 +27,6 @@ in
     ./incus.nix
     ./linstor.nix
     ./nftables.nix
-    inputs.homelab-modules.nixosModules.vlan-aware-vxlan
   ];
   image.modules = mkForce {
     inherit (inputs.homelab-modules.nixosModules) kexec incus-vm;

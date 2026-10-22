@@ -108,8 +108,8 @@ in
         ];
       };
       # BGP unnumbered の underlay リンク (ホスト側 br_svc2host)
-      "15-enp0s3" = {
-        name = "enp0s3";
+      "15-host" = {
+        name = static.microvm.svcLeaf.networks.host.IF;
         linkConfig = {
           MTUBytes = static.microvm.svcLeaf.mtu;
         };

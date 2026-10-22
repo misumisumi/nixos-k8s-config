@@ -30,13 +30,13 @@ in
     ../../share/settings/users.nix
     ./bgp.nix
     ./diskless.nix
-    # ./fancontrol
     ./microvm
     ./network.nix
   ];
   environment.systemPackages = with pkgs; [
     dhcpcd
     ndisc6
+    mstflint-cx3-support
   ];
   image.modules = mkForce {
     inherit (inputs.homelab-modules.nixosModules) kexec incus-vm;

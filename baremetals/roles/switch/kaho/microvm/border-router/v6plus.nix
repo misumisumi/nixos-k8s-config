@@ -5,20 +5,22 @@
 }:
 let
   inherit (static.microvm.borderRouter) BR CE IPIP6_IPv4;
-  inherit (config.networking.vxlan.tenants.wan) vrf;
+  inherit (static.microvm.borderRouter.bgp) wanVrfTable;
+  vrf = "wan-vrf${toString wanVrfTable}";
+  wanIF = static.microvm.borderRouter.networks.wan.IF;
 in
 {
   boot = {
     kernel.sysctl = {
       "net.ipv6.conf.all.accept_ra" = 1;
-      "net.ipv6.conf.enp0s4.accept_ra" = 2;
+      "net.ipv6.conf.${wanIF}.accept_ra" = 2;
     };
     kernelModules = [ "ip6_tunnel" ];
   };
   networking.firewall.extraInputRules = ''
     meta l4proto ipv6-icmp accept
-    iifname "enp0s4" meta l4proto 4 accept
-    iifname "enp0s4" udp dport 546 udp sport 547 accept
+    iifname "${wanIF}" meta l4proto 4 accept
+    iifname "${wanIF}" udp dport 546 udp sport 547 accept
   '';
   systemd.network = {
     netdevs.v6plus-tnl = {
@@ -35,11 +37,11 @@ in
       };
     };
     networks = {
-      "10-enp0s4" = {
-        name = "enp0s4";
+      "10-wan" = {
+        name = wanIF;
         vrf = [ vrf ];
         linkConfig = {
-          MTUBytes = static.switch.kaho.networks.wan.mtu;
+          MTUBytes = static.microvm.borderRouter.mtu;
         };
         networkConfig = {
           Description = "WAN Interface";

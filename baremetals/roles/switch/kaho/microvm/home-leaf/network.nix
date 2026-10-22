@@ -13,8 +13,11 @@ let
     toLower
     ;
   inherit (static.microvm.homeLeaf.bgp) routerId;
+  inherit (static.microvm.homeLeaf) networks;
 
   idSuffix = last (splitString "." routerId);
+
+  l3vniHwAddr = "3E:E9:45:18:AD:4E";
 
   hwAddrPart =
     vid:
@@ -48,7 +51,7 @@ in
     "home" = {
       name = "home";
       L3VNI = {
-        hwAddr = "3E:E9:45:18:AD:4E";
+        hwAddr = l3vniHwAddr;
         vni = 11001;
         vlan = 1101;
         local = routerId;
@@ -155,8 +158,8 @@ in
         ];
       };
       # BGP unnumbered の underlay リンク (ホスト側 br_home2host)
-      "15-enp0s3" = {
-        name = "enp0s3";
+      "15-host" = {
+        name = networks.host.IF;
         linkConfig = {
           MTUBytes = static.microvm.homeLeaf.mtu;
         };
@@ -166,11 +169,11 @@ in
           IPv6AcceptRA = false;
         };
       };
-      # Wi-Fi AP トランク (macvtap, MAC でマッチ) から VLAN 10/20/100 を取り出す
-      "16-enp0s4" = {
-        name = "enp0s4";
+      # Wi-Fi AP トランク (macvtap or PCIe passthrough) から VLAN 10/20/100 を取り出す
+      "16-apTrunk" = {
+        name = networks.apTrunk.IF;
         linkConfig = {
-          MTUBytes = static.switch.kaho.networks.intra10G_1.mtu;
+          MTUBytes = static.microvm.homeLeaf.mtu;
         };
         networkConfig = {
           Description = "To Wi-Fi AP trunk";
@@ -182,11 +185,35 @@ in
           "ap-gst"
         ];
       };
-      # 40G アクセスポート (macvtap, MAC でマッチ) を home VLAN 10 に収容
-      "16-home40g" = {
-        matchConfig.MACAddress = "20:20:00:00:00:ac";
+      # 10G アクセスポート (intra10G_2) を home VLAN 10 に収容
+      "16-home10G" = {
+        name = networks.intra10G_2.IF;
         linkConfig = {
-          MTUBytes = static.switch.kaho.networks.intra40G_4.mtu;
+          MTUBytes = static.microvm.homeLeaf.mtu;
+        };
+        networkConfig = {
+          Description = "To home 10G access port";
+          IPv6AcceptRA = false;
+        };
+        bridge = [
+          "home-br"
+        ];
+        bridgeVLANs = [
+          {
+            VLAN = 10;
+            PVID = 10;
+            EgressUntagged = 10;
+          }
+        ];
+      };
+      # 40G アクセスポートを home VLAN 10 に収容
+      # VF (mlx4) の HW MAC フィルタは 1 MAC しか通さないため、
+      # bridge/L3VNI と同じ MAC に固定して local entry で受信させる。
+      "16-home40G" = {
+        name = networks.intra40G_4.IF;
+        linkConfig = {
+          MTUBytes = static.microvm.homeLeaf.mtu;
+          MACAddress = l3vniHwAddr;
         };
         networkConfig = {
           Description = "To home 40G access port";

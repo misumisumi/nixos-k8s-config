@@ -7,18 +7,10 @@
       hostname = "kaho";
 
       networks = {
-        wan = {
-          IF = "enp5s0";
-          mtu = 9000;
-        };
         manage = {
           IF = "enp6s0";
           address = "192.168.20.42/24";
           mtu = 1500;
-        };
-        intra10G_1 = {
-          IF = "enp7s0";
-          mtu = 9000;
         };
         intra40G_1 = {
           IF = "enp8s0";
@@ -83,11 +75,22 @@
       system = "x86_64-linux";
       user = "renako";
       hostname = "borderRouter";
-      networks = { };
+      networks = {
+        host = {
+          IF = "enp0s5";
+        };
+        wan = {
+          IF = "enp0s4";
+          # macvtap の親 (ホスト側) IF
+          parent = "enp5s0";
+        };
+      };
       mtu = 9000;
       bgp = {
         routerId = "10.10.10.254";
         AS = "64512";
+        # wan VRF の routing table 番号 (EVPN では使わない)。
+        wanVrfTable = 30001;
       };
       BR = "fd42:3a98:dc40:52c6::254";
       CE = "fd42:3a98:dc40:52c6::100";
@@ -99,7 +102,24 @@
       system = "x86_64-linux";
       user = "renako";
       hostname = "homeLeaf";
-      networks = { };
+      networks = {
+        host = {
+          IF = "enp0s3";
+        };
+        apTrunk = {
+          IF = "enp0s4";
+          # macvtap の親 (ホスト側) IF
+          parent = "enp7s0";
+        };
+        intra10G_2 = {
+          IF = "enp0s5";
+          parent = "enp12s0";
+        };
+        intra40G_4 = {
+          IF = "enp0s6";
+          parent = "enp11s0";
+        };
+      };
       mtu = 9000;
       bgp = {
         routerId = "10.10.10.250";
@@ -111,7 +131,11 @@
       system = "x86_64-linux";
       user = "renako";
       hostname = "svcLeaf";
-      networks = { };
+      networks = {
+        host = {
+          IF = "enp0s3";
+        };
+      };
       mtu = 9000;
       bgp = {
         routerId = "10.10.10.240";

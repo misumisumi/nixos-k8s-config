@@ -6,7 +6,10 @@
 }:
 let
   inherit (config.networking.vxlan) tenants;
-  inherit (static.microvm.borderRouter.bgp) routerId;
+  inherit (static.microvm.borderRouter.bgp) routerId wanVrfTable;
+  # WAN は冗長化しないため EVPN (L3VNI) にせず、tenant VRF へ `import vrf` で
+  # default を leak する VRF-lite 構成にする。VRF だけを単独で定義する。
+  wanVrf = "wan-vrf${toString wanVrfTable}";
 in
 {
   boot.kernel.sysctl = {
@@ -31,15 +34,6 @@ in
   # systemd-resolved の stub (127.0.0.53) は VRF 内から到達できない。
   services.resolved.enable = false;
   networking.vxlan.tenants = {
-    "wan" = {
-      name = "wan";
-      L3VNI = {
-        vni = 30001;
-        local = routerId;
-        destinationPort = 4789;
-        mode = "single-vni";
-      };
-    };
     # 家庭内ネットワーク。1 つの L3 VNI (11001) に LAN/IoT/Guest を VLAN で集約する。
     "home" = {
       name = "home";
@@ -82,9 +76,19 @@ in
           Kind = "dummy";
         };
       };
-      "lo${tenants.wan.L3VNI.vni}" = {
+      "${wanVrf}" = {
         netdevConfig = {
-          Name = "lo${tenants.wan.L3VNI.vni}";
+          Name = "${wanVrf}";
+          Kind = "vrf";
+          Description = "VRF for wan";
+        };
+        vrfConfig = {
+          Table = wanVrfTable;
+        };
+      };
+      "lo${toString wanVrfTable}" = {
+        netdevConfig = {
+          Name = "lo${toString wanVrfTable}";
           Kind = "dummy";
         };
       };
@@ -96,16 +100,21 @@ in
           "${tenants.home.L3VNI.local}/32"
         ];
       };
-      "5-lo${tenants.wan.L3VNI.vni}" = {
-        name = "lo${tenants.wan.L3VNI.vni}";
-        vrf = [ "${tenants.wan.vrf}" ];
+      # wan VRF の VRF デバイス。tenant VRF から `import vrf` するだけなので
+      # アドレスやブリッジは持たない。
+      "50-${wanVrf}" = {
+        name = "${wanVrf}";
+      };
+      "5-lo${toString wanVrfTable}" = {
+        name = "lo${toString wanVrfTable}";
+        vrf = [ "${wanVrf}" ];
         address = [
           "${tenants.home.L3VNI.local}/32"
         ];
       };
       # BGP unnumbered の underlay リンク (ホスト側 br_router2host)
-      "15-enp0s5" = {
-        name = "enp0s5";
+      "15-host" = {
+        name = static.microvm.borderRouter.networks.host.IF;
         linkConfig = {
           MTUBytes = static.microvm.borderRouter.mtu;
         };
