@@ -122,28 +122,6 @@ in
           Kind = "dummy";
         };
       };
-      # Wi-Fi AP トランク (macvtap) を VLAN ごとに分割するデバイス
-      ap-home = {
-        netdevConfig = {
-          Name = "ap-home";
-          Kind = "vlan";
-        };
-        vlanConfig.Id = 10;
-      };
-      ap-iot = {
-        netdevConfig = {
-          Name = "ap-iot";
-          Kind = "vlan";
-        };
-        vlanConfig.Id = 20;
-      };
-      ap-gst = {
-        netdevConfig = {
-          Name = "ap-gst";
-          Kind = "vlan";
-        };
-        vlanConfig.Id = 100;
-      };
     };
     networks = {
       "5-lo0" = {
@@ -169,20 +147,25 @@ in
           IPv6AcceptRA = false;
         };
       };
-      # Wi-Fi AP トランク (macvtap or PCIe passthrough) から VLAN 10/20/100 を取り出す
+      # 下流の managed L2 が VLAN 10/20/100 を trunk で運ぶため、
+      # ここではタグを剥がさず tagged のまま home-br に収容する。
+      # overlay は 1500 (VXLAN/ブリッジ) なので AP 側に合わせる。
       "16-apTrunk" = {
         name = networks.apTrunk.IF;
         linkConfig = {
-          MTUBytes = static.microvm.homeLeaf.mtu;
+          MTUBytes = 1500;
         };
         networkConfig = {
-          Description = "To Wi-Fi AP trunk";
+          Description = "To managed L2 (Wi-Fi AP trunk)";
           IPv6AcceptRA = false;
         };
-        vlan = [
-          "ap-home"
-          "ap-iot"
-          "ap-gst"
+        bridge = [
+          "home-br"
+        ];
+        bridgeVLANs = [
+          { VLAN = 10; }
+          { VLAN = 20; }
+          { VLAN = 100; }
         ];
       };
       # 10G アクセスポート (intra10G_2) を home VLAN 10 に収容
@@ -227,46 +210,6 @@ in
             VLAN = 10;
             PVID = 10;
             EgressUntagged = 10;
-          }
-        ];
-      };
-      # 各 VLAN を home テナントのブリッジへ untagged(PVID) で収容
-      "60-ap-home" = {
-        name = "ap-home";
-        bridge = [
-          "home-br"
-        ];
-        bridgeVLANs = [
-          {
-            VLAN = 10;
-            PVID = 10;
-            EgressUntagged = 10;
-          }
-        ];
-      };
-      "60-ap-iot" = {
-        name = "ap-iot";
-        bridge = [
-          "home-br"
-        ];
-        bridgeVLANs = [
-          {
-            VLAN = 20;
-            PVID = 20;
-            EgressUntagged = 20;
-          }
-        ];
-      };
-      "60-ap-gst" = {
-        name = "ap-gst";
-        bridge = [
-          "home-br"
-        ];
-        bridgeVLANs = [
-          {
-            VLAN = 100;
-            PVID = 100;
-            EgressUntagged = 100;
           }
         ];
       };

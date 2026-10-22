@@ -47,12 +47,12 @@ let
       content = ''
         chain prerouting {
           type filter hook prerouting priority mangle; policy accept;
-          iifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set 1400
+          iifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set 1420
         }
 
         chain postrouting {
           type filter hook postrouting priority mangle; policy accept;
-          oifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set 1400
+          oifname "v6plus-tnl" tcp flags & syn == syn tcp option maxseg size set 1420
         }
       '';
     };

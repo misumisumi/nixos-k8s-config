@@ -41,7 +41,7 @@ in
         name = wanIF;
         vrf = [ vrf ];
         linkConfig = {
-          MTUBytes = static.microvm.borderRouter.mtu;
+          MTUBytes = static.microvm.borderRouter.networks.wan.mtu;
         };
         networkConfig = {
           Description = "WAN Interface";
@@ -63,6 +63,9 @@ in
       "11-v6plus-tnl" = {
         name = "v6plus-tnl";
         vrf = [ vrf ];
+        linkConfig = {
+          MTUBytes = static.microvm.borderRouter.networks.wan.mtu - 40;
+        };
         networkConfig = {
           Description = "IPv6+ Tunnel Interface";
           IPv4Forwarding = true;

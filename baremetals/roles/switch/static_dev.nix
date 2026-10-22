@@ -83,6 +83,7 @@
           IF = "enp0s4";
           # macvtap の親 (ホスト側) IF
           parent = "enp5s0";
+          mtu = 1500;
         };
       };
       mtu = 9000;
