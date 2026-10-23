@@ -572,6 +572,33 @@ in
               done
             '';
           };
+        services.set-vlan-arp-flux =
+          let
+            interfaces = flatten (
+              mapAttrsToList (_: v: map (x: x.vlanIF) v.vniVlanPairs') cfg
+            );
+          in
+          {
+            description = "Configure ARP behavior for tenant VLAN SVIs";
+            wantedBy = [ "multi-user.target" ];
+            wants = [ "wait-vlan-addresses.service" ];
+            after = [ "wait-vlan-addresses.service" ];
+            path = with pkgs; [
+              procps
+            ];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+            };
+            script = ''
+              ${concatStringsSep "\n" (
+                map (iface: ''
+                  sysctl -w net.ipv4.conf.${iface}.arp_ignore=1
+                  sysctl -w net.ipv4.conf.${iface}.arp_announce=2
+                '') interfaces
+              )}
+            '';
+          };
       };
     };
 }
