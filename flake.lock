@@ -838,6 +838,7 @@
         "flakes": "flakes",
         "home-manager": "home-manager",
         "homelab-modules": "homelab-modules",
+        "litellm-plugin-collection": "litellm-plugin-collection",
         "microvm": "microvm",
         "nixos-linstor": "nixos-linstor",
         "nixpkgs": "nixpkgs_4",
@@ -928,6 +929,27 @@
         "type": "path"
       },
       "parent": []
+    },
+    "litellm-plugin-collection": {
+      "inputs": {
+        "nixpkgs": [
+          "homelab-baremetals",
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793286311,
+        "narHash": "sha256-iGGx7bdeRIzPc6gCim0p1HOMemS/VWDWP1Fmx9wB7E8=",
+        "owner": "misumisumi",
+        "repo": "litellm-plugin-collection",
+        "rev": "57a5923d46dcec82b5d7df367d7665740fc0cf9a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "misumisumi",
+        "repo": "litellm-plugin-collection",
+        "type": "github"
+      }
     },
     "microvm": {
       "inputs": {

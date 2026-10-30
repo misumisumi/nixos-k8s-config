@@ -104,8 +104,13 @@ in
         misc.dnsmasq_lines = [
           "server=/llm.misumi-sumi.com/1.1.1.1"
           "server=/relay.misumi-sumi.com/1.1.1.1"
+          # ACME (lego) は DNS-01 のゾーン判定に SOA を使う。OCI 自身の
+          # resolver が pihole なので、ここで * .oci を Cloudflare 側へ
+          # 解決できないと renewal が REFUSED で失敗する。
+          # NOTE: 宅内 PowerDNS が用意できるまでは公開 DNS を使う。
+          "server=/oci.misumi-sumi.com/1.1.1.1"
+          "server=/misumi-sumi.com/1.1.1.1"
           "address=/wg.oci.misumi-sumi.com/${wgAddress}"
-          "server=/misumi-sumi.com/${static.${group}.${hostname}.pihole.home.forwardIP}"
         ];
       };
     };
@@ -115,6 +120,12 @@ in
       ports = [ 8080 ];
     };
   };
+
+  # nixpkgs の setup script は既に登録済みの adlist を POST すると
+  # "The item is already present" を返し、any_failed=1 で終了する。
+  # 再適用のたびに nixos-rebuild が exit 4 になるため、この既知の
+  # 冪等性エラー (exit 1) を成功扱いにする。
+  systemd.services.pihole-ftl-setup.serviceConfig.SuccessExitStatus = [ 1 ];
 
   # Generate the real pihole.toml from the store base + the sops pwhash,
   # ordered before pihole-ftl / pihole-web start.

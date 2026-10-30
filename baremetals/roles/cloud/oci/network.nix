@@ -56,7 +56,9 @@ in
         allowedTCPPorts = [
           443
           9443
-        ]; # nginx: TLS reverse proxy for managing web-ui
+          4000
+          8787
+        ]; # nginx: LiteLLM Admin UI (webui) + Headroom dashboard via WireGuard only
       };
       interfaces.tailscale0 = {
         allowedUDPPorts = [ 53 ]; # for DNS (Tailscale クライアント用)

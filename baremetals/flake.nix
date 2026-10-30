@@ -63,6 +63,10 @@
     };
 
     homelab-modules.url = "path:../modules";
+    litellm-plugin-collection = {
+      url = "github:misumisumi/litellm-plugin-collection";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs =

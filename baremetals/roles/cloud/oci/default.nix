@@ -14,8 +14,9 @@
     ../../share/settings/ssh.nix
     ./cloudflared.nix
     ./headscale
-    ./litellm
+    ./headroom
     ./network.nix
+    ./litellm
     ./nginx.nix
     ./oci.nix
     ./paseo-relay.nix
